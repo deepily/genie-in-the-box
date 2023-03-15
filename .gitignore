@@ -1,0 +1,5 @@
+# Skip the usual OS X artifacts and noise
+.DS_Store
+._.DS_Store
+._run-genie-gui.sh
+.idea/
