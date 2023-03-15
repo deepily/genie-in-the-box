@@ -3,3 +3,5 @@
 ._.DS_Store
 ._run-genie-gui.sh
 .idea/
+
+**/__pycache__/**

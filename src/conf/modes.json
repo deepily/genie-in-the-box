@@ -1,0 +1,30 @@
+{
+    "transcribe": {
+        "title": "Transcribe (Raw)",
+        "method_name": "do_transcription"
+    },
+    "transcribe_and_clean_prose": {
+        "title": "Transcribe (Prose)",
+        "method_name": "do_transcribe_and_clean_prose"
+    },
+    "transcribe_and_clean_python": {
+        "title": "Transcribe (Python)",
+        "method_name": "do_transcribe_and_clean_python"
+    },
+    "ai_explain_code_from_clipboard": {
+        "title": "Explain This Code or Error (Clipboard)",
+        "method_name": "do_gpt_code_explanation_from_clipboard"
+    },
+    "ai_service_by_vox": {
+        "title": "ChatGPT (Vox)",
+        "method_name": "do_gpt_by_voice"
+    },
+    "ai_service_from_clipboard": {
+        "title": "ChatGPT (Clipboard)",
+        "method_name": "do_gpt_from_clipboard"
+    },
+    "tts_from_clipboard": {
+        "title": "Read to me (Clipboard)",
+        "method_name": "do_read_to_me"
+    }
+}
