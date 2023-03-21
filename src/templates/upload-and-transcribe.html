@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Record and save audio</title>
+    <style>
+      audio {
+        display: block;
+        margin: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="record">Record</button>
+    <button id="stop" disabled>Stop</button>
+    <button id="play" disabled>Play</button>
+    <button id="save" disabled>Transcribe</button>
+<!--    <input id="input1" value="Paste it here?"></input>-->
+<!--    <input id="input2" value="Paste it here?"></input>-->
+
+
+    <script>
+
+      // let elem = document.getElementById('type-here');
+
+      window.addEventListener( "keydown", function (event) {
+          // console.log( "event [" + event + "]" );
+          // console.log( "event.key [" + event.key + "]" );
+          if ( event.ctrlKey && event.key == "r" ) {
+            console.log( "'Ctrl r' pressed" );
+            document.getElementById('record').click();
+          } else if ( event.ctrlKey && event.key == "s" ) {
+            console.log( "'Ctrl s' pressed" );
+            document.getElementById('stop').click();
+            console.log( "Key pressed [" + event.key + "]" );
+          } else if ( event.ctrlKey && event.key == "p" ) {
+            console.log( "Ctrl 'p' pressed" );
+            document.getElementById('play').click();
+          } else if ( event.ctrlKey && event.key == "t" ) {
+            console.log( "'Ctrl t' pressed" );
+            document.getElementById('save').click();
+          }
+      });
+      const recordAudio = () =>
+        new Promise(async resolve => {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const mediaRecorder = new MediaRecorder(stream);
+          let audioChunks = [];
+
+          mediaRecorder.addEventListener('dataavailable', event => {
+            audioChunks.push(event.data);
+          });
+
+          const start = () => {
+            audioChunks = [];
+            mediaRecorder.start();
+          };
+
+          const stop = () =>
+            new Promise(resolve => {
+              mediaRecorder.addEventListener('stop', () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/mpeg' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+                const play = () => audio.play();
+                resolve({ audioChunks, audioBlob, audioUrl, play });
+              });
+
+              mediaRecorder.stop();
+            });
+
+          resolve({ start, stop });
+        });
+
+      const sleep = time => new Promise(resolve => setTimeout(resolve, time));
+
+      const recordButton = document.querySelector('#record');
+      const stopButton = document.querySelector('#stop');
+      const playButton = document.querySelector('#play');
+      const saveButton = document.querySelector('#save');
+
+      let recorder;
+      let audio;
+
+      recordButton.addEventListener('click', async () => {
+        recordButton.setAttribute('disabled', true);
+        stopButton.removeAttribute('disabled');
+        playButton.setAttribute('disabled', true);
+        saveButton.setAttribute('disabled', true);
+        if (!recorder) {
+          recorder = await recordAudio();
+        }
+        recorder.start();
+      });
+
+      stopButton.addEventListener('click', async () => {
+        recordButton.removeAttribute('disabled');
+        stopButton.setAttribute('disabled', true);
+        playButton.removeAttribute('disabled');
+        saveButton.removeAttribute('disabled');
+        audio = await recorder.stop();
+      });
+
+      playButton.addEventListener('click', () => {
+        audio.play();
+      });
+
+      saveButton.addEventListener('click', async () => {
+
+        const reader = new FileReader();
+        reader.readAsDataURL(audio.audioBlob);
+        // reader.readAsArrayBuffer(audio.audioBlob);
+        reader.onload = () => {
+
+          const audioMessage = reader.result.split(',')[1];
+          const mimeType = reader.result.split(',')[0];
+
+          fetch('/api/upload-and-transcribe', {
+            method: 'POST',
+            headers: { 'Content-Type': mimeType },
+            // headers: { 'Content-Type': 'application/json' },
+            // headers: {
+            //   'content-type': "application/octet-stream",
+            //   'content-length': audioMessage.byteLength,
+            // },
+            // body: JSON.stringify({ recording: audioMessage })
+            // body: audioMessage
+            body: audioMessage
+          }).then(res => {
+            console.log( res.headers );
+            console.log( res.body );
+            console.log( res.status  );
+            if (res.ok == true) {
+              console.log('Successfully transcribed audio message');
+              let text = res.text().then( respText => {
+                console.log( "respText [" + respText + "]" )
+                pushToClipboard( respText );
+              });
+              console.log( "text [" + text + "]" );
+              // alert(text);
+            } else
+              console.log('Invalid status saving audio message: ' + res.status);
+          });
+        };
+      });
+      pushToClipboard = (msg ) => {
+        console.log("Pushing to clipboard [" + msg + "]...");
+        navigator.clipboard.writeText(msg).then(() => {
+          console.log("Success!");
+        }, () => {
+          console.log("Failed to write to clipboard!");
+        });
+        console.log("document.hasFocus() " + document.hasFocus());
+        console.log("document.activeElement " + document.activeElement.id);
+        // document.activeElement.value = msg;
+        typeInTextarea( msg );
+      }
+      const typeInTextarea = ( newText, el = document.activeElement) => {
+        const [start, end] = [el.selectionStart, el.selectionEnd];
+        el.setRangeText(newText, start, end, 'select');
+      }
+    </script>
+  </body>
+</html>

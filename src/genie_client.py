@@ -20,7 +20,8 @@ import util
 
 wav_file     = "vox-to-be-transcribed.wav"
 docker_path  = "/var/io/{}"
-local_path   = "/Users/rruiz/Projects/projects-sshfs/io/{}"
+# local_path   = "/Users/rruiz/Projects/projects-sshfs/io/{}"
+local_path   = "/Volumes/projects/io/{}"
 write_method = "file" # "file" or "flask"
 
 class GenieClient:
@@ -53,8 +54,8 @@ class GenieClient:
         self.runtime_context    = runtime_context
         self.write_method       = write_method
         self.input_path         = "/var/io/{}".format( wav_file )
-        self.trans_address      = "127.0.0.1:7999"
-        self.tts_address        = "127.0.0.1:5002"
+        self.trans_address      = "192.168.0.19:7999"
+        self.tts_address        = "192.168.0.19:5002"
         self.tts_wav_path       = "/tmp/tts.wav"
         self.py                 = pyaudio.PyAudio()
         
@@ -273,8 +274,9 @@ class GenieClient:
         text = parse.quote_plus( tts_input )
     
         start_millis = time.time()
-        print( "Converting text to speech...", end="" )
-        response = ur.urlopen( "http://{ip_and_port}/api/tts?text={text}".format( ip_and_port=ip_and_port, text=text ) ).read()
+        url = "http://{ip_and_port}/api/tts?text={text}".format( ip_and_port=ip_and_port, text=text )
+        print( "Converting text to speech [{}]...".format( url ), end="" )
+        response = ur.urlopen( url ).read()
     
         with open( tts_output_path, "wb" ) as f:
             f.write( response )
@@ -377,8 +379,9 @@ class GenieClient:
     
         raw_text = self.do_transcription()
     
-        preamble = "Clean up the following text, including using proper capitalization, contractions, grammar, and " \
-                   "translation of punctuation mark words into single characters. Format output as informal prose."
+        preamble = "You are an expert copy editor. Clean up the following text, including using proper capitalization, " \
+                   "contractions, grammar, and translation of punctuation mark words into single characters. Format " \
+                   "output as formal technical prose."
 
         gpt_response = self.ask_chat_gpt_text( raw_text, preamble=preamble )
 
