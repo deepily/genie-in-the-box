@@ -1,6 +1,5 @@
-import json
-import subprocess
-from pydub import AudioSegment
+import os
+
 from flask import Flask, request, render_template
 import whisper
 import base64
@@ -35,6 +34,16 @@ def root():
 # def upload_and_transcribe_html():
 #     return render_template( "upload-and-transcribe.html" )
 
+@app.route( "/api/ask-ai-text" )
+def ask_ai_text():
+
+    question = request.args.get( "question" )
+
+    print( "Asking AI [{}]...".format( question ) )
+    result = genie_client.ask_chat_gpt_text( question, preamble="What does this mean?" )
+    print( "Result: [{}]".format( result ) )
+
+    return result.strip()
 
 @app.route( "/api/upload-and-transcribe", methods=[ "POST" ] )
 def upload_and_transcribe_file():
@@ -110,9 +119,13 @@ def vox_2_text():
 
     return result[ "text" ].strip()
 
+
 print( "Loading whisper engine... ", end="" )
 model = whisper.load_model( "base.en" )
 print( "Done!" )
+
+print( os.getenv( "OPENAI_API_KEY" ) )
+genie_client = gc.GenieClient()
 
 if __name__ == "__main__":
 
