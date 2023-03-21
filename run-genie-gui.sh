@@ -1,12 +1,14 @@
 #! /bin/bash
+# This script is used to run the Genie GUI on a Mac.
 
 # TODO: This should be a part of the environment configuration.
-export OPENAI_API_KEY=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
+export OPENAI_API_KEY=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
 
-# This script is used to run the Genie GUI on a Mac.
+# Activate the virtual environment
 source /Users/rruiz/Projects/local-interpreter-python3.10/venv/bin/activate
 
-cd /Users/rruiz/Projects/projects-sshfs/genie-in-the-box/src
+# Change to the directory containing the Genie GUI
+cd /Volumes/projects/genie-in-the-box/src
 
 # Pass all command line arguments
 python3.10 genie_client_gui.py "$@"
