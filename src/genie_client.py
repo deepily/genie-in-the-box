@@ -26,7 +26,7 @@ write_method = "file" # "file" or "flask"
 
 class GenieClient:
     
-    def __init__( self, calling_gui=None, startup_mode="transcription", runtime_context="docker", write_method="flask", debug=False, recording_timeout=30, runtime_mode="transcribe" ):
+    def __init__( self, calling_gui=None, startup_mode="transcribe", runtime_context="docker", write_method="flask", debug=False, recording_timeout=30 ):
         
         self.debug = debug
         
@@ -231,32 +231,32 @@ class GenieClient:
         print( "Transcription returned [{}]".format( transcribed_text ) )
         return transcribed_text
     
-    def ask_chat_gpt_text( self, query, preamble="What does this mean" ):
+    def ask_chat_gpt_text( self, query, preamble="What does this mean: " ):
     
         openai.api_key = os.getenv( "OPENAI_API_KEY" )
     
-        response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt="{}:\n\n###{}".format( preamble, query ),
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[ { "role": "system", "content": "You are ChatGPT, a large language model trained by OpenAI. "
+                                                      "Answer as concisely as possible."
+                                                      "\nKnowledge cutoff: =2021-09-01\nCurrent date: 2023-03-02" },
+                       { "role": "user", "content": preamble + query } ],
             temperature=0,
             max_tokens=600,
             top_p=1.0,
             frequency_penalty=0.0,
-            presence_penalty=0.0,
-            stop=[ "###" ]
+            presence_penalty=0.0
         )
         print( response )
         
-        return response[ "choices" ][ 0 ][ "text" ].strip()
+        return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
 
     def ask_chat_gpt_code( self, query, preamble="Fix this source code" ):
     
         openai.api_key = os.getenv( "OPENAI_API_KEY" )
     
         response = openai.Completion.create(
-            # model="code-davinci-002",
-            model="code-cushman-001",
-            # model="text-davinci-003",
+            model="gpt-3.5-turbo",
             prompt="{}\n\n###{}###".format( preamble, query ),
             temperature=0,
             max_tokens=600,
@@ -267,7 +267,7 @@ class GenieClient:
         )
         print( response )
     
-        return response[ "choices" ][ 0 ][ "text" ].strip()
+        return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
     
     def get_tts_file( self, ip_and_port, tts_input, tts_output_path ):
     
