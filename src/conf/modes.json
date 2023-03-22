@@ -15,6 +15,10 @@
         "title": "Explain This Code or Error (Clipboard)",
         "method_name": "do_gpt_code_explanation_from_clipboard"
     },
+    "ai_explain_text_from_clipboard": {
+        "title": "Explain This Prose (Clipboard)",
+        "method_name": "do_gpt_prose_explanation_from_clipboard"
+    },
     "ai_service_by_vox": {
         "title": "ChatGPT (Vox)",
         "method_name": "do_gpt_by_voice"

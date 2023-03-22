@@ -165,5 +165,6 @@ if __name__ == "__main__":
         recording_timeout=recording_timeout,
         record_once_on_startup=record_once_on_startup
     )
-    
+    # Watch out where the Huskies go. Don't you eat the yellow snow!
+    # gg.genie_client.do_gpt_prose_explanation_from_clipboard()
     

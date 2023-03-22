@@ -406,7 +406,18 @@ class GenieClient:
         self.get_tts_file( self.tts_address, gpt_response, self.tts_wav_path )
 
         self.play_file( self.tts_wav_path )
-        
+
+    def do_gpt_prose_explanation_from_clipboard( self ):
+
+        query = self._get_from_clipboard()
+        preamble = "Explain the following text in natural language: "
+        gpt_response = self.ask_chat_gpt_text( query, preamble=preamble )
+
+        self._copy_to_clipboard( gpt_response )
+
+        self.get_tts_file( self.tts_address, gpt_response, self.tts_wav_path )
+
+        self.play_file( self.tts_wav_path )
     def munge_code( self, code ):
     
         if self.debug: print( "Before punctuation translation: \n\n{}".format( code ), end="\n\n" )
