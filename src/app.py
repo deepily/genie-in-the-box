@@ -40,10 +40,10 @@ def ask_ai_text():
     question = request.args.get( "question" )
 
     print( "Asking AI [{}]...".format( question ) )
-    result = genie_client.ask_chat_gpt_text( question, preamble="What does this mean?" )
+    result = genie_client.ask_chat_gpt_text( question, preamble="What does this mean?" ).strip()
     print( "Result: [{}]".format( result ) )
 
-    return result.strip()
+    return result
 
 @app.route( "/api/upload-and-transcribe", methods=[ "POST" ] )
 def upload_and_transcribe_file():

@@ -26,7 +26,8 @@ write_method = "file" # "file" or "flask"
 
 class GenieClient:
     
-    def __init__( self, calling_gui=None, startup_mode="transcribe", runtime_context="docker", write_method="flask", debug=False, recording_timeout=30 ):
+    def __init__( self, calling_gui=None, startup_mode="transcribe", runtime_context="docker", write_method="flask",
+                  debug=False, recording_timeout=30, trans_address="127.0.0.1:7999", tts_address="127.0.0.1:5002" ):
         
         self.debug = debug
         
@@ -54,8 +55,8 @@ class GenieClient:
         self.runtime_context    = runtime_context
         self.write_method       = write_method
         self.input_path         = "/var/io/{}".format( wav_file )
-        self.trans_address      = "192.168.0.19:7999"
-        self.tts_address        = "192.168.0.19:5002"
+        self.trans_address      = trans_address
+        self.tts_address        = tts_address
         self.tts_wav_path       = "/tmp/tts.wav"
         self.py                 = pyaudio.PyAudio()
         
