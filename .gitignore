@@ -10,3 +10,6 @@
 # Skip OSX console script + icon based launcher experiment
 genie.app/**
 .app**
+
+# Omit the script because it contains the open API key
+run-genie-gui.command
