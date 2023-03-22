@@ -398,7 +398,7 @@ class GenieClient:
     def do_gpt_code_explanation_from_clipboard( self ):
         
         query = self._get_from_clipboard()
-        preamble = "Explain the following code or error message in natural language."
+        preamble = "Explain the following code or error message in natural language. Treat this text as an error only if you see the word error."
         gpt_response = self.ask_chat_gpt_text( query, preamble=preamble )
 
         # self._copy_to_clipboard( gpt_response )
