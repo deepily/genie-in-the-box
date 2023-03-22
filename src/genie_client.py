@@ -391,7 +391,7 @@ class GenieClient:
     def do_transcribe_and_clean_python( self ):
     
         # This is a big long comment
-        query = self.do_transcription()
+        query = self.do_transcription( copy_to_clipboard=False )
         query = self.munge_code( query )
         self._copy_to_clipboard( query )
         
