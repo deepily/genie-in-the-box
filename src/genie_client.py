@@ -412,7 +412,7 @@ class GenieClient:
         if self.debug: print( "Before punctuation translation: \n\n{}".format( code ), end="\n\n" )
         
         # Remove "space, ", commas, and periods.
-        code = re.sub( r'space, |[,.]', '', code )
+        code = re.sub( r'space, |[,.]', '', code.lower() )
 
         # Translate punctuation mark words into single characters.
         for key, value in self.punctuation.items():
@@ -469,7 +469,7 @@ if __name__ == "__main__":
 
     runtime_context   = cli_args.get( "runtime_context", "docker" )
     write_method      = cli_args.get( "write_method", "flask" )
-    default_mode      = cli_args.get( "default_mode", "transcribe" )
+    default_mode      = cli_args.get( "default_mode", "transcribe_and_clean_python" )
     recording_timeout = int( cli_args.get( "recording_timeout", 3 ) )
     
     print( "     default_mode: [{}]".format( default_mode ) )
@@ -483,6 +483,10 @@ if __name__ == "__main__":
         write_method=write_method,
         recording_timeout=recording_timeout
     )
+
+    code = gc.munge_code( "Deaf key underscore event open parenthesis self comma event close parenthesis colon new line new line")
+    print( code )
+
 
     # transcription = gc.do_transcription()
     # gc.do_gpt_by_voice()

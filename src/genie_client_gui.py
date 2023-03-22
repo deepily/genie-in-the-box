@@ -76,7 +76,7 @@ class GenieGui:
             self.main.destroy()
         else:
             tkinter.mainloop()
-        
+
     def key_event( self, event ):
         
         if self.debug: print( "key pressed [{}]".format( event.keysym ) )
