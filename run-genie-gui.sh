@@ -2,7 +2,7 @@
 # This script is used to run the Genie GUI on a Mac.
 
 # TODO: This should be a part of the environment configuration.
-export OPENAI_API_KEY=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
+# export OPENAI_API_KEY=
 
 # Activate the virtual environment
 source /Users/rruiz/Projects/local-interpreter-python3.10/venv/bin/activate
