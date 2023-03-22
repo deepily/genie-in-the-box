@@ -1,12 +1,17 @@
 import os
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, make_response
+from flask_cors import CORS
+
 import whisper
 import base64
 
 import genie_client as gc
 
 app = Flask( __name__ )
+
+# Props to StackOverflow for this workaround:https://stackoverflow.com/questions/25594893/how-to-enable-cors-in-flask
+CORS( app )
 
 @app.route( "/" )
 def root():
@@ -43,7 +48,10 @@ def ask_ai_text():
     result = genie_client.ask_chat_gpt_text( question, preamble="What does this mean?" ).strip()
     print( "Result: [{}]".format( result ) )
 
-    return result
+    response = make_response( result )
+    response.headers.add( "Access-Control-Allow-Origin", "*" );
+
+    return response
 
 @app.route( "/api/upload-and-transcribe", methods=[ "POST" ] )
 def upload_and_transcribe_file():
