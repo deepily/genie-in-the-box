@@ -66,7 +66,7 @@ def upload_and_transcribe_file():
     print( len( decoded_audio ) )
     print( decoded_audio[ 0:32] )
 
-    path = gc.local_path.format( "recording.mp3" )
+    path = gc.docker_path.format( "recording.mp3" )
 
     print( "Saving file recorded audio bytes to [{}]...".format( path ), end="" )
     with open( path, "wb" ) as f:
