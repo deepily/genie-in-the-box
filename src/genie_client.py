@@ -27,7 +27,7 @@ write_method = "file" # "file" or "flask"
 class GenieClient:
     
     def __init__( self, calling_gui=None, startup_mode="transcribe", runtime_context="docker", write_method="flask",
-                  debug=False, recording_timeout=30, trans_address="127.0.0.1:7999", tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav"  ):
+                  debug=False, recording_timeout=30, stt_address="127.0.0.1:7999", tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav" ):
         
         self.debug = debug
         
@@ -48,14 +48,14 @@ class GenieClient:
         self.startup_mode       = startup_mode
         self.modes_dict         = util.get_file_as_json( "conf/modes.json" )
         self.methods_dict       = self._get_titles_to_methods_dict()
-        self.punctuation        = util.get_file_as_dictionary( "conf/punctuation.txt", lower_case=True )
+        self.punctuation        = util.get_file_as_dictionary( "conf/translation-dictionary.txt", lower_case=True )
         self.default_mode_index = self._get_default_mode_index()
         self.calling_gui        = calling_gui
         self.recording_timeout  = recording_timeout
         self.runtime_context    = runtime_context
         self.write_method       = write_method
         self.input_path         = "/var/io/{}".format( wav_file )
-        self.trans_address      = trans_address
+        self.stt_address        = stt_address
         self.tts_address        = tts_address
         self.tts_wav_path       = tts_output_path
         self.py                 = pyaudio.PyAudio()
@@ -197,7 +197,7 @@ class GenieClient:
             
             # Post temp file to flask server
             files = [ ( "file", ( wav_file, open( temp_file, "rb" ), "multipart/form-data" ) ) ]
-            url   = "http://{}/api/upload?runtime_context={}".format( self.trans_address, self.runtime_context )
+            url   = "http://{}/api/upload?runtime_context={}".format( self.stt_address, self.runtime_context )
             
             print( "POST'ing tempfile [{}] to [{}]...".format( temp_file, url ), end="" )
             response = requests.request( "POST", url, headers={ }, data={ }, files=files )
@@ -233,8 +233,9 @@ class GenieClient:
         return transcribed_text
     
     def ask_chat_gpt_text( self, query, preamble="What does this mean: " ):
-    
+
         openai.api_key = os.getenv( "OPENAI_API_KEY" )
+        print( "Using OPENAI_API_KEY [{}]".format( os.getenv( "OPENAI_API_KEY" ) ) )
     
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -322,7 +323,7 @@ class GenieClient:
         self.start_recording()
         # self.wait_to_finish_audio_serialization( self )
         
-        transcribed_text = self._get_transcription( self.trans_address, self.serialized_audio_path )
+        transcribed_text = self._get_transcription( self.stt_address, self.serialized_audio_path )
 
         self.play_working()
         gpt_response = self.ask_chat_gpt_text( transcribed_text )
@@ -449,7 +450,7 @@ class GenieClient:
     
         self.start_recording()
         
-        transcribed_text = self._get_transcription( self.trans_address, self.serialized_audio_path )
+        transcribed_text = self._get_transcription( self.stt_address, self.serialized_audio_path )
         
         if copy_to_clipboard: self._copy_to_clipboard( transcribed_text )
         
