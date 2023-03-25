@@ -91,10 +91,10 @@ def get_file_as_dictionary( path, lower_case=False, debug=False ):
     
     return lines_as_dict
 
-# lines_dict = get_lines_as_dictionary( "conf/punctuation.txt" )
+# lines_dict = get_lines_as_dictionary( "conf/translation-dictionary.txt" )
 # print( lines_dict )
 #
-# lines = get_file_as_list( "conf/punctuation.txt" )
+# lines = get_file_as_list( "conf/translation-dictionary.txt" )
 # lines.sort()
 #
 # punctuation_dict = { }
