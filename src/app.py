@@ -1,6 +1,7 @@
 import os
+import subprocess
 
-from flask import Flask, request, render_template, make_response
+from flask import Flask, request, render_template, make_response, send_file
 from flask_cors import CORS
 
 import whisper
@@ -44,7 +45,7 @@ def ask_ai_text():
 
     question = request.args.get( "question" )
 
-    print( "Asking AI [{}]...".format( question ) )
+    print( "Calling ask_chat_gpt_text() [{}]...".format( question ) )
     result = genie_client.ask_chat_gpt_text( question, preamble="What does this mean?" ).strip()
     print( "Result: [{}]".format( result ) )
 
@@ -89,10 +90,11 @@ def upload_and_transcribe_file():
     result = model.transcribe( path )
     print( "Done!", end="\n\n" )
 
-    print( "Result: [{}]".format( result[ "text" ].strip() ) )
-    print( result[ "text" ].strip() )
+    result = result[ "text" ].strip()
 
-    return result[ "text" ].strip()
+    print( "Result: [{}]".format( result ) )
+
+    return result
 
 @app.route( "/api/upload", methods=[ "POST" ] )
 def upload_file():
@@ -127,13 +129,29 @@ def vox_2_text():
 
     return result[ "text" ].strip()
 
+@app.route( "/api/text2vox" )
+def text_2_vox():
+
+    text = request.args.get( "text" )
+
+    path_wav = genie_client.tts_wav_path
+    tts_address = genie_client.tts_address
+    genie_client.get_tts_file( tts_address, text, path_wav )
+
+    # convert to mp3
+    path_mp3 = path_wav.replace( ".wav", ".mp3" )
+    print( "Converting [{}] to [{}]...".format( path_wav, path_mp3 ) )
+    response = subprocess.call( [ "ffmpeg", "-y", "-i", path_wav, path_mp3 ] )
+    print( "response: {}".format( response ) )
+
+    return send_file( path_mp3, mimetype="audio/mpeg", as_attachment=False )
 
 print( "Loading whisper engine... ", end="" )
 model = whisper.load_model( "base.en" )
 print( "Done!" )
 
 print( os.getenv( "OPENAI_API_KEY" ) )
-genie_client = gc.GenieClient()
+genie_client = gc.GenieClient( tts_address="127.0.0.1:5002", runtime_context="local", tts_output_path="/Users/rruiz/Projects/projects-sshfs/io/text-to-vox.wav" )
 
 if __name__ == "__main__":
 

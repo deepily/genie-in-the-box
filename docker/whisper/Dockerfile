@@ -12,3 +12,5 @@ RUN pip3 install pydub
 RUN pip3 install --upgrade openai
 
 RUN pip3 install pyperclip
+
+RUN pip3 install flask_cors

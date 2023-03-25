@@ -27,7 +27,7 @@ write_method = "file" # "file" or "flask"
 class GenieClient:
     
     def __init__( self, calling_gui=None, startup_mode="transcribe", runtime_context="docker", write_method="flask",
-                  debug=False, recording_timeout=30, trans_address="127.0.0.1:7999", tts_address="127.0.0.1:5002" ):
+                  debug=False, recording_timeout=30, trans_address="127.0.0.1:7999", tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav"  ):
         
         self.debug = debug
         
@@ -57,7 +57,7 @@ class GenieClient:
         self.input_path         = "/var/io/{}".format( wav_file )
         self.trans_address      = trans_address
         self.tts_address        = tts_address
-        self.tts_wav_path       = "/tmp/tts.wav"
+        self.tts_wav_path       = tts_output_path
         self.py                 = pyaudio.PyAudio()
         
         self.sound_resources_dir = os.getcwd() + "/resources/sound/"
@@ -276,7 +276,7 @@ class GenieClient:
     
         start_millis = time.time()
         url = "http://{ip_and_port}/api/tts?text={text}".format( ip_and_port=ip_and_port, text=text )
-        print( "Converting text to speech [{}]...".format( url ), end="" )
+        print( "Converting text to speech [{}] and writing to temp file [{}]...".format( url, tts_output_path ), end="" )
         response = ur.urlopen( url ).read()
     
         with open( tts_output_path, "wb" ) as f:
