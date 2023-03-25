@@ -17,7 +17,7 @@ CORS( app )
 @app.route( "/" )
 def root():
 
-    return "Hello whisper flask server!"
+    return "Genie in the box flask server!"
 
 
 # @app.route( "/recorder.html" )
@@ -129,29 +129,32 @@ def vox_2_text():
 
     return result[ "text" ].strip()
 
-@app.route( "/api/text2vox" )
-def text_2_vox():
-
-    text = request.args.get( "text" )
-
-    path_wav = genie_client.tts_wav_path
-    tts_address = genie_client.tts_address
-    genie_client.get_tts_file( tts_address, text, path_wav )
-
-    # convert to mp3
-    path_mp3 = path_wav.replace( ".wav", ".mp3" )
-    print( "Converting [{}] to [{}]...".format( path_wav, path_mp3 ) )
-    response = subprocess.call( [ "ffmpeg", "-y", "-i", path_wav, path_mp3 ] )
-    print( "response: {}".format( response ) )
-
-    return send_file( path_mp3, mimetype="audio/mpeg", as_attachment=False )
+# This is something that the HTML client can access on its own. comma no need to start mixing in max and functionality
+# across servers.
+# @app.route( "/api/text2vox" )
+# def text_2_vox():
+#
+#     text = request.args.get( "text" )
+#
+#     path_wav = genie_client.tts_wav_path
+#     tts_address = genie_client.tts_address
+#     genie_client.get_tts_file( tts_address, text, path_wav )
+#
+#     # convert to mp3
+#     path_mp3 = path_wav.replace( ".wav", ".mp3" )
+#     print( "Converting [{}] to [{}]...".format( path_wav, path_mp3 ) )
+#     response = subprocess.call( [ "ffmpeg", "-y", "-i", path_wav, path_mp3 ] )
+#     print( "response: {}".format( response ) )
+#
+#     return send_file( path_mp3, mimetype="audio/mpeg", as_attachment=False )
 
 print( "Loading whisper engine... ", end="" )
 model = whisper.load_model( "base.en" )
 print( "Done!" )
 
 print( os.getenv( "OPENAI_API_KEY" ) )
-genie_client = gc.GenieClient( tts_address="127.0.0.1:5002", runtime_context="local", tts_output_path="/Users/rruiz/Projects/projects-sshfs/io/text-to-vox.wav" )
+# genie_client = gc.GenieClient( tts_address="127.0.0.1:5000", runtime_context="local", tts_output_path="/Users/rruiz/Projects/projects-sshfs/io/text-to-vox.wav" )
+genie_client = gc.GenieClient()
 
 if __name__ == "__main__":
 
