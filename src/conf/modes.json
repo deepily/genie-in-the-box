@@ -30,5 +30,18 @@
     "tts_from_clipboard": {
         "title": "Read to me (Clipboard)",
         "method_name": "do_read_to_me"
+    },
+    "ai_interactive_editor_prose": {
+        "title": "Edit Prose Prompt (Vox)",
+        "method_name": "do_vox_edit_of_prose_prompt"
+    },
+    "ai_interactive_editor_prose_run": {
+        "title": "Process Prose Prompt (ChatGPT)",
+        "method_name": "do_process_prose_prompt"
+    },
+
+    "ai_interactive_editor_code": {
+        "title": "Edit Code (Interactive)",
+        "method_name": "do_interactive_editor_code"
     }
 }

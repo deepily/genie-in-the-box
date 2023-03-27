@@ -48,6 +48,7 @@ class GenieClient:
         self.startup_mode       = startup_mode
         self.modes_dict         = util.get_file_as_json( "conf/modes.json" )
         self.methods_dict       = self._get_titles_to_methods_dict()
+        self.keys_dict          = self._get_titles_to_keys_dict()
         self.punctuation        = util.get_file_as_dictionary( "conf/translation-dictionary.txt", lower_case=True )
         self.default_mode_index = self._get_default_mode_index()
         self.calling_gui        = calling_gui
@@ -81,6 +82,14 @@ class GenieClient:
             title_to_methods_dict[ self.modes_dict[ key ][ "title" ] ] = self.modes_dict[ key ][ "method_name" ]
     
         return title_to_methods_dict
+
+    def _get_titles_to_keys_dict( self ):
+
+        title_to_keys_dict = { }
+        for key in self.modes_dict.keys():
+            title_to_keys_dict[ self.modes_dict[ key ][ "title" ] ] = key
+
+        return title_to_keys_dict
         
     def _get_default_mode_index( self ):
     
@@ -354,7 +363,7 @@ class GenieClient:
     
         self.play_working()
         
-        clipboard_text = self._get_from_clipboard()
+        clipboard_text = self.get_from_clipboard()
 
         gpt_response = self.ask_chat_gpt_text( clipboard_text )
 
@@ -370,7 +379,7 @@ class GenieClient:
 
     def do_read_to_me( self ):
     
-        clipboard_text = self._get_from_clipboard()
+        clipboard_text = self.get_from_clipboard()
     
         self.play_working()
         self.get_tts_file( self.tts_address, clipboard_text, self.tts_wav_path )
@@ -398,7 +407,7 @@ class GenieClient:
         
     def do_gpt_code_explanation_from_clipboard( self ):
         
-        query = self._get_from_clipboard()
+        query = self.get_from_clipboard()
         preamble = "Explain the following code or error message in natural language. Treat this text as an error only if you see the word error."
         gpt_response = self.ask_chat_gpt_text( query, preamble=preamble )
 
@@ -410,7 +419,7 @@ class GenieClient:
 
     def do_gpt_prose_explanation_from_clipboard( self ):
 
-        query = self._get_from_clipboard()
+        query = self.get_from_clipboard()
         preamble = "Explain the following text in natural language: "
         gpt_response = self.ask_chat_gpt_text( query, preamble=preamble )
 
@@ -455,13 +464,25 @@ class GenieClient:
         if copy_to_clipboard: self._copy_to_clipboard( transcribed_text )
         
         return transcribed_text
-        
+
+    def do_vox_edit_of_prose_prompt( self ):
+
+        print( "do_vox_edit_of_prose_prompt() called..." )
+        transcript = self.do_transcription( copy_to_clipboard=True )
+
+    def do_process_prose_prompt( self ):
+
+        print( "do_process_prose_prompt() called..." )
+        response = "\n\n" + self.ask_chat_gpt_text( self.calling_gui.txt_content.get('1.0','end'), preamble=self.calling_gui.txt_prompt.get('1.0','end') )
+        # self._copy_to_clipboard( response )
+        self.calling_gui.txt_content.insert( 'end', response )
+
     def _copy_to_clipboard( self, text ):
         
         pyperclip.copy( text )
         # print( "Copied to clipboard: \n\n{}".format( text ), end="\n\n" )
         
-    def _get_from_clipboard( self ):
+    def get_from_clipboard( self ):
         
         return pyperclip.paste()
     
