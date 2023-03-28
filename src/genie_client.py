@@ -339,7 +339,7 @@ class GenieClient:
 
         # Copy the question and answer to the clipboard and print to the console.
         q_and_a = "Q: {}\n\nA: {}".format( transcribed_text, gpt_response )
-        self._copy_to_clipboard( q_and_a )
+        self.copy_to_clipboard( q_and_a )
         
         self.get_tts_file( self.tts_address, gpt_response, self.tts_wav_path )
         
@@ -369,7 +369,7 @@ class GenieClient:
 
         # Copy the question and answer to the clipboard and print to the console.
         q_and_a = "Q: {}\n\nA: {}".format( clipboard_text, gpt_response )
-        self._copy_to_clipboard( q_and_a )
+        self.copy_to_clipboard( q_and_a )
         # gpt_response = "Oops, I didn't understand that."
         
         self.play_working()
@@ -396,14 +396,14 @@ class GenieClient:
 
         gpt_response = self.ask_chat_gpt_text( raw_text, preamble=preamble )
 
-        self._copy_to_clipboard( gpt_response )
+        self.copy_to_clipboard( gpt_response )
 
     def do_transcribe_and_clean_python( self ):
     
         # This is a big long comment
         query = self.do_transcription( copy_to_clipboard=False )
         query = self.munge_code( query )
-        self._copy_to_clipboard( query )
+        self.copy_to_clipboard( query )
         
     def do_gpt_code_explanation_from_clipboard( self ):
         
@@ -423,7 +423,7 @@ class GenieClient:
         preamble = "Explain the following text in natural language: "
         gpt_response = self.ask_chat_gpt_text( query, preamble=preamble )
 
-        self._copy_to_clipboard( gpt_response )
+        self.copy_to_clipboard( gpt_response )
 
         self.get_tts_file( self.tts_address, gpt_response, self.tts_wav_path )
 
@@ -461,7 +461,7 @@ class GenieClient:
         
         transcribed_text = self._get_transcription( self.stt_address, self.serialized_audio_path )
         
-        if copy_to_clipboard: self._copy_to_clipboard( transcribed_text )
+        if copy_to_clipboard: self.copy_to_clipboard( transcribed_text )
         
         return transcribed_text
 
@@ -473,11 +473,15 @@ class GenieClient:
     def do_process_prose_prompt( self ):
 
         print( "do_process_prose_prompt() called..." )
-        response = "\n\n" + self.ask_chat_gpt_text( self.calling_gui.txt_content.get('1.0','end'), preamble=self.calling_gui.txt_prompt.get('1.0','end') )
-        # self._copy_to_clipboard( response )
-        self.calling_gui.txt_content.insert( 'end', response )
+        response = "\n\n" + self.ask_chat_gpt_text( self.calling_gui.txt_content.get('1.0', 'end'), preamble=self.calling_gui.txt_prompt.get('1.0', 'end') ) + "\n\n"
+        hr = "-" * 50
+        hr = hr + "\n\n"
+        self.copy_to_clipboard( response )
+        self.calling_gui.txt_response.insert( "1.0", hr )
+        self.calling_gui.txt_response.insert( "1.0", response )
+        self.calling_gui.last_text_with_focus.focus_force()
 
-    def _copy_to_clipboard( self, text ):
+    def copy_to_clipboard( self, text ):
         
         pyperclip.copy( text )
         # print( "Copied to clipboard: \n\n{}".format( text ), end="\n\n" )
