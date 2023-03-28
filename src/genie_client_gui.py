@@ -156,9 +156,9 @@ class GenieGui:
         elif event.widget == self.txt_response:
             print( "Response has focus" )
             self.last_text_with_focus = self.txt_response
-        else:
-            print( "Something else has focus:", event.widget )
-            # self.widget_with_focus = None
+        # else:
+        #     print( "Something else has focus:", event.widget )
+        #     # self.widget_with_focus = None
     def key_event( self, event ):
         
         print( "key_event [{}] keysym [{}]".format( event, event.keysym ) )
