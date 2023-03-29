@@ -478,6 +478,9 @@ class GenieClient:
 
         print( "do_vox_edit_of_prose_prompt() called..." )
         transcript = self.do_transcription( copy_to_clipboard=True )
+        self.copy_to_clipboard( transcript )
+        self.calling_gui.txt_response.insert( "1.0", transcript )
+        self.calling_gui.last_text_with_focus.focus_force()
 
     def do_process_prose_prompt( self ):
 

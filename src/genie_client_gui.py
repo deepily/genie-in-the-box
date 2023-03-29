@@ -105,22 +105,31 @@ class GenieGui:
             self.editor, width=4, padx=0, pady=0, text="Cut", font=self.font_obj, command=lambda: self.do_edit( "cut" )
         )
         self.btn_cut.grid( row=3, column=0, padx=0, pady=0 )
+
         self.btn_copy = tkinter.Button(
             self.editor, width=4, padx=0, pady=0, text="Copy", font=self.font_obj, command=lambda: self.do_edit( "copy" )
         )
         self.btn_copy.grid( row=3, column=1, padx=0, pady=0 )
+
         self.btn_paste = tkinter.Button(
             self.editor, width=4, padx=0, pady=0, text="Paste", font=self.font_obj, command=lambda: self.do_edit( "paste" )
         )
         self.btn_paste.grid( row=3, column=2, padx=0, pady=0 )
+
         self.btn_delete = tkinter.Button(
             self.editor, width=4, padx=0, pady=0, text="Del", font=self.font_obj, command=lambda: self.do_edit( "delete" )
         )
         self.btn_delete.grid( row=3, column=3, padx=0, pady=0 )
+
         self.btn_space = tkinter.Button(
             self.editor, width=4, padx=0, pady=0, text="Space", font=self.font_obj, command=lambda: self.do_edit( "space" )
         )
-        self.btn_space.grid( row=3, column=4, padx=0, pady=0 )
+        self.btn_space.grid( row=3, column=5, padx=0, pady=0 )
+
+        self.btn_clear = tkinter.Button(
+            self.editor, width=4, padx=0, pady=0, text="Clear", font=self.font_obj, command=lambda: self.do_edit( "clear" )
+        )
+        self.btn_clear.grid( row=3, column=6, padx=0, pady=0 )
         # self.editor_buttons.pack( fill=tk.BOTH, expand=True )
 
         # Bind keys
@@ -197,22 +206,8 @@ class GenieGui:
 
             print( "Control + T" )
             self._do_conditional_transcription_toggle()
-            # if not self.genie_client.is_recording():
-            #
-            #     ranges = self.last_text_with_focus.tag_ranges( tk.SEL )
-            #     if ranges:
-            #         print( 'SELECTED Text is %r' % self.last_text_with_focus.get( *ranges ) )
-            #         print( "ranges:", ranges )
-            #         self.last_text_with_focus.delete( *ranges )
-            #     else:
-            #         print( 'NO Selected Text' )
-            #
-            #     self.start_processing()
-            #
-            #     transcription = self.genie_client.get_from_clipboard()
-            #
-            #     self.last_text_with_focus.insert( tk.INSERT, transcription )
 
+        # This is superfluous. It's already captured in the button bar.
         # elif self.last_key == "v" and event.keysym == "Control_L":
         #
         #     print( "Control + V (paste)" )
@@ -312,6 +307,8 @@ class GenieGui:
             self._do_conditional_cut_copy_delete( delete_selected_text=True, copy_to_clipboard=False )
         elif action == "space":
             self.last_text_with_focus.insert( tk.INSERT, " " )
+        elif action == "clear":
+            self.last_text_with_focus.delete( 1.0, tk.END )
 
     def set_ready_to_start( self ):
 
@@ -324,11 +321,15 @@ class GenieGui:
         key = self.genie_client.keys_dict[ self.selected_mode.get() ]
         print( "key [{}]".format( key ) )
 
+        # ¡OJO! This is extremely ad hoc and brittle, WILL break if the mode keys are changed.
         if key == "ai_interactive_editor_prose" or key == "ai_interactive_editor_prose_run":
             self.show_interactive_code_editor( True, key )
         else:
             self.show_interactive_code_editor( False, key )
 
+        # ¡OJO! This is extremely ad hoc and brittle too, WILL break if the mode keys are changed.
+        if key == "ai_interactive_editor_prose":
+            self.btn_start.config( state=DISABLED )
     def update_prompt( self ):
 
         print( "update_prompt() called, key [{}]".format( self.selected_prompt.get() ) )
