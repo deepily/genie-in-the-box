@@ -31,7 +31,7 @@ class GenieGui:
         
         # Start Tkinter and set Title
         self.geometry_bar = "666x60"
-        self.geometry_editor = "812x1048"
+        self.geometry_editor = "854x1048"
 
         self.main = tkinter.Tk()
         self.collections = [ ]
@@ -39,7 +39,8 @@ class GenieGui:
         self.main.title( "Genie in The Box" )
 
         self.font_size = 18
-        self.font_obj = tkf.Font( size=self.font_size )
+        self.font_obj_big = tkf.Font( size=self.font_size )
+        self.font_obj_mid = tkf.Font( size=int( self.font_size * .75 ) )
 
         # Set Frames
         self.top_level_buttons = tkinter.Frame( self.main, padx=5, pady=5 )
@@ -49,18 +50,18 @@ class GenieGui:
         
         # Start and Stop buttons
         self.btn_start = tkinter.Button(
-            self.top_level_buttons, width=10, padx=10, pady=5, text="Start", font=self.font_obj, command=lambda: self.start_processing()
+            self.top_level_buttons, width=10, padx=10, pady=5, text="Start", font=self.font_obj_big, command=lambda: self.start_processing()
         )
         self.btn_start.grid( row=0, column=0, padx=5, pady=5 )
         self.btn_stop = tkinter.Button(
-            self.top_level_buttons, width=10, padx=10, pady=5, text="Stop", font=self.font_obj, command=lambda: self.stop_processing()
+            self.top_level_buttons, width=10, padx=10, pady=5, text="Stop", font=self.font_obj_big, command=lambda: self.stop_processing()
         )
         self.btn_stop.config( state=DISABLED )
         self.btn_stop.grid( row=0, column=1, columnspan=1, padx=5, pady=5 )
 
         # Mode selection
         self.selected_mode = tk.StringVar()
-        self.cmb_mode = ttk.Combobox( self.top_level_buttons, width=25, height=20, font=self.font_obj, state="readonly", textvariable=self.selected_mode )
+        self.cmb_mode = ttk.Combobox( self.top_level_buttons, width=25, height=20, font=self.font_obj_big, state="readonly", textvariable=self.selected_mode )
         
         self.cmb_mode[ "values" ] = self.genie_client.get_titles()
         self.cmb_mode.current( self.genie_client.default_mode_index )
@@ -69,68 +70,87 @@ class GenieGui:
 
         # Prompt selection.
         self.selected_prompt = tk.StringVar()
-        self.cmb_prompt = ttk.Combobox( self.top_level_buttons, width=60, height=20, font=self.font_obj, state="readonly", textvariable=self.selected_prompt )
+        self.cmb_prompt = ttk.Combobox( self.top_level_buttons, width=70, height=20, font=self.font_obj_big, state="readonly", textvariable=self.selected_prompt )
         self.cmb_prompt[ "values" ] = self.genie_client.prompt_titles
         self.cmb_prompt.current( 0 )
         self.cmb_prompt.bind( "<<ComboboxSelected>>", lambda event: self.update_prompt() )
         self.cmb_prompt.grid( row=1, column=0, columnspan=10, padx=5, pady=5, sticky="w" )
 
-        self.editor = tkinter.Frame( self.main, padx=5, pady=5 )
+        self.editor = tkinter.Frame( self.main, padx=0, pady=0 )
         self.editor.pack( fill=tk.BOTH, expand=True )
 
         toggle_text = " Click HERE to start/stop transcription"
-        self.lbl_prompt = tk.Label( self.editor, text="Prompt focus = [Ctl + p]" + toggle_text, font=self.font_obj, width=65, height=1, anchor="w" )
-        self.lbl_prompt.grid( row=0, rowspan=1, column=0, columnspan=10, padx=5, pady=5 )
+        self.lbl_prompt = tk.Label( self.editor, text="Prompt focus = [Ctl + p]" + toggle_text, font=self.font_obj_big, width=65, height=1, anchor="w" )
+        self.lbl_prompt.grid( row=0, rowspan=1, column=0, columnspan=12, padx=5, pady=5 )
 
-        self.txt_prompt = tk.Text( self.editor, font=self.font_obj, width=70, height=10, wrap=tk.WORD, borderwidth=1 )
-        self.txt_prompt.grid( row=1, rowspan=1, column=0, columnspan=10, padx=5, pady=5 )
+        self.txt_prompt = tk.Text( self.editor, font=self.font_obj_big, width=72, height=10, wrap=tk.WORD, borderwidth=1 )
+        self.txt_prompt.grid( row=1, rowspan=1, column=0, columnspan=12, padx=5, pady=5 )
 
-        self.lbl_content = tk.Label( self.editor, text="Input focus = [Ctl + i]" + toggle_text, font=self.font_obj, width=65, height=1, anchor="w" )
-        self.lbl_content.grid( row=2, rowspan=1, column=0, columnspan=10, padx=5, pady=5 )
+        self.lbl_content = tk.Label( self.editor, text="Input focus = [Ctl + i]" + toggle_text, font=self.font_obj_big, width=65, height=1, anchor="w" )
+        self.lbl_content.grid( row=2, rowspan=1, column=0, columnspan=12, padx=5, pady=5 )
 
-        self.txt_content = tk.Text( self.editor, font=self.font_obj, width=70, height=14, wrap=tk.WORD, borderwidth=1 )
-        self.txt_content.grid( row=4, rowspan=1, column=0, columnspan=10, padx=5, pady=5 )
+        self.txt_content = tk.Text( self.editor, font=self.font_obj_big, width=72, height=14, wrap=tk.WORD, borderwidth=1 )
+        self.txt_content.grid( row=4, rowspan=1, column=0, columnspan=12, padx=5, pady=5 )
 
-        self.lbl_response = tk.Label( self.editor, text="Response focus = [Ctl + r]" + toggle_text, font=self.font_obj, width=65, height=1, anchor="w" )
-        self.lbl_response.grid( row=5, rowspan=1, column=0, columnspan=10, padx=5, pady=5 )
+        self.lbl_response = tk.Label( self.editor, text="Response focus = [Ctl + r]" + toggle_text, font=self.font_obj_big, width=65, height=1, anchor="w" )
+        self.lbl_response.grid( row=5, rowspan=1, column=0, columnspan=12, padx=5, pady=5 )
 
-        self.txt_response = tk.Text( self.editor, font=self.font_obj, width=70, height=14, wrap=tk.WORD, borderwidth=1 )
-        self.txt_response.grid( row=6, rowspan=1, column=0, columnspan=10, padx=5, pady=5 )
+        self.txt_response = tk.Text( self.editor, font=self.font_obj_big, width=72, height=14, wrap=tk.WORD, borderwidth=1 )
+        self.txt_response.grid( row=6, rowspan=1, column=0, columnspan=12, padx=5, pady=5 )
 
         # Create an editor button bar containing Cut, Copy, Paste, Space and Backspace options.
         # self.editor_buttons = tkinter.Frame( self.editor, padx=0, pady=0, border=2 )
         # self.editor_buttons.pack( fill=tk.BOTH, expand=True )
 
         self.btn_cut = tkinter.Button(
-            self.editor, width=4, padx=0, pady=0, text="Cut", font=self.font_obj, command=lambda: self.do_edit( "cut" )
+            self.editor, width=2, padx=0, pady=0, text="Cut", font=self.font_obj_mid, command=lambda: self.do_edit( "cut" )
         )
         self.btn_cut.grid( row=3, column=0, padx=0, pady=0 )
 
         self.btn_copy = tkinter.Button(
-            self.editor, width=4, padx=0, pady=0, text="Copy", font=self.font_obj, command=lambda: self.do_edit( "copy" )
+            self.editor, width=2, padx=0, pady=0, text="Copy", font=self.font_obj_mid, command=lambda: self.do_edit( "copy" )
         )
         self.btn_copy.grid( row=3, column=1, padx=0, pady=0 )
 
         self.btn_paste = tkinter.Button(
-            self.editor, width=4, padx=0, pady=0, text="Paste", font=self.font_obj, command=lambda: self.do_edit( "paste" )
+            self.editor, width=2, padx=0, pady=0, text="Paste", font=self.font_obj_mid, command=lambda: self.do_edit( "paste" )
         )
         self.btn_paste.grid( row=3, column=2, padx=0, pady=0 )
 
         self.btn_delete = tkinter.Button(
-            self.editor, width=4, padx=0, pady=0, text="Del", font=self.font_obj, command=lambda: self.do_edit( "delete" )
+            self.editor, width=2, padx=0, pady=0, text="Del", font=self.font_obj_mid, command=lambda: self.do_edit( "delete" )
         )
         self.btn_delete.grid( row=3, column=3, padx=0, pady=0 )
 
         self.btn_space = tkinter.Button(
-            self.editor, width=4, padx=0, pady=0, text="Space", font=self.font_obj, command=lambda: self.do_edit( "space" )
+            self.editor, width=2, padx=0, pady=0, text="Space", font=self.font_obj_mid, command=lambda: self.do_edit( "space" )
         )
-        self.btn_space.grid( row=3, column=5, padx=0, pady=0 )
+        self.btn_space.grid( row=3, column=4, padx=0, pady=0 )
 
         self.btn_clear = tkinter.Button(
-            self.editor, width=4, padx=0, pady=0, text="Clear", font=self.font_obj, command=lambda: self.do_edit( "clear" )
+            self.editor, width=2, padx=0, pady=0, text="Clear", font=self.font_obj_mid, command=lambda: self.do_edit( "clear" )
         )
-        self.btn_clear.grid( row=3, column=6, padx=0, pady=0 )
-        # self.editor_buttons.pack( fill=tk.BOTH, expand=True )
+        self.btn_clear.grid( row=3, column=5, padx=0, pady=0 )
+
+        self.btn_left = tkinter.Button(
+            self.editor, width=2, padx=0, pady=0, text="<", font=self.font_obj_mid, command=lambda: self.move_cursor( "left" )
+        )
+        self.btn_left.grid( row=3, column=6, padx=0, pady=0 )
+
+        self.btn_right = tkinter.Button(
+            self.editor, width=2, padx=0, pady=0, text=">", font=self.font_obj_mid, command=lambda: self.move_cursor( "right" )
+        )
+        self.btn_right.grid( row=3, column=7, padx=0, pady=0 )
+
+        self.btn_up = tkinter.Button(
+            self.editor, width=2, padx=0, pady=0, text="Up", font=self.font_obj_mid, command=lambda: self.move_cursor( "up" )
+        )
+        self.btn_up.grid( row=3, column=8, padx=0, pady=0 )
+
+        self.btn_down = tkinter.Button(
+            self.editor, width=2, padx=0, pady=0, text="Down", font=self.font_obj_mid, command=lambda: self.move_cursor( "down" )
+        )
+        self.btn_down.grid( row=3, column=9, padx=0, pady=0 )
 
         # Bind keys
         # self.main.bind( "<KeyPress>", self.key_event )
@@ -163,6 +183,22 @@ class GenieGui:
         else:
             tkinter.mainloop()
 
+    # Create a method to move the cursor forward and backwards within a text object.
+    def move_cursor( self, direction ):
+
+        if self.debug: print( "move_cursor [{}]".format( direction ) )
+        position = self.last_text_with_focus.index( tk.INSERT )
+        if self.debug: print( "position:", position )
+
+        if direction == "left":
+            self.last_text_with_focus.mark_set( tk.INSERT, position + " -1c" )
+        elif direction == "right":
+            self.last_text_with_focus.mark_set( tk.INSERT, position + " +1c" )
+        elif direction == "up":
+            self.last_text_with_focus.mark_set( tk.INSERT, position + " -1l" )
+        elif direction == "down":
+            self.last_text_with_focus.mark_set( tk.INSERT, position + " +1l" )
+
     def handle_focus( self, event ):
 
         if event.widget == self.txt_content:
@@ -177,7 +213,7 @@ class GenieGui:
 
     def key_event( self, event ):
         
-        print( "key_event [{}] keysym [{}]".format( event, event.keysym ) )
+        if self.debug: print( "key_event [{}] keysym [{}]".format( event, event.keysym ) )
 
         if self.last_key == "Up" and event.keysym == "Meta_L":
             print( "Meta + Up" )
