@@ -58,31 +58,40 @@ class GenieGui:
         self.btn_stop.config( state=DISABLED )
         self.btn_stop.grid( row=0, column=1, columnspan=1, padx=5, pady=5 )
 
+        # Mode selection
         self.selected_mode = tk.StringVar()
-        self.cmb_mode = ttk.Combobox( self.top_level_buttons, width=25, height=15, font=self.font_obj, state="readonly", textvariable=self.selected_mode )
+        self.cmb_mode = ttk.Combobox( self.top_level_buttons, width=25, height=20, font=self.font_obj, state="readonly", textvariable=self.selected_mode )
         
         self.cmb_mode[ "values" ] = self.genie_client.get_titles()
         self.cmb_mode.current( self.genie_client.default_mode_index )
         self.cmb_mode.bind( "<<ComboboxSelected>>", lambda event: self.set_ready_to_start() )
         self.cmb_mode.grid( row=0, column=2, columnspan=1, padx=5, pady=5 )
 
+        # Prompt selection.
+        self.selected_prompt = tk.StringVar()
+        self.cmb_prompt = ttk.Combobox( self.top_level_buttons, width=60, height=20, font=self.font_obj, state="readonly", textvariable=self.selected_prompt )
+        self.cmb_prompt[ "values" ] = self.genie_client.prompt_titles
+        self.cmb_prompt.current( 0 )
+        self.cmb_prompt.bind( "<<ComboboxSelected>>", lambda event: self.update_prompt() )
+        self.cmb_prompt.grid( row=1, column=0, columnspan=10, padx=5, pady=5, sticky="w" )
+
         self.editor = tkinter.Frame( self.main, padx=5, pady=5 )
         self.editor.pack( fill=tk.BOTH, expand=True )
 
-        toggle_text = " Clicking toggles transcription"
-        self.lbl_prompt = tk.Label( self.editor, text="Prompt (Ctl + p)" + toggle_text, font=self.font_obj, width=65, height=1, anchor="w" )
+        toggle_text = " Click HERE to start/stop transcription"
+        self.lbl_prompt = tk.Label( self.editor, text="Prompt focus = [Ctl + p]" + toggle_text, font=self.font_obj, width=65, height=1, anchor="w" )
         self.lbl_prompt.grid( row=0, rowspan=1, column=0, columnspan=10, padx=5, pady=5 )
 
         self.txt_prompt = tk.Text( self.editor, font=self.font_obj, width=70, height=10, wrap=tk.WORD, borderwidth=1 )
         self.txt_prompt.grid( row=1, rowspan=1, column=0, columnspan=10, padx=5, pady=5 )
 
-        self.lbl_content = tk.Label( self.editor, text="Input (Ctl + i)" + toggle_text, font=self.font_obj, width=65, height=1, anchor="w" )
+        self.lbl_content = tk.Label( self.editor, text="Input focus = [Ctl + i]" + toggle_text, font=self.font_obj, width=65, height=1, anchor="w" )
         self.lbl_content.grid( row=2, rowspan=1, column=0, columnspan=10, padx=5, pady=5 )
 
         self.txt_content = tk.Text( self.editor, font=self.font_obj, width=70, height=14, wrap=tk.WORD, borderwidth=1 )
         self.txt_content.grid( row=4, rowspan=1, column=0, columnspan=10, padx=5, pady=5 )
 
-        self.lbl_response = tk.Label( self.editor, text="Response (Ctl + r)" + toggle_text, font=self.font_obj, width=65, height=1, anchor="w" )
+        self.lbl_response = tk.Label( self.editor, text="Response focus = [Ctl + r]" + toggle_text, font=self.font_obj, width=65, height=1, anchor="w" )
         self.lbl_response.grid( row=5, rowspan=1, column=0, columnspan=10, padx=5, pady=5 )
 
         self.txt_response = tk.Text( self.editor, font=self.font_obj, width=70, height=14, wrap=tk.WORD, borderwidth=1 )
@@ -125,9 +134,9 @@ class GenieGui:
         self.lbl_content.bind( "<Button-1>", lambda event: self._do_conditional_transcription_toggle() )
         self.lbl_response.bind( "<Button-1>", lambda event: self._do_conditional_transcription_toggle() )
 
-        self.btn_start.focus_set()
-
+        # This is superfluous. It's already called in the next method.
         self.set_ready_to_start()
+        self.update_prompt()
         
         # force GUI to update periodically?
         def update():
@@ -156,9 +165,7 @@ class GenieGui:
         elif event.widget == self.txt_response:
             print( "Response has focus" )
             self.last_text_with_focus = self.txt_response
-        # else:
-        #     print( "Something else has focus:", event.widget )
-        #     # self.widget_with_focus = None
+
     def key_event( self, event ):
         
         print( "key_event [{}] keysym [{}]".format( event, event.keysym ) )
@@ -321,6 +328,15 @@ class GenieGui:
             self.show_interactive_code_editor( True, key )
         else:
             self.show_interactive_code_editor( False, key )
+
+    def update_prompt( self ):
+
+        print( "update_prompt() called, key [{}]".format( self.selected_prompt.get() ) )
+        prompt = self.genie_client.prompts_dict[ self.selected_prompt.get() ]
+        print( "prompt [{}]".format( prompt ) )
+
+        self.txt_prompt.delete( "0.0", tk.END )
+        self.txt_prompt.insert( tk.INSERT, prompt )
 
     def show_interactive_code_editor( self, show, key ):
 

@@ -49,6 +49,8 @@ class GenieClient:
         self.modes_dict         = util.get_file_as_json( "conf/modes.json" )
         self.methods_dict       = self._get_titles_to_methods_dict()
         self.keys_dict          = self._get_titles_to_keys_dict()
+        self.prompts_dict       = util.get_file_as_dictionary( "conf/prompts.txt", lower_case=False )
+        self.prompt_titles      = self._get_prompt_titles()
         self.punctuation        = util.get_file_as_dictionary( "conf/translation-dictionary.txt", lower_case=True )
         self.default_mode_index = self._get_default_mode_index()
         self.calling_gui        = calling_gui
@@ -65,8 +67,9 @@ class GenieClient:
         
         # tracks what the recording & writing thread is doing
         self.finished_serializing_audio = False
-        
 
+        # ad hoc addition to the translation dictionary.
+        self.punctuation[ "space" ] = " "
     def get_titles( self ):
     
         titles = [ ]
@@ -90,7 +93,13 @@ class GenieClient:
             title_to_keys_dict[ self.modes_dict[ key ][ "title" ] ] = key
 
         return title_to_keys_dict
-        
+
+    def _get_prompt_titles( self ):
+
+        titles = [ key for key in self.prompts_dict.keys() ]
+        titles.sort()
+
+        return titles
     def _get_default_mode_index( self ):
     
         modes_list = list( self.modes_dict.keys() )
