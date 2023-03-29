@@ -78,7 +78,7 @@ def get_file_as_dictionary( path, lower_case=False, debug=False ):
     lines.sort()
 
     lines_as_dict = { }
-    lines_as_dict[ "space" ] = " "
+    # lines_as_dict[ "space" ] = " "
 
     for lines in lines:
 
@@ -87,7 +87,7 @@ def get_file_as_dictionary( path, lower_case=False, debug=False ):
             if debug: print( "[{}] = [{}]".format( pair[ 0 ], pair[ 1 ].strip() ) )
             lines_as_dict[ pair[ 0 ] ] = pair[ 1 ].strip()
         else:
-            print( "ERROR: [{}]".format( pair[ 0 ] ) )
+            if debug: print( "ERROR: [{}]".format( pair[ 0 ] ) )
     
     return lines_as_dict
 
@@ -145,3 +145,9 @@ def get_file_as_dictionary( path, lower_case=False, debug=False ):
 #
 # print( get_titles( modes_dict ) )
 # print( get_titles_to_methods_dict( modes_dict ) )
+
+# Create a method that reads in a JSON file containing chatgpt prompts and populates the dictionary with it.
+
+prompts = get_file_as_dictionary( "conf/prompts.txt" )
+for key in prompts.keys():
+    print( "[{}] = [{}]".format( key, prompts[ key ] ) )
