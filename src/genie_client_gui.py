@@ -30,7 +30,7 @@ class GenieGui:
         self.record_once_on_startup_finished = False
         
         # Start Tkinter and set Title
-        self.geometry_bar = "666x60"
+        self.geometry_bar = "666x70"
         self.geometry_editor = "854x1048"
 
         self.main = tkinter.Tk()
@@ -43,25 +43,25 @@ class GenieGui:
         self.font_obj_mid = tkf.Font( size=int( self.font_size * .75 ) )
 
         # Set Frames
-        self.top_level_buttons = tkinter.Frame( self.main, padx=5, pady=5 )
+        self.top_level_buttons = tkinter.Frame( self.main, padx=0, pady=5 )
         
         # Pack Frame
         self.top_level_buttons.pack( fill=tk.BOTH )
         
         # Start and Stop buttons
         self.btn_start = tkinter.Button(
-            self.top_level_buttons, width=10, padx=10, pady=5, text="Start", font=self.font_obj_big, command=lambda: self.start_processing()
+            self.top_level_buttons, width=10, padx=0, pady=5, text="Start", font=self.font_obj_big, command=lambda: self.start_processing()
         )
-        self.btn_start.grid( row=0, column=0, padx=5, pady=5 )
+        self.btn_start.grid( row=0, column=0, padx=0, pady=5 )
         self.btn_stop = tkinter.Button(
-            self.top_level_buttons, width=10, padx=10, pady=5, text="Stop", font=self.font_obj_big, command=lambda: self.stop_processing()
+            self.top_level_buttons, width=10, padx=0, pady=5, text="Stop", font=self.font_obj_big, command=lambda: self.stop_processing()
         )
         self.btn_stop.config( state=DISABLED )
-        self.btn_stop.grid( row=0, column=1, columnspan=1, padx=5, pady=5 )
+        self.btn_stop.grid( row=0, column=1, columnspan=1, padx=0, pady=5 )
 
         # Mode selection
         self.selected_mode = tk.StringVar()
-        self.cmb_mode = ttk.Combobox( self.top_level_buttons, width=25, height=20, font=self.font_obj_big, state="readonly", textvariable=self.selected_mode )
+        self.cmb_mode = ttk.Combobox( self.top_level_buttons, width=22, height=20, font=self.font_obj_big, state="readonly", textvariable=self.selected_mode )
         
         self.cmb_mode[ "values" ] = self.genie_client.get_titles()
         self.cmb_mode.current( self.genie_client.default_mode_index )
@@ -74,7 +74,7 @@ class GenieGui:
         self.cmb_prompt[ "values" ] = self.genie_client.prompt_titles
         self.cmb_prompt.current( 0 )
         self.cmb_prompt.bind( "<<ComboboxSelected>>", lambda event: self.update_prompt() )
-        self.cmb_prompt.grid( row=1, column=0, columnspan=10, padx=5, pady=5, sticky="w" )
+        self.cmb_prompt.grid( row=1, column=0, columnspan=10, padx=5, pady=10, sticky="w" )
 
         self.editor = tkinter.Frame( self.main, padx=0, pady=0 )
         self.editor.pack( fill=tk.BOTH, expand=True )
