@@ -43,7 +43,7 @@ class GenieGui:
         self.font_obj_mid = tkf.Font( size=int( self.font_size * .75 ) )
 
         # Set Frames
-        self.top_level_buttons = tkinter.Frame( self.main, padx=0, pady=5 )
+        self.top_level_buttons = tkinter.Frame( self.main, padx=10, pady=5 )
         
         # Pack Frame
         self.top_level_buttons.pack( fill=tk.BOTH )
@@ -74,29 +74,29 @@ class GenieGui:
         self.cmb_prompt[ "values" ] = self.genie_client.prompt_titles
         self.cmb_prompt.current( 0 )
         self.cmb_prompt.bind( "<<ComboboxSelected>>", lambda event: self.update_prompt() )
-        self.cmb_prompt.grid( row=1, column=0, columnspan=10, padx=5, pady=10, sticky="w" )
+        self.cmb_prompt.grid( row=1, column=0, columnspan=10, padx=12, pady=10, sticky="w" )
 
-        self.editor = tkinter.Frame( self.main, padx=0, pady=0 )
+        self.editor = tkinter.Frame( self.main, padx=10, pady=0 )
         self.editor.pack( fill=tk.BOTH, expand=True )
 
         toggle_text = " Click HERE to start/stop transcription"
         self.lbl_prompt = tk.Label( self.editor, text="Prompt focus = [Ctl + p]" + toggle_text, font=self.font_obj_big, width=65, height=1, anchor="w" )
-        self.lbl_prompt.grid( row=0, rowspan=1, column=0, columnspan=12, padx=5, pady=5 )
+        self.lbl_prompt.grid( row=0, rowspan=1, column=0, columnspan=12, padx=10, pady=5 )
 
         self.txt_prompt = tk.Text( self.editor, font=self.font_obj_big, width=72, height=10, wrap=tk.WORD, borderwidth=1 )
-        self.txt_prompt.grid( row=1, rowspan=1, column=0, columnspan=12, padx=5, pady=5 )
+        self.txt_prompt.grid( row=1, rowspan=1, column=0, columnspan=12, padx=10, pady=5 )
 
         self.lbl_content = tk.Label( self.editor, text="Input focus = [Ctl + i]" + toggle_text, font=self.font_obj_big, width=65, height=1, anchor="w" )
         self.lbl_content.grid( row=2, rowspan=1, column=0, columnspan=12, padx=5, pady=5 )
 
         self.txt_content = tk.Text( self.editor, font=self.font_obj_big, width=72, height=14, wrap=tk.WORD, borderwidth=1 )
-        self.txt_content.grid( row=4, rowspan=1, column=0, columnspan=12, padx=5, pady=5 )
+        self.txt_content.grid( row=4, rowspan=1, column=0, columnspan=12, padx=10, pady=5 )
 
         self.lbl_response = tk.Label( self.editor, text="Response focus = [Ctl + r]" + toggle_text, font=self.font_obj_big, width=65, height=1, anchor="w" )
-        self.lbl_response.grid( row=5, rowspan=1, column=0, columnspan=12, padx=5, pady=5 )
+        self.lbl_response.grid( row=5, rowspan=1, column=0, columnspan=12, padx=10, pady=5 )
 
         self.txt_response = tk.Text( self.editor, font=self.font_obj_big, width=72, height=14, wrap=tk.WORD, borderwidth=1 )
-        self.txt_response.grid( row=6, rowspan=1, column=0, columnspan=12, padx=5, pady=5 )
+        self.txt_response.grid( row=6, rowspan=1, column=0, columnspan=12, padx=10, pady=5 )
 
         # Create an editor button bar containing Cut, Copy, Paste, Space and Backspace options.
         # self.editor_buttons = tkinter.Frame( self.editor, padx=0, pady=0, border=2 )
