@@ -1,4 +1,6 @@
 period = .
+dot dot dot = ...
+ellipsis = ...
 dot = .
 comma = ,
 semicolon = ;
@@ -11,6 +13,9 @@ double quote = "
 quote = "
 apostrophe = '
 hyphen = -
+double dash = --
+double hyphen = --
+dash dash = --
 dash = -
 open parentheses = (
 open parenthesis = (

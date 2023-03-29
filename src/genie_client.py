@@ -463,6 +463,36 @@ class GenieClient:
         if self.debug: print( "After punctuation substitution: \n\n{}".format( code ), end="\n\n" )
         
         return code
+
+    def munge_prose( self, prose ):
+
+        if self.debug: print( "Before punctuation translation: \n\n{}".format( prose ), end="\n\n" )
+
+        # Remove "space, ", commas, and periods.
+        prose = re.sub( r'[,.]', '', prose )
+
+        # Translate punctuation mark words into single characters.
+        for key, value in self.punctuation.items():
+            prose = prose.replace( key, value )
+
+        # Remove extra spaces.
+        prose = prose.replace( "[ ", "[" )
+        prose = prose.replace( " ]", "]" )
+        prose = prose.replace( " )", ")" )
+        prose = prose.replace( "( ", "(" )
+        prose = prose.replace( " .", "." )
+        prose = prose.replace( " ,", "," )
+        prose = prose.replace( " ?", "?" )
+        prose = prose.replace( " !", "!" )
+        prose = prose.replace( " :", ":" )
+        prose = prose.replace( " ;", ";" )
+        prose = prose.replace( ' "', '"' )
+
+        prose = ' '.join( prose.split() )
+
+        if self.debug: print( "After punctuation substitution: \n\n{}".format( prose ), end="\n\n" )
+
+        return prose
     
     def do_transcription( self, copy_to_clipboard=True ):
     
@@ -478,7 +508,7 @@ class GenieClient:
 
         print( "do_vox_edit_of_prose_prompt() called..." )
         transcript = self.do_transcription( copy_to_clipboard=True )
-        self.copy_to_clipboard( transcript )
+        transcript = self.munge_prose( transcript )
         self.calling_gui.txt_response.insert( "1.0", transcript )
         self.calling_gui.last_text_with_focus.focus_force()
 
@@ -533,8 +563,8 @@ if __name__ == "__main__":
         recording_timeout=recording_timeout
     )
 
-    code = gc.munge_code( "Deaf key underscore event open parenthesis self comma event close parenthesis colon new line new line")
-    print( code )
+    # code = gc.munge_code( "Deaf key underscore event open parenthesis self comma event close parenthesis colon new line new line")
+    # print( code )
 
 
     # transcription = gc.do_transcription()
@@ -546,7 +576,10 @@ if __name__ == "__main__":
     # preamble = "Clean up the following raw text transcription created by whisper.ai. Correct spelling and format " \
     #           "output as Python source code w/o any capitalization. Source code must compile" \
     #
-    # query = "Def, set, underscore ready, underscore TO, underscore start, open parentheses, self, close parentheses, colon, new line, new line, print open parentheses, quote, mode, set to open bracket, open brace, close brace, close bracket, quote, dot format, open parentheses, self, dot selected underscore mode, dot get parentheses, close parentheses, close parentheses."
+    query = "What's it like to open bracket almost exclusively, close bracket, use your voice comma instead of your hands. question mark. "
+
+    print( gc.munge_prose( query ) )
+
     #
     # print( "1) Before punctuation translation: \n\n{}".format( query ), end="\n\n" )
     # # query = query.lower().replace( ",", "" ).replace( "space, ", "" )
