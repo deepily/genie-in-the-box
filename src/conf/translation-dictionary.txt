@@ -5,6 +5,7 @@ dot = .
 comma = ,
 semicolon = ;
 colon = :
+colin = :
 call = :
 exclamation point = !
 question mark = ?

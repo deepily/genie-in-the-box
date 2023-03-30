@@ -17,8 +17,7 @@ CORS( app )
 @app.route( "/" )
 def root():
 
-    return "Genie in the box flask server!"
-
+    return "Genie in the box flask server, ready to reload dynamically!"
 
 # @app.route( "/recorder.html" )
 # def blank():

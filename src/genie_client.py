@@ -466,10 +466,10 @@ class GenieClient:
 
     def munge_prose( self, prose ):
 
-        if self.debug: print( "Before punctuation translation: \n\n{}".format( prose ), end="\n\n" )
+        print( "munge_prose() Before punctuation translation: \n\n{}".format( prose ), end="\n\n" )
 
         # Remove "space, ", commas, and periods.
-        prose = re.sub( r'[,.]', '', prose )
+        prose = re.sub( r'[,.]', '', prose.lower() )
 
         # Translate punctuation mark words into single characters.
         for key, value in self.punctuation.items():
@@ -483,14 +483,16 @@ class GenieClient:
         prose = prose.replace( " .", "." )
         prose = prose.replace( " ,", "," )
         prose = prose.replace( " ?", "?" )
+        prose = prose.replace( "??", "?" )
         prose = prose.replace( " !", "!" )
+        prose = prose.replace( "!!", "!" )
         prose = prose.replace( " :", ":" )
         prose = prose.replace( " ;", ";" )
         prose = prose.replace( ' "', '"' )
 
         prose = ' '.join( prose.split() )
 
-        if self.debug: print( "After punctuation substitution: \n\n{}".format( prose ), end="\n\n" )
+        print( "munge_prose() After punctuation substitution: \n\n{}".format( prose ), end="\n\n" )
 
         return prose
     
@@ -507,8 +509,9 @@ class GenieClient:
     def do_vox_edit_of_prose_prompt( self ):
 
         print( "do_vox_edit_of_prose_prompt() called..." )
-        transcript = self.do_transcription( copy_to_clipboard=True )
+        transcript = self.do_transcription( copy_to_clipboard=False )
         transcript = self.munge_prose( transcript )
+        self.copy_to_clipboard( transcript )
         self.calling_gui.txt_response.insert( "1.0", transcript )
         self.calling_gui.last_text_with_focus.focus_force()
 
@@ -576,7 +579,7 @@ if __name__ == "__main__":
     # preamble = "Clean up the following raw text transcription created by whisper.ai. Correct spelling and format " \
     #           "output as Python source code w/o any capitalization. Source code must compile" \
     #
-    query = "What's it like to open bracket almost exclusively, close bracket, use your voice comma instead of your hands. question mark. "
+    query = "Let me stop you right there, Colin. First, comma. You'd better stop shouting so much comma. Okay, question mark. By the way comma, what's it like to open bracket almost exclusively, close bracket, use your voice comma instead of your hands. question mark. "
 
     print( gc.munge_prose( query ) )
 

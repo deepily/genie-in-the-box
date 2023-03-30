@@ -14,3 +14,6 @@ RUN pip3 install --upgrade openai
 RUN pip3 install pyperclip
 
 RUN pip3 install flask_cors
+
+# CMD [ "/var/genie-in-the-box/run-flask-whisper.sh" ]
+
