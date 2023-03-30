@@ -80,23 +80,26 @@ def upload_and_transcribe_mp3_file():
 @app.route( "/api/upload-and-transcribe-wav", methods=[ "POST" ] )
 def upload_and_transcribe_wav_file():
 
-    file = request.files[ "file" ]
-    # path = gc.docker_path.format( file.filename )
-    id = str( time.time() ).replace( ".", "-" )
-    path = "/tmp/{}-{}".format( id, file.filename )
-    print( "Saving file [{}] to [{}]...".format( file.filename, path ), end="" )
-    file.save( path )
+    file      = request.files[ "file" ]
+    timestamp = str( time.time() ).replace( ".", "-" )
+    temp_file = "/tmp/{}-{}".format( timestamp, file.filename )
+
+    print( "Saving file [{}] to [{}]...".format( file.filename, temp_file ), end="" )
+    file.save( temp_file )
     print( " Done!" )
 
-    print( "Transcribing {}...".format( path ) )
-    result = model.transcribe( path )
+    print( "Transcribing {}...".format( temp_file ) )
+    result = model.transcribe( temp_file )
     print( "Done!", end="\n\n" )
 
-    result = result[ "text" ].strip()
+    transcribed_text = result[ "text" ].strip()
+    print( "transcribed_text: [{}]".format( transcribed_text ) )
 
-    print( "Result: [{}]".format( result ) )
+    print( "Deleting temp file [{}]...".format( temp_file ), end="" )
+    os.remove( temp_file )
+    print( " Done!" )
 
-    return result
+    return transcribed_text
 
 @app.route( "/api/upload", methods=[ "POST" ] )
 def upload_file():
