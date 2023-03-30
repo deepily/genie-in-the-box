@@ -30,6 +30,7 @@ class GenieClient:
                   debug=False, recording_timeout=30, stt_address="127.0.0.1:7999", tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav" ):
         
         self.debug = debug
+        self.bar = "*" * 80
         
         self.CHUNK         = 4096
         self.FORMAT        = pyaudio.paInt16
@@ -179,15 +180,14 @@ class GenieClient:
         self.timer_running = False
 
     def start_recording( self ):
-    
-        self._start_recording_timeout( seconds=self.recording_timeout )
-        
+
         print( "Recording...", end="" )
         self.play_recording()
 
         self.recording = True
         self.finished_serializing_audio = False
-    
+        self._start_recording_timeout( seconds=self.recording_timeout )
+
         frames_buffer = [ ]
         stream = self.py.open( format=self.FORMAT, channels=self.CHANNELS, rate=self.RATE, input=True, frames_per_buffer=self.CHUNK )
         while self.recording:
@@ -215,40 +215,46 @@ class GenieClient:
             
             # Post temp file to flask server
             files = [ ( "file", ( wav_file, open( temp_file, "rb" ), "multipart/form-data" ) ) ]
-            url   = "http://{}/api/upload?runtime_context={}".format( self.stt_address, self.runtime_context )
+            url   = "http://{}/api/upload-and-transcribe-wav".format( self.stt_address )
             
             print( "POST'ing tempfile [{}] to [{}]...".format( temp_file, url ), end="" )
             response = requests.request( "POST", url, headers={ }, data={ }, files=files )
             print( " Done!" )
-            print( "Response [{}]".format( response.text ) )
-            
+
             # Delete temp file
             print( "Deleting temp file [{}]...".format( temp_file ), end="" )
             os.remove( temp_file )
             print( " Done!" )
-            
-            self.serialized_audio_path = response.text
+
+            transcribed_text = response.text
+            print( "Transcription returned [{}]".format( transcribed_text ) )
+            return transcribed_text
+
         else:
             
-            print( "Writing audio to [{}]...".format( self.output_path ), end="" )
-            self._write_audio_file( self.output_path, frames_buffer )
-            print( " Done!" )
-            self.serialized_audio_path = self.output_path
+            # print( "Writing audio to [{}]...".format( self.output_path ), end="" )
+            # self._write_audio_file( self.output_path, frames_buffer )
+            # print( " Done!" )
+            # self.serialized_audio_path = self.output_path
+
+            print( self.bar )
+            print( "Writing to anything but flask is deprecated.")
+            print( self.bar )
             
         self.finished_serializing_audio = True
         
-    def _get_transcription( self, ip_and_port, input_path ):
-    
-        url = "http://{ip_and_port}/api/vox2text?path={input_path}".format(
-            ip_and_port=ip_and_port,
-            input_path=input_path
-        )
-        print( "Calling transcription [{}]...".format( url ) )
-        response = ur.urlopen( url ).read()
-        
-        transcribed_text = response.decode( "utf-8" )
-        print( "Transcription returned [{}]".format( transcribed_text ) )
-        return transcribed_text
+    # def _get_transcription( self, ip_and_port, input_path ):
+    #
+    #     url = "http://{ip_and_port}/api/vox2text?path={input_path}".format(
+    #         ip_and_port=ip_and_port,
+    #         input_path=input_path
+    #     )
+    #     print( "Calling transcription [{}]...".format( url ) )
+    #     response = ur.urlopen( url ).read()
+    #
+    #     transcribed_text = response.decode( "utf-8" )
+    #     print( "Transcription returned [{}]".format( transcribed_text ) )
+    #     return transcribed_text
     
     def ask_chat_gpt_text( self, query, preamble="What does this mean: " ):
 
@@ -338,10 +344,9 @@ class GenieClient:
     
     def do_gpt_by_voice( self ):
     
-        self.start_recording()
-        # self.wait_to_finish_audio_serialization( self )
-        
-        transcribed_text = self._get_transcription( self.stt_address, self.serialized_audio_path )
+        transcribed_text = self.start_recording()
+
+        # transcribed_text = self._get_transcription( self.stt_address, self.serialized_audio_path )
 
         self.play_working()
         gpt_response = self.ask_chat_gpt_text( transcribed_text )
@@ -498,9 +503,9 @@ class GenieClient:
     
     def do_transcription( self, copy_to_clipboard=True ):
     
-        self.start_recording()
+        transcribed_text = self.start_recording()
         
-        transcribed_text = self._get_transcription( self.stt_address, self.serialized_audio_path )
+        # transcribed_text = self._get_transcription( self.stt_address, self.serialized_audio_path )
         
         if copy_to_clipboard: self.copy_to_clipboard( transcribed_text )
         

@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 def get_name_value_pairs( arg_list ):
 
@@ -148,6 +149,9 @@ def get_file_as_dictionary( path, lower_case=False, debug=False ):
 
 # Create a method that reads in a JSON file containing chatgpt prompts and populates the dictionary with it.
 
-prompts = get_file_as_dictionary( "conf/prompts.txt" )
-for key in prompts.keys():
-    print( "[{}] = [{}]".format( key, prompts[ key ] ) )
+# prompts = get_file_as_dictionary( "conf/prompts.txt" )
+# for key in prompts.keys():
+#     print( "[{}] = [{}]".format( key, prompts[ key ] ) )
+
+# foo = time.time()
+# print( foo )

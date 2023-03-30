@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 
 from flask import Flask, request, render_template, make_response, send_file
 from flask_cors import CORS
@@ -76,23 +77,43 @@ def upload_and_transcribe_mp3_file():
 
     return result
 
-@app.route( "/api/upload", methods=[ "POST" ] )
-def upload_file():
-
-    runtime_context = request.args.get( "runtime_context" )
-    print( "/api/upload?runtime_context={}".format( runtime_context ) )
+@app.route( "/api/upload-and-transcribe-wav", methods=[ "POST" ] )
+def upload_and_transcribe_wav_file():
 
     file = request.files[ "file" ]
-    # if runtime_context == "local":
-    #     path = gc.local_path.format( file.filename )
-    # else:
-    path = gc.docker_path.format( file.filename )
-
+    # path = gc.docker_path.format( file.filename )
+    id = str( time.time() ).replace( ".", "-" )
+    path = "/tmp/{}-{}".format( id, file.filename )
     print( "Saving file [{}] to [{}]...".format( file.filename, path ), end="" )
     file.save( path )
     print( " Done!" )
 
-    return path
+    print( "Transcribing {}...".format( path ) )
+    result = model.transcribe( path )
+    print( "Done!", end="\n\n" )
+
+    result = result[ "text" ].strip()
+
+    print( "Result: [{}]".format( result ) )
+
+    return result
+
+@app.route( "/api/upload", methods=[ "POST" ] )
+def upload_file():
+
+    bar = "#" * 80
+    print( bar )
+    print( "# This endpoint has been deprecated. Please update your code." )
+    print( bar )
+    #
+    # file = request.files[ "file" ]
+    # path = gc.docker_path.format( file.filename )
+    #
+    # print( "Saving file [{}] to [{}]...".format( file.filename, path ), end="" )
+    # file.save( path )
+    # print( " Done!" )
+    #
+    # return path
 
 
 @app.route( "/api/vox2text" )
