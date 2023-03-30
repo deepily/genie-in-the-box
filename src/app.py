@@ -19,25 +19,6 @@ def root():
 
     return "Genie in the box flask server, ready to reload dynamically!"
 
-# @app.route( "/recorder.html" )
-# def blank():
-#
-#     return render_template( "recorder.html" )
-#
-# @app.route( "/recorder.js" )
-# def recorder():
-#
-#     return render_template( "recorder.js" )
-#
-# @app.route( "/uploader.html" )
-# def uploader_html():
-#
-#     return render_template( "uploader.html" )
-#
-#
-# @app.route( "/upload-and-transcribe.html" )
-# def upload_and_transcribe_html():
-#     return render_template( "upload-and-transcribe.html" )
 
 @app.route( "/api/ask-ai-text" )
 def ask_ai_text():
@@ -53,8 +34,8 @@ def ask_ai_text():
 
     return response
 
-@app.route( "/api/upload-and-transcribe", methods=[ "POST" ] )
-def upload_and_transcribe_file():
+@app.route( "/api/upload-and-transcribe-mp3", methods=[ "POST" ] )
+def upload_and_transcribe_mp3_file():
 
     print( type( request.data ) )
     print( len( request.data ) )
