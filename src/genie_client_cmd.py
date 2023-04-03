@@ -119,9 +119,11 @@ class CmdUi:
         self.txt_console.insert( tk.END, "Done!\n" )
         self.btn_start.focus_set()
 
+        self.genie_client.stop_recording()
+
     def _start_processing_thread( self ):
 
-        if self.debug: print( "Processing. on a separate thread in [{}] mode...".format( self.selected_mode.get() ), end="" )
+        if self.debug: print( "Processing. on a separate thread...", end="" )
         transcription = self.genie_client.do_transcribe_and_clean_python()
 
         self.txt_console.insert( tk.END, "Transcription [{}]\n".format( transcription ) )
@@ -139,13 +141,13 @@ class CmdUi:
 # add main method
 if __name__ == "__main__":
 
-    debug = False
+    debug = True
     cli_args = util.get_name_value_pairs( sys.argv )
 
     startup_mode = cli_args.get( "startup_mode", "transcribe_and_clean_python" )
     record_once_on_startup = cli_args.get( "record_once_on_startup", "FALSE" ) == "True"
     copy_transx_to_clipboard = cli_args.get( "copy_transx_to_clipboard", "True" ) == "True"
-    recording_timeout = int( cli_args.get( "recording_timeout", 4 ) )
+    recording_timeout = int( cli_args.get( "recording_timeout", 15 ) )
 
     if debug:
         print( "     startup_mode: [{}]".format( startup_mode ) )
