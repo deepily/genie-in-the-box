@@ -27,7 +27,7 @@ write_method = "file" # "file" or "flask"
 class GenieClient:
     
     def __init__( self, calling_gui=None, startup_mode="transcribe", copy_transx_to_clipboard=True, runtime_context="docker", write_method="flask",
-                  debug=False, recording_timeout=30, stt_address="127.0.0.1:7999", tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav" ):
+                  debug=False, recording_timeout=30, stt_address="127.0.0.1:7999", tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav", cwd=os.getcwd() ):
         
         self.debug = debug
         self.bar = "*" * 80
@@ -47,7 +47,8 @@ class GenieClient:
         if debug: print( "Setting runtime output_path to [{}]".format( self.output_path ) )
 
         self.startup_mode       = startup_mode
-        self.modes_dict         = util.get_file_as_json( "conf/modes.json" )
+        self.cwd                = cwd
+        self.modes_dict         = util.get_file_as_json( self.cwd + "/conf/modes.json" )
         self.methods_dict       = self._get_titles_to_methods_dict()
         self.keys_dict          = self._get_titles_to_keys_dict()
         self.prompts_dict       = util.get_file_as_dictionary( "conf/prompts.txt", lower_case=False )
@@ -198,7 +199,7 @@ class GenieClient:
             frames_buffer.append( data )
             if self.debug: print( ".", end="" )
             # only call if there's a GUI to update
-            if self.calling_gui is not None: self.calling_gui.main.update()
+            if self.calling_gui is not None: self.calling_gui.update()
 
         if self.debug:
             print( " Done!" )

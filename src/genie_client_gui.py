@@ -19,10 +19,6 @@ class GenieGui:
 
         self.last_key = ""
         
-        # Instantiate headless client object
-        self.genie_client = gc.GenieClient(
-            calling_gui=self, startup_mode=default_mode, copy_transx_to_clipboard=copy_transx_to_clipboard, runtime_context=runtime_context, write_method=write_method, recording_timeout=recording_timeout, debug=debug
-        )
         self.copy_transx_to_clipboard = copy_transx_to_clipboard
         self.record_once_on_startup = record_once_on_startup
         self.default_mode = default_mode
@@ -42,6 +38,9 @@ class GenieGui:
         self.font_size = 18
         self.font_obj_big = tkf.Font( size=self.font_size )
         self.font_obj_mid = tkf.Font( size=int( self.font_size * .75 ) )
+
+        # Center the frame?
+        # self.main.eval( 'tk::PlaceWindow . center' )
 
         # Set Frames
         self.top_level_buttons = tkinter.Frame( self.main, padx=10, pady=5 )
@@ -167,7 +166,12 @@ class GenieGui:
         # This is superfluous. It's already called in the next method.
         self.set_ready_to_start()
         self.update_prompt()
-        
+
+        # Instantiate headless client object
+        self.genie_client = gc.GenieClient(
+            calling_gui=self.main, startup_mode=default_mode, copy_transx_to_clipboard=copy_transx_to_clipboard, runtime_context=runtime_context, write_method=write_method, recording_timeout=recording_timeout, debug=debug
+        )
+
         # force GUI to update periodically?
         def update():
             
@@ -390,7 +394,7 @@ class GenieGui:
             self.btn_start.focus_set()
             self.main.geometry( self.geometry_bar )
 
-    def start_processing( self ):
+    def processing( self ):
 
         if self.debug: print( "start_processing() called..." )
 
