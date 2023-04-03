@@ -11,7 +11,7 @@ import util
 
 class GenieGui:
     
-    def __init__( self, default_mode="transcription", record_once_on_startup=False, runtime_context="docker", write_method="flask", recording_timeout=30, debug=False ):
+    def __init__( self, default_mode="transcription", copy_transx_to_clipboard=True, record_once_on_startup=False, runtime_context="docker", write_method="flask", recording_timeout=30, debug=False ):
         
         # TODO: Move configuration values into the same kind of format that we used in AMPE
         self.last_text_with_focus = None
@@ -21,8 +21,9 @@ class GenieGui:
         
         # Instantiate headless client object
         self.genie_client = gc.GenieClient(
-            calling_gui=self, startup_mode=default_mode, runtime_context=runtime_context, write_method=write_method, recording_timeout=recording_timeout, debug=debug
+            calling_gui=self, startup_mode=default_mode, copy_transx_to_clipboard=copy_transx_to_clipboard, runtime_context=runtime_context, write_method=write_method, recording_timeout=recording_timeout, debug=debug
         )
+        self.copy_transx_to_clipboard = copy_transx_to_clipboard
         self.record_once_on_startup = record_once_on_startup
         self.default_mode = default_mode
         
@@ -177,9 +178,9 @@ class GenieGui:
 
         # Start & block while in the mainloop
         if self.record_once_on_startup:
-            print( "self.record_once_on_startup is True, blocking main thread while this runs." )
+            if self.debug: print( "self.record_once_on_startup is True, blocking main thread while this runs." )
             self.start_processing()
-            self.main.destroy()
+            # self.main.destroy()
         else:
             tkinter.mainloop()
 
@@ -259,9 +260,9 @@ class GenieGui:
             self.genie_client.is_recording() or
             self.genie_client.is_playing() ):
 
-            print( "Quitting... (Don't forget to check for stream right completion before destroying window?)" )
-            self.main.destroy()
-
+            if self.debug: print( "Quitting... (Don't forget to check for stream right completion before destroying window?)" )
+            # self.main.destroy()
+            self.main.quit()
         self.last_key = event.keysym
 
     def _do_conditional_paste_from_clipboard( self ):
@@ -348,14 +349,14 @@ class GenieGui:
 
     def set_ready_to_start( self ):
 
-        print( "Mode set to [{}]".format( self.selected_mode.get() ) )
+        if self.debug: print( "Mode set to [{}]".format( self.selected_mode.get() ) )
         self.btn_start.config( state=ACTIVE )
         self.btn_start.focus_set()
         self.btn_stop.config( state=DISABLED )
 
         # Add Hock, Switch to display or hide interactive code editor.
         key = self.genie_client.keys_dict[ self.selected_mode.get() ]
-        print( "key [{}]".format( key ) )
+        if self.debug: print( "key [{}]".format( key ) )
 
         # ¡OJO! This is extremely ad hoc and brittle, WILL break if the mode keys are changed.
         if key == "ai_interactive_editor_prose" or key == "ai_interactive_editor_prose_run":
@@ -368,30 +369,30 @@ class GenieGui:
             self.btn_start.config( state=DISABLED )
     def update_prompt( self ):
 
-        print( "update_prompt() called, key [{}]".format( self.selected_prompt.get() ) )
+        if self.debug: print( "update_prompt() called, key [{}]".format( self.selected_prompt.get() ) )
         prompt = self.genie_client.prompts_dict[ self.selected_prompt.get() ]
-        print( "prompt [{}]".format( prompt ) )
+        if self.debug: print( "prompt [{}]".format( prompt ) )
 
         self.txt_prompt.delete( "0.0", tk.END )
         self.txt_prompt.insert( tk.INSERT, prompt )
 
     def show_interactive_code_editor( self, show, key ):
 
-        print( "show_interactive_code_editor() called w/ mode key [{}]...".format( key ) )
+        if self.debug: print( "show_interactive_code_editor() called w/ mode key [{}]...".format( key ) )
         if show:
-            print( "Showing interactive editor..." )
+            if self.debug: print( "Showing interactive editor..." )
             self.editor.pack()
             self.txt_prompt.focus_set()
             self.main.geometry( self.geometry_editor )
         else:
-            print( "Hiding interactive editor..." )
+            if self.debug: print( "Hiding interactive editor..." )
             self.editor.forget()
             self.btn_start.focus_set()
             self.main.geometry( self.geometry_bar )
 
     def start_processing( self ):
 
-        print( "start_processing() called..." )
+        if self.debug: print( "start_processing() called..." )
 
         self.cmb_mode.config( state=DISABLED )
         self.btn_start.config( state=DISABLED )
@@ -410,7 +411,7 @@ class GenieGui:
         
     def _start_processing_thread( self ):
     
-        print( "Processing. on a separate thread in [{}] mode...".format( self.selected_mode.get() ), end="" )
+        if self.debug: print( "Processing. on a separate thread in [{}] mode...".format( self.selected_mode.get() ), end="" )
     
         # branch on mode_title
         mode_title = self.selected_mode.get()
@@ -425,7 +426,7 @@ class GenieGui:
             
     def stop_processing( self ):
     
-        print( "stop_processing() called..." )
+        if self.debug: print( "stop_processing() called..." )
         self.cmb_mode.config( state=ACTIVE )
         self.btn_start.config( state=ACTIVE )
         self.btn_start.focus_set()
@@ -465,3 +466,4 @@ if __name__ == "__main__":
     # gg.genie_client.do_gpt_prose_explanation_from_clipboard()
 
     # gg.genie_client.do_gpt_prose_explanation_from_clipboard()
+    sys.exit( 0 )

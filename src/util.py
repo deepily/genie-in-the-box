@@ -2,7 +2,7 @@ import json
 import os
 import time
 
-def get_name_value_pairs( arg_list ):
+def get_name_value_pairs( arg_list, debug=False ):
 
     """
     Parses a list of strings -- name=value -- into dictionary format { "name":"value" }
@@ -17,24 +17,24 @@ def get_name_value_pairs( arg_list ):
     """
 
     # Quick sanity check. Do we have anything to iterate?
-    print( "Length of arg_list [{}]".format( len( arg_list ) ) )
+    if debug: print( "Length of arg_list [{}]".format( len( arg_list ) ) )
     if len( arg_list ) <= 1: return { }
     
     name_value_pairs = { }
 
     for i, arg in enumerate( arg_list ):
 
-        print( "[{0}]th arg = [{1}]... ".format( i, arg_list[ i ] ), end="" )
+        if debug: print( "[{0}]th arg = [{1}]... ".format( i, arg_list[ i ] ), end="" )
 
         if "=" in arg:
             pair = arg.split( "=" )
             name_value_pairs[ pair[ 0 ] ] = pair[ 1 ]
-            print( "done!" )
+            if debug: print( "done!" )
         else:
-            print( "SKIPPING, name=value format not found" )
+            if debug: print( "SKIPPING, name=value format not found" )
 
-    print()
-    print( "Name value dictionary pairs:", end="\n\n" )
+    if debug: print()
+    if debug: print( "Name value dictionary pairs:", end="\n\n" )
 
     # get max width for right justification
     max_len = max( [ len( key ) for key in name_value_pairs.keys() ] ) + 1
@@ -46,8 +46,8 @@ def get_name_value_pairs( arg_list ):
     names.sort()
 
     for name in names:
-        print( "{0}] = [{1}]".format( ("[" + name).rjust( max_len, " " ), name_value_pairs[ name ] ) )
-    print()
+        if debug: print( "{0}] = [{1}]".format( ("[" + name).rjust( max_len, " " ), name_value_pairs[ name ] ) )
+    if debug: print()
 
     return name_value_pairs
 
@@ -92,10 +92,10 @@ def get_file_as_dictionary( path, lower_case=False, debug=False ):
     
     return lines_as_dict
 
-# lines_dict = get_lines_as_dictionary( "conf/translation-dictionary.txt" )
+# lines_dict = get_lines_as_dictionary( "conf/translation-dictionary.map" )
 # print( lines_dict )
 #
-# lines = get_file_as_list( "conf/translation-dictionary.txt" )
+# lines = get_file_as_list( "conf/translation-dictionary.map" )
 # lines.sort()
 #
 # punctuation_dict = { }

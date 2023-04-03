@@ -26,7 +26,7 @@ write_method = "file" # "file" or "flask"
 
 class GenieClient:
     
-    def __init__( self, calling_gui=None, startup_mode="transcribe", runtime_context="docker", write_method="flask",
+    def __init__( self, calling_gui=None, startup_mode="transcribe", copy_transx_to_clipboard=True, runtime_context="docker", write_method="flask",
                   debug=False, recording_timeout=30, stt_address="127.0.0.1:7999", tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav" ):
         
         self.debug = debug
@@ -39,12 +39,12 @@ class GenieClient:
         self.recording     = False
         self.playing       = False
         
-        print( "runtime_context [{}]".format( runtime_context ) )
+        if debug: print( "runtime_context [{}]".format( runtime_context ) )
         if runtime_context == "docker":
             self.output_path = docker_path.format( wav_file )
         else:
             self.output_path = local_path.format( wav_file )
-        print( "Setting runtime output_path to [{}]".format( self.output_path ) )
+        if debug: print( "Setting runtime output_path to [{}]".format( self.output_path ) )
 
         self.startup_mode       = startup_mode
         self.modes_dict         = util.get_file_as_json( "conf/modes.json" )
@@ -52,7 +52,7 @@ class GenieClient:
         self.keys_dict          = self._get_titles_to_keys_dict()
         self.prompts_dict       = util.get_file_as_dictionary( "conf/prompts.txt", lower_case=False )
         self.prompt_titles      = self._get_prompt_titles()
-        self.punctuation        = util.get_file_as_dictionary( "conf/translation-dictionary.txt", lower_case=True )
+        self.punctuation        = util.get_file_as_dictionary( "conf/translation-dictionary.map", lower_case=True )
         self.default_mode_index = self._get_default_mode_index()
         self.calling_gui        = calling_gui
         self.recording_timeout  = recording_timeout
@@ -64,10 +64,13 @@ class GenieClient:
         self.tts_wav_path       = tts_output_path
         self.py                 = pyaudio.PyAudio()
         
-        self.sound_resources_dir = os.getcwd() + "/resources/sound/"
+        self.sound_resources_dir        = os.getcwd() + "/resources/sound/"
         
         # tracks what the recording & writing thread is doing
         self.finished_serializing_audio = False
+
+        # Do we want to automatically stash the results of a transcription or processing of a transcription to the clipboard when we're done?
+        self.copy_transx_to_clipboard   = copy_transx_to_clipboard
 
         # ad hoc addition to the translation dictionary.
         self.punctuation[ "space" ] = " "
@@ -105,8 +108,8 @@ class GenieClient:
     
         modes_list = list( self.modes_dict.keys() )
         
-        print( "Default mode [{}]".format( self.startup_mode ) )
-        print( "modes_list", modes_list )
+        if self.debug: print( "Default mode [{}]".format( self.startup_mode ) )
+        if self.debug: print( "modes_list", modes_list )
         
         if self.startup_mode not in modes_list:
             
@@ -116,7 +119,7 @@ class GenieClient:
             index = 0
         else:
             index = modes_list.index( self.startup_mode )
-            print( "Default mode index [{}]".format( index ) )
+            if self.debug: print( "Default mode index [{}]".format( index ) )
         
         return index
     
@@ -124,7 +127,7 @@ class GenieClient:
     
         function_name = self.methods_dict[ mode_title ]
         print()
-        print( "Calling [{}]...".format( function_name ) )
+        if self.debug: print( "Calling [{}]...".format( function_name ) )
         getattr( self, function_name )()
         #
         # if   mode == "ChatGPT (Vox)":
@@ -158,19 +161,19 @@ class GenieClient:
         
     def _start_recording_timeout( self, seconds ):
     
-        print( "Starting recording timeout thread, {} seconds limit...".format( seconds ) )
+        if self.debug: print( "Starting recording timeout thread, {} seconds limit...".format( seconds ) )
         thread = Thread( target=self._wait_to_stop_recording, args=[ seconds ] )
         thread.start()
     
     def _wait_to_stop_recording( self, max_recording_seconds=30 ):
         
-        print( "Waiting to stop recording [{}] for [{}] seconds...".format( self.recording, max_recording_seconds ) )
+        if self.debug: print( "Waiting to stop recording [{}] for [{}] seconds...".format( self.recording, max_recording_seconds ) )
         seconds = 0
         self.timer_running = True
         
         while seconds < max_recording_seconds and self.timer_running:
             time.sleep( 1 )
-            print( "*", end="" )
+            if self.debug: print( "*", end="" )
             seconds += 1
         
         self.recording = False
@@ -181,7 +184,7 @@ class GenieClient:
 
     def start_recording( self ):
 
-        print( "Recording...", end="" )
+        if self.debug: print( "Recording...", end="" )
         self.play_recording()
 
         self.recording = True
@@ -193,41 +196,42 @@ class GenieClient:
         while self.recording:
             data = stream.read( self.CHUNK )
             frames_buffer.append( data )
-            print( ".", end="" )
+            if self.debug: print( ".", end="" )
             # only call if there's a GUI to update
             if self.calling_gui is not None: self.calling_gui.main.update()
-            
-        print( " Done!" )
-        print( "Frames recorded [{}]".format( len( frames_buffer ) ) )
+
+        if self.debug:
+            print( " Done!" )
+            print( "Frames recorded [{}]".format( len( frames_buffer ) ) )
         stream.close()
     
         self.stop_recording_timeout()
         
         if self.write_method == "flask":
             
-            print( "POST'ing audio to [{}]...".format( self.write_method ) )
+            if self.debug: print( "POST'ing audio to [{}]...".format( self.write_method ) )
             
             # Write to temp file
             temp_file = "/tmp/{}".format( wav_file )
-            print( "Writing audio to temp file for POST'ing [{}]...".format( temp_file ), end="" )
+            if self.debug: print( "Writing audio to temp file for POST'ing [{}]...".format( temp_file ), end="" )
             self._write_audio_file( temp_file, frames_buffer )
-            print( " Done!" )
+            if self.debug: print( " Done!" )
             
             # Post temp file to flask server
             files = [ ( "file", ( wav_file, open( temp_file, "rb" ), "multipart/form-data" ) ) ]
             url   = "http://{}/api/upload-and-transcribe-wav".format( self.stt_address )
             
-            print( "POST'ing tempfile [{}] to [{}]...".format( temp_file, url ), end="" )
+            if self.debug: print( "POST'ing tempfile [{}] to [{}]...".format( temp_file, url ), end="" )
             response = requests.request( "POST", url, headers={ }, data={ }, files=files )
-            print( " Done!" )
+            if self.debug: print( " Done!" )
 
             # Delete temp file
-            print( "Deleting temp file [{}]...".format( temp_file ), end="" )
+            if self.debug: print( "Deleting temp file [{}]...".format( temp_file ), end="" )
             os.remove( temp_file )
-            print( " Done!" )
+            if self.debug: print( " Done!" )
 
             transcribed_text = response.text
-            print( "Transcription returned [{}]".format( transcribed_text ) )
+            if self.debug: print( "Transcription returned [{}]".format( transcribed_text ) )
             return transcribed_text
 
         else:
@@ -415,9 +419,11 @@ class GenieClient:
     def do_transcribe_and_clean_python( self ):
     
         # This is a big long comment
-        query = self.do_transcription( copy_to_clipboard=False )
-        query = self.munge_code( query )
-        self.copy_to_clipboard( query )
+        python_code = self.do_transcription( copy_to_clipboard=self.copy_transx_to_clipboard )
+        python_code = self.munge_code( python_code )
+        if self.copy_transx_to_clipboard: self.copy_to_clipboard( python_code )
+
+        return python_code
         
     def do_gpt_code_explanation_from_clipboard( self ):
         
