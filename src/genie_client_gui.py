@@ -35,6 +35,10 @@ class GenieGui:
         self.main.geometry( self.geometry_bar )
         self.main.title( "Genie in The Box" )
 
+        # Now that we have a GUI object to point to, instantiate headless client object
+        self.genie_client = gc.GenieClient(
+            calling_gui=self.main, startup_mode=default_mode, copy_transx_to_clipboard=copy_transx_to_clipboard, runtime_context=runtime_context, write_method=write_method, recording_timeout=recording_timeout, debug=debug
+        )
         self.font_size = 18
         self.font_obj_big = tkf.Font( size=self.font_size )
         self.font_obj_mid = tkf.Font( size=int( self.font_size * .75 ) )
@@ -166,11 +170,6 @@ class GenieGui:
         # This is superfluous. It's already called in the next method.
         self.set_ready_to_start()
         self.update_prompt()
-
-        # Instantiate headless client object
-        self.genie_client = gc.GenieClient(
-            calling_gui=self.main, startup_mode=default_mode, copy_transx_to_clipboard=copy_transx_to_clipboard, runtime_context=runtime_context, write_method=write_method, recording_timeout=recording_timeout, debug=debug
-        )
 
         # force GUI to update periodically?
         def update():
@@ -394,7 +393,7 @@ class GenieGui:
             self.btn_start.focus_set()
             self.main.geometry( self.geometry_bar )
 
-    def processing( self ):
+    def start_processing( self ):
 
         if self.debug: print( "start_processing() called..." )
 
@@ -455,7 +454,7 @@ if __name__ == "__main__":
 
     runtime_context        = cli_args.get( "runtime_context", "docker" )
     write_method           = cli_args.get( "write_method", "flask" )
-    default_mode           = cli_args.get( "default_mode", "transcribe" )
+    default_mode           = cli_args.get( "default_mode", "transcribe_and_clean_prose" )
     recording_timeout      = int( cli_args.get( "recording_timeout", 30 ) )
     record_once_on_startup = cli_args.get( "record_once_on_startup", "False" ) == "True"
 
