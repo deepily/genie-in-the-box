@@ -1,6 +1,7 @@
 gs = git status
 gb = git branch
-gc = git commit 
+gc = git commit
+ga = git add
 gaa = git add .
 gca = git commit -am 
 gpo = git push origin
