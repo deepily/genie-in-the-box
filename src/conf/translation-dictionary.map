@@ -1,6 +1,7 @@
 period = .
 dot dot dot = ...
 dot dot slash = ../
+dot dot = ..
 dot = .
 ellipsis = ...
 comma = ,
@@ -51,7 +52,7 @@ hash tag = #
 hashtag = #
 hash = #
 at sign = @
-at = @
+| at | = @
 caret = ^
 underscore = _
 equals sign = =
@@ -60,6 +61,7 @@ equals = =
 tilde = ~
 pipe = |
 less than = <
+less then = <
 greater than = >
 new line = NL
 newline = NL
@@ -68,3 +70,4 @@ speech to text = STT
 text to speech = TTS
 true = True
 false = False
+space = | |
