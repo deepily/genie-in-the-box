@@ -74,9 +74,13 @@ def get_file_as_json( path ):
    
 def get_file_as_dictionary( path, lower_case=False, debug=False ):
     
+    # ¡OJO! The pipe symbol is a reserved character used to delimit white space. See the keywords "space" or "| at |" below.
+    
     lines = get_file_as_list( path, lower_case=lower_case )
 
-    lines.sort()
+    # Sorting was breaking order dependence, as in "dot", "dot dot", and "dot dot dot", etc., which should appear in reverse order,
+    # most restrictive first.
+    # lines.sort()
 
     lines_as_dict = { }
     # lines_as_dict[ "space" ] = " "
@@ -86,9 +90,12 @@ def get_file_as_dictionary( path, lower_case=False, debug=False ):
         pair = lines.strip().split( " = " )
         if len( pair ) > 1:
             if debug: print( "[{}] = [{}]".format( pair[ 0 ], pair[ 1 ].strip() ) )
-            lines_as_dict[ pair[ 0 ] ] = pair[ 1 ].strip()
+            # Only pull pipes after the key and values have been stripped.
+            lines_as_dict[ pair[ 0 ].strip().replace( "|", "" ) ] = pair[ 1 ].strip().replace( "|", "" )
         else:
             if debug: print( "ERROR: [{}]".format( pair[ 0 ] ) )
     
     return lines_as_dict
+
+
 
