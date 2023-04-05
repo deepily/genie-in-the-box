@@ -6,10 +6,10 @@ source /Users/rruiz/Projects/local-interpreter-python3.10/venv/bin/activate
 
 # Change to the directory containing the Genie GUI
 # Using SMB mount:
-cd /Volumes/projects/genie-in-the-box/src
+# cd /Volumes/projects/genie-in-the-box/src
 
 # Using SSHFS:
-# cd /Users/rruiz/Projects/projects-sshfs/genie-in-the-box/src
+cd /Users/rruiz/Projects/projects-sshfs/genie-in-the-box/src
 
 # Pass all command line arguments
 python3.10 genie_client_gui.py "$@"
