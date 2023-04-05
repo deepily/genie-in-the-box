@@ -20,7 +20,7 @@ modes_to_methods_dict = {
      transcription_mode_python_punctuation : "transcribe_python_punctuation",
      transcription_mode_python_proofread   : "transcribe_python_proofread"
 }
-class Mode:
+class MultiModalTranscriber:
 
     def __init__(self, raw_transcription, config_path="conf/modes-vox.json", debug=True ):
 
@@ -166,7 +166,7 @@ if __name__ == "__main__":
     # transcription = "transcription mode pros punctuation Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
     # transcription = "transcription mode pros email r-i-c-a-r-d-o dot f-e-l-i-p-e dot r-u-i-z at gmail.com"
     transcription = "transcription mode pros punctuation Here 's my email address. r-i-c-a-r-d-o.f-e-l-i-p-e-.r-u-i-z at gmail.com."
-    mode = Mode( transcription, debug=False )
+    mode = MultiModalTranscriber( transcription, debug=False )
     print( mode )
     
     
