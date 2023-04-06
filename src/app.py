@@ -9,7 +9,8 @@ import whisper
 import base64
 
 import genie_client as gc
-import multi_modal_transcriber as mmt
+import multi_modal_munger as mmm
+import util_stopwatch as sw
 
 app = Flask( __name__ )
 
@@ -76,7 +77,17 @@ def upload_and_transcribe_mp3_file():
 
     print( "Result: [{}]".format( result ) )
     
-    munger = mmt.MultiModalTranscriber( result )
+    munger = mmm.MultiModalMunger( result )
+
+    if munger.is_text_proofread():
+        
+        print( "Proofreading text... ", end="" )
+        timer = sw.Stopwatch()
+        preamble = "You are an expert proofreader. Correct grammar. Correct tense. Correct spelling. Correct contractions. Correct punctuation. Correct capitalization. Correct word choice. Correct sentence structure. Correct paragraph structure. Correct paragraph length. Correct paragraph flow. Correct paragraph topic. Correct paragraph tone. Correct paragraph style. Correct paragraph voice. Correct paragraph mood. Correct paragraph theme."
+        response = genie_client.ask_chat_gpt_text( munger.transcription, preamble=preamble )
+        timer.print( "Done!" )
+        
+        munger.transcription = response
 
     return munger.get_json()
 

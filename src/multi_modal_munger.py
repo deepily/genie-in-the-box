@@ -1,13 +1,15 @@
 import re
 
 import util as du # du = "deepily's utils"
+import genie_client as gc
+import util_stopwatch as sw
 
 # Currently, comma, all transcription mode descriptors are three words long.
 # This will become important or more important in the future.
-transcription_mode_text_raw          = "multimodal text raw"
-transcription_mode_text_email        = "multimodal text email"
-transcription_mode_text_punctuation  = "multimodal text punctuation"
-transcription_mode_text_proofread    = "multimodal text proofread"
+transcription_mode_text_raw           = "multimodal text raw"
+transcription_mode_text_email         = "multimodal text email"
+transcription_mode_text_punctuation   = "multimodal text punctuation"
+transcription_mode_text_proofread     = "multimodal text proofread"
 transcription_mode_python_punctuation = "multimodal python punctuation"
 transcription_mode_python_proofread   = "multimodal python proofread"
 transcription_mode_default            = transcription_mode_text_punctuation
@@ -20,7 +22,7 @@ modes_to_methods_dict = {
      transcription_mode_python_punctuation : "munge_python_punctuation",
      transcription_mode_python_proofread   : "munge_python_proofread"
 }
-class MultiModalTranscriber:
+class MultiModalMunger:
 
     def __init__(self, raw_transcription, config_path="conf/modes-vox.json", debug=False ):
 
@@ -39,9 +41,9 @@ class MultiModalTranscriber:
             print( "modes_to_methods_dict", self.modes_to_methods_dict, end="\n\n" )
             print( "methods_to_modes_dict", self.methods_to_modes_dict, end="\n\n" )
         
-        self.transcription_tuple    = self._transcribe( raw_transcription )
-        self.transcription          = self.transcription_tuple[ 0 ]
-        self.mode                   = self.transcription_tuple[ 1 ]
+        result = self.parse( raw_transcription )
+        self.transcription = result[ 0 ]
+        self.mode          = result[ 1 ]
         
     def __str__(self):
 
@@ -65,7 +67,7 @@ class MultiModalTranscriber:
             methods_to_modes_dict[ method ] = mode
         
         return methods_to_modes_dict
-    def _transcribe( self, raw_transcription ):
+    def parse( self, raw_transcription ):
         
         # ¡OJO! super special ad hoc prefix cleanup due to the use of multi, please don't do this often!
         raw_transcription = self._adhoc_prefix_cleanup( raw_transcription )
@@ -74,7 +76,6 @@ class MultiModalTranscriber:
         regex = re.compile( '[^a-zA-Z ]' )
         transcription = regex.sub( '', raw_transcription ).replace( "-", " " ).lower()
 
-        
         print( transcription )
         words = transcription.split()
 
@@ -98,10 +99,14 @@ class MultiModalTranscriber:
                 
         print( "method_name:", method_name )
         mode = self.methods_to_modes_dict[ method_name ]
+        print( "mode:", mode )
         if self.debug: print( "Calling [{}] w/ mode [{}]...".format( method_name, mode ) )
-        result = getattr( self, method_name )( raw_transcription, mode )
+        result, mode = getattr( self, method_name )( raw_transcription, mode )
+        print( "result[ 0 ]:", result[ 0 ] )
+        print( "result[ 1 ]:", result[ 1 ] )
+        print( "mode:", mode )
         
-        return result
+        return result[ 0 ], mode
         
     def _adhoc_prefix_cleanup( self, raw_transcription ):
         
@@ -178,9 +183,9 @@ class MultiModalTranscriber:
     
     def munge_text_proofread( self, raw_transcription, mode ):
     
-        prose = re.sub( r'[,.]', '', raw_transcription.lower() )
+        transcription = self.munge_text_punctuation( raw_transcription, mode )
         
-        return raw_transcription, mode
+        return transcription, mode
     
     def munge_python_punctuation( self, raw_transcription, mode ):
         
@@ -190,19 +195,32 @@ class MultiModalTranscriber:
         
         return raw_transcription, mode
     
+    def is_text_proofread( self ):
+        
+        return self.mode == transcription_mode_text_proofread
+    
 if __name__ == "__main__":
 
     # transcription = "DOM fully loaded and parsed, Checking permissions.... Done!"
     # transcription = "multi-mode text raw Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
+    # transcription = "multi-mode text proofread Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
     # transcription = "multi-mode text punctuation Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
-    transcription = "multi-modal text email r-i-c-a-r-d-o dot f-e-l-i-p-e dot r-u-i-z at gmail.com"
+    # transcription = "multi-modal text email r-i-c-a-r-d-o dot f-e-l-i-p-e dot r-u-i-z at gmail.com"
     # transcription = "multi-mode text punctuation Here's my email address. r-i-c-a-r-d-o.f-e-l-i-p-e-.r-u-i-z at gmail.com."
     # transcription = "blah blah blah"
-    transcriber = MultiModalTranscriber( transcription, debug=False )
-    print( transcriber )
+    transcription = "multimodal text proofread I go to market yesterday comma Tonight I go to the dance, comma, and I'm very happy that exclamation point."
+    munger = MultiModalMunger( transcription, debug=False )
+    print( munger )
     
-    print( transcriber.get_json() )
-    print( type( transcriber.get_json() ) )
-    print( transcriber.get_json()[ "transcription" ] )
-    
+    print( "munger.get_json()", munger.get_json() )
+    print( "type( munger.get_json() )", type( munger.get_json() ) )
+    print( munger.get_json()[ "transcription" ] )
+    print( munger.is_text_proofread() )
+
+    genie_client = gc.GenieClient( debug=True )
+    timer = sw.Stopwatch()
+    preamble = "You are an expert proofreader. Correct grammar. Correct tense. Correct spelling. Correct contractions. Correct punctuation. Correct capitalization. Correct word choice. Correct sentence structure. Correct paragraph structure. Correct paragraph length. Correct paragraph flow. Correct paragraph topic. Correct paragraph tone. Correct paragraph style. Correct paragraph voice. Correct paragraph mood. Correct paragraph theme."
+    response = genie_client.ask_chat_gpt_text( munger.transcription, preamble=preamble )
+    print( response )
+    timer.print( "Proofread", use_millis=True )
     

@@ -271,7 +271,8 @@ class GenieClient:
             messages=[ { "role": "system", "content": "You are ChatGPT, a large language model trained by OpenAI. "
                                                       "Answer as concisely as possible."
                                                       "\nKnowledge cutoff: =2021-09-01\nCurrent date: 2023-03-02" },
-                       { "role": "user", "content": preamble + query } ],
+                       { "role": "system", "content": preamble },
+                       { "role": "user", "content": query } ],
             temperature=0,
             max_tokens=600,
             top_p=1.0,
