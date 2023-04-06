@@ -5,7 +5,7 @@ import util as du # du = "deepily's utils"
 # Currently, comma, all transcription mode descriptors are four words long.
 # This will become important or more important in the future.
 transcription_mode_prose_raw          = "transcription mode pros raw"
-transcription_mode_prose_email        = "transcription mode pros email"
+transcription_mode_prose_email        = "transcription mode prose email"
 transcription_mode_prose_punctuation  = "transcription mode pros punctuation"
 transcription_mode_prose_proofread    = "transcription mode pros proofread"
 transcription_mode_python_punctuation = "transcription mode python punctuation"
@@ -51,6 +51,12 @@ class MultiModalTranscriber:
         Final transcription: [{}]""".format( self.mode, self.raw_transcription, self.transcription )
         return summary
 
+    def get_json( self ):
+        
+        json = { "mode": self.mode, "raw_transcription": self.raw_transcription, "transcription": self.transcription }
+        
+        return json
+        
     def _get_methods_to_modes_dict( self, modes_to_methods_dict ):
         
         methods_to_modes_dict = { }
@@ -77,9 +83,12 @@ class MultiModalTranscriber:
             default_method = self.modes_to_methods_dict[ transcription_mode_default ]
             method_name = self.modes_to_methods_dict.get( first_four_words, default_method )
             
-            # Pull the first four words before we send them to be transcribed.
-            raw_transcription = " ".join( words[ 4: ] )
-        
+            # Conditionally pull the first four words before we send them to be transcribed.
+            if first_four_words in self.modes_to_methods_dict:
+                raw_transcription = " ".join( words[ 4: ] )
+            else:
+                print( "first_four_words [{}] not in modes_to_methods_dict".format( first_four_words ) )
+                
         print( "method_name:", method_name )
         mode = self.methods_to_modes_dict[ method_name ]
         if self.debug: print( "Calling [{}] w/ mode [{}]...".format( method_name, mode ) )
@@ -165,8 +174,13 @@ if __name__ == "__main__":
     # transcription = "DOM fully loaded and parsed, Checking permissions.... Done!"
     # transcription = "transcription mode pros punctuation Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
     # transcription = "transcription mode pros email r-i-c-a-r-d-o dot f-e-l-i-p-e dot r-u-i-z at gmail.com"
-    transcription = "transcription mode pros punctuation Here 's my email address. r-i-c-a-r-d-o.f-e-l-i-p-e-.r-u-i-z at gmail.com."
-    mode = MultiModalTranscriber( transcription, debug=False )
-    print( mode )
+    # transcription = "transcription mode pros punctuation Here's my email address. r-i-c-a-r-d-o.f-e-l-i-p-e-.r-u-i-z at gmail.com."
+    transcription = "blah blah blah"
+    transcriber = MultiModalTranscriber( transcription, debug=False )
+    print( transcriber )
+    
+    print( transcriber.get_json() )
+    print( type( transcriber.get_json() ) )
+    print( transcriber.get_json()[ "transcription" ] )
     
     
