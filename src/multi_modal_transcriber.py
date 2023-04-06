@@ -2,27 +2,27 @@ import re
 
 import util as du # du = "deepily's utils"
 
-# Currently, comma, all transcription mode descriptors are four words long.
+# Currently, comma, all transcription mode descriptors are three words long.
 # This will become important or more important in the future.
-transcription_mode_prose_raw          = "transcription mode pros raw"
-transcription_mode_prose_email        = "transcription mode prose email"
-transcription_mode_prose_punctuation  = "transcription mode pros punctuation"
-transcription_mode_prose_proofread    = "transcription mode pros proofread"
-transcription_mode_python_punctuation = "transcription mode python punctuation"
-transcription_mode_python_proofread   = "transcription mode python proofread"
-transcription_mode_default            = transcription_mode_prose_raw
+transcription_mode_text_raw          = "multimodal text raw"
+transcription_mode_text_email        = "multimodal text email"
+transcription_mode_text_punctuation  = "multimodal text punctuation"
+transcription_mode_text_proofread    = "multimodal text proofread"
+transcription_mode_python_punctuation = "multimodal python punctuation"
+transcription_mode_python_proofread   = "multimodal python proofread"
+transcription_mode_default            = transcription_mode_text_punctuation
 
 modes_to_methods_dict = {
-     transcription_mode_prose_raw          : "transcribe_prose_raw",
-     transcription_mode_prose_email        : "transcribe_prose_email",
-     transcription_mode_prose_punctuation  : "transcribe_prose_punctuation",
-     transcription_mode_prose_proofread    : "transcribe_prose_proofread",
-     transcription_mode_python_punctuation : "transcribe_python_punctuation",
-     transcription_mode_python_proofread   : "transcribe_python_proofread"
+     transcription_mode_text_raw          : "munge_text_raw",
+     transcription_mode_text_email        : "munge_text_email",
+     transcription_mode_text_punctuation  : "munge_text_punctuation",
+     transcription_mode_text_proofread    : "munge_text_proofread",
+     transcription_mode_python_punctuation : "munge_python_punctuation",
+     transcription_mode_python_proofread   : "munge_python_proofread"
 }
 class MultiModalTranscriber:
 
-    def __init__(self, raw_transcription, config_path="conf/modes-vox.json", debug=True ):
+    def __init__(self, raw_transcription, config_path="conf/modes-vox.json", debug=False ):
 
         self.debug                  = debug
         self.config_path            = config_path
@@ -67,27 +67,34 @@ class MultiModalTranscriber:
         return methods_to_modes_dict
     def _transcribe( self, raw_transcription ):
         
+        # ¡OJO! super special ad hoc prefix cleanup due to the use of multi, please don't do this often!
+        raw_transcription = self._adhoc_prefix_cleanup( raw_transcription )
+        
         # knock everything down to alphabetic characters and spaces so that we can analyze what transcription mode we're in.
         regex = re.compile( '[^a-zA-Z ]' )
-        transcription = regex.sub( '', raw_transcription ).lower()
+        transcription = regex.sub( '', raw_transcription ).replace( "-", " " ).lower()
+
+        
         print( transcription )
         words = transcription.split()
+
+        prefix_count = len( transcription_mode_default.split() )
         
-        # If we have fewer than four words, just assign default transcription mode.
-        if len( words ) < 4:
+        # If we have fewer than 'prefix_count' words, just assign default transcription mode.
+        if len( words ) < prefix_count:
             method_name = self.modes_to_methods_dict[ transcription_mode_default ]
         else:
             
-            first_four_words = " ".join( words[ 0:4 ] )
-            print( "first_four_words:", first_four_words )
+            first_words = " ".join( words[ 0:prefix_count ] )
+            print( "first_words:", first_words )
             default_method = self.modes_to_methods_dict[ transcription_mode_default ]
-            method_name = self.modes_to_methods_dict.get( first_four_words, default_method )
+            method_name = self.modes_to_methods_dict.get( first_words, default_method )
             
             # Conditionally pull the first four words before we send them to be transcribed.
-            if first_four_words in self.modes_to_methods_dict:
-                raw_transcription = " ".join( words[ 4: ] )
+            if first_words in self.modes_to_methods_dict:
+                raw_transcription = " ".join( words[ prefix_count: ] )
             else:
-                print( "first_four_words [{}] not in modes_to_methods_dict".format( first_four_words ) )
+                print( "first_words [{}] not in modes_to_methods_dict".format( first_words ) )
                 
         print( "method_name:", method_name )
         mode = self.methods_to_modes_dict[ method_name ]
@@ -96,6 +103,16 @@ class MultiModalTranscriber:
         
         return result
         
+    def _adhoc_prefix_cleanup( self, raw_transcription ):
+        
+        # I'm sure a regular expression would do a much more concise job of this, but I'm not sure how to do it QUICKLY right now
+        prefixes = [ "Multimodal", "multi-mode", "Multi-mode", "multimode", "Multimode" ]
+        for prefix in prefixes:
+            if raw_transcription.startswith( prefix ):
+                raw_transcription = raw_transcription.replace( prefix, "multimodal" )
+                break
+                
+        return raw_transcription
     def _remove_spaces_around_punctuation( self, prose ):
     
         # Remove extra spaces.
@@ -118,11 +135,11 @@ class MultiModalTranscriber:
         prose = prose.replace( ' "', '"' )
         
         return prose
-    def transcribe_prose_raw( self, raw_transcription, mode ):
+    def munge_text_raw( self, raw_transcription, mode ):
         
         return raw_transcription, mode
     
-    def transcribe_prose_email( self, raw_transcription, mode ):
+    def munge_text_email( self, raw_transcription, mode ):
     
         # Add special considerations for the erratic nature of email transcriptions when received raw from the whisper.
         prose = raw_transcription.replace( ".", " dot " )
@@ -140,9 +157,13 @@ class MultiModalTranscriber:
         # Remove extra spaces
         prose = prose.replace( " ", "" )
         
+        # Add back in the dot: yet another ad hoc fix up
+        if not prose.endswith( ".com" ) and prose.endswith( "com" ):
+            prose = prose.replace( "com", ".com" )
+        
         return prose, mode
     
-    def transcribe_prose_punctuation( self, raw_transcription, mode ):
+    def munge_text_punctuation( self, raw_transcription, mode ):
         
         prose = re.sub( r'[,.]', '', raw_transcription.lower() )
 
@@ -155,27 +176,28 @@ class MultiModalTranscriber:
         
         return prose, mode
     
-    def transcribe_prose_proofread( self, raw_transcription, mode ):
+    def munge_text_proofread( self, raw_transcription, mode ):
     
         prose = re.sub( r'[,.]', '', raw_transcription.lower() )
         
         return raw_transcription, mode
     
-    def transcribe_python_punctuation( self, raw_transcription, mode ):
+    def munge_python_punctuation( self, raw_transcription, mode ):
         
         return raw_transcription, mode
     
-    def transcribe_python_proofread( self, raw_transcription, mode ):
+    def munge_python_proofread( self, raw_transcription, mode ):
         
         return raw_transcription, mode
     
 if __name__ == "__main__":
 
     # transcription = "DOM fully loaded and parsed, Checking permissions.... Done!"
-    # transcription = "transcription mode pros punctuation Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
-    # transcription = "transcription mode pros email r-i-c-a-r-d-o dot f-e-l-i-p-e dot r-u-i-z at gmail.com"
-    # transcription = "transcription mode pros punctuation Here's my email address. r-i-c-a-r-d-o.f-e-l-i-p-e-.r-u-i-z at gmail.com."
-    transcription = "blah blah blah"
+    # transcription = "multi-mode text raw Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
+    # transcription = "multi-mode text punctuation Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
+    transcription = "multi-modal text email r-i-c-a-r-d-o dot f-e-l-i-p-e dot r-u-i-z at gmail.com"
+    # transcription = "multi-mode text punctuation Here's my email address. r-i-c-a-r-d-o.f-e-l-i-p-e-.r-u-i-z at gmail.com."
+    # transcription = "blah blah blah"
     transcriber = MultiModalTranscriber( transcription, debug=False )
     print( transcriber )
     
