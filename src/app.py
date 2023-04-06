@@ -37,6 +37,21 @@ def ask_ai_text():
 
     return response
 
+@app.route( "/api/proofread" )
+def proofread():
+    
+    question = request.args.get( "question" )
+
+    timer = sw.Stopwatch()
+    preamble = "You are an expert proofreader. Correct grammar. Correct tense. Correct spelling. Correct contractions. Correct punctuation. Correct capitalization. Correct word choice. Correct sentence structure. Correct paragraph structure. Correct paragraph length. Correct paragraph flow. Correct paragraph topic. Correct paragraph tone. Correct paragraph style. Correct paragraph voice. Correct paragraph mood. Correct paragraph theme."
+    result = genie_client.ask_chat_gpt_text( question, preamble=preamble )
+    print( result )
+    timer.print( "Proofread", use_millis=True )
+
+    response = make_response( result )
+    response.headers.add( "Access-Control-Allow-Origin", "*" );
+    
+    return response
 @app.route( "/api/upload-and-transcribe-mp3", methods=[ "POST" ] )
 def upload_and_transcribe_mp3_file():
 

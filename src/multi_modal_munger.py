@@ -206,7 +206,7 @@ if __name__ == "__main__":
     # transcription = "multi-modal text email r-i-c-a-r-d-o dot f-e-l-i-p-e dot r-u-i-z at gmail.com"
     # transcription = "multi-mode text punctuation Here's my email address. r-i-c-a-r-d-o.f-e-l-i-p-e-.r-u-i-z at gmail.com."
     # transcription = "blah blah blah"
-    transcription = "multimodal text proofread I go to market yesterday comma Tonight I go to the dance, comma, and I'm very happy that exclamation point."
+    # transcription = "multimodal text proofread i go to market yesterday comma Tonight i go to the dance, comma, and im very happy that exclamation point."
     transcription = "multimodal editor proof"
     munger = MultiModalMunger( transcription, debug=False )
     print( munger, end="\n\n" )
