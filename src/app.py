@@ -9,6 +9,7 @@ import whisper
 import base64
 
 import genie_client as gc
+import multi_modal_transcriber as mmt
 
 app = Flask( __name__ )
 
@@ -38,14 +39,14 @@ def ask_ai_text():
 @app.route( "/api/upload-and-transcribe-mp3", methods=[ "POST" ] )
 def upload_and_transcribe_mp3_file():
 
-    print( type( request.data ) )
-    print( len( request.data ) )
-    print( request.data[ 0:32 ] )
+    # print( type( request.data ) )
+    # print( len( request.data ) )
+    # print( request.data[ 0:32 ] )
 
     decoded_audio = base64.b64decode( request.data )
-    print( type( decoded_audio ) )
-    print( len( decoded_audio ) )
-    print( decoded_audio[ 0:32] )
+    # print( type( decoded_audio ) )
+    # print( len( decoded_audio ) )
+    # print( decoded_audio[ 0:32] )
 
     path = gc.docker_path.format( "recording.mp3" )
 
@@ -74,8 +75,10 @@ def upload_and_transcribe_mp3_file():
     result = result[ "text" ].strip()
 
     print( "Result: [{}]".format( result ) )
+    
+    munger = mmt.MultiModalTranscriber( result )
 
-    return result
+    return munger.get_json()
 
 @app.route( "/api/upload-and-transcribe-wav", methods=[ "POST" ] )
 def upload_and_transcribe_wav_file():
