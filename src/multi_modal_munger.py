@@ -97,16 +97,14 @@ class MultiModalMunger:
             else:
                 print( "first_words [{}] not in modes_to_methods_dict".format( first_words ) )
                 
-        print( "method_name:", method_name )
         mode = self.methods_to_modes_dict[ method_name ]
-        print( "mode:", mode )
         if self.debug: print( "Calling [{}] w/ mode [{}]...".format( method_name, mode ) )
         result, mode = getattr( self, method_name )( raw_transcription, mode )
-        print( "result[ 0 ]:", result[ 0 ] )
-        print( "result[ 1 ]:", result[ 1 ] )
-        print( "mode:", mode )
+        if self.debug:
+            print( "result after:", result )
+            print( "mode:", mode )
         
-        return result[ 0 ], mode
+        return result, mode
         
     def _adhoc_prefix_cleanup( self, raw_transcription ):
         
@@ -183,7 +181,7 @@ class MultiModalMunger:
     
     def munge_text_proofread( self, raw_transcription, mode ):
     
-        transcription = self.munge_text_punctuation( raw_transcription, mode )
+        transcription, mode = self.munge_text_punctuation( raw_transcription, mode )
         
         return transcription, mode
     
@@ -209,18 +207,20 @@ if __name__ == "__main__":
     # transcription = "multi-mode text punctuation Here's my email address. r-i-c-a-r-d-o.f-e-l-i-p-e-.r-u-i-z at gmail.com."
     # transcription = "blah blah blah"
     transcription = "multimodal text proofread I go to market yesterday comma Tonight I go to the dance, comma, and I'm very happy that exclamation point."
+    transcription = "multimodal editor proof"
     munger = MultiModalMunger( transcription, debug=False )
-    print( munger )
+    print( munger, end="\n\n" )
+    print( munger.get_json(), end="\n\n" )
     
-    print( "munger.get_json()", munger.get_json() )
-    print( "type( munger.get_json() )", type( munger.get_json() ) )
-    print( munger.get_json()[ "transcription" ] )
-    print( munger.is_text_proofread() )
+    # print( "munger.get_json()", munger.get_json() )
+    # print( "type( munger.get_json() )", type( munger.get_json() ) )
+    # print( munger.get_json()[ "transcription" ] )
+    # print( munger.is_text_proofread() )
 
-    genie_client = gc.GenieClient( debug=True )
-    timer = sw.Stopwatch()
-    preamble = "You are an expert proofreader. Correct grammar. Correct tense. Correct spelling. Correct contractions. Correct punctuation. Correct capitalization. Correct word choice. Correct sentence structure. Correct paragraph structure. Correct paragraph length. Correct paragraph flow. Correct paragraph topic. Correct paragraph tone. Correct paragraph style. Correct paragraph voice. Correct paragraph mood. Correct paragraph theme."
-    response = genie_client.ask_chat_gpt_text( munger.transcription, preamble=preamble )
-    print( response )
-    timer.print( "Proofread", use_millis=True )
+    # genie_client = gc.GenieClient( debug=True )
+    # timer = sw.Stopwatch()
+    # preamble = "You are an expert proofreader. Correct grammar. Correct tense. Correct spelling. Correct contractions. Correct punctuation. Correct capitalization. Correct word choice. Correct sentence structure. Correct paragraph structure. Correct paragraph length. Correct paragraph flow. Correct paragraph topic. Correct paragraph tone. Correct paragraph style. Correct paragraph voice. Correct paragraph mood. Correct paragraph theme."
+    # response = genie_client.ask_chat_gpt_text( munger.transcription, preamble=preamble )
+    # print( response )
+    # timer.print( "Proofread", use_millis=True )
     
