@@ -89,16 +89,21 @@ class MultiModalMunger:
             first_words = " ".join( words[ 0:prefix_count ] )
             print( "first_words:", first_words )
             default_method = self.modes_to_methods_dict[ transcription_mode_default ]
-            method_name = self.modes_to_methods_dict.get( first_words, default_method )
+            method_name    = self.modes_to_methods_dict.get( first_words, default_method )
             
             # Conditionally pull the first four words before we send them to be transcribed.
             if first_words in self.modes_to_methods_dict:
-                raw_transcription = " ".join( words[ prefix_count: ] )
+                # raw_transcription = " ".join( words[ prefix_count: ] )
+                raw_words = raw_transcription.split()
+                raw_transcription = " ".join( raw_words[ prefix_count: ] )
             else:
                 print( "first_words [{}] not in modes_to_methods_dict".format( first_words ) )
                 
         mode = self.methods_to_modes_dict[ method_name ]
-        if self.debug: print( "Calling [{}] w/ mode [{}]...".format( method_name, mode ) )
+        if self.debug:
+            print( "Calling [{}] w/ mode [{}]...".format( method_name, mode ) )
+            print( "raw_transcription [{}]".format( raw_transcription ) )
+            
         result, mode = getattr( self, method_name )( raw_transcription, mode )
         if self.debug:
             print( "result after:", result )
@@ -109,12 +114,16 @@ class MultiModalMunger:
     def _adhoc_prefix_cleanup( self, raw_transcription ):
         
         # I'm sure a regular expression would do a much more concise job of this, but I'm not sure how to do it QUICKLY right now
-        prefixes = [ "Multimodal", "multi-mode", "Multi-mode", "multimode", "Multimode" ]
-        for prefix in prefixes:
-            if raw_transcription.startswith( prefix ):
-                raw_transcription = raw_transcription.replace( prefix, "multimodal" )
-                break
-                
+        # prefixes = [ "Multimodal", "multi-mode", "Multi-mode", "multimode", "Multimode" ]
+        # for prefix in prefixes:
+        #     if raw_transcription.startswith( prefix ):
+        #         raw_transcription = raw_transcription.replace( prefix, "multimodal" )
+        #         break
+        
+        # Find the first instance of "multi________" and replace it with "multimodal".
+        multimodal_regex  = re.compile( "multi([ -]){0,1}mod[ae]l", re.IGNORECASE )
+        raw_transcription = multimodal_regex.sub( "multimodal", raw_transcription, 1 )
+        
         return raw_transcription
     def _remove_spaces_around_punctuation( self, prose ):
     
@@ -146,8 +155,12 @@ class MultiModalMunger:
     
         # Add special considerations for the erratic nature of email transcriptions when received raw from the whisper.
         prose = raw_transcription.replace( ".", " dot " )
+        print( "raw_transcription:", raw_transcription )
+        print( "prose:", prose )
         
         prose = re.sub( r'[,]', '', prose.lower() )
+        
+        # phonetic spellings often contain -'s
         prose = prose.replace( "-", "" )
 
         # Translate punctuation mark words into single characters.
@@ -202,13 +215,14 @@ if __name__ == "__main__":
     # transcription = "DOM fully loaded and parsed, Checking permissions.... Done!"
     # transcription = "multi-mode text raw Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
     # transcription = "multi-mode text proofread Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
-    # transcription = "multi-mode text punctuation Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
+    # transcription = "Multi-mode text punctuation Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
     # transcription = "multi-modal text email r-i-c-a-r-d-o dot f-e-l-i-p-e dot r-u-i-z at gmail.com"
+    transcription = "multi model text email r-i-c-a-r-d-o-. f-e-l-i-p-e-. r-u-i-z at gmail. com"
     # transcription = "multi-mode text punctuation Here's my email address. r-i-c-a-r-d-o.f-e-l-i-p-e-.r-u-i-z at gmail.com."
     # transcription = "blah blah blah"
     # transcription = "multimodal text proofread i go to market yesterday comma Tonight i go to the dance, comma, and im very happy that exclamation point."
-    transcription = "multimodal editor proof"
-    munger = MultiModalMunger( transcription, debug=False )
+    # transcription = "multimodal editor proof"
+    munger = MultiModalMunger( transcription, debug=True )
     print( munger, end="\n\n" )
     print( munger.get_json(), end="\n\n" )
     

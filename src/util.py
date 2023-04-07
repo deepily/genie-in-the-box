@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import regex as re
 
 def get_name_value_pairs( arg_list, debug=False ):
 
@@ -99,3 +100,19 @@ def get_file_as_dictionary( path, lower_case=False, debug=False ):
 
 
 
+if __name__ == "__main__":
+
+    # raw = "r-i-c-a-r-d-o dot f-e-l-i-p-e dot r-u-i-z at gmail.com"
+    # dashes_regex = re.compile( "[a-z]-+", re.IGNORECASE )
+    # # x = dashes_regex.sub( "[a-z]", raw )
+    # x = dashes_regex.match( raw )
+    # print( x )
+    raw_txt = [  "multimodel text email", "MulTi mOdel text email", "MulTi-mOdel text email", "MulTi-mOdal text email" ]
+
+    multimodal_regex = re.compile( "multi([ -]){0,1}mod[ae]l", re.IGNORECASE )
+    for i in range( 0, len( raw_txt ) ):
+        txt = raw_txt[ i ]
+        x = multimodal_regex.sub( "multimodal", txt, 1 )
+        print( x )
+        
+    # regex = re.compile( r"(\w+)(\s+)(\w+)" )
