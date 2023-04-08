@@ -32,7 +32,10 @@ class MultiModalMunger:
 
         # load transcription munging map and handle a problematic right hand value: "space"
         self.punctuation            = du.get_file_as_dictionary( "conf/translation-dictionary.map", lower_case=True, debug=self.debug )
-        self.punctuation[ "space" ] = " "
+        self.domain_names           = du.get_file_as_dictionary( "conf/domain-names-fixup.map", lower_case=True )
+        
+        # We probably don't need this anymore since I started using type symbols to delimit white space
+        # self.punctuation[ "space" ] = " "
         
         self.modes_to_methods_dict  = modes_to_methods_dict
         self.methods_to_modes_dict  = self._get_methods_to_modes_dict( modes_to_methods_dict )
@@ -128,6 +131,7 @@ class MultiModalMunger:
     def _remove_spaces_around_punctuation( self, prose ):
     
         # Remove extra spaces.
+        prose = prose.replace( " / ", "/" )
         prose = prose.replace( "[ ", "[" )
         prose = prose.replace( " ]", "]" )
     
@@ -154,11 +158,17 @@ class MultiModalMunger:
     def munge_text_email( self, raw_transcription, mode ):
     
         # Add special considerations for the erratic nature of email transcriptions when received raw from the whisper.
-        prose = raw_transcription.replace( ".", " dot " )
-        print( "raw_transcription:", raw_transcription )
-        print( "prose:", prose )
+        # prose = raw_transcription.replace( ".", " dot " )
+        print( "BEFORE raw_transcription:", raw_transcription )
+        prose = raw_transcription.lower()
         
-        prose = re.sub( r'[,]', '', prose.lower() )
+        # Encode domain names
+        for key, value in self.domain_names.items():
+            prose = prose.replace( key, value )
+            
+        print( " AFTER raw_transcription:", raw_transcription )
+        
+        prose = re.sub( r'[,]', '', prose )
         
         # phonetic spellings often contain -'s
         prose = prose.replace( "-", "" )
@@ -174,18 +184,31 @@ class MultiModalMunger:
         prose = prose.replace( " ", "" )
         
         # Add back in the dot: yet another ad hoc fix up
-        if not prose.endswith( ".com" ) and prose.endswith( "com" ):
-            prose = prose.replace( "com", ".com" )
+        # if not prose.endswith( ".com" ) and prose.endswith( "com" ):
+        #     prose = prose.replace( "com", ".com" )
         
         return prose, mode
     
     def munge_text_punctuation( self, raw_transcription, mode ):
-        
-        prose = re.sub( r'[,.]', '', raw_transcription.lower() )
+    
+        print( "BEFORE raw_transcription:", raw_transcription )
+        prose = raw_transcription.lower()
+    
+        # Encode domain names
+        for key, value in self.domain_names.items():
+            prose = prose.replace( key, value )
 
+        print( "0 AFTER prose:", prose )
+        
+        prose = re.sub( r'[,.]', '', prose )
+
+        print( "1 AFTER prose:", prose )
+        
         # Translate punctuation mark words into single characters.
         for key, value in self.punctuation.items():
             prose = prose.replace( key, value )
+            
+        print( "2 AFTER prose:", prose )
 
         # Remove extra spaces.
         prose = self._remove_spaces_around_punctuation( prose )
