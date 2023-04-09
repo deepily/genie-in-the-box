@@ -80,6 +80,9 @@ def get_file_as_dictionary( path, lower_case=False, omit_comments=True, debug=Fa
     lines = get_file_as_list( path, lower_case=lower_case )
 
     lines_as_dict = { }
+
+    # Delete the first and last type symbols if they're there
+    pipe_regex = re.compile( "^\||\|$" )
     
     for line in lines:
 
@@ -91,7 +94,9 @@ def get_file_as_dictionary( path, lower_case=False, omit_comments=True, debug=Fa
         if len( pair ) > 1:
             if debug: print( "[{}] = [{}]".format( pair[ 0 ], pair[ 1 ] ) )
             # Only pull pipes after the key and values have been stripped.
-            lines_as_dict[ pair[ 0 ].strip().replace( "|", "" ) ] = pair[ 1 ].strip().replace( "|", "" )
+            p0 = pipe_regex.sub( "", pair[ 0 ].strip() )
+            p1 = pipe_regex.sub( "", pair[ 1 ].strip() )
+            lines_as_dict[ p0 ] = p1
         else:
             if debug: print( "ERROR: [{}]".format( pair[ 0 ] ) )
     
@@ -117,3 +122,13 @@ if __name__ == "__main__":
     # regex = re.compile( r"(\w+)(\s+)(\w+)" )
     
     #
+    regex_str = "^\||\|$"
+    regex_pattern = re.compile( regex_str )
+    print( regex_pattern.sub( "", "|1|2|" ) )
+    print( "|1|2|".replace( regex_str, "" ) )
+    
+    xlation_dict = get_file_as_dictionary( "conf/translation-dictionary.map", debug=True )
+    print( "xlation_dict[ 'pipe' ] = [{}]".format( xlation_dict[ "pipe" ] ) )
+    print( "xlation_dict[ 'space' ] = [{}]".format( xlation_dict[ "space" ] ) )
+    print( "xlation_dict[ ' dot com' ] = [{}]".format( xlation_dict[ " dot com" ] ) )
+    print( "xlation_dict[ 'comma ' ] = [{}]".format( xlation_dict[ "comma " ] ) )
