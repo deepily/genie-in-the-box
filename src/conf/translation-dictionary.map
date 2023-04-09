@@ -28,21 +28,21 @@
 | dot net dot au = .net.au
 | dot org dot au = .org.au
 
-equals equals equals = |===|
-not equals equals = |!==|
-not equal equal = |!==|
-equals equals = |==|
-does not equal = |!=|
-is not equal = |!=|
-not equals = |!=|
-not equal = |!=|
-equals sign equals sign equals sign = |===|
-equal sign equal sign equal sign = |===|
-equals sign equals sign = |==|
-equal sign equal sign = |==|
-equals sign = |=|
-equal sign = |=|
-equals = |=|
+equals equals equals = ===
+not equals equals = !==
+not equal equal = !==
+equals equals = ==
+does not equal = !=
+is not equal = !=
+not equals = !=
+not equal = !=
+equals sign equals sign equals sign = ===
+equal sign equal sign equal sign = ===
+equals sign equals sign = ==
+equal sign equal sign = ==
+equals sign = =
+equal sign = =
+equals = =
 
 period = .
 dot dot dot = ...
@@ -50,7 +50,7 @@ dot dot slash = ../
 dot dot = ..
 dot = .
 ellipsis = ...
-comma = ,
+|comma | = ,
 semicolon = ;
 colon = :
 colin = :
@@ -105,10 +105,8 @@ at sign = @
 caret = ^
 underscore = _
 equals sign = =
-equal = =
-equals = =
 tilde = ~
-pipe = |
+pipe = |||
 new line = NL
 newline = NL
 deaf = def
