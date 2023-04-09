@@ -28,6 +28,22 @@
 | dot net dot au = .net.au
 | dot org dot au = .org.au
 
+equals equals equals = |===|
+not equals equals = |!==|
+not equal equal = |!==|
+equals equals = |==|
+does not equal = |!=|
+is not equal = |!=|
+not equals = |!=|
+not equal = |!=|
+equals sign equals sign equals sign = |===|
+equal sign equal sign equal sign = |===|
+equals sign equals sign = |==|
+equal sign equal sign = |==|
+equals sign = |=|
+equal sign = |=|
+equals = |=|
+
 period = .
 dot dot dot = ...
 dot dot slash = ../
@@ -69,6 +85,9 @@ close brace = }
 closed brace = }
 open angle bracket = <
 close angle bracket = >
+less than = <
+less then = <
+greater than = >
 ampersand = &
 asterisk = *
 plus sign = +
@@ -90,9 +109,6 @@ equal = =
 equals = =
 tilde = ~
 pipe = |
-less than = <
-less then = <
-greater than = >
 new line = NL
 newline = NL
 deaf = def
