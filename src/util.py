@@ -73,24 +73,23 @@ def get_file_as_json( path ):
     with open( path, "r" ) as file:
         return json.load( file )
    
-def get_file_as_dictionary( path, lower_case=False, debug=False ):
+def get_file_as_dictionary( path, lower_case=False, omit_comments=True, debug=False ):
     
     # ¡OJO! The pipe symbol is a reserved character used to delimit white space. See the keywords "space" or "| at |" below.
     
     lines = get_file_as_list( path, lower_case=lower_case )
 
-    # Sorting was breaking order dependence, as in "dot", "dot dot", and "dot dot dot", etc., which should appear in reverse order,
-    # most restrictive first.
-    # lines.sort()
-
     lines_as_dict = { }
-    # lines_as_dict[ "space" ] = " "
+    
+    for line in lines:
 
-    for lines in lines:
-
-        pair = lines.strip().split( " = " )
+        # Skip comments: if a line starts with # or // then skip it
+        if omit_comments and ( line.startswith( "#" ) or line.startswith( "//" ) ):
+            continue
+            
+        pair = line.strip().split( " = " )
         if len( pair ) > 1:
-            if debug: print( "[{}] = [{}]".format( pair[ 0 ], pair[ 1 ].strip() ) )
+            if debug: print( "[{}] = [{}]".format( pair[ 0 ], pair[ 1 ] ) )
             # Only pull pipes after the key and values have been stripped.
             lines_as_dict[ pair[ 0 ].strip().replace( "|", "" ) ] = pair[ 1 ].strip().replace( "|", "" )
         else:
@@ -116,3 +115,5 @@ if __name__ == "__main__":
         print( x )
         
     # regex = re.compile( r"(\w+)(\s+)(\w+)" )
+    
+    #
