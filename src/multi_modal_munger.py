@@ -116,13 +116,6 @@ class MultiModalMunger:
         
     def _adhoc_prefix_cleanup( self, raw_transcription ):
         
-        # I'm sure a regular expression would do a much more concise job of this, but I'm not sure how to do it QUICKLY right now
-        # prefixes = [ "Multimodal", "multi-mode", "Multi-mode", "multimode", "Multimode" ]
-        # for prefix in prefixes:
-        #     if raw_transcription.startswith( prefix ):
-        #         raw_transcription = raw_transcription.replace( prefix, "multimodal" )
-        #         break
-        
         # Find the first instance of "multi________" and replace it with "multimodal".
         multimodal_regex  = re.compile( "multi([ -]){0,1}mod[ae]l", re.IGNORECASE )
         raw_transcription = multimodal_regex.sub( "multimodal", raw_transcription, 1 )
@@ -142,10 +135,10 @@ class MultiModalMunger:
         prose = prose.replace( "( ", "(" )
         prose = prose.replace( " .", "." )
         prose = prose.replace( " ,", "," )
+        prose = prose.replace( "??", "?" )
         prose = prose.replace( " ?", "?" )
-        # prose = prose.replace( "??", "?" )
+        prose = prose.replace( "!!", "!" )
         prose = prose.replace( " !", "!" )
-        # prose = prose.replace( "!!", "!" )
         prose = prose.replace( " :", ":" )
         prose = prose.replace( " ;", ";" )
         prose = prose.replace( ' "', '"' )
@@ -191,25 +184,19 @@ class MultiModalMunger:
     
     def munge_text_punctuation( self, raw_transcription, mode ):
     
-        print( "BEFORE raw_transcription:", raw_transcription )
+        # print( "BEFORE raw_transcription:", raw_transcription )
         prose = raw_transcription.lower()
     
         # Encode domain names
         for key, value in self.domain_names.items():
             prose = prose.replace( key, value )
 
-        print( "0 AFTER prose:", prose )
-        
         prose = re.sub( r'[,.]', '', prose )
 
-        print( "1 AFTER prose:", prose )
-        
         # Translate punctuation mark words into single characters.
         for key, value in self.punctuation.items():
             prose = prose.replace( key, value )
             
-        print( "2 AFTER prose:", prose )
-
         # Remove extra spaces.
         prose = self._remove_spaces_around_punctuation( prose )
         
