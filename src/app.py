@@ -54,7 +54,11 @@ def proofread():
     return response
 @app.route( "/api/upload-and-transcribe-mp3", methods=[ "POST" ] )
 def upload_and_transcribe_mp3_file():
-
+    
+    print( "upload_and_transcribe_mp3_file() called" )
+    
+    prefix = request.args.get( "prefix" )
+    print( "prefix: [{}]".format( prefix ) )
     # print( type( request.data ) )
     # print( len( request.data ) )
     # print( request.data[ 0:32 ] )
@@ -92,7 +96,7 @@ def upload_and_transcribe_mp3_file():
 
     print( "Result: [{}]".format( result ) )
     
-    munger = mmm.MultiModalMunger( result )
+    munger = mmm.MultiModalMunger( result, prefix=prefix )
 
     if munger.is_text_proofread():
         

@@ -24,11 +24,12 @@ modes_to_methods_dict = {
 }
 class MultiModalMunger:
 
-    def __init__(self, raw_transcription, config_path="conf/modes-vox.json", debug=False ):
+    def __init__(self, raw_transcription, prefix="", config_path="conf/modes-vox.json", debug=False ):
 
         self.debug                  = debug
         self.config_path            = config_path
         self.raw_transcription      = raw_transcription
+        self.prefix                 = prefix
 
         # load transcription munging map and handle a problematic right hand value: "space"
         self.punctuation            = du.get_file_as_dictionary( "conf/translation-dictionary.map", lower_case=True, debug=self.debug )
@@ -52,13 +53,14 @@ class MultiModalMunger:
 
         summary = """
                        Mode: [{}]
+                     Prefix: [{}]
           Raw transcription: [{}]
-        Final transcription: [{}]""".format( self.mode, self.raw_transcription, self.transcription )
+        Final transcription: [{}]""".format( self.mode, self.prefix, self.raw_transcription, self.transcription )
         return summary
 
     def get_json( self ):
         
-        json = { "mode": self.mode, "raw_transcription": self.raw_transcription, "transcription": self.transcription }
+        json = { "mode": self.mode, "prefix": self.prefix, "raw_transcription": self.raw_transcription, "transcription": self.transcription }
         
         return json
         
