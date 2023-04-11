@@ -452,16 +452,16 @@ if __name__ == "__main__":
     print( "Starting GenieClient in [{}]...".format( os.getcwd() ) )
     cli_args = util.get_name_value_pairs( sys.argv )
 
-    runtime_context        = cli_args.get( "runtime_context", "docker" )
-    write_method           = cli_args.get( "write_method", "flask" )
+    # runtime_context        = cli_args.get( "runtime_context", "docker" )
+    # write_method           = cli_args.get( "write_method", "flask" )
     default_mode           = cli_args.get( "default_mode", "transcribe_and_clean_prose" )
     recording_timeout      = int( cli_args.get( "recording_timeout", 30 ) )
     record_once_on_startup = cli_args.get( "record_once_on_startup", "False" ) == "True"
 
     gg = GenieGui(
         default_mode=default_mode,
-        runtime_context=runtime_context,
-        write_method=write_method,
+        # runtime_context=runtime_context,
+        # write_method=write_method,
         recording_timeout=recording_timeout,
         record_once_on_startup=record_once_on_startup
     )
@@ -469,4 +469,6 @@ if __name__ == "__main__":
     # gg.genie_client.do_gpt_prose_explanation_from_clipboard()
 
     # gg.genie_client.do_gpt_prose_explanation_from_clipboard()
-    sys.exit( 0 )
+    
+    #
+    # sys.exit( 0 )
