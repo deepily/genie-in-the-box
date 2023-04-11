@@ -121,6 +121,9 @@ class MultiModalMunger:
         # Find the first instance of "multi________" and replace it with "multimodal".
         multimodal_regex  = re.compile( "multi([ -]){0,1}mod[ae]l", re.IGNORECASE )
         raw_transcription = multimodal_regex.sub( "multimodal", raw_transcription, 1 )
+
+        multimodal_regex = re.compile( "t[ao]ggle", re.IGNORECASE )
+        raw_transcription = multimodal_regex.sub( "toggle", raw_transcription, 1 )
         
         return raw_transcription
     def _remove_spaces_around_punctuation( self, prose ):
