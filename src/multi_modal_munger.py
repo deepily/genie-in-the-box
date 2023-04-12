@@ -15,10 +15,11 @@ transcription_mode_python_proofread   = "multimodal python proofread"
 transcription_mode_default            = transcription_mode_text_punctuation
 
 modes_to_methods_dict = {
-     transcription_mode_text_raw          : "munge_text_raw",
-     transcription_mode_text_email        : "munge_text_email",
-     transcription_mode_text_punctuation  : "munge_text_punctuation",
-     transcription_mode_text_proofread    : "munge_text_proofread",
+    
+     transcription_mode_text_raw           : "munge_text_raw",
+     transcription_mode_text_email         : "munge_text_email",
+     transcription_mode_text_punctuation   : "munge_text_punctuation",
+     transcription_mode_text_proofread     : "munge_text_proofread",
      transcription_mode_python_punctuation : "munge_python_punctuation",
      transcription_mode_python_proofread   : "munge_python_proofread"
 }
@@ -34,9 +35,6 @@ class MultiModalMunger:
         # load transcription munging map and handle a problematic right hand value: "space"
         self.punctuation            = du.get_file_as_dictionary( "conf/translation-dictionary.map", lower_case=True, debug=self.debug )
         self.domain_names           = du.get_file_as_dictionary( "conf/domain-names-fixup.map", lower_case=True )
-        
-        # We probably don't need this anymore since I started using type symbols to delimit white space
-        # self.punctuation[ "space" ] = " "
         
         self.modes_to_methods_dict  = modes_to_methods_dict
         self.methods_to_modes_dict  = self._get_methods_to_modes_dict( modes_to_methods_dict )
