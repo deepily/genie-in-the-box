@@ -96,13 +96,20 @@ class MultiModalMunger:
             
             # Conditionally pull the first four words before we send them to be transcribed.
             if first_words in self.modes_to_methods_dict:
-                # raw_transcription = " ".join( words[ prefix_count: ] )
                 raw_words = raw_transcription.split()
                 raw_transcription = " ".join( raw_words[ prefix_count: ] )
             else:
-                print( "first_words [{}] not in modes_to_methods_dict".format( first_words ) )
+                print( "first_words [{}] of raw_transcription not found in modes_to_methods_dict".format( first_words ) )
+                
+                # If we have a prefix, try to use it to determine the transcription mode.
+                if self.prefix in self.modes_to_methods_dict:
+                    print( "prefix [{}] in modes_to_methods_dict".format( self.prefix ) )
+                    method_name = self.modes_to_methods_dict[ self.prefix ]
+                else:
+                    print( "prefix [{}] not found in modes_to_methods_dict either".format( self.prefix ) )
                 
         mode = self.methods_to_modes_dict[ method_name ]
+        
         if self.debug:
             print( "Calling [{}] w/ mode [{}]...".format( method_name, mode ) )
             print( "raw_transcription [{}]".format( raw_transcription ) )
@@ -212,8 +219,31 @@ class MultiModalMunger:
         return transcription, mode
     
     def munge_python_punctuation( self, raw_transcription, mode ):
+    
+        code = raw_transcription.lower()
+
+        # Remove "space, ", commas, and periods.
+        code = re.sub( r'space, |[,.-]', '', code.lower() )
+
+        # Translate punctuation mark words into single characters.
+        for key, value in self.punctuation.items():
+            code = code.replace( key, value )
+
+        # Remove extra spaces.
+        code = code.replace( " _ ", "_" )
+        code = code.replace( " ,", ", " )
+        code = code.replace( "self . ", "self." )
+        code = code.replace( " . ", "." )
+        code = code.replace( "[ { } ]", "[{}]" )
+        code = code.replace( " ( )", "()" )
+        code = code.replace( ") :", "):" )
+        code = code.replace( " ( ", "( " )
+        # code = code.replace( " ) ", " ) " )
+
+        # Remove extra spaces.
+        code = ' '.join( code.split() )
         
-        return raw_transcription, mode
+        return code, mode
     
     def munge_python_proofread( self, raw_transcription, mode ):
         
@@ -230,11 +260,14 @@ if __name__ == "__main__":
     # transcription = "multi-mode text proofread Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
     # transcription = "Multi-mode text punctuation Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
     # transcription = "multi-modal text email r-i-c-a-r-d-o dot f-e-l-i-p-e dot r-u-i-z at gmail.com"
-    transcription = "multi model text email r-i-c-a-r-d-o-. f-e-l-i-p-e-. r-u-i-z at gmail. com"
+    # transcription = "multi model text email r-i-c-a-r-d-o-. f-e-l-i-p-e-. r-u-i-z at gmail. com"
     # transcription = "multi-mode text punctuation Here's my email address. r-i-c-a-r-d-o.f-e-l-i-p-e-.r-u-i-z at gmail.com."
     # transcription = "blah blah blah"
     # transcription = "multimodal text proofread i go to market yesterday comma Tonight i go to the dance, comma, and im very happy that exclamation point."
     # transcription = "multimodal editor proof"
+    
+    transcription = "multimodal python punctuation Deaf, Munch, Underscore Python, Underscore Punctuation, Open Parenthesis, Space, Self, Comma, Raw Underscore transcription, Comma, Space, Mode, Space, Close Parenthesis, Colon,"
+    
     munger = MultiModalMunger( transcription, debug=True )
     print( munger, end="\n\n" )
     print( munger.get_json(), end="\n\n" )
