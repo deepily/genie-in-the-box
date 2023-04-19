@@ -464,12 +464,13 @@ class GenieClient:
         # Remove extra spaces.
         code = code.replace( " _ ", "_" )
         code = code.replace( " ,", "," )
-        code = code.replace( ") :", "):" )
         code = code.replace( "self . ", "self." )
         code = code.replace( " . ", "." )
-        code = code.replace( " ( )", "()" )
         code = code.replace( "[ { } ]", "[{}]" )
+        code = code.replace( " ( )", "()" )
+        code = code.replace( ") :", "):" )
         code = code.replace( " ( ", "( " )
+        # code = code.replace( " ) ", " ) " )
         
         code = ' '.join( code.split() )
 
