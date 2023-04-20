@@ -1,3 +1,8 @@
+| dot co dot uk = .co.uk
+| dot com dot mx = .com.mx
+| dot com dot au = .com.au
+| dot net dot au = .net.au
+| dot org dot au = .org.au
 | dot com = .com
 | dot org = .org
 | dot net = .net
@@ -19,14 +24,9 @@
 | dot ch = .ch
 | dot ai = .ai
 | dot co = .co
-| dot co dot uk = .co.uk
-| dot com dot mx = .com.mx
 | dot mx = .mx
 | dot tw = .tw
 | dot uk = .uk
-| dot com dot au = .com.au
-| dot net dot au = .net.au
-| dot org dot au = .org.au
 
 equals equals equals = ===
 not equals equals = !==
@@ -90,6 +90,8 @@ less then = <
 greater than = >
 ampersand = &
 asterisk = *
+plus equals = +=
+plus equal = +=
 plus sign = +
 plus = +
 slash = /
@@ -124,7 +126,7 @@ smile emoji = 😃
 grinning emoji = 😁
 grin emoji = 😁
 lmao = 🤣
-laughing my ass off emjoji = 🤣
+laughing my ass off emoji = 🤣
 laughing my ass off = 🤣
 lol = 😂
 shruggy emoji = ¯\_(ツ)_/¯
