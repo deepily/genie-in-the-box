@@ -1,3 +1,7 @@
+.co.uk = | dot co dot uk
+.org.au = | dot org dot au
+.com.au = | dot com dot au
+.net.au = | dot net dot au
 .com = | dot com
 .org = | dot org
 .net = | dot net
@@ -19,11 +23,7 @@
 .ch = | dot ch
 .ai = | dot ai
 .co = | dot co
-.co.uk = | dot co dot uk
 .me = | dot me
 .mx = | dot mx
 .se = | dot se
 .tw = | dot tw
-.com.au = | dot com dot au
-.net.au = | dot net dot au
-.org.au = | dot org dot au
