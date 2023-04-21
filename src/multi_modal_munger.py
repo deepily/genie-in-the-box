@@ -34,7 +34,8 @@ class MultiModalMunger:
 
         # load transcription munging map and handle a problematic right hand value: "space"
         self.punctuation            = du.get_file_as_dictionary( "conf/translation-dictionary.map", lower_case=True, debug=self.debug )
-        self.domain_names           = du.get_file_as_dictionary( "conf/domain-names-fixup.map", lower_case=True )
+        self.domain_names           = du.get_file_as_dictionary( "conf/domain-names.map", lower_case=True )
+        self.numbers                = du.get_file_as_dictionary( "conf/numbers.map", lower_case=True )
         
         self.modes_to_methods_dict  = modes_to_methods_dict
         self.methods_to_modes_dict  = self._get_methods_to_modes_dict( modes_to_methods_dict )
@@ -165,8 +166,12 @@ class MultiModalMunger:
         print( "BEFORE raw_transcription:", raw_transcription )
         prose = raw_transcription.lower()
         
-        # Encode domain names
+        # Decode domain names
         for key, value in self.domain_names.items():
+            prose = prose.replace( key, value )
+        
+        # Decode numbers
+        for key, value in self.numbers.items():
             prose = prose.replace( key, value )
             
         print( " AFTER raw_transcription:", raw_transcription )
@@ -229,12 +234,17 @@ class MultiModalMunger:
         for key, value in self.punctuation.items():
             code = code.replace( key, value )
 
+            # Decode numbers
+        for key, value in self.numbers.items():
+            code = code.replace( key, value )
+
         # Remove extra spaces.
         code = code.replace( " _ ", "_" )
         code = code.replace( " ,", ", " )
         code = code.replace( "self . ", "self." )
         code = code.replace( " . ", "." )
         code = code.replace( "[ { } ]", "[{}]" )
+        code = code.replace( " [", "[" )
         code = code.replace( " ( )", "()" )
         code = code.replace( ") :", "):" )
         code = code.replace( " ( ", "( " )
@@ -266,7 +276,7 @@ if __name__ == "__main__":
     # transcription = "multimodal text proofread i go to market yesterday comma Tonight i go to the dance, comma, and im very happy that exclamation point."
     # transcription = "multimodal editor proof"
     
-    transcription = "multimodal python punctuation Deaf, Munch, Underscore Python, Underscore Punctuation, Open Parenthesis, Space, Self, Comma, Raw Underscore transcription, Comma, Space, Mode, Space, Close Parenthesis, Colon,"
+    transcription = "multimodal python punctuation Deaf, Munch, Underscore Python, Underscore Punctuation, Open Parenthesis, Space, Self, Comma, Raw Underscore transcription, Comma, Space, Mode, Space, Close Parenthesis, Colon, newline newline foo equals six divided by four newline newline bar equals brackets"
     
     munger = MultiModalMunger( transcription, debug=True )
     print( munger, end="\n\n" )
