@@ -94,10 +94,24 @@ plus equals = +=
 plus equal = +=
 plus sign = +
 plus = +
+minus equals = -=
+minus equal = -=
+minus sign = -
+minus = -
+negative = -
+
+divided by = /
+divide by = /
+divide = /
 slash = /
 backslash = \
 percent sign = %
+percent = %
+dollarsign = $
 dollar sign = $
+dollars = $
+dollar = $
+
 pound sign = #
 hash tag = #
 hashtag = #
@@ -109,8 +123,8 @@ underscore = _
 equals sign = =
 tilde = ~
 pipe = |||
-new line = NL
-newline = NL
+new line = \n
+newline = \n
 deaf = def
 speech to text = STT
 text to speech = TTS
