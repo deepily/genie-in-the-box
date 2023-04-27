@@ -102,8 +102,13 @@ def upload_and_transcribe_mp3_file():
         
         print( "Proofreading text... ", end="" )
         timer = sw.Stopwatch()
-        preamble = "You are an expert proofreader. Correct grammar. Correct tense. Correct spelling. Correct contractions. Correct punctuation. Correct capitalization. Correct word choice. Correct sentence structure. Correct paragraph structure. Correct paragraph length. Correct paragraph flow. Correct paragraph topic. Correct paragraph tone. Correct paragraph style. Correct paragraph voice. Correct paragraph mood. Correct paragraph theme."
-        response = genie_client.ask_chat_gpt_text( munger.transcription, preamble=preamble )
+        preamble = """
+            You are an expert proofreader. Proofread the text delimited by three backticks at the end of these instructions.
+            Correct grammar. Correct tense. Correct spelling. Correct contractions. Correct punctuation. Correct capitalization.
+            Correct word choice. Correct sentence structure. Correct paragraph structure. Correct paragraph length.
+            Correct paragraph flow. Correct paragraph topic. Correct paragraph tone. Correct paragraph style.
+            Correct paragraph voice. Correct paragraph mood. Correct paragraph theme."""
+        response = genie_client.ask_chat_gpt_text( "```" + munger.transcription + "```", preamble=preamble )
         timer.print( "Done!" )
         
         munger.transcription = response
