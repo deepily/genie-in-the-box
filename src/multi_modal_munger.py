@@ -10,6 +10,7 @@ transcription_mode_text_raw           = "multimodal text raw"
 transcription_mode_text_email         = "multimodal text email"
 transcription_mode_text_punctuation   = "multimodal text punctuation"
 transcription_mode_text_proofread     = "multimodal text proofread"
+transcription_mode_text_contact       = "multimodal contact information"
 transcription_mode_python_punctuation = "multimodal python punctuation"
 transcription_mode_python_proofread   = "multimodal python proofread"
 transcription_mode_default            = transcription_mode_text_punctuation
@@ -20,6 +21,7 @@ modes_to_methods_dict = {
      transcription_mode_text_email         : "munge_text_email",
      transcription_mode_text_punctuation   : "munge_text_punctuation",
      transcription_mode_text_proofread     : "munge_text_proofread",
+     transcription_mode_text_contact       : "munge_text_contact",
      transcription_mode_python_punctuation : "munge_python_punctuation",
      transcription_mode_python_proofread   : "munge_python_proofread"
 }
@@ -32,10 +34,10 @@ class MultiModalMunger:
         self.raw_transcription      = raw_transcription
         self.prefix                 = prefix
 
-        # load transcription munging map and handle a problematic right hand value: "space"
         self.punctuation            = du.get_file_as_dictionary( "conf/translation-dictionary.map", lower_case=True, debug=self.debug )
         self.domain_names           = du.get_file_as_dictionary( "conf/domain-names.map", lower_case=True )
         self.numbers                = du.get_file_as_dictionary( "conf/numbers.map", lower_case=True )
+        self.contact_info           = du.get_file_as_dictionary( "conf/contact-information.map", lower_case=True )
         
         self.modes_to_methods_dict  = modes_to_methods_dict
         self.methods_to_modes_dict  = self._get_methods_to_modes_dict( modes_to_methods_dict )
@@ -95,7 +97,7 @@ class MultiModalMunger:
             default_method = self.modes_to_methods_dict[ transcription_mode_default ]
             method_name    = self.modes_to_methods_dict.get( first_words, default_method )
             
-            # Conditionally pull the first four words before we send them to be transcribed.
+            # Conditionally pull the first n words before we send them to be transcribed.
             if first_words in self.modes_to_methods_dict:
                 raw_words = raw_transcription.split()
                 raw_transcription = " ".join( raw_words[ prefix_count: ] )
@@ -225,6 +227,17 @@ class MultiModalMunger:
         
         return prose, mode
     
+    def munge_text_contact( self, raw_transcription, mode, extra_words="" ):
+        
+        # multimodal contact information ___________
+        raw_transcription = raw_transcription.lower()
+        regex = re.compile( '[^a-zA-Z ]' )
+        raw_transcription = regex.sub( '', raw_transcription ).replace( "-", " " ).lower()
+        # There could be more words included here, but they're superfluous, we're only looking for the 1st word After three have been stripped out already.
+        contact_info_key = raw_transcription.split()[ 0 ]
+        contact_info     = self.contact_info.get( contact_info_key, "N/A" ).title()
+        
+        return contact_info, mode
     def munge_text_proofread( self, raw_transcription, mode ):
     
         transcription, mode = self.munge_text_punctuation( raw_transcription, mode )
@@ -278,7 +291,7 @@ if __name__ == "__main__":
     # transcription = "multi-mode text proofread Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
     # transcription = "Multi-mode text punctuation Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
     # transcription = "multi-modal text email r-i-c-a-r-d-o dot f-e-l-i-p-e dot r-u-i-z at gmail.com"
-    transcription = "multi model text email r-i-c-a-r-d-o dot f-e-l-i-p-e dot r-u-i-z six two at sign gmail. com."
+    # transcription = "multi model text email r-i-c-a-r-d-o dot f-e-l-i-p-e dot r-u-i-z six two at sign gmail. com."
     # transcription = "multi-mode text punctuation Here's my email address. r-i-c-a-r-d-o.f-e-l-i-p-e-.r-u-i-z at gmail.com."
     # transcription = "blah blah blah"
     # transcription = "multimodal text proofread i go to market yesterday comma Tonight i go to the dance, comma, and im very happy that exclamation point."
@@ -286,29 +299,34 @@ if __name__ == "__main__":
     
     # transcription = "multimodal python punctuation Deaf, Munch, Underscore Python, Underscore Punctuation, Open Parenthesis, Space, Self, Comma, Raw Underscore transcription, Comma, Space, Mode, Space, Close Parenthesis, Colon, newline newline foo equals six divided by four newline newline bar equals brackets"
     
+    # transcription = "multimodal contact information name"
+    transcription = "multimodal contact information address"
+    
     munger = MultiModalMunger( transcription, debug=True )
     print( munger, end="\n\n" )
     print( munger.get_json(), end="\n\n" )
     
-    regex = re.compile( "[.]$", re.IGNORECASE )
-    foo = regex.sub( "", "foo.", 1 )
-    print( foo )
-
-    bar = "1 2 3 4"
-    regex = re.compile( "((?P<before>[0-9])([ ]{0,1})(?P<after>[0-9]))", re.IGNORECASE )
-    # bar = regex.sub( "multimodal", bar, 1 )
-    bar = regex.sub( "\g<before>\g<after>", bar )
-    print( bar )
+    # regex = re.compile( "[.]$", re.IGNORECASE )
+    # foo = regex.sub( "", "foo.", 1 )
+    # print( foo )
+    #
+    # bar = "1 2 3 4"
+    # regex = re.compile( "((?P<before>[0-9])([ ]{0,1})(?P<after>[0-9]))", re.IGNORECASE )
+    # # bar = regex.sub( "multimodal", bar, 1 )
+    # bar = regex.sub( "\g<before>\g<after>", bar )
+    # print( bar )
+    #
+    # foo = " 1 2 3ab4 5 6 7 "
+    # regex = re.compile( '(?<=[0-9]) (?=[0-9])' )
+    # foo = regex.sub( "", foo )
+    # print( "[{}]".format( foo ) )
+    #
+    # blah = "a-b-c-d-e-f-g-h-i-j-k-l -- -members-only- -- n-o-p-q-r-s-t-u-v-w-x-y-z"
+    # regex = re.compile( "(?<=[a-z])([-])(?=[a-z])", re.IGNORECASE )
+    # blah = regex.sub( "", blah )
+    # print( blah )
     
-    foo = " 1 2 3ab4 5 6 7 "
-    regex = re.compile( '(?<=[0-9]) (?=[0-9])' )
-    foo = regex.sub( "", foo )
-    print( "[{}]".format( foo ) )
     
-    blah = "a-b-c-d-e-f-g-h-i-j-k-l -- -members-only- -- n-o-p-q-r-s-t-u-v-w-x-y-z"
-    regex = re.compile( "(?<=[a-z])([-])(?=[a-z])", re.IGNORECASE )
-    blah = regex.sub( "", blah )
-    print( blah )
     
     # print( "munger.get_json()", munger.get_json() )
     # print( "type( munger.get_json() )", type( munger.get_json() ) )

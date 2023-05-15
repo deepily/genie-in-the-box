@@ -107,7 +107,8 @@ def upload_and_transcribe_mp3_file():
             Correct grammar. Correct tense. Correct spelling. Correct contractions. Correct punctuation. Correct capitalization.
             Correct word choice. Correct sentence structure. Correct paragraph structure. Correct paragraph length.
             Correct paragraph flow. Correct paragraph topic. Correct paragraph tone. Correct paragraph style.
-            Correct paragraph voice. Correct paragraph mood. Correct paragraph theme."""
+            Correct paragraph voice. Correct paragraph mood. Correct paragraph theme.
+            Format corrected output as plain text."""
         response = genie_client.ask_chat_gpt_text( "```" + munger.transcription + "```", preamble=preamble )
         timer.print( "Done!" )
         
