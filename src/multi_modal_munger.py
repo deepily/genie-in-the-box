@@ -27,7 +27,7 @@ modes_to_methods_dict = {
 }
 class MultiModalMunger:
 
-    def __init__(self, raw_transcription, prefix="", config_path="conf/modes-vox.json", debug=False ):
+    def __init__(self, raw_transcription, prefix="", config_path="conf/modes-vox.json", debug=True ):
 
         self.debug                  = debug
         self.config_path            = config_path
@@ -88,7 +88,7 @@ class MultiModalMunger:
         prefix_count = len( transcription_mode_default.split() )
         
         # If we have fewer than 'prefix_count' words, just assign default transcription mode.
-        if len( words ) < prefix_count:
+        if len( words ) < prefix_count and ( self.prefix == "" or self.prefix not in self.modes_to_methods_dict ):
             method_name = self.modes_to_methods_dict[ transcription_mode_default ]
         else:
             
@@ -286,6 +286,7 @@ class MultiModalMunger:
     
 if __name__ == "__main__":
 
+    prefix = ""
     # transcription = "DOM fully loaded and parsed, Checking permissions.... Done!"
     # transcription = "multi-mode text raw Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
     # transcription = "multi-mode text proofread Less then, Robert at somewhere.com greater than. DOM fully loaded and parsed comma Checking permissions.... Done exclamation point."
@@ -300,9 +301,11 @@ if __name__ == "__main__":
     # transcription = "multimodal python punctuation Deaf, Munch, Underscore Python, Underscore Punctuation, Open Parenthesis, Space, Self, Comma, Raw Underscore transcription, Comma, Space, Mode, Space, Close Parenthesis, Colon, newline newline foo equals six divided by four newline newline bar equals brackets"
     
     # transcription = "multimodal contact information name"
-    transcription = "multimodal contact information address"
+    # transcription = "multimodal contact information address"
+    prefix        = "multimodal contact information"
+    transcription = "name"
     
-    munger = MultiModalMunger( transcription, debug=True )
+    munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
     print( munger, end="\n\n" )
     print( munger.get_json(), end="\n\n" )
     
