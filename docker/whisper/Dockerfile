@@ -15,5 +15,7 @@ RUN pip3 install pyperclip
 
 RUN pip3 install flask_cors
 
+RUN pip3 install pip install duckduckgo-search
+
 CMD [ "/var/genie-in-the-box/run-flask-whisper.sh" ]
 
