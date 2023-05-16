@@ -13,6 +13,7 @@ transcription_mode_text_proofread     = "multimodal text proofread"
 transcription_mode_text_contact       = "multimodal contact information"
 transcription_mode_python_punctuation = "multimodal python punctuation"
 transcription_mode_python_proofread   = "multimodal python proofread"
+transcription_mode_ai_fetch           = "multimodal ai fetch"
 transcription_mode_default            = transcription_mode_text_punctuation
 
 modes_to_methods_dict = {
@@ -23,7 +24,8 @@ modes_to_methods_dict = {
      transcription_mode_text_proofread     : "munge_text_proofread",
      transcription_mode_text_contact       : "munge_text_contact",
      transcription_mode_python_punctuation : "munge_python_punctuation",
-     transcription_mode_python_proofread   : "munge_python_proofread"
+     transcription_mode_python_proofread   : "munge_python_proofread",
+     transcription_mode_ai_fetch           : "do_ai_fetch"
 }
 class MultiModalMunger:
 
@@ -50,18 +52,23 @@ class MultiModalMunger:
         self.transcription = result[ 0 ]
         self.mode          = result[ 1 ]
         
+        # This field added to hold the results of a calculation, e.g.: ai file fetch or kamoma eventually proofreading
+        # results will be stashed here
+        self.results       = ""
+        
     def __str__(self):
 
         summary = """
                        Mode: [{}]
                      Prefix: [{}]
           Raw transcription: [{}]
-        Final transcription: [{}]""".format( self.mode, self.prefix, self.raw_transcription, self.transcription )
+        Final transcription: [{}]
+                     Result: [{}]""".format( self.mode, self.prefix, self.raw_transcription, self.transcription, self.results )
         return summary
 
     def get_json( self ):
         
-        json = { "mode": self.mode, "prefix": self.prefix, "raw_transcription": self.raw_transcription, "transcription": self.transcription }
+        json = { "mode": self.mode, "prefix": self.prefix, "raw_transcription": self.raw_transcription, "transcription": self.transcription, "result": self.results }
         
         return json
         
@@ -280,9 +287,21 @@ class MultiModalMunger:
         
         return raw_transcription, mode
     
+    def do_ai_fetch( self, raw_transcription, mode ):
+    
+        if "this information" in raw_transcription:
+            print( "KLUDGE: 'THIS information' munged into 'DISinformation'" )
+            raw_transcription = raw_transcription.replace( "this information", "disinformation" )
+            
+        return raw_transcription, mode
+    
     def is_text_proofread( self ):
         
         return self.mode == transcription_mode_text_proofread
+    
+    def is_ai_fetch( self ):
+        
+        return self.mode == transcription_mode_ai_fetch
     
 if __name__ == "__main__":
 
@@ -302,12 +321,14 @@ if __name__ == "__main__":
     
     # transcription = "multimodal contact information name"
     # transcription = "multimodal contact information address"
-    prefix        = "multimodal contact information"
-    transcription = "name"
+    # prefix        = "multimodal contact information"
+    # transcription = "name"
+    transcription = "multimodal ai fetch this information effect on political credibility"
     
     munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
     print( munger, end="\n\n" )
     print( munger.get_json(), end="\n\n" )
+    print( "munger.is_ai_fetch()", munger.is_ai_fetch(), end="\n\n" )
     
     # regex = re.compile( "[.]$", re.IGNORECASE )
     # foo = regex.sub( "", "foo.", 1 )

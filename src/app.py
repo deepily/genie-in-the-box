@@ -1,9 +1,12 @@
 import os
 import subprocess
 import time
+import json
 
 from flask import Flask, request, render_template, make_response, send_file
 from flask_cors import CORS
+
+from duckduckgo_search import ddg
 
 import whisper
 import base64
@@ -59,34 +62,15 @@ def upload_and_transcribe_mp3_file():
     
     prefix = request.args.get( "prefix" )
     print( "prefix: [{}]".format( prefix ) )
-    # print( type( request.data ) )
-    # print( len( request.data ) )
-    # print( request.data[ 0:32 ] )
-
+    
     decoded_audio = base64.b64decode( request.data )
-    # print( type( decoded_audio ) )
-    # print( len( decoded_audio ) )
-    # print( decoded_audio[ 0:32] )
-
+    
     path = gc.docker_path.format( "recording.mp3" )
 
     print( "Saving file recorded audio bytes to [{}]...".format( path ), end="" )
     with open( path, "wb" ) as f:
         f.write( decoded_audio )
     print( " Done!" )
-
-    print( "Skipping *.mp3 -> *.wav conversion, we don't need it!" )
-    # sound = AudioSegment.from_mp3( path )
-    # sound.export( path.replace( ".mp3", ".wav" ), format="wav" )
-    # subprocess.call( [ "ffmpeg", "-y", "-i", "-hide_banner", "-loglevel panic", path, path.replace( ".mp3", ".wav" ) ] )
-    # print( "Transcribing {}...".format( path ), end="" )
-    # result = model.transcribe( path )
-    # print( "Done!", end="\n\n" )
-    #
-    # print( "Result: [{}]".format( result[ "text" ] ) )
-    # print( result[ "text" ] )
-    #
-    # return path.replace( ".mp3", ".wav" )
 
     print( "Transcribing {}...".format( path ) )
     result = model.transcribe( path )
@@ -100,6 +84,7 @@ def upload_and_transcribe_mp3_file():
 
     if munger.is_text_proofread():
         
+        # TODO: This hardwired proofreading prompt should live in its own configuration file!
         print( "Proofreading text... ", end="" )
         timer = sw.Stopwatch()
         preamble = """
@@ -113,7 +98,15 @@ def upload_and_transcribe_mp3_file():
         timer.print( "Done!" )
         
         munger.transcription = response
-
+        munger.results = response
+        
+    elif munger.is_ai_fetch():
+        
+        print( "Fetching AI results for [{}]...".format( munger.transcription ) )
+        results = ddg( munger.transcription, region='wt-wt', safesearch='Off', time='y', max_results=10 )
+        print( results )
+        munger.results = results
+        
     return munger.get_json()
 
 @app.route( "/api/upload-and-transcribe-wav", methods=[ "POST" ] )
