@@ -288,12 +288,14 @@ class MultiModalMunger:
         return raw_transcription, mode
     
     def do_ai_fetch( self, raw_transcription, mode ):
-    
-        if "this information" in raw_transcription:
+        
+        transcription, mode = self.munge_text_punctuation( raw_transcription, mode )
+        
+        if "this information" in transcription:
             print( "KLUDGE: 'THIS information' munged into 'DISinformation'" )
-            raw_transcription = raw_transcription.replace( "this information", "disinformation" )
+            transcription = transcription.replace( "this information", "disinformation" )
             
-        return raw_transcription, mode
+        return transcription, mode
     
     def is_text_proofread( self ):
         
@@ -323,7 +325,7 @@ if __name__ == "__main__":
     # transcription = "multimodal contact information address"
     # prefix        = "multimodal contact information"
     # transcription = "name"
-    transcription = "multimodal ai fetch this information effect on political credibility"
+    transcription = "multimodal ai fetch this information: Large, language models."
     
     munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
     print( munger, end="\n\n" )
