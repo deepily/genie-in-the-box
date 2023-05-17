@@ -52,7 +52,7 @@ class MultiModalMunger:
         self.transcription = result[ 0 ]
         self.mode          = result[ 1 ]
         
-        # This field added to hold the results of a calculation, e.g.: ai file fetch or kamoma eventually proofreading
+        # This field added to hold the results of a calculation, e.g.: ai file fetch or eventually proofreading
         # results will be stashed here
         self.results       = ""
         
@@ -63,12 +63,12 @@ class MultiModalMunger:
                      Prefix: [{}]
           Raw transcription: [{}]
         Final transcription: [{}]
-                     Result: [{}]""".format( self.mode, self.prefix, self.raw_transcription, self.transcription, self.results )
+                    Results: [{}]""".format( self.mode, self.prefix, self.raw_transcription, self.transcription, self.results )
         return summary
 
     def get_json( self ):
         
-        json = { "mode": self.mode, "prefix": self.prefix, "raw_transcription": self.raw_transcription, "transcription": self.transcription, "result": self.results }
+        json = { "mode": self.mode, "prefix": self.prefix, "raw_transcription": self.raw_transcription, "transcription": self.transcription, "results": self.results }
         
         return json
         
@@ -239,10 +239,27 @@ class MultiModalMunger:
         # multimodal contact information ___________
         raw_transcription = raw_transcription.lower()
         regex = re.compile( '[^a-zA-Z ]' )
-        raw_transcription = regex.sub( '', raw_transcription ).replace( "-", " " ).lower()
+        raw_transcription = regex.sub( '', raw_transcription ).replace( "-", " " )
         # There could be more words included here, but they're superfluous, we're only looking for the 1st word After three have been stripped out already.
         contact_info_key = raw_transcription.split()[ 0 ]
-        contact_info     = self.contact_info.get( contact_info_key, "N/A" ).title()
+        contact_info     = self.contact_info.get( contact_info_key, "N/A" )
+        
+        if contact_info_key in "full all":
+            
+            contact_info = "{}\n{}\n{} {}, {}\n{}\n{}".format(
+                self.contact_info[ "name" ].title(),
+                self.contact_info[ "address" ].title(),
+                self.contact_info[ "city" ].title(), self.contact_info[ "state" ].upper(), self.contact_info[ "zip" ],
+                self.contact_info[ "email" ],
+                self.contact_info[ "telephone" ]
+            )
+            
+        elif contact_info_key == "state":
+            contact_info = contact_info.upper()
+        elif contact_info_key != "email":
+            contact_info = contact_info.title()
+        
+        self.results = contact_info
         
         return contact_info, mode
     def munge_text_proofread( self, raw_transcription, mode ):
@@ -323,9 +340,9 @@ if __name__ == "__main__":
     
     # transcription = "multimodal contact information name"
     # transcription = "multimodal contact information address"
-    # prefix        = "multimodal contact information"
-    # transcription = "name"
-    transcription = "multimodal ai fetch this information: Large, language models."
+    prefix        = "multimodal contact information"
+    transcription = "full"
+    # transcription = "multimodal ai fetch this information: Large, language models."
     
     munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
     print( munger, end="\n\n" )
