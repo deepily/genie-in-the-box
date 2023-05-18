@@ -135,24 +135,6 @@ def upload_and_transcribe_wav_file():
 
     return transcribed_text
 
-# @app.route( "/api/upload", methods=[ "POST" ] )
-# def upload_file():
-#
-#     bar = "#" * 80
-#     print( bar )
-#     print( "# This endpoint has been deprecated. Please update your code." )
-#     print( bar )
-#     #
-#     # file = request.files[ "file" ]
-#     # path = gc.docker_path.format( file.filename )
-#     #
-#     # print( "Saving file [{}] to [{}]...".format( file.filename, path ), end="" )
-#     # file.save( path )
-#     # print( " Done!" )
-#     #
-#     # return path
-#
-
 @app.route( "/api/vox2text" )
 def vox_2_text():
 
@@ -166,25 +148,6 @@ def vox_2_text():
     print( result[ "text" ] )
 
     return result[ "text" ].strip()
-
-# This is something that the HTML client can access on its own. comma no need to start mixing in max and functionality
-# across servers.
-# @app.route( "/api/text2vox" )
-# def text_2_vox():
-#
-#     text = request.args.get( "text" )
-#
-#     path_wav = genie_client.tts_wav_path
-#     tts_address = genie_client.tts_address
-#     genie_client.get_tts_file( tts_address, text, path_wav )
-#
-#     # convert to mp3
-#     path_mp3 = path_wav.replace( ".wav", ".mp3" )
-#     print( "Converting [{}] to [{}]...".format( path_wav, path_mp3 ) )
-#     response = subprocess.call( [ "ffmpeg", "-y", "-i", path_wav, path_mp3 ] )
-#     print( "response: {}".format( response ) )
-#
-#     return send_file( path_mp3, mimetype="audio/mpeg", as_attachment=False )
 
 print( "Loading whisper engine... ", end="" )
 model = whisper.load_model( "base.en" )
