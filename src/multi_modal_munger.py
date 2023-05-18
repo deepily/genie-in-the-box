@@ -29,7 +29,7 @@ modes_to_methods_dict = {
 }
 class MultiModalMunger:
 
-    def __init__(self, raw_transcription, prefix="", config_path="conf/modes-vox.json", debug=True ):
+    def __init__(self, raw_transcription, prefix="", prompt_key="generic", config_path="conf/modes-vox.json", debug=True ):
 
         self.debug                  = debug
         self.config_path            = config_path
@@ -40,6 +40,10 @@ class MultiModalMunger:
         self.domain_names           = du.get_file_as_dictionary( "conf/domain-names.map", lower_case=True )
         self.numbers                = du.get_file_as_dictionary( "conf/numbers.map", lower_case=True )
         self.contact_info           = du.get_file_as_dictionary( "conf/contact-information.map", lower_case=True )
+        self.prompt_dictionary      = du.get_file_as_dictionary( "conf/prompt-dictionary.map", lower_case=True )
+        self.prompt                 = du.get_file_as_string( self.prompt_dictionary.get( prompt_key, "generic" ) )
+        print( "prompt_key:", prompt_key )
+        print( "prompt:", self.prompt )
         
         self.modes_to_methods_dict  = modes_to_methods_dict
         self.methods_to_modes_dict  = self._get_methods_to_modes_dict( modes_to_methods_dict )

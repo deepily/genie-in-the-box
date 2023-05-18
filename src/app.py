@@ -60,8 +60,11 @@ def upload_and_transcribe_mp3_file():
     
     print( "upload_and_transcribe_mp3_file() called" )
     
-    prefix = request.args.get( "prefix" )
-    print( "prefix: [{}]".format( prefix ) )
+    prefix          = request.args.get( "prefix" )
+    prompt_key      = request.args.get( "prompt_key",     default="generic" )
+    prompt_feedback = request.args.get( "prompt_verbose", default="verbose" )
+    print( "    prefix: [{}]".format( prefix ) )
+    print( "prompt_key: [{}]".format( prompt_key ) )
     
     decoded_audio = base64.b64decode( request.data )
     
@@ -80,20 +83,19 @@ def upload_and_transcribe_mp3_file():
 
     print( "Result: [{}]".format( result ) )
     
-    munger = mmm.MultiModalMunger( result, prefix=prefix )
+    munger = mmm.MultiModalMunger( result, prefix=prefix, prompt_key=prompt_key )
 
     if munger.is_text_proofread():
         
-        # TODO: This hardwired proofreading prompt should live in its own configuration file!
         print( "Proofreading text... ", end="" )
         timer = sw.Stopwatch()
-        preamble = """
-            You are an expert proofreader. Proofread the text delimited by three backticks at the end of these instructions.
-            Correct grammar. Correct tense. Correct spelling. Correct contractions. Correct punctuation. Correct capitalization.
-            Correct word choice. Correct sentence structure. Correct paragraph structure. Correct paragraph length.
-            Correct paragraph flow. Correct paragraph topic. Correct paragraph tone. Correct paragraph style.
-            Correct paragraph voice. Correct paragraph mood. Correct paragraph theme.
-            Format corrected output as plain text."""
+        
+        if prompt_feedback.lower() == "verbose":
+            prompt_feedback = "DO"
+        else:
+            prompt_feedback = "DO NOT"
+            
+        preamble = munger.prompt.format( prompt_feedback=prompt_feedback )
         response = genie_client.ask_chat_gpt_text( "```" + munger.transcription + "```", preamble=preamble )
         timer.print( "Done!" )
         
@@ -103,7 +105,7 @@ def upload_and_transcribe_mp3_file():
     elif munger.is_ai_fetch():
         
         print( "Fetching AI results for [{}]...".format( munger.transcription ) )
-        results = ddg( munger.transcription, region='wt-wt', safesearch='Off', time='y', max_results=10 )
+        results = ddg( munger.transcription, region='wt-wt', safesearch='Off', time='y', max_results=20 )
         print( results )
         munger.results = results
         
