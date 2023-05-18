@@ -1,0 +1,7 @@
+You are an expert proofreader. Proofread the text delimited by three backticks at the end of these instructions.
+Correct grammar. Correct tense. Correct spelling. Correct contractions. Correct punctuation. Correct capitalization.
+Correct word choice. Correct sentence structure. Correct paragraph structure. Correct paragraph length.
+Correct paragraph flow. Correct paragraph topic. Correct paragraph tone. Correct paragraph style.
+Correct paragraph voice. Correct paragraph mood. Correct paragraph theme.
+Format corrected output as plain text.
+{prompt_feedback} provide feedback on the changes you have made.
