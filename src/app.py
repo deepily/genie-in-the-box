@@ -135,23 +135,23 @@ def upload_and_transcribe_wav_file():
 
     return transcribed_text
 
-@app.route( "/api/upload", methods=[ "POST" ] )
-def upload_file():
-
-    bar = "#" * 80
-    print( bar )
-    print( "# This endpoint has been deprecated. Please update your code." )
-    print( bar )
-    #
-    # file = request.files[ "file" ]
-    # path = gc.docker_path.format( file.filename )
-    #
-    # print( "Saving file [{}] to [{}]...".format( file.filename, path ), end="" )
-    # file.save( path )
-    # print( " Done!" )
-    #
-    # return path
-
+# @app.route( "/api/upload", methods=[ "POST" ] )
+# def upload_file():
+#
+#     bar = "#" * 80
+#     print( bar )
+#     print( "# This endpoint has been deprecated. Please update your code." )
+#     print( bar )
+#     #
+#     # file = request.files[ "file" ]
+#     # path = gc.docker_path.format( file.filename )
+#     #
+#     # print( "Saving file [{}] to [{}]...".format( file.filename, path ), end="" )
+#     # file.save( path )
+#     # print( " Done!" )
+#     #
+#     # return path
+#
 
 @app.route( "/api/vox2text" )
 def vox_2_text():
