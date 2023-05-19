@@ -111,6 +111,16 @@ def upload_and_transcribe_mp3_file():
         
     return munger.get_json()
 
+@app.route( "/api/run-raw-prompt-text" )
+def run_prompt():
+    
+    prompt_and_content = request.args.get( "prompt_and_content" )
+    prompt_feedback    = request.args.get( "prompt_verbose", default="verbose" )
+    
+    print( "Running prompt [{}]...".format( prompt_and_content ) )
+    
+    return genie_client.ask_chat_gpt_using_raw_prompt_and_content( prompt_and_content ).replace( "```", "" )
+    
 @app.route( "/api/upload-and-transcribe-wav", methods=[ "POST" ] )
 def upload_and_transcribe_wav_file():
 

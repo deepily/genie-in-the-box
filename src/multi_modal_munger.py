@@ -14,18 +14,20 @@ transcription_mode_text_contact       = "multimodal contact information"
 transcription_mode_python_punctuation = "multimodal python punctuation"
 transcription_mode_python_proofread   = "multimodal python proofread"
 transcription_mode_ai_fetch           = "multimodal ai fetch"
+transcription_mode_run_prompt         = "multimodal run prompt"
 transcription_mode_default            = transcription_mode_text_punctuation
 
 modes_to_methods_dict = {
     
-     transcription_mode_text_raw           : "munge_text_raw",
-     transcription_mode_text_email         : "munge_text_email",
-     transcription_mode_text_punctuation   : "munge_text_punctuation",
-     transcription_mode_text_proofread     : "munge_text_proofread",
-     transcription_mode_text_contact       : "munge_text_contact",
-     transcription_mode_python_punctuation : "munge_python_punctuation",
-     transcription_mode_python_proofread   : "munge_python_proofread",
-     transcription_mode_ai_fetch           : "do_ai_fetch"
+    transcription_mode_text_raw           : "munge_text_raw",
+    transcription_mode_text_email         : "munge_text_email",
+    transcription_mode_text_punctuation   : "munge_text_punctuation",
+    transcription_mode_text_proofread     : "munge_text_proofread",
+    transcription_mode_text_contact       : "munge_text_contact",
+    transcription_mode_python_punctuation : "munge_python_punctuation",
+    transcription_mode_python_proofread   : "munge_python_proofread",
+    transcription_mode_ai_fetch           : "do_ai_fetch",
+    transcription_mode_run_prompt         : "do_run_prompt",
 }
 class MultiModalMunger:
 
@@ -318,6 +320,13 @@ class MultiModalMunger:
             
         return transcription, mode
     
+    def do_run_prompt( self, raw_transcription, mode ):
+        
+        # Not doing much preparation work here. For the moment.
+        raw_transcription = raw_transcription.lower()
+        
+        return raw_transcription, mode
+    
     def is_text_proofread( self ):
         
         return self.mode == transcription_mode_text_proofread
@@ -325,6 +334,10 @@ class MultiModalMunger:
     def is_ai_fetch( self ):
         
         return self.mode == transcription_mode_ai_fetch
+    
+    def is_run_prompt( self ):
+        
+        return self.mode == transcription_mode_run_prompt
     
 if __name__ == "__main__":
 
@@ -344,14 +357,33 @@ if __name__ == "__main__":
     
     # transcription = "multimodal contact information name"
     # transcription = "multimodal contact information address"
-    prefix        = "multimodal contact information"
-    transcription = "full"
+    # prefix        = "multimodal contact information"
+    # transcription = "full"
     # transcription = "multimodal ai fetch this information: Large, language models."
     
-    munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
-    print( munger, end="\n\n" )
-    print( munger.get_json(), end="\n\n" )
-    print( "munger.is_ai_fetch()", munger.is_ai_fetch(), end="\n\n" )
+    # prefix = transcription_mode_run_prompt
+    # transcription = "you are a professional prompt creator"
+    #
+    # munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
+    # print( munger, end="\n\n" )
+    # print( munger.get_json(), end="\n\n" )
+    # print( "munger.is_ai_fetch()", munger.is_ai_fetch() )
+    # print( "munger.is_run_prompt()", munger.is_run_prompt(), end="\n\n" )
+    
+    raw_prompt = """
+    Your task is to generate a short summary of a product review from an ecommerce site.
+    Summarize the review below, delimited by triple backticks, in at most 30 words.
+    Review: ```Got this panda plush toy for my daughter's birthday,
+    who loves it and takes it everywhere. It's soft and
+    super cute, and its face has a friendly look. It's
+    a bit small for what I paid though. I think there
+    might be other options that are bigger for the same price. It arrived a day
+    earlier than expected, so I got to play with it myself before I gave it to her. ```
+    """
+    preamble = raw_prompt.split( "```" )[ 0 ].strip()
+    content = raw_prompt.split( "```" )[ 1 ].strip()
+    print( "preamble [{}]".format( preamble ) )
+    print( "  review [{}]".format( content ) )
     
     # regex = re.compile( "[.]$", re.IGNORECASE )
     # foo = regex.sub( "", "foo.", 1 )
