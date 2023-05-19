@@ -13,21 +13,21 @@ transcription_mode_text_proofread     = "multimodal text proofread"
 transcription_mode_text_contact       = "multimodal contact information"
 transcription_mode_python_punctuation = "multimodal python punctuation"
 transcription_mode_python_proofread   = "multimodal python proofread"
-transcription_mode_ai_fetch           = "multimodal ai fetch"
+transcription_mode_server_search      = "multimodal server search"
 transcription_mode_run_prompt         = "multimodal run prompt"
 transcription_mode_default            = transcription_mode_text_punctuation
 
 modes_to_methods_dict = {
     
-    transcription_mode_text_raw           : "munge_text_raw",
-    transcription_mode_text_email         : "munge_text_email",
-    transcription_mode_text_punctuation   : "munge_text_punctuation",
-    transcription_mode_text_proofread     : "munge_text_proofread",
-    transcription_mode_text_contact       : "munge_text_contact",
-    transcription_mode_python_punctuation : "munge_python_punctuation",
-    transcription_mode_python_proofread   : "munge_python_proofread",
-    transcription_mode_ai_fetch           : "do_ai_fetch",
-    transcription_mode_run_prompt         : "do_run_prompt",
+    transcription_mode_text_raw          : "munge_text_raw",
+    transcription_mode_text_email        : "munge_text_email",
+    transcription_mode_text_punctuation  : "munge_text_punctuation",
+    transcription_mode_text_proofread    : "munge_text_proofread",
+    transcription_mode_text_contact      : "munge_text_contact",
+    transcription_mode_python_punctuation: "munge_python_punctuation",
+    transcription_mode_python_proofread  : "munge_python_proofread",
+    transcription_mode_server_search     : "do_ddg_search",
+    transcription_mode_run_prompt        : "do_run_prompt",
 }
 class MultiModalMunger:
 
@@ -310,7 +310,7 @@ class MultiModalMunger:
         
         return raw_transcription, mode
     
-    def do_ai_fetch( self, raw_transcription, mode ):
+    def do_ddg_search( self, raw_transcription, mode ):
         
         transcription, mode = self.munge_text_punctuation( raw_transcription, mode )
         
@@ -331,9 +331,9 @@ class MultiModalMunger:
         
         return self.mode == transcription_mode_text_proofread
     
-    def is_ai_fetch( self ):
+    def is_ddg_search( self ):
         
-        return self.mode == transcription_mode_ai_fetch
+        return self.mode == transcription_mode_server_search
     
     def is_run_prompt( self ):
         
