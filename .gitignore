@@ -14,4 +14,4 @@ genie.app/**
 # Omit the script because it contains the open API key
 run-genie-gui.command
 
-contact-information.map
+src/conf/contact-information.map
