@@ -102,7 +102,7 @@ def upload_and_transcribe_mp3_file():
         munger.transcription = response
         munger.results = response
         
-    elif munger.is_ai_fetch():
+    elif munger.is_ddg_search():
         
         print( "Fetching AI results for [{}]...".format( munger.transcription ) )
         results = ddg( munger.transcription, region='wt-wt', safesearch='Off', time='y', max_results=20 )
@@ -112,7 +112,7 @@ def upload_and_transcribe_mp3_file():
     return munger.get_json()
 
 @app.route( "/api/run-raw-prompt-text" )
-def run_prompt():
+def run_raw_prompt_text():
     
     prompt_and_content = request.args.get( "prompt_and_content" )
     prompt_feedback    = request.args.get( "prompt_verbose", default="verbose" )
