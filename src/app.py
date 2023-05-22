@@ -121,15 +121,7 @@ def run_raw_prompt_text():
     
     return genie_client.ask_chat_gpt_using_raw_prompt_and_content( prompt_and_content ).replace( "```", "" )
     
-
-@app.route( "/api/download-text" )
-def download_text():
     
-    text = request.args.get( "text" )
-    
-    # response = make_response( text )
-
-    return text
     
 @app.route( "/api/upload-and-transcribe-wav", methods=[ "POST" ] )
 def upload_and_transcribe_wav_file():
