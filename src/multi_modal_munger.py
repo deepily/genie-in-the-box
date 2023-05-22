@@ -54,13 +54,13 @@ class MultiModalMunger:
             print( "modes_to_methods_dict", self.modes_to_methods_dict, end="\n\n" )
             print( "methods_to_modes_dict", self.methods_to_modes_dict, end="\n\n" )
         
-        result = self.parse( raw_transcription )
-        self.transcription = result[ 0 ]
-        self.mode          = result[ 1 ]
-        
-        # This field added to hold the results of a calculation, e.g.: ai file fetch or eventually proofreading
-        # results will be stashed here
+        # This field added to hold the results of a calculation, e.g.: ddg search, contact information, or eventually proofreading
+        # When all processing is refactored and consistent across all functionality. ¡TODO!
         self.results       = ""
+        
+        parsing_results = self.parse( raw_transcription )
+        self.transcription = parsing_results[ 0 ]
+        self.mode          = parsing_results[ 1 ]
         
     def __str__(self):
 
@@ -246,8 +246,9 @@ class MultiModalMunger:
         raw_transcription = raw_transcription.lower()
         regex = re.compile( '[^a-zA-Z ]' )
         raw_transcription = regex.sub( '', raw_transcription ).replace( "-", " " )
-        # There could be more words included here, but they're superfluous, we're only looking for the 1st word After three have been stripped out already.
-        contact_info_key = raw_transcription.split()[ 0 ]
+        # # There could be more words included here, but they're superfluous, we're only looking for the 1st word After three have been stripped out already.
+        # contact_info_key = raw_transcription.split()[ 0 ]
+        contact_info_key = raw_transcription
         contact_info     = self.contact_info.get( contact_info_key, "N/A" )
         
         if contact_info_key in "full all":
@@ -259,15 +260,21 @@ class MultiModalMunger:
                 self.contact_info[ "email" ],
                 self.contact_info[ "telephone" ]
             )
-            
+        elif contact_info_key == "city state zip":
+        
+            contact_info = "{} {}, {}".format(
+                self.contact_info[ "city" ].title(), self.contact_info[ "state" ].upper(), self.contact_info[ "zip" ]
+            )
+        
         elif contact_info_key == "state":
             contact_info = contact_info.upper()
         elif contact_info_key != "email":
             contact_info = contact_info.title()
         
         self.results = contact_info
-        
-        return contact_info, mode
+        # prefix_plus_key = transcription_mode_text_contact + " " + raw_transcription
+
+        return raw_transcription, mode
     def munge_text_proofread( self, raw_transcription, mode ):
     
         transcription, mode = self.munge_text_punctuation( raw_transcription, mode )
@@ -357,33 +364,36 @@ if __name__ == "__main__":
     
     # transcription = "multimodal contact information name"
     # transcription = "multimodal contact information address"
-    # prefix        = "multimodal contact information"
+    transcription = "City, State, Zip."
+    prefix        = "multimodal contact information"
+    # prefix = ""
+    
     # transcription = "full"
     # transcription = "multimodal ai fetch this information: Large, language models."
     
     # prefix = transcription_mode_run_prompt
     # transcription = "you are a professional prompt creator"
     #
-    # munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
-    # print( munger, end="\n\n" )
-    # print( munger.get_json(), end="\n\n" )
-    # print( "munger.is_ai_fetch()", munger.is_ai_fetch() )
-    # print( "munger.is_run_prompt()", munger.is_run_prompt(), end="\n\n" )
+    munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
+    print( munger, end="\n\n" )
+    print( munger.get_json(), end="\n\n" )
+    print( "munger.is_ddg_search()", munger.is_ddg_search() )
+    print( "munger.is_run_prompt()", munger.is_run_prompt(), end="\n\n" )
     
-    raw_prompt = """
-    Your task is to generate a short summary of a product review from an ecommerce site.
-    Summarize the review below, delimited by triple backticks, in at most 30 words.
-    Review: ```Got this panda plush toy for my daughter's birthday,
-    who loves it and takes it everywhere. It's soft and
-    super cute, and its face has a friendly look. It's
-    a bit small for what I paid though. I think there
-    might be other options that are bigger for the same price. It arrived a day
-    earlier than expected, so I got to play with it myself before I gave it to her. ```
-    """
-    preamble = raw_prompt.split( "```" )[ 0 ].strip()
-    content = raw_prompt.split( "```" )[ 1 ].strip()
-    print( "preamble [{}]".format( preamble ) )
-    print( "  review [{}]".format( content ) )
+    # raw_prompt = """
+    # Your task is to generate a short summary of a product review from an ecommerce site.
+    # Summarize the review below, delimited by triple backticks, in at most 30 words.
+    # Review: ```Got this panda plush toy for my daughter's birthday,
+    # who loves it and takes it everywhere. It's soft and
+    # super cute, and its face has a friendly look. It's
+    # a bit small for what I paid though. I think there
+    # might be other options that are bigger for the same price. It arrived a day
+    # earlier than expected, so I got to play with it myself before I gave it to her. ```
+    # """
+    # preamble = raw_prompt.split( "```" )[ 0 ].strip()
+    # content = raw_prompt.split( "```" )[ 1 ].strip()
+    # print( "preamble [{}]".format( preamble ) )
+    # print( "  review [{}]".format( content ) )
     
     # regex = re.compile( "[.]$", re.IGNORECASE )
     # foo = regex.sub( "", "foo.", 1 )
