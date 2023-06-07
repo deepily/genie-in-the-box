@@ -1,0 +1,30 @@
+classify the following commands below enclosed by 3 backticks.
+
+you have the following choices for classifying the text:
+
+
+- "open new tab URL"
+- "open in current tab URL"
+- "close the current tab"
+- "zoom text in current tab N times"
+- "unzoom text in current tab N times"
+- "command unidentifiable"
+
+format the classification response as json, using the following two field names:
+
+- "command"
+- "raw text"
+
+when the classification involves urls, always append the url to the end of the classification text
+
+command text:
+
+```
+- i want to go to npr.org in another tab
+- go to cnn.com
+- open a new tab and go to washingtonpost.com
+- i want to go home now
+- "zoom zoom zoom"
+- "zoom out zoom out"
+- "zoom in 3 times"
+```
