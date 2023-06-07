@@ -119,7 +119,10 @@ def run_raw_prompt_text():
     
     print( "Running prompt [{}]...".format( prompt_and_content ) )
     
-    return genie_client.ask_chat_gpt_using_raw_prompt_and_content( prompt_and_content ).replace( "```", "" )
+    timer = sw.Stopwatch()
+    response = genie_client.ask_chat_gpt_using_raw_prompt_and_content( prompt_and_content ).replace( "```", "" ).strip()
+    timer.print( "Done!" )
+    return response
     
     
     
