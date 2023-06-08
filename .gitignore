@@ -15,3 +15,6 @@ genie.app/**
 run-genie-gui.command
 
 src/conf/contact-information.map
+
+# Omit Mail Map
+.mailmap
