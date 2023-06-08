@@ -279,7 +279,7 @@ class GenieClient:
                 { "role": "user", "content": content }
             ],
             temperature=0,
-            max_tokens=600,
+            max_tokens=1000,
             top_p=1.0,
             frequency_penalty=0.0,
             presence_penalty=0.0
