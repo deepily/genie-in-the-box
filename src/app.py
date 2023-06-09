@@ -114,6 +114,14 @@ def upload_and_transcribe_mp3_file():
 @app.route( "/api/run-raw-prompt-text" )
 def run_raw_prompt_text():
     
+    for key in request.__dict__:
+        # print( "key [{}] value [{}]".format( key, request.__dict__[ key ] ), end="\n\n" )
+        print( "key [{}]".format( key ) )
+    print()
+    print( "request.args: [{}]".format( request.args ) )
+    print( "request.data: [{}]".format( request.data ) )
+    print( "query_string: [{}]".format( request.query_string ) )
+    
     prompt_and_content = request.args.get( "prompt_and_content" )
     prompt_feedback    = request.args.get( "prompt_verbose", default="verbose" )
     
