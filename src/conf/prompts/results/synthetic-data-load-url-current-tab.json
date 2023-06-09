@@ -1,0 +1,122 @@
+[
+    {
+        "id": 1,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Navigate to www.randomdomain123.com"
+    },
+    {
+        "id": 2,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Open www.anotherdomain456.com in this tab"
+    },
+    {
+        "id": 3,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Take me to www.example789.com"
+    },
+    {
+        "id": 4,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Load www.domainxyz.com in this tab"
+    },
+    {
+        "id": 5,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Visit www.somedomain789.com"
+    },
+    {
+        "id": 6,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Display www.randomdomain456.com in this tab"
+    },
+    {
+        "id": 7,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Load www.domain123.com in the current tab"
+    },
+    {
+        "id": 8,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Take me to www.somedomain456.com in this tab"
+    },
+    {
+        "id": 9,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Open www.anotherdomain789.com in the current tab"
+    },
+    {
+        "id": 10,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Navigate to www.example456.com in this tab"
+    },
+    {
+        "id": 11,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Go to www.randomdomain789.com"
+    },
+    {
+        "id": 12,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Display www.domain456.com in the current tab"
+    },
+    {
+        "id": 13,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Open www.anotherdomain123.com in this tab please"
+    },
+    {
+        "id": 14,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Visit www.somedomain123.com in the current tab"
+    },
+    {
+        "id": 15,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Load www.example789.com in this tab"
+    },
+    {
+        "id": 16,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Take me to www.randomdomain456.com in the current tab"
+    },
+    {
+        "id": 17,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Navigate to www.domain123.com"
+    },
+    {
+        "id": 18,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Go to www.anotherdomain456.com in this tab"
+    },
+    {
+        "id": 19,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Display www.somedomain789.com in the current tab"
+    },
+    {
+        "id": 20,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "Open www.example456.com in this tab"
+    }
+]
