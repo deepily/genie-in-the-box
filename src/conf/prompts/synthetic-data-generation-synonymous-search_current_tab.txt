@@ -13,7 +13,7 @@ return the results in json format, using the following descriptions for each fie
 - "voice_command": this is a constant value, use the voice_command below delimited by three * symbols, DO NOT CHANGE THIS VALUE.
 - "synonymous_command": contains the random and diversely generated sentences. this is the only text field that should vary in the json output.
 
-    system_command: ___search___
+system_command: ___search___
 
 voice_command: ***do a search and display the results in the current tab***
 
