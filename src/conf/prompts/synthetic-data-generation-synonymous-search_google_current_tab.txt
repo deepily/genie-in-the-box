@@ -5,8 +5,7 @@ create randomly generated keywords for each search command and store them in the
 the generated sentences should vary significantly in length from simple and terse (2 words) to long and verbose (7 words).
 the generated sentences should use the term "in the current tab" 50% of the time, the remaining 50% of the generated sentences SHOULD NOT mention "in the current tab".
 
-
-return the results in json format, using the following descriptions for each field in the json output:
+use the following descriptions for each field in the json output:
 
 - "id": indicates the ordinal position of the sentence, the first sentence should have an id of 1, the second sentence should have an id of 2, etc.
 - "system_command": this is a constant value, use the system_command below delimited by three _ symbols, DO NOT CHANGE THIS VALUE.
