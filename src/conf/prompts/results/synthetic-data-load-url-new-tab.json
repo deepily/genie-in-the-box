@@ -1,0 +1,55 @@
+[
+  {
+    "voice_command": "open a new tab and load the following url",
+    "synonymous_command": "open a new tab and navigate to https://www.example.com",
+    "id": 1
+  },
+  {
+    "voice_command": "open a new tab and load the following url",
+    "synonymous_command": "create a new tab and go to https://www.randomwebsite.com",
+    "id": 2
+  },
+  {
+    "voice_command": "open a new tab and load the following url",
+    "synonymous_command": "open a new tab and visit https://www.testsite.net",
+    "id": 3
+  },
+  {
+    "voice_command": "open a new tab and load the following url",
+    "synonymous_command": "create a new tab and load https://www.example.org",
+    "id": 4
+  },
+  {
+    "voice_command": "open a new tab and load the following url",
+    "synonymous_command": "open a new tab and navigate to https://www.randomsite.com",
+    "id": 5
+  },
+  {
+    "voice_command": "open a new tab and load the following url",
+    "synonymous_command": "create a new tab and go to https://www.testwebsite.net",
+    "id": 6
+  },
+  {
+    "voice_command": "open a new tab and load the following url",
+    "synonymous_command": "open a new tab and visit https://www.example.net",
+    "id": 7
+  },
+  {
+    "voice_command": "open a new tab and load the following url",
+    "synonymous_command": "create a new tab and load https://www.randomsite.net",
+    "id": 8
+  },
+  {
+    "voice_command": "open a new tab and load the following url",
+    "synonymous_command": "open a new tab and navigate to https://www.testsite.com",
+    "id": 9
+  },
+  {
+    "voice_command": "open a new tab and load the following url",
+    "synonymous_command": "create a new tab and go to https://www.examplewebsite.com",
+    "id": 10
+  }
+]
+
+
+
