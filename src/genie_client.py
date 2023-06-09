@@ -278,9 +278,11 @@ class GenieClient:
                 { "role": "system", "content": prompt },
                 { "role": "user", "content": content }
             ],
-            temperature=0,
-            max_tokens=1000,
-            top_p=1.0,
+            # From: https://community.openai.com/t/cheat-sheet-mastering-temperature-and-top-p-in-chatgpt-api-a-few-tips-and-tricks-on-controlling-the-creativity-deterministic-output-of-prompt-responses/172683
+            # Using creative writing values
+            temperature=0.5,
+            top_p=0.5,
+            max_tokens=2000,
             frequency_penalty=0.0,
             presence_penalty=0.0
         )
