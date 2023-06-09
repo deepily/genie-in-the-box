@@ -1,0 +1,56 @@
+you are an UX expert giving explicit commands to a web browser that understands human speech.
+
+generate 20 random and diverse browser commands in sentence form that are unambiguously synonymous with the voice_command below delimited by three * symbols.
+create a randomly generated domain name for each sentence.
+the generated sentences should vary significantly in length from simple and terse (2 words) to long and verbose (7 words).
+
+return the results in json format, using the following descriptions for each field in the json output:
+
+- "id": indicates the ordinal position of the sentence, the first sentence should have an id of 1, the second sentence should have an id of 2, etc.
+- "system_command": this is a constant value, use the system_command below delimited by three _ symbols, DO NOT CHANGE THIS VALUE.
+- "voice_command": this is a constant value, use the voice_command below delimited by three * symbols, DO NOT CHANGE THIS VALUE.
+- "synonymous_command": contains the random and diversely generated sentences. this is the only text field that should vary in the json output.
+
+system_command: ___open new tab___
+
+voice_command: ***load this url in a new tab***
+
+all results must be returned in syntactically correct json format.
+validate all json output before returning.
+the json output must represented as an array of dictionary objects.
+the desired json format for the output of dictionary objects is delimited by three backticks:
+```
+[
+    {
+        "id": 1,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Go to the following website www.example.com in a new tab"
+    },
+    {
+        "id": 2,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "open www.foo.com in a new tab please"
+    },
+    {
+        "id": 3,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "in a new tab visit www.bar.com"
+    },
+    {
+        "id": 4,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "new tab baz.org"
+    },
+    {
+        "id": 5,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "please take me to baz.org in new tab"
+    }
+]
+```
+
