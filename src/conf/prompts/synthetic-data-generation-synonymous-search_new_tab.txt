@@ -1,0 +1,66 @@
+you are an UX expert giving explicit commands to a web browser that understands human speech.
+
+generate 20 random and diverse browser commands in sentence form that are unambiguously synonymous with the voice_command below delimited by three * symbols.
+create randomly generated keywords for each search command and store them in the "keywords" field.
+the generated sentences should vary significantly in length from simple and terse (2 words) to long and verbose (7 words).
+the generated sentences should use the equivalent of term "new tab" 100% of the time
+
+return the results in json format, using the following descriptions for each field in the json output:
+
+- "id": indicates the ordinal position of the sentence, the first sentence should have an id of 1, the second sentence should have an id of 2, etc.
+- "system_command": this is a constant value, use the system_command below delimited by three _ symbols, DO NOT CHANGE THIS VALUE.
+- "voice_command": this is a constant value, use the voice_command below delimited by three * symbols, DO NOT CHANGE THIS VALUE.
+- "synonymous_command": contains the random and diversely generated sentences. this is the only text field that should vary in the json output.
+
+system_command: ___search new tab___
+
+voice_command: ***do a search and display the results in a new tab***
+
+all results must be returned exclusively in json format.
+use the following format for the json output below, delimited by three backticks:
+```
+[
+  {
+    "id": 1
+    "system_command": "search new tab",
+    "voice_command": "do a search and display the results in a new tab",
+    "synonymous_command": "in a new tab search for",
+    "keywords": "popular songs 2021",
+  },
+  {
+    "id": 2
+    "system_command": "search new tab",
+    "voice_command": "do a search and display the results in a new tab",
+    "synonymous_command": "Do a search and show results in a new tab",
+    "keywords": "tropical plants",
+  },
+  {
+    "id": 3
+    "system_command": "search new tab",
+    "voice_command": "do a search and display the results in a new tab",
+    "synonymous_command": "Display search results in a new tab",
+    "keywords": "best pizza places",
+  },
+  {
+    "id": 4
+    "system_command": "search new tab",
+    "voice_command": "do a search and display the results in a new tab",
+    "synonymous_command": "search for in a new tab",
+    "keywords": "best pho in town",
+  },
+  {
+    "id": 5
+    "system_command": "search new tab",
+    "voice_command": "do a search and display the results in a new tab",
+    "synonymous_command": "run a search and show results in a new tab",
+    "keywords": "favorite diners",
+  },
+  {
+    "id": 6
+    "system_command": "search new tab",
+    "voice_command": "do a search and display the results in a new tab",
+    "synonymous_command": "in a new tab run a search",
+    "keywords": "favorite pillow covers",
+  }
+]
+```
