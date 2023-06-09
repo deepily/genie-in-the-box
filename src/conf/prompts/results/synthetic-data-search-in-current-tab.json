@@ -1,0 +1,142 @@
+[
+    {
+        "id": 1,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "in the current tab search for",
+        "keywords": "popular songs 2021"
+    },
+    {
+        "id": 2,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "Do a search and show results",
+        "keywords": "tropical plants"
+    },
+    {
+        "id": 3,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "Display search results in the current tab",
+        "keywords": "best pizza places"
+    },
+    {
+        "id": 4,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "do a search",
+        "keywords": "best pho in town"
+    },
+    {
+        "id": 5,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "run a search and show results in the current tab",
+        "keywords": "favorite diners"
+    },
+    {
+        "id": 6,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "run a search",
+        "keywords": "favorite pillow covers"
+    },
+    {
+        "id": 7,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "search and display results in current tab",
+        "keywords": "new movies 2021"
+    },
+    {
+        "id": 8,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "show search results in the current tab",
+        "keywords": "best hiking trails"
+    },
+    {
+        "id": 9,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "display search results",
+        "keywords": "best sushi restaurants"
+    },
+    {
+        "id": 10,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "search and show results in the current tab",
+        "keywords": "top-rated coffee shops"
+    },
+    {
+        "id": 11,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "search and display results",
+        "keywords": "best running shoes"
+    },
+    {
+        "id": 12,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "show search results",
+        "keywords": "best laptops 2021"
+    },
+    {
+        "id": 13,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "run a search and display results in the current tab",
+        "keywords": "best ice cream shops"
+    },
+    {
+        "id": 14,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "search and show results",
+        "keywords": "best pizza toppings"
+    },
+    {
+        "id": 15,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "display search results in current tab",
+        "keywords": "best workout apps"
+    },
+    {
+        "id": 16,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "run a search and show results",
+        "keywords": "best book clubs"
+    },
+    {
+        "id": 17,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "search and display results in current tab",
+        "keywords": "best vegan restaurants"
+    },
+    {
+        "id": 18,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "show search results in current tab",
+        "keywords": "best beaches in the world"
+    },
+    {
+        "id": 19,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "search and show results in current tab",
+        "keywords": "best art museums"
+    },
+    {
+        "id": 20,
+        "system_command": "do search",
+        "voice_command": "do a search and display the results in the current tab",
+        "synonymous_command": "run a search and display results",
+        "keywords": "best budget headphones"
+    }
+]
