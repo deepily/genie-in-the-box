@@ -1,8 +1,6 @@
 import re
 
-import util as du # du = "deepily's utils"
-import genie_client as gc
-import util_stopwatch as sw
+from src.lib import util as du
 
 # Currently, comma, all transcription mode descriptors are three words long.
 # This will become important or more important in the future.
@@ -57,7 +55,7 @@ class MultiModalMunger:
             print( "modes_to_methods_dict", self.modes_to_methods_dict, end="\n\n" )
             print( "methods_to_modes_dict", self.methods_to_modes_dict, end="\n\n" )
         
-        # This field added to hold the results of a calculation, e.g.: ddg search, contact information, or eventually proofreading
+        # This field added to hold the data of a calculation, e.g.: ddg search, contact information, or eventually proofreading
         # When all processing is refactored and consistent across all functionality. ¡TODO!
         self.results       = ""
         
@@ -77,7 +75,7 @@ class MultiModalMunger:
 
     def get_json( self ):
         
-        json = { "mode": self.mode, "prefix": self.prefix, "raw_transcription": self.raw_transcription, "transcription": self.transcription, "results": self.results }
+        json = { "mode": self.mode, "prefix": self.prefix, "raw_transcription": self.raw_transcription, "transcription": self.transcription, "data": self.results }
         
         return json
         

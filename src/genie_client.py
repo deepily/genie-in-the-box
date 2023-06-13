@@ -4,7 +4,6 @@ import sys
 import os
 import re
 from threading import Thread
-from multiprocessing import Process
 
 import pyaudio
 
@@ -16,7 +15,7 @@ import requests
 import openai
 import pyperclip
 
-import util
+from src.lib import util
 
 wav_file     = "vox-to-be-transcribed.wav"
 docker_path  = "/var/io/{}"
@@ -27,7 +26,8 @@ write_method = "file" # "file" or "flask"
 class GenieClient:
     
     def __init__( self, calling_gui=None, startup_mode="transcribe", copy_transx_to_clipboard=True, runtime_context="docker", write_method="flask",
-                  debug=False, recording_timeout=30, stt_address="127.0.0.1:7999", tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav", cwd=os.getcwd() ):
+                  debug=False, recording_timeout=30, stt_address="127.0.0.1:7999", tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav",
+                  proj_root="/Users/rruiz/Projects/projects-sshfs/genie-in-the-box" ):
         
         self.debug = debug
         self.bar = "*" * 80
@@ -47,13 +47,13 @@ class GenieClient:
         if debug: print( "Setting runtime output_path to [{}]".format( self.output_path ) )
 
         self.startup_mode       = startup_mode
-        self.cwd                = cwd
-        self.modes_dict         = util.get_file_as_json( self.cwd + "/conf/modes.json" )
+        self.proj_root          = proj_root
+        self.modes_dict         = util.get_file_as_json( self.proj_root + "/src/conf/modes.json" )
         self.methods_dict       = self._get_titles_to_methods_dict()
         self.keys_dict          = self._get_titles_to_keys_dict()
-        self.prompts_dict       = util.get_file_as_dictionary( "conf/prompts.txt", lower_case=False )
+        self.prompts_dict       = util.get_file_as_dictionary( self.proj_root + "/src/conf/prompts.txt", lower_case=False )
         self.prompt_titles      = self._get_prompt_titles()
-        self.punctuation        = util.get_file_as_dictionary( "conf/translation-dictionary.map", lower_case=True )
+        self.punctuation        = util.get_file_as_dictionary( self.proj_root + "/src/conf/translation-dictionary.map", lower_case=True )
         self.default_mode_index = self._get_default_mode_index()
         self.calling_gui        = calling_gui
         self.recording_timeout  = recording_timeout
@@ -65,12 +65,12 @@ class GenieClient:
         self.tts_wav_path       = tts_output_path
         self.py                 = pyaudio.PyAudio()
         
-        self.sound_resources_dir        = os.getcwd() + "/resources/sound/"
+        self.sound_resources_dir = self.proj_root + "/src/resources/sound/"
         
         # tracks what the recording & writing thread is doing
         self.finished_serializing_audio = False
 
-        # Do we want to automatically stash the results of a transcription or processing of a transcription to the clipboard when we're done?
+        # Do we want to automatically stash the data of a transcription or processing of a transcription to the clipboard when we're done?
         self.copy_transx_to_clipboard   = copy_transx_to_clipboard
 
         # ad hoc addition to the translation dictionary.
@@ -653,9 +653,9 @@ if __name__ == "__main__":
     # print( "After punctuation substitution: \n\n{}".format( query ), end="\n\n" )
 
     
-    # results = gc.ask_chat_gpt_code( query, preamble=preamble )
+    # data = gc.ask_chat_gpt_code( query, preamble=preamble )
     #
-    # print( "Results: \n\n{}".format( results ), end="\n\n" )
+    # print( "Results: \n\n{}".format( data ), end="\n\n" )
     #
     # gc.process_by_mode_title( gc.modes_dict[ default_mode ][ "title" ] )
     # gc.start_recording()

@@ -7,7 +7,8 @@ from threading import Thread
 from tkinter import ttk, ACTIVE, DISABLED
 
 import genie_client as gc
-import util
+from src.lib import util
+
 
 class GenieGui:
     
