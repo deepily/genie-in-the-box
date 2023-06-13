@@ -19,7 +19,6 @@ from src.lib import util
 
 wav_file     = "vox-to-be-transcribed.wav"
 docker_path  = "/var/io/{}"
-# local_path   = "/Users/rruiz/Projects/projects-sshfs/io/{}"
 local_path   = "/Volumes/projects/io/{}"
 write_method = "file" # "file" or "flask"
 
@@ -27,7 +26,7 @@ class GenieClient:
     
     def __init__( self, calling_gui=None, startup_mode="transcribe", copy_transx_to_clipboard=True, runtime_context="docker", write_method="flask",
                   debug=False, recording_timeout=30, stt_address="127.0.0.1:7999", tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav",
-                  proj_root="/Users/rruiz/Projects/projects-sshfs/genie-in-the-box" ):
+                  project_root="/var/genie-in-the-box" ):
         
         self.debug = debug
         self.bar = "*" * 80
@@ -47,13 +46,21 @@ class GenieClient:
         if debug: print( "Setting runtime output_path to [{}]".format( self.output_path ) )
 
         self.startup_mode       = startup_mode
-        self.proj_root          = proj_root
-        self.modes_dict         = util.get_file_as_json( self.proj_root + "/src/conf/modes.json" )
+        
+        # Test for project root and set accordingly
+        print( "GENIE_IN_THE_BOX_ROOT [{}]".format( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) ) )
+        print( "          os.getcwd() [{}]".format( os.getcwd() ) )
+        if os.getenv( "GENIE_IN_THE_BOX_ROOT" ) is not None:
+            self.project_root = os.getenv( "GENIE_IN_THE_BOX_ROOT" )
+        else:
+            self.project_root = project_root
+            
+        self.punctuation        = util.get_file_as_dictionary( self.project_root + "/src/conf/translation-dictionary.map", lower_case=True )
+        self.prompts_dict       = util.get_file_as_dictionary( self.project_root + "/src/conf/prompts.txt", lower_case=False )
+        self.modes_dict         = util.get_file_as_json( self.project_root + "/src/conf/modes.json" )
         self.methods_dict       = self._get_titles_to_methods_dict()
         self.keys_dict          = self._get_titles_to_keys_dict()
-        self.prompts_dict       = util.get_file_as_dictionary( self.proj_root + "/src/conf/prompts.txt", lower_case=False )
         self.prompt_titles      = self._get_prompt_titles()
-        self.punctuation        = util.get_file_as_dictionary( self.proj_root + "/src/conf/translation-dictionary.map", lower_case=True )
         self.default_mode_index = self._get_default_mode_index()
         self.calling_gui        = calling_gui
         self.recording_timeout  = recording_timeout
@@ -65,7 +72,7 @@ class GenieClient:
         self.tts_wav_path       = tts_output_path
         self.py                 = pyaudio.PyAudio()
         
-        self.sound_resources_dir = self.proj_root + "/src/resources/sound/"
+        self.sound_resources_dir = self.project_root + "/src/resources/sound/"
         
         # tracks what the recording & writing thread is doing
         self.finished_serializing_audio = False
