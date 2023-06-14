@@ -109,7 +109,59 @@ def get_file_as_dictionary( path, lower_case=False, omit_comments=True, debug=Fa
     
     return lines_as_dict
 
+def print_banner( msg, expletive=False, chunk="¡@#!-$?%^_¿", end="\n\n", prepend_nl=False, flex=False ):
 
+    """
+    Prints message to console w/ 'header'/horizontal lines as brackets
+
+    :param expletive: Do you want a fancy error string, like in the cartoons?
+
+    :param chunk: Allows caller to use their own expletives string
+
+    :param end: String representation of multiple or no newline characters, just like in print( "foo", end="\n\n" )
+
+    :param msg: What do you want to print to the console?
+
+    :param prepend_nl: Insert a NL char before printing the banner
+
+    :param flex: Adapt bar line length to the length of message? Defaults to False
+
+    :return: None, prints to console
+    """
+    if prepend_nl: print()
+
+    max_len = 120
+    if expletive:
+
+        bar_str = ""
+        while len( bar_str ) < max_len:
+            bar_str += chunk
+
+    elif flex:
+
+        # Get max length of string, Splitting onCharacters
+        bar_len = max( [ len( line ) for line in msg.split( "\n" ) ] + [ max_len ] ) + 2
+        print( bar_len )
+        bar_str = ""
+        while len( bar_str ) < bar_len:
+            bar_str += "-"
+
+    else:
+
+        bar_str = ""
+        while len( bar_str ) < max_len:
+            bar_str += "-"
+        # bar_str = "----------------------------------------------------------------------------------------------------"
+
+    print( bar_str )
+    if expletive:
+        print( chunk )
+        print( chunk, msg )
+        print( chunk )
+    else:
+        print( "-", msg )
+    print( bar_str, end=end )
+    
 def get_project_root_path():
     
     """
