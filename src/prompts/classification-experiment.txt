@@ -2,8 +2,8 @@ classify the following commands below enclosed by 3 backticks.
 
 you have the following choices for classifying the text:
 
-- "open new tab URL"
-- "open in current tab URL"
+- "open new tab"
+- "open in current tab"
 - "close the current tab"
 - "zoom text in current tab N times"
 - "unzoom text in current tab N times"
@@ -13,7 +13,7 @@ you have the following choices for classifying the text:
 
 format the classification response as json, using the following three field names:
 
-- "command"
+- "classification"
 - "raw transcription"
 - "args"
 
