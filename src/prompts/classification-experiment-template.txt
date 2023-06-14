@@ -1,0 +1,23 @@
+classify the following synonymous command below enclosed by 3 backticks.
+
+you have the following choices for classifying the text:
+
+- "open in new tab"
+- "open in current tab"
+- "close the current tab"
+- "zoom text in current tab N times"
+- "unzoom text in current tab N times"
+- "reset zoom"
+- "refresh current tab"
+- "command not recognized"
+
+format the classification response as json, using the following format and field names:
+{
+  "classification": "_______________________",
+  "raw transcription": "Navigate to www.randomdomain123.com",
+  "args": "www.randomdomain123.com"
+}
+
+when the classification involves urls, domain names, or other additional arguments, record them in the "args" field
+
+synonymous command: ```{synonymous_command}```
