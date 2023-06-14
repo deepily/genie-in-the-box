@@ -2,48 +2,87 @@ import os
 
 from src import genie_client as gc
 from src.lib import util as du
+from src.lib import util_stopwatch as sw
 
 import json
-
+import pandas as pd
 
 class Accuracy:
     
     def __init__( self ):
         
-        # print( "GENIE_IN_THE_BOX_ROOT [{}]".format( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) ) )
-        # if os.getenv( "GENIE_IN_THE_BOX_ROOT" ) is not None:
-        #     self.project_root = os.getenv( "GENIE_IN_THE_BOX_ROOT" )
-        # else:
-        #     self.project_root = proj_root
-        
         self.project_root = du.get_project_root_path()
-        self.prompt       = du.get_file_as_string( self.project_root + "/src/prompts/classification-experiment.txt" )
+        self.prompt       = du.get_file_as_string( self.project_root + "/src/prompts/classification-experiment-template.txt" )
+        
+        print( "Using project root [{}]".format( self.project_root ) )
+        
+        pd.set_option( "display.width", 512)
+        pd.set_option( "display.max_columns", 6 )
     
     def load_json( self, path ):
         
-        with open( path, 'r' ) as f:
-            data = json.load( f )
+        df = pd.read_json( path )
         
-        return data
+        return df
+    
+    def load_training_data( self ):
+        
+        # load data
+        paths = [
+            self.project_root + "/src/prompts/data/synthetic-data-load-url-current-tab.json",
+            self.project_root + "/src/prompts/data/synthetic-data-load-url-new-tab.json"
+        ]
+        dfs = []
+        for path in paths:
+            
+            df = self.load_json( path )
+            total = df.shape[ 0 ]
+            print( "prompts in this df: {}".format( total ) )
+            dfs.append( df )
+            
+        df = pd.concat( dfs )
+        df.reset_index( inplace=True )
+        df.drop( "index", axis=1, inplace=True )
+        
+        return df
     
     
-
+    
 if __name__ == "__main__":
     
-    # print( "Calculating accuracy..." )
     accuracy = Accuracy()
-    print( accuracy.project_root )
-    # load data
-    data = accuracy.load_json( "data/synthetic-data-load-url-current-tab.json" )
-    # get total number of prompts
-    total = len( data )
-    print( "Total number of prompts: {}".format( total ) )
-    print( data[0] )
+    
+    df = accuracy.load_training_data()
+    print( "Total number of prompts: {}".format( df.shape[ 0 ] ) )
+    # print( df )
+
+    commands        = df[ "synonymous_command" ].tolist()
+    system_commands = df[ "system_command"     ].tolist()
 
     genie_client = gc.GenieClient()
-    print( genie_client )
+
+    timer = sw.Stopwatch()
+    correct = 0
+
+    for idx, command in enumerate( commands ):
+
+        prompt = accuracy.prompt.replace( "{synonymous_command}", command )
+
+        timer_item = sw.Stopwatch()
+        response = genie_client.ask_chat_gpt_using_raw_prompt_and_content( prompt )
+        response = json.loads( response )
+
+        print( idx, command, response )
+        timer_item.print( "Done interpreting one command", use_millis=True )
+        print( "-" * 120 )
+
+        if system_commands[ 0 ] == response[ "classification" ]:
+            correct += 1
+
+    timer.print( "Done Iterating commands", use_millis=False )
+
+    accuracy = 100.0 * correct / len( commands )
+    accuracy = round( accuracy, 1 )
+
+    du.print_banner( "[{}] correct out of [{}] commands. Accuracy: {}%".format( correct, len( commands ), accuracy ) )
     
-    # if os.getenv( "GENIE_IN_THE_BOX_ROOT" ):
-    #     print( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) )
-    # else:
-    #     print( "GENIE_IN_THE_BOX_ROOT not set!" )
