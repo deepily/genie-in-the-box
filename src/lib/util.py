@@ -3,8 +3,15 @@ import os
 import time
 import regex as re
 
+debug = False
+
+def init( d ):
+    
+    global debug
+    debug = d
 
 def get_name_value_pairs( arg_list, debug=False ):
+    
     """
     Parses a list of strings -- name=value -- into dictionary format { "name":"value" }
 
@@ -102,6 +109,25 @@ def get_file_as_dictionary( path, lower_case=False, omit_comments=True, debug=Fa
     
     return lines_as_dict
 
+
+def get_project_root_path():
+    
+    """
+    Returns the path to the root of the project.
+    
+    If we're running in a docker container, we need to set the project root to the docker container's root. Otherwise,
+    we can just use the working directory specified in the environment variable.
+    :return:
+    """
+    
+    if debug:
+        print( "GENIE_IN_THE_BOX_ROOT [{}]".format( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) ) )
+        print( "          os.getcwd() [{}]".format( os.getcwd() ) )
+        
+    if "GENIE_IN_THE_BOX_ROOT" in os.environ:
+        return os.environ[ "GENIE_IN_THE_BOX_ROOT" ]
+    else:
+        return "/var/genie-in-the-box"
 
 if __name__ == "__main__":
     
