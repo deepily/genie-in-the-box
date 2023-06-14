@@ -15,7 +15,7 @@ import requests
 import openai
 import pyperclip
 
-from src.lib import util
+from src.lib import util as du
 
 wav_file     = "vox-to-be-transcribed.wav"
 docker_path  = "/var/io/{}"
@@ -25,8 +25,7 @@ write_method = "file" # "file" or "flask"
 class GenieClient:
     
     def __init__( self, calling_gui=None, startup_mode="transcribe", copy_transx_to_clipboard=True, runtime_context="docker", write_method="flask",
-                  debug=False, recording_timeout=30, stt_address="127.0.0.1:7999", tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav",
-                  project_root="/var/genie-in-the-box" ):
+                  debug=False, recording_timeout=30, stt_address="127.0.0.1:7999", tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav" ):
         
         self.debug = debug
         self.bar = "*" * 80
@@ -48,16 +47,22 @@ class GenieClient:
         self.startup_mode       = startup_mode
         
         # Test for project root and set accordingly
-        print( "GENIE_IN_THE_BOX_ROOT [{}]".format( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) ) )
-        print( "          os.getcwd() [{}]".format( os.getcwd() ) )
-        if os.getenv( "GENIE_IN_THE_BOX_ROOT" ) is not None:
-            self.project_root = os.getenv( "GENIE_IN_THE_BOX_ROOT" )
-        else:
-            self.project_root = project_root
+        # if debug:
+        #     print( "GENIE_IN_THE_BOX_ROOT [{}]".format( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) ) )
+        #     print( "          os.getcwd() [{}]".format( os.getcwd() ) )
             
-        self.punctuation        = util.get_file_as_dictionary( self.project_root + "/src/conf/translation-dictionary.map", lower_case=True )
-        self.prompts_dict       = util.get_file_as_dictionary( self.project_root + "/src/conf/prompts.txt", lower_case=False )
-        self.modes_dict         = util.get_file_as_json( self.project_root + "/src/conf/modes.json" )
+        # If we're running in a docker container, we need to set the project root to the docker container's root
+        # otherwise, we can just use the working directory specified in the environment variable
+        # if os.getenv( "GENIE_IN_THE_BOX_ROOT" ) is not None:
+        #     self.project_root = os.getenv( "GENIE_IN_THE_BOX_ROOT" )
+        # else:
+        #     self.project_root = project_root
+        
+        self.project_root       = du.get_project_root_path()
+            
+        self.punctuation        = du.get_file_as_dictionary( self.project_root + "/src/conf/translation-dictionary.map", lower_case=True )
+        self.prompts_dict       = du.get_file_as_dictionary( self.project_root + "/src/conf/prompts.txt", lower_case=False )
+        self.modes_dict         = du.get_file_as_json(       self.project_root + "/src/conf/modes.json" )
         self.methods_dict       = self._get_titles_to_methods_dict()
         self.keys_dict          = self._get_titles_to_keys_dict()
         self.prompt_titles      = self._get_prompt_titles()
@@ -81,7 +86,9 @@ class GenieClient:
         self.copy_transx_to_clipboard   = copy_transx_to_clipboard
 
         # ad hoc addition to the translation dictionary.
-        self.punctuation[ "space" ] = " "
+        # This is superfluous, now that I found a way to escape white space characters
+        # self.punctuation[ "space" ] = " "
+        
     def get_titles( self ):
     
         titles = [ ]
@@ -597,7 +604,7 @@ class GenieClient:
 if __name__ == "__main__":
     
     print( "Starting GenieClient in [{}]...".format( os.getcwd() ) )
-    cli_args = util.get_name_value_pairs( sys.argv )
+    cli_args = du.get_name_value_pairs( sys.argv )
 
     runtime_context   = cli_args.get( "runtime_context", "docker" )
     write_method      = cli_args.get( "write_method", "flask" )

@@ -445,11 +445,6 @@ class GenieGui:
 # Create main function to run the program.
 if __name__ == "__main__":
     
-    # def foo():
-    #     print( "foo" )
-    #
-    # "foo"
-    
     print( "Starting GenieClient in [{}]...".format( os.getcwd() ) )
     cli_args = util.get_name_value_pairs( sys.argv )
 

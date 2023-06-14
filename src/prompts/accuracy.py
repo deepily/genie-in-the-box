@@ -8,14 +8,16 @@ import json
 
 class Accuracy:
     
-    def __init__( self, proj_root="/var/genie-in-the-box/src" ):
+    def __init__( self ):
         
-        print( "GENIE_IN_THE_BOX_ROOT [{}]".format( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) ) )
-        if os.getenv( "GENIE_IN_THE_BOX_ROOT" ) is not None:
-            self.project_root = os.getenv( "GENIE_IN_THE_BOX_ROOT" )
-        else:
-            self.project_root = proj_root
-        self.prompt    = du.get_file_as_string( self.project_root + "/src/prompts/classification-experiment.txt" )
+        # print( "GENIE_IN_THE_BOX_ROOT [{}]".format( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) ) )
+        # if os.getenv( "GENIE_IN_THE_BOX_ROOT" ) is not None:
+        #     self.project_root = os.getenv( "GENIE_IN_THE_BOX_ROOT" )
+        # else:
+        #     self.project_root = proj_root
+        
+        self.project_root = du.get_project_root_path()
+        self.prompt       = du.get_file_as_string( self.project_root + "/src/prompts/classification-experiment.txt" )
     
     def load_json( self, path ):
         

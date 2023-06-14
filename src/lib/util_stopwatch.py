@@ -70,12 +70,13 @@ class Stopwatch:
 
 
 def about( self ):
-    util.print_banner( "{0} about() called".format( os.path.basename( __file__ ) ), end="\n\n" )
+    
+    du.print_banner( "{0} about() called".format( os.path.basename( __file__ ) ), end="\n\n" )
     
     file_name = os.path.basename( __file__ )
     file_path = os.path.abspath( __file__ )
     
-    util.generic_about( self, file_name, file_path )
+    du.generic_about( self, file_name, file_path )
 
 
 if __name__ == '__main__':
