@@ -1,6 +1,6 @@
 import re
 
-from src.lib import util as du
+from lib import util as du
 
 # Currently, comma, all transcription mode descriptors are three words long.
 # This will become important or more important in the future.

@@ -7,7 +7,7 @@ from threading import Thread
 from tkinter import ttk, ACTIVE, DISABLED
 
 import genie_client as gc
-from src.lib import util
+import lib.util as du
 
 
 class GenieGui:
@@ -446,7 +446,7 @@ class GenieGui:
 if __name__ == "__main__":
     
     print( "Starting GenieClient in [{}]...".format( os.getcwd() ) )
-    cli_args = util.get_name_value_pairs( sys.argv )
+    cli_args = du.get_name_value_pairs( sys.argv )
 
     # runtime_context        = cli_args.get( "runtime_context", "docker" )
     # write_method           = cli_args.get( "write_method", "flask" )
@@ -459,7 +459,8 @@ if __name__ == "__main__":
         # runtime_context=runtime_context,
         # write_method=write_method,
         recording_timeout=recording_timeout,
-        record_once_on_startup=record_once_on_startup
+        record_once_on_startup=record_once_on_startup,
+        debug=False
     )
     # Watch out where the Huskies go. Don't you eat the yellow snow!
     # gg.genie_client.do_gpt_prose_explanation_from_clipboard()
@@ -468,3 +469,5 @@ if __name__ == "__main__":
     
     #
     # sys.exit( 0 )
+    
+    

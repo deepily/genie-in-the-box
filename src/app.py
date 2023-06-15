@@ -9,13 +9,15 @@ from duckduckgo_search import ddg
 import whisper
 import base64
 
-import src.genie_client       as gc
-import src.multi_modal_munger as mmm
-import src.lib.util_stopwatch as sw
+# print( "os.getcwd() [{}]".format( os.getcwd() ) )
+# print( "GENIE_IN_THE_BOX_ROOT [{}]".format( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) ) )
+
+import genie_client       as gc
+import multi_modal_munger as mmm
+import lib.util_stopwatch as sw
 
 app = Flask( __name__ )
 
-print( "os.getcwd() [{}]".format( os.getcwd() ) )
 
 # Props to StackOverflow for this workaround:https://stackoverflow.com/questions/25594893/how-to-enable-cors-in-flask
 CORS( app )

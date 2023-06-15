@@ -1,7 +1,7 @@
 import datetime as dt
 import os
 
-from src.lib import util as du
+from lib import util as du
 
 
 class Stopwatch:

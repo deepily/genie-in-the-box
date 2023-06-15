@@ -15,7 +15,20 @@ import requests
 import openai
 import pyperclip
 
-from src.lib import util as du
+# gib_path = os.getenv( "GENIE_IN_THE_BOX_ROOT" )
+# print( "GENIE_IN_THE_BOX_ROOT [{}]".format( gib_path ) )
+# path = os.getenv( "GENIE_IN_THE_BOX_ROOT" ) + "/src/lib"
+# if path not in sys.path:
+#
+#     print( "Adding [{}] to sys.path".format( path ) )
+#     sys.path.append( path )
+# else:
+#     print( "[{}] already in sys.path".format( path ) )
+#
+# print( sys.path )
+
+# from src.lib import util as du
+import lib.util as du
 
 wav_file     = "vox-to-be-transcribed.wav"
 docker_path  = "/var/io/{}"
@@ -45,18 +58,6 @@ class GenieClient:
         if debug: print( "Setting runtime output_path to [{}]".format( self.output_path ) )
 
         self.startup_mode       = startup_mode
-        
-        # Test for project root and set accordingly
-        # if debug:
-        #     print( "GENIE_IN_THE_BOX_ROOT [{}]".format( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) ) )
-        #     print( "          os.getcwd() [{}]".format( os.getcwd() ) )
-            
-        # If we're running in a docker container, we need to set the project root to the docker container's root
-        # otherwise, we can just use the working directory specified in the environment variable
-        # if os.getenv( "GENIE_IN_THE_BOX_ROOT" ) is not None:
-        #     self.project_root = os.getenv( "GENIE_IN_THE_BOX_ROOT" )
-        # else:
-        #     self.project_root = project_root
         
         self.project_root       = du.get_project_root_path()
             
@@ -300,7 +301,7 @@ class GenieClient:
             frequency_penalty=0.0,
             presence_penalty=0.0
         )
-        print( response )
+        if self.debug: print( response )
         
         return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
     
@@ -608,7 +609,8 @@ if __name__ == "__main__":
 
     runtime_context   = cli_args.get( "runtime_context", "docker" )
     write_method      = cli_args.get( "write_method", "flask" )
-    default_mode      = cli_args.get( "default_mode", "transcribe_and_clean_python" )
+    # default_mode      = cli_args.get( "default_mode", "transcribe_and_clean_python" )
+    default_mode      = cli_args.get( "default_mode", "transcribe" )
     recording_timeout = int( cli_args.get( "recording_timeout", 3 ) )
     
     print( "     default_mode: [{}]".format( default_mode ) )
@@ -627,7 +629,8 @@ if __name__ == "__main__":
     # print( code )
 
 
-    # transcription = gc.do_transcription()
+    transcription = gc.do_transcription()
+    print( transcription )
     # gc.do_gpt_by_voice()
     # gc.do_gpt_from_clipboard()
     # gc.do_transcribe_and_clean()
@@ -636,9 +639,9 @@ if __name__ == "__main__":
     # preamble = "Clean up the following raw text transcription created by whisper.ai. Correct spelling and format " \
     #           "output as Python source code w/o any capitalization. Source code must compile" \
     #
-    query = "Let me stop you right there, Colin. First, comma. You'd better stop shouting so much comma. Okay, question mark. By the way comma, what's it like to open bracket almost exclusively, close bracket, use your voice comma instead of your hands. question mark. "
-
-    print( gc.munge_prose( query ) )
+    # query = "Let me stop you right there, Colin. First, comma. You'd better stop shouting so much comma. Okay, question mark. By the way comma, what's it like to open bracket almost exclusively, close bracket, use your voice comma instead of your hands. question mark. "
+    #
+    # print( gc.munge_prose( query ) )
 
     #
     # print( "1) Before punctuation translation: \n\n{}".format( query ), end="\n\n" )
