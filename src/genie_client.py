@@ -60,7 +60,9 @@ class GenieClient:
         self.startup_mode       = startup_mode
         
         self.project_root       = du.get_project_root_path()
-            
+        
+        print( "         self.project_root [{}]".format( self.project_root ) )
+        print( "translation-dictionary.map [{}]".format( self.project_root + "/src/conf/translation-dictionary.map" ) )
         self.punctuation        = du.get_file_as_dictionary( self.project_root + "/src/conf/translation-dictionary.map", lower_case=True )
         self.prompts_dict       = du.get_file_as_dictionary( self.project_root + "/src/conf/prompts.txt", lower_case=False )
         self.modes_dict         = du.get_file_as_json(       self.project_root + "/src/conf/modes.json" )
