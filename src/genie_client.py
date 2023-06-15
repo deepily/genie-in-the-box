@@ -284,8 +284,9 @@ class GenieClient:
         prompt  = prompt_and_content.split( "```" )[ 0 ].strip()
         content = prompt_and_content.split( "```" )[ 1 ].strip()
         
-        print( " prompt [{}]".format( prompt ) )
-        print( "content [{}]".format( content ) )
+        if self.debug:
+            print( " prompt [{}]".format( prompt ) )
+            print( "content [{}]".format( content ) )
         
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -323,7 +324,7 @@ class GenieClient:
             frequency_penalty=0.0,
             presence_penalty=0.0
         )
-        print( response )
+        if self.debug: print( response )
         
         return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
 
