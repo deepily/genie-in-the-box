@@ -64,7 +64,7 @@ if __name__ == "__main__":
     timer         = sw.Stopwatch()
     correct_count = 0
 
-    for idx, command in enumerate( commands[ 0:2 ] ):
+    for idx, command in enumerate( commands ):
 
         prompt = accuracy.prompt.replace( "{synonymous_command}", command )
 
@@ -74,16 +74,19 @@ if __name__ == "__main__":
 
         print( idx, command, response )
         timer_item.print( "Done interpreting one command", use_millis=True )
-        print( "-" * 120 )
+        # print( "-" * 120 )
 
         if system_commands[ 0 ] == response[ "classification" ]:
             correct_count += 1
             correct[ idx ] = 1
 
     timer.print( "Done Iterating commands", use_millis=False )
+    df[ "correct" ] = correct
 
     accuracy = 100.0 * correct_count / len( commands )
     accuracy = round( accuracy, 1 )
 
     du.print_banner( "[{}] correct out of [{}] commands. Accuracy: {}%".format( correct_count, len( commands ), accuracy ) )
+    
+    print( df )
     
