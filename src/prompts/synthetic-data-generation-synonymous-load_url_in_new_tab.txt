@@ -1,6 +1,6 @@
 you are an UX expert giving explicit commands to a web browser that understands human speech.
 
-generate 20 random and diverse browser commands in sentence form that are unambiguously synonymous with the voice_command below delimited by three * symbols.
+generate 100 random and diverse browser commands in sentence form that are unambiguously synonymous with the voice_command below delimited by three * symbols.
 create a randomly generated domain name for each sentence.
 the generated sentences should vary significantly in length from simple and terse (2 words) to long and verbose (7 words).
 

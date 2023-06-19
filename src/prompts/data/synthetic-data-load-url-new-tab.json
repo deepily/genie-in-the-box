@@ -3,120 +3,600 @@
         "id": 1,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "Open www.randomsite1.com in a new tab"
+        "synonymous_command": "Open www.abc123.com in a new tab"
     },
     {
         "id": 2,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "new tab www.randomsite2.net"
+        "synonymous_command": "Create a new tab and navigate to www.xyz.com"
     },
     {
         "id": 3,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "Open www.randomsite3.org in a new tab please"
+        "synonymous_command": "Open a new tab and go to www.123abc.com"
     },
     {
         "id": 4,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "In a new tab, go to www.randomsite4.com"
+        "synonymous_command": "Open www.randomsite.com in a new tab please"
     },
     {
         "id": 5,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "Please open www.randomsite5.net in a new tab"
+        "synonymous_command": "In a new tab, navigate to www.longdomainnameexample.com"
     },
     {
         "id": 6,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "Create a new tab and load www.randomsite6.com"
+        "synonymous_command": "Open www.short.com in a new tab"
     },
     {
         "id": 7,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "new tab www.randomsite7.net"
+        "synonymous_command": "Please open www.example.net in a new tab"
     },
     {
         "id": 8,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "In a new tab, navigate to www.randomsite8.com"
+        "synonymous_command": "In a new tab, navigate to www.test123.com"
     },
     {
         "id": 9,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "Open www.randomsite9.org in a new tab please"
+        "synonymous_command": "Open www.randomdomain.com in a new tab"
     },
     {
         "id": 10,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "Create a new tab and go to www.randomsite10.com"
+        "synonymous_command": "Create a new tab and go to www.example.org"
     },
     {
         "id": 11,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "Open www.randomsite11.net in a new tab"
+        "synonymous_command": "Open www.longdomainnameexample2.com in a new tab"
     },
     {
         "id": 12,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "In a new tab, load www.randomsite12.com"
+        "synonymous_command": "In a new tab, navigate to www.abcxyz123.com"
     },
     {
         "id": 13,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "Open www.randomsite13.org in a new tab please"
+        "synonymous_command": "Open www.shortdomain.com in a new tab please"
     },
     {
         "id": 14,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "Create a new tab and navigate to www.randomsite14.com"
+        "synonymous_command": "Open www.example.co.uk in a new tab"
     },
     {
         "id": 15,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "Open www.randomsite15.net in a new tab"
+        "synonymous_command": "Create a new tab and go to www.foobar.com"
     },
     {
         "id": 16,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "In a new tab, go to www.randomsite16.com"
+        "synonymous_command": "Open www.example.ca in a new tab please"
     },
     {
         "id": 17,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "Open www.randomsite17.org in a new tab please"
+        "synonymous_command": "In a new tab, navigate to www.example.edu"
     },
     {
         "id": 18,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "Create a new tab and load www.randomsite18.com"
+        "synonymous_command": "Open www.example.biz in a new tab"
     },
     {
         "id": 19,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "Open www.randomsite19.net in a new tab"
+        "synonymous_command": "Please open www.example.tv in a new tab"
     },
     {
         "id": 20,
         "system_command": "open new tab",
         "voice_command": "load this url in a new tab",
-        "synonymous_command": "Open a new tab www.randomsite20.com"
+        "synonymous_command": "Open www.example.us in a new tab"
+    },
+    {
+        "id": 21,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Create a new tab and go to www.example.com.au"
+    },
+    {
+        "id": 22,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.example.info in a new tab please"
+    },
+    {
+        "id": 23,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "In a new tab, navigate to www.example.gov"
+    },
+    {
+        "id": 24,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.example.io in a new tab"
+    },
+    {
+        "id": 25,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Please open www.example.co in a new tab"
+    },
+    {
+        "id": 26,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.example.de in a new tab"
+    },
+    {
+        "id": 27,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Create a new tab and go to www.example.fr"
+    },
+    {
+        "id": 28,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.example.es in a new tab please"
+    },
+    {
+        "id": 29,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "In a new tab, navigate to www.example.cn"
+    },
+    {
+        "id": 30,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.example.ru in a new tab"
+    },
+    {
+        "id": 31,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Please open www.example.jp in a new tab"
+    },
+    {
+        "id": 32,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.example.nl in a new tab"
+    },
+    {
+        "id": 33,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Create a new tab and go to www.example.kr"
+    },
+    {
+        "id": 34,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.example.it in a new tab please"
+    },
+    {
+        "id": 35,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "In a new tab, navigate to www.example.ch"
+    },
+    {
+        "id": 36,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.example.at in a new tab"
+    },
+    {
+        "id": 37,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Please open www.example.be in a new tab"
+    },
+    {
+        "id": 38,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.example.dk in a new tab"
+    },
+    {
+        "id": 39,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Create a new tab and go to www.example.se"
+    },
+    {
+        "id": 40,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.example.no in a new tab please"
+    },
+    {
+        "id": 41,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "In a new tab, navigate to www.example.pt"
+    },
+    {
+        "id": 42,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.example.fi in a new tab"
+    },
+    {
+        "id": 43,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Please open www.example.gr in a new tab"
+    },
+    {
+        "id": 44,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.example.hu in a new tab"
+    },
+    {
+        "id": 45,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Create a new tab and go to www.example.ie"
+    },
+    {
+        "id": 46,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.example.pl in a new tab please"
+    },
+    {
+        "id": 47,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "In a new tab, navigate to www.example.ro"
+    },
+    {
+        "id": 48,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.example.sk in a new tab"
+    },
+    {
+        "id": 49,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Please open www.example.ua in a new tab"
+    },
+    {
+        "id": 50,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.example.cz in a new tab"
+    },
+    {
+        "id": 51,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.randomsite1.com in a new tab"
+    },
+    {
+        "id": 52,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "In a new tab, navigate to www.randomsite2.net"
+    },
+    {
+        "id": 53,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Please open www.randomsite3.org in a new tab"
+    },
+    {
+        "id": 54,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Create a new tab and go to www.randomsite4.com"
+    },
+    {
+        "id": 55,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.randomsite5.net in a new tab please"
+    },
+    {
+        "id": 56,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "In a new tab, load www.randomsite6.com"
+    },
+    {
+        "id": 57,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open a new tab and navigate to www.randomsite7.org"
+    },
+    {
+        "id": 58,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Please open www.randomsite8.net in a new tab"
+    },
+    {
+        "id": 59,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Create a new tab and go to www.randomsite9.com"
+    },
+    {
+        "id": 60,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.randomsite10.net in a new tab please"
+    },
+    {
+        "id": 61,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "In a new tab, load www.randomsite11.com"
+    },
+    {
+        "id": 62,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open a new tab and navigate to www.randomsite12.org"
+    },
+    {
+        "id": 63,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Please open www.randomsite13.net in a new tab"
+    },
+    {
+        "id": 64,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Create a new tab and go to www.randomsite14.com"
+    },
+    {
+        "id": 65,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.randomsite15.net in a new tab please"
+    },
+    {
+        "id": 66,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "In a new tab, load www.randomsite16.com"
+    },
+    {
+        "id": 67,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open a new tab and navigate to www.randomsite17.org"
+    },
+    {
+        "id": 68,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Please open www.randomsite18.net in a new tab"
+    },
+    {
+        "id": 69,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Create a new tab and go to www.randomsite19.com"
+    },
+    {
+        "id": 70,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.randomsite20.net in a new tab please"
+    },
+    {
+        "id": 71,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "In a new tab, load www.randomsite21.com"
+    },
+    {
+        "id": 72,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open a new tab and navigate to www.randomsite22.org"
+    },
+    {
+        "id": 73,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Please open www.randomsite23.net in a new tab"
+    },
+    {
+        "id": 74,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Create a new tab and go to www.randomsite24.com"
+    },
+    {
+        "id": 75,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.randomsite25.net in a new tab please"
+    },
+    {
+        "id": 76,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "In a new tab, load www.randomsite26.com"
+    },
+    {
+        "id": 77,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open a new tab and navigate to www.randomsite27.org"
+    },
+    {
+        "id": 78,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Please open www.randomsite28.net in a new tab"
+    },
+    {
+        "id": 79,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Create a new tab and go to www.randomsite29.com"
+    },
+    {
+        "id": 80,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.randomsite30.net in a new tab please"
+    },
+    {
+        "id": 81,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "In a new tab, load www.randomsite31.com"
+    },
+    {
+        "id": 82,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open a new tab and navigate to www.randomsite32.org"
+    },
+    {
+        "id": 83,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Please open www.randomsite33.net in a new tab"
+    },
+    {
+        "id": 84,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Create a new tab and go to www.randomsite34.com"
+    },
+    {
+        "id": 85,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.randomsite35.net in a new tab please"
+    },
+    {
+        "id": 86,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "In a new tab, load www.randomsite36.com"
+    },
+    {
+        "id": 87,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open a new tab and navigate to www.randomsite37.org"
+    },
+    {
+        "id": 88,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Please open www.randomsite38.net in a new tab"
+    },
+    {
+        "id": 89,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Create a new tab and go to www.randomsite39.com"
+    },
+    {
+        "id": 90,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.randomsite40.net in a new tab please"
+    },
+    {
+        "id": 91,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "In a new tab, load www.randomsite41.com"
+    },
+    {
+        "id": 92,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open a new tab and navigate to www.randomsite42.org"
+    },
+    {
+        "id": 93,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Please open www.randomsite43.net in a new tab"
+    },
+    {
+        "id": 94,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Create a new tab and go to www.randomsite44.com"
+    },
+    {
+        "id": 95,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.randomsite45.net in a new tab please"
+    },
+    {
+        "id": 96,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "In a new tab, load www.randomsite46.com"
+    },
+    {
+        "id": 97,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open a new tab and navigate to www.randomsite47.org"
+    },
+    {
+        "id": 98,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Please open www.randomsite48.net in a new tab"
+    },
+    {
+        "id": 99,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Create a new tab and go to www.randomsite49.com"
+    },
+    {
+        "id": 100,
+        "system_command": "open new tab",
+        "voice_command": "load this url in a new tab",
+        "synonymous_command": "Open www.randomsite50.net in a new tab please"
     }
 ]
