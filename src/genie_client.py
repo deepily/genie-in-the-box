@@ -300,7 +300,7 @@ class GenieClient:
             # Using creative writing values
             temperature=0.5,
             top_p=0.5,
-            max_tokens=2000,
+            max_tokens=3500,
             frequency_penalty=0.0,
             presence_penalty=0.0
         )
