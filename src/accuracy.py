@@ -46,47 +46,70 @@ class Accuracy:
         
         return df
     
+    def test_data_baseline( self ):
+        
+        df = self.load_training_data()
+        print( "Total number of prompts: {}".format( df.shape[ 0 ] ) )
+        
+        commands = df[ "synonymous_command" ].tolist()
+        system_commands = df[ "system_command" ].tolist()
+        correct = [ 0 ] * len( commands )
+        
+        genie_client = gc.GenieClient()
+        timer = sw.Stopwatch()
+        correct_count = 0
+        
+        for idx, command in enumerate( commands[ 0:2 ] ):
+            
+            prompt = self.prompt.replace( "{synonymous_command}", command )
+            
+            timer_item = sw.Stopwatch()
+            response = genie_client.ask_chat_gpt_using_raw_prompt_and_content( prompt )
+            response = json.loads( response )
+            
+            print( idx, command, response )
+            timer_item.print( "Done interpreting one command", use_millis=True )
+            # print( "-" * 120 )
+            
+            if system_commands[ 0 ] == response[ "classification" ]:
+                correct_count += 1
+                correct[ idx ] = 1
+        
+        timer.print( "Done Iterating commands", use_millis=False )
+        df[ "correct" ] = correct
+        
+        accuracy = 100.0 * correct_count / len( commands )
+        accuracy = round( accuracy, 1 )
+        
+        du.print_banner(
+            "[{}] correct out of [{}] commands. Accuracy: {}%".format( correct_count, len( commands ), accuracy )
+            )
+        
+        return df
     
-    
+    def get_training_prompts( self ):
+        
+        df = self.load_training_data()
+        prompts_df = df[ [ "synonymous_command", "system_command" ] ].copy()
+        prompts_df.rename( columns={ "synonymous_command": "prompt", "system_command": "completion" }, inplace=True )
+        
+        # Insert hash marks according to these instructions below
+        # https://community.openai.com/t/gpt3-finetuning-for-multilabel-classification/19105/5
+        prompts_df[ "prompt" ] = prompts_df[ "prompt" ] + "\n\n###\n\n"
+        prompts_df[ "completion" ] = " " + prompts_df[ "completion" ]
+        
+        return prompts_df
+
 if __name__ == "__main__":
     
     accuracy = Accuracy()
     
-    df = accuracy.load_training_data()
-    print( "Total number of prompts: {}".format( df.shape[ 0 ] ) )
-    # print( df )
-
-    commands        = df[ "synonymous_command" ].tolist()
-    system_commands = df[ "system_command"     ].tolist()
-    correct         = [ 0 ] * len( commands)
-
-    genie_client  = gc.GenieClient()
-    timer         = sw.Stopwatch()
-    correct_count = 0
-
-    for idx, command in enumerate( commands ):
-
-        prompt = accuracy.prompt.replace( "{synonymous_command}", command )
-
-        timer_item = sw.Stopwatch()
-        response = genie_client.ask_chat_gpt_using_raw_prompt_and_content( prompt )
-        response = json.loads( response )
-
-        print( idx, command, response )
-        timer_item.print( "Done interpreting one command", use_millis=True )
-        # print( "-" * 120 )
-
-        if system_commands[ 0 ] == response[ "classification" ]:
-            correct_count += 1
-            correct[ idx ] = 1
-
-    timer.print( "Done Iterating commands", use_millis=False )
-    df[ "correct" ] = correct
-
-    accuracy = 100.0 * correct_count / len( commands )
-    accuracy = round( accuracy, 1 )
-
-    du.print_banner( "[{}] correct out of [{}] commands. Accuracy: {}%".format( correct_count, len( commands ), accuracy ) )
+    # df = accuracy.test_data_baseline()
+    df = accuracy.get_training_prompts()
+    
+    df.to_json( accuracy.project_root + "/src/prompts/data/jsonl/open-new-or-current-tab.jsonl", orient='records', lines=True )
     
     print( df )
+
+    
     

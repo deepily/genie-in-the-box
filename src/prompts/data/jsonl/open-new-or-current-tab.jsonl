@@ -1,0 +1,199 @@
+{"prompt":"Navigate to www.fizzbuzz.com\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.randomsite.net in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.foobar.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Access www.example.org in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Take me to www.testsite.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.newsite.net in the current tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.example.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.randomsite.com in the current tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Access www.foobar.net in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Take me to www.testsite.org in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.newsite.com in this tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.example.net in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.randomsite.org in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Access www.foobar.org in this tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Take me to www.testsite.net in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.newsite.org in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.example.org in this tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.randomsite.net in the current tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Access www.foobar.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Take me to www.testsite.org in this tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.newsite.net in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.example.com in this tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.randomsite.org in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Access www.foobar.net in this tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Take me to www.testsite.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.newsite.org in the current tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.example.net in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.randomsite.com in the current tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Access www.foobar.org in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Take me to www.testsite.net in this tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.newsite.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.example.org in this tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.randomsite.net in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Access www.foobar.com in this tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Take me to www.testsite.org in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.newsite.net in the current tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.example.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Go to www.anotherdomain456.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Display www.somedomain789.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.example456.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.randomdomain123.com\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.anotherdomain456.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Take me to www.example789.com\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.domainxyz.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Visit www.somedomain789.com\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Display www.randomdomain456.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.domain123.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Take me to www.somedomain456.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.anotherdomain789.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.example456.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Go to www.randomdomain789.com\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Display www.domain456.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.anotherdomain123.com in this tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Visit www.somedomain123.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.example789.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Take me to www.randomdomain456.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.domain123.com\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.blueberry.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.pineapple.net in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.strawberry.org in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Access www.banana.co.uk in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Take me to www.orange.io in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Visit www.mango.biz in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.watermelon.tv in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.kiwi.net in the current tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.grape.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Access www.apple.org in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Take me to www.berry.co.uk in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Visit www.citrus.io in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.apricot.biz in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.pear.tv in the current tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.pomegranate.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Access www.cherry.org in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Take me to www.fig.co.uk in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Visit www.plum.io in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.peach.biz in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.nectarine.tv in the current tab please\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.raspberry.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Access www.blackberry.org in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.randomsite1.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.randomsite2.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load www.randomsite3.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Take me to www.randomsite4.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Access www.randomsite5.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Direct me to www.randomsite6.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load up www.randomsite7.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Visit www.randomsite8.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open up www.randomsite9.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Go to www.randomsite10.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Access www.randomsite11.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Take me to www.randomsite12.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Visit www.randomsite13.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.randomsite14.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Navigate to www.randomsite15.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Direct me to www.randomsite16.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Load up www.randomsite17.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Access www.randomsite18.com in the current tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Go to www.randomsite19.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Visit www.randomsite20.com in this tab\n\n###\n\n","completion":" open in current tab"}
+{"prompt":"Open www.abc123.com in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and navigate to www.xyz.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open a new tab and go to www.123abc.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.randomsite.com in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, navigate to www.longdomainnameexample.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.short.com in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.example.net in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, navigate to www.test123.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.randomdomain.com in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.example.org\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.longdomainnameexample2.com in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, navigate to www.abcxyz123.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.shortdomain.com in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.co.uk in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.foobar.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.ca in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, navigate to www.example.edu\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.biz in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.example.tv in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.us in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.example.com.au\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.info in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, navigate to www.example.gov\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.io in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.example.co in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.de in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.example.fr\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.es in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, navigate to www.example.cn\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.ru in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.example.jp in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.nl in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.example.kr\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.it in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, navigate to www.example.ch\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.at in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.example.be in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.dk in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.example.se\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.no in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, navigate to www.example.pt\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.fi in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.example.gr in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.hu in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.example.ie\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.pl in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, navigate to www.example.ro\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.sk in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.example.ua in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.example.cz in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.randomsite1.com in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, navigate to www.randomsite2.net\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.randomsite3.org in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.randomsite4.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.randomsite5.net in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, load www.randomsite6.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open a new tab and navigate to www.randomsite7.org\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.randomsite8.net in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.randomsite9.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.randomsite10.net in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, load www.randomsite11.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open a new tab and navigate to www.randomsite12.org\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.randomsite13.net in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.randomsite14.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.randomsite15.net in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, load www.randomsite16.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open a new tab and navigate to www.randomsite17.org\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.randomsite18.net in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.randomsite19.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.randomsite20.net in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, load www.randomsite21.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open a new tab and navigate to www.randomsite22.org\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.randomsite23.net in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.randomsite24.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.randomsite25.net in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, load www.randomsite26.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open a new tab and navigate to www.randomsite27.org\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.randomsite28.net in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.randomsite29.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.randomsite30.net in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, load www.randomsite31.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open a new tab and navigate to www.randomsite32.org\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.randomsite33.net in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.randomsite34.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.randomsite35.net in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, load www.randomsite36.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open a new tab and navigate to www.randomsite37.org\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.randomsite38.net in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.randomsite39.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.randomsite40.net in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, load www.randomsite41.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open a new tab and navigate to www.randomsite42.org\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.randomsite43.net in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.randomsite44.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.randomsite45.net in a new tab please\n\n###\n\n","completion":" open new tab"}
+{"prompt":"In a new tab, load www.randomsite46.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open a new tab and navigate to www.randomsite47.org\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Please open www.randomsite48.net in a new tab\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Create a new tab and go to www.randomsite49.com\n\n###\n\n","completion":" open new tab"}
+{"prompt":"Open www.randomsite50.net in a new tab please\n\n###\n\n","completion":" open new tab"}
