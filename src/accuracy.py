@@ -1,6 +1,6 @@
 import os
 
-from src import genie_client as gc
+from src     import genie_client as gc
 from src.lib import util as du
 from src.lib import util_stopwatch as sw
 
@@ -58,13 +58,13 @@ if __name__ == "__main__":
 
     commands        = df[ "synonymous_command" ].tolist()
     system_commands = df[ "system_command"     ].tolist()
+    correct         = [ 0 ] * len( commands)
 
-    genie_client = gc.GenieClient()
+    genie_client  = gc.GenieClient()
+    timer         = sw.Stopwatch()
+    correct_count = 0
 
-    timer = sw.Stopwatch()
-    correct = 0
-
-    for idx, command in enumerate( commands ):
+    for idx, command in enumerate( commands[ 0:2 ] ):
 
         prompt = accuracy.prompt.replace( "{synonymous_command}", command )
 
@@ -77,12 +77,13 @@ if __name__ == "__main__":
         print( "-" * 120 )
 
         if system_commands[ 0 ] == response[ "classification" ]:
-            correct += 1
+            correct_count += 1
+            correct[ idx ] = 1
 
     timer.print( "Done Iterating commands", use_millis=False )
 
-    accuracy = 100.0 * correct / len( commands )
+    accuracy = 100.0 * correct_count / len( commands )
     accuracy = round( accuracy, 1 )
 
-    du.print_banner( "[{}] correct out of [{}] commands. Accuracy: {}%".format( correct, len( commands ), accuracy ) )
+    du.print_banner( "[{}] correct out of [{}] commands. Accuracy: {}%".format( correct_count, len( commands ), accuracy ) )
     
