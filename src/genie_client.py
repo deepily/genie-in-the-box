@@ -310,6 +310,11 @@ class GenieClient:
         
         return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
     
+    def run_fine_tuning( self, prompt_and_content ):
+        
+        openai.api_key = os.getenv( "OPENAI_API_KEY" )
+        # TODO: Sketch out fine tuning parameters in notebook and add here
+        
     def ask_chat_gpt_text( self, query, preamble="What does this mean: " ):
 
         openai.api_key = os.getenv( "OPENAI_API_KEY" )
