@@ -11,8 +11,9 @@ class Accuracy:
     
     def __init__( self ):
         
-        self.project_root = du.get_project_root_path()
-        self.prompt       = du.get_file_as_string( self.project_root + "/src/prompts/classification-experiment-template.txt" )
+        self.project_root     = du.get_project_root_path()
+        self.prompt           = du.get_file_as_string( self.project_root + "/src/prompts/classification-experiment-template.txt" )
+        self.class_dictionary = {}
         
         print( "Using project root [{}]".format( self.project_root ) )
         
@@ -43,6 +44,9 @@ class Accuracy:
         df = pd.concat( dfs )
         df.reset_index( inplace=True )
         df.drop( "index", axis=1, inplace=True )
+        
+        # Create numeric representation of categorical system_command
+        df[ "system_command_categorical" ] = pd.factorize( df[ "system_command" ] )[ 0 ]
         
         return df
     
@@ -83,20 +87,20 @@ class Accuracy:
         
         du.print_banner(
             "[{}] correct out of [{}] commands. Accuracy: {}%".format( correct_count, len( commands ), accuracy )
-            )
+        )
         
         return df
     
     def get_training_prompts( self ):
         
         df = self.load_training_data()
-        prompts_df = df[ [ "synonymous_command", "system_command" ] ].copy()
-        prompts_df.rename( columns={ "synonymous_command": "prompt", "system_command": "completion" }, inplace=True )
+        prompts_df = df[ [ "synonymous_command", "system_command_categorical" ] ].copy()
+        prompts_df.rename( columns={ "synonymous_command": "prompt", "system_command_categorical": "completion" }, inplace=True )
         
-        # Insert hash marks according to these instructions below
+        # Insert hash marks and space according to these instructions below
         # https://community.openai.com/t/gpt3-finetuning-for-multilabel-classification/19105/5
-        prompts_df[ "prompt" ] = prompts_df[ "prompt" ] + "\n\n###\n\n"
-        prompts_df[ "completion" ] = " " + prompts_df[ "completion" ]
+        prompts_df[ "prompt" ]     = prompts_df[ "prompt" ] + "\n\n###\n\n"
+        prompts_df[ "completion" ] = " " + prompts_df[ "completion" ].astype( str )
         
         return prompts_df
 
@@ -106,9 +110,9 @@ if __name__ == "__main__":
     
     # df = accuracy.test_data_baseline()
     df = accuracy.get_training_prompts()
-    
     df.to_json( accuracy.project_root + "/src/prompts/data/jsonl/open-new-or-current-tab.jsonl", orient='records', lines=True )
-    
+    # df = accuracy.load_training_data()
+    # df.
     print( df )
 
     
