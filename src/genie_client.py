@@ -15,6 +15,8 @@ import requests
 import openai
 import pyperclip
 
+import lib.util_stopwatch as sw
+
 # gib_path = os.getenv( "GENIE_IN_THE_BOX_ROOT" )
 # print( "GENIE_IN_THE_BOX_ROOT [{}]".format( gib_path ) )
 # path = os.getenv( "GENIE_IN_THE_BOX_ROOT" ) + "/src/lib"
@@ -352,7 +354,7 @@ class GenieClient:
     
         text = parse.quote_plus( tts_input )
     
-        start_millis = time.time()
+        timer = sw.Stopwatch()
         url = "http://{ip_and_port}/api/tts?text={text}".format( ip_and_port=ip_and_port, text=text )
         print( "Converting text to speech [{}] and writing to temp file [{}]...".format( url, tts_output_path ), end="" )
         response = ur.urlopen( url ).read()
@@ -360,8 +362,7 @@ class GenieClient:
         with open( tts_output_path, "wb" ) as f:
             f.write( response )
             
-        end_millis = round( time.time() - start_millis, 1 )
-        print( "Done in [{}] seconds".format( end_millis ) )
+        timer.print( "Done" )
     
     def play_file( self, tts_wav_path ):
     
