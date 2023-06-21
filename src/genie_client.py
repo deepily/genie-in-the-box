@@ -302,9 +302,10 @@ class GenieClient:
             # Using creative writing values
             temperature=0.5,
             top_p=0.5,
-            max_tokens=3500,
-            frequency_penalty=0.0,
-            presence_penalty=0.0
+            max_tokens=3400,
+            # From: https://community.openai.com/t/difference-between-frequency-and-presence-penalties/2777/2
+            frequency_penalty=0.5,
+            presence_penalty=0.5
         )
         if self.debug: print( response )
         
