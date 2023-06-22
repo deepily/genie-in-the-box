@@ -178,7 +178,7 @@ print( "Loading whisper engine... ", end="" )
 model = whisper.load_model( "base.en" )
 print( "Done!" )
 
-print( os.getenv( "OPENAI_API_KEY" ) )
+print( os.getenv( "FALSE_POSITIVE_API_KEY" ) )
 # genie_client = gc.GenieClient( tts_address="127.0.0.1:5000", runtime_context="local", tts_output_path="/Users/rruiz/Projects/projects-sshfs/io/text-to-vox.wav" )
 genie_client = gc.GenieClient()
 
