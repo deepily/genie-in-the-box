@@ -282,9 +282,10 @@ class GenieClient:
     
     def ask_chat_gpt_using_raw_prompt_and_content( self, prompt_and_content ):
         
-        openai.api_key = os.getenv( "OPENAI_API_KEY" )
-        print( "Using OPENAI_API_KEY [{}]".format( os.getenv( "OPENAI_API_KEY" ) ) )
+        openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
+        print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
         
+        print( "prompt_and_content [{}]".format( prompt_and_content ) )
         prompt  = prompt_and_content.split( "```" )[ 0 ].strip()
         content = prompt_and_content.split( "```" )[ 1 ].strip()
         
@@ -293,7 +294,7 @@ class GenieClient:
             print( "content [{}]".format( content ) )
         
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-3.5-turbo-0613",
             messages=[
                 { "role": "system", "content": prompt },
                 { "role": "user", "content": content }
@@ -304,11 +305,11 @@ class GenieClient:
             top_p=0.5,
             max_tokens=3400,
             # From: https://community.openai.com/t/difference-between-frequency-and-presence-penalties/2777/2
-            frequency_penalty=0.5,
-            presence_penalty=0.5
+            # frequency_penalty=0.5,
+            # presence_penalty=0.5
             # # Non-zero values break JSON formatting.
-            # frequency_penalty=0.0,
-            # presence_penalty=0.0
+            frequency_penalty=0.0,
+            presence_penalty=0.0
         )
         if self.debug: print( response )
         
@@ -316,13 +317,13 @@ class GenieClient:
     
     def run_fine_tuning( self, prompt_and_content ):
         
-        openai.api_key = os.getenv( "OPENAI_API_KEY" )
+        openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
         # TODO: Sketch out fine tuning parameters in notebook and add here
         
     def ask_chat_gpt_text( self, query, preamble="What does this mean: " ):
 
-        openai.api_key = os.getenv( "OPENAI_API_KEY" )
-        print( "Using OPENAI_API_KEY [{}]".format( os.getenv( "OPENAI_API_KEY" ) ) )
+        openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
+        print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
     
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -343,7 +344,7 @@ class GenieClient:
 
     def ask_chat_gpt_code( self, query, preamble="Fix this source code" ):
     
-        openai.api_key = os.getenv( "OPENAI_API_KEY" )
+        openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
     
         response = openai.Completion.create(
             model="gpt-3.5-turbo",
