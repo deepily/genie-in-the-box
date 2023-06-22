@@ -1,8 +1,8 @@
 you are an UX expert giving explicit commands to a web browser that understands human speech.
 
-generate 20 random and diverse browser commands in sentence form that are unambiguously synonymous with the voice_command below delimited by three * symbols.
+generate 10 random and diverse browser commands in sentence form that are unambiguously synonymous with the voice_command below delimited by three * symbols.
 create randomly generated keywords for each search command and store them in the "keywords" field.
-the generated sentences should vary significantly in length from simple and terse (2 words) to long and verbose (7 words).
+the generated sentences should vary significantly in length from simple and terse (2 words) to long and verbose (12 words).
 the generated sentences should use the term "in the current tab" 50% of the time, the remaining 50% of the generated sentences SHOULD NOT mention "in the current tab".
 
 use the following descriptions for each field in the json output:
@@ -25,43 +25,37 @@ use the following format for the json output below, delimited by three backticks
         "id": 1,
         "system_command": "search google",
         "voice_command": "do a google search and display the results in the current tab",
-        "synonymous_command": "in the current tab search google for",
-        "keywords": "popular songs 2021"
+        "synonymous_command": "in the current tab search google for popular songs 2021"
     },
     {
         "id": 2,
         "system_command": "search google",
         "voice_command": "do a google search and display the results in the current tab",
-        "synonymous_command": "Do a google search and show results",
-        "keywords": "tropical plants"
+        "synonymous_command": "Do a google search on tropical plants and show results"
     },
     {
         "id": 3,
         "system_command": "search google",
         "voice_command": "do a google search and display the results in the current tab",
-        "synonymous_command": "Display google search results in the current tab",
-        "keywords": "best pizza places"
+        "synonymous_command": "Display google search results on best pizza places in the current tab"
     },
     {
         "id": 4,
         "system_command": "search google",
         "voice_command": "do a google search and display the results in the current tab",
-        "synonymous_command": "google search for",
-        "keywords": "best pho in town"
+        "synonymous_command": "google search for best pho in town"
     },
     {
         "id": 5,
         "system_command": "search google",
         "voice_command": "do a google search and display the results in the current tab",
-        "synonymous_command": "run a search on google and show results in the current tab",
-        "keywords": "favorite diners"
+        "synonymous_command": "search terms favorite diners on google and show results in the current tab"
     },
     {
         "id": 6,
         "system_command": "search google",
         "voice_command": "do a google search and display the results in the current tab",
-        "synonymous_command": "run a google search",
-        "keywords": "favorite pillow covers"
+        "synonymous_command": "run a google search for keywords favorite pillow covers"
     }
 ]
 ```

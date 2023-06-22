@@ -1,8 +1,8 @@
 you are an UX expert giving explicit commands to a web browser that understands human speech.
 
-generate 20 random and diverse browser commands in sentence form that are unambiguously synonymous with the voice_command below delimited by three * symbols.
+generate 10 random and diverse browser commands in sentence form that are unambiguously synonymous with the voice_command below delimited by three * symbols.
 create randomly generated keywords for each search command and store them in the "keywords" field.
-the generated sentences should vary significantly in length from simple and terse (2 words) to long and verbose (7 words).
+the generated sentences should vary significantly in length from simple and terse (2 words) to long and verbose (12 words).
 the generated sentences should use the term "in the current tab" 50% of the time, the remaining 50% of the generated sentences should not mention "in the current tab".
 
 
@@ -11,7 +11,8 @@ return the results in json format, using the following descriptions for each fie
 - "id": indicates the ordinal position of the sentence, the first sentence should have an id of 1, the second sentence should have an id of 2, etc.
 - "system_command": this is a constant value, use the system_command below delimited by three _ symbols, DO NOT CHANGE THIS VALUE.
 - "voice_command": this is a constant value, use the voice_command below delimited by three * symbols, DO NOT CHANGE THIS VALUE.
-- "synonymous_command": contains the random and diversely generated sentences. this is the only text field that should vary in the json output.
+- "synonymous_command": contains the random and diversely generated sentences. this is the only text field that should vary in the json output, and
+MUST include common misspellings such as "teh" for "the" and "they're" for "their".
 
 system_command: ___search___
 
@@ -25,43 +26,37 @@ use the following format for the json output below, delimited by three backticks
     "id": 1
     "system_command": "search",
     "voice_command": "do a search and display the results in the current tab",
-    "synonymous_command": "in the current tab search for",
-    "keywords": "popular songs 2021",
+    "synonymous_command": "in the current tab search for popular songs 2021"
   },
   {
     "id": 2
     "system_command": "search",
     "voice_command": "do a search and display the results in the current tab",
-    "synonymous_command": "Do a search and show results",
-    "keywords": "tropical plants",
+    "synonymous_command": "Do a search for tropical plants and show results"
   },
   {
     "id": 3
     "system_command": "search",
     "voice_command": "do a search and display the results in the current tab",
-    "synonymous_command": "Display search results in the current tab",
-    "keywords": "best pizza places",
+    "synonymous_command": "Display search results in the current tab, keywords: pizza places, 5 star",
   },
   {
     "id": 4
     "system_command": "search",
     "voice_command": "do a search and display the results in the current tab",
-    "synonymous_command": "search for",
-    "keywords": "best pho in town",
+    "synonymous_command": "search terms: pho near me"
   },
   {
     "id": 5
     "system_command": "search",
     "voice_command": "do a search and display the results in the current tab",
-    "synonymous_command": "run a search and show results in the current tab",
-    "keywords": "favorite diners",
+    "synonymous_command": "run a search on favorite diners nearby and show results in this tab"
   },
   {
     "id": 6
     "system_command": "search",
     "voice_command": "do a search and display the results in the current tab",
-    "synonymous_command": "run a search",
-    "keywords": "favorite pillow covers",
+    "synonymous_command": "run a search pillow covers"
   }
 ]
 ```

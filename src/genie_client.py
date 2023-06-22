@@ -306,6 +306,9 @@ class GenieClient:
             # From: https://community.openai.com/t/difference-between-frequency-and-presence-penalties/2777/2
             frequency_penalty=0.5,
             presence_penalty=0.5
+            # # Non-zero values break JSON formatting.
+            # frequency_penalty=0.0,
+            # presence_penalty=0.0
         )
         if self.debug: print( response )
         
