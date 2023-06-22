@@ -75,7 +75,7 @@ class MultiModalMunger:
 
     def get_json( self ):
         
-        json = { "mode": self.mode, "prefix": self.prefix, "raw_transcription": self.raw_transcription, "transcription": self.transcription, "data": self.results }
+        json = { "mode": self.mode, "prefix": self.prefix, "raw_transcription": self.raw_transcription, "transcription": self.transcription, "results": self.results }
         
         return json
         
@@ -252,6 +252,9 @@ class MultiModalMunger:
         contact_info_key = raw_transcription
         contact_info     = self.contact_info.get( contact_info_key, "N/A" )
         
+        print( "contact_info_key:", contact_info_key )
+        print( "    contact_info:", contact_info )
+        
         if contact_info_key in "full all":
             
             contact_info = "{}\n{}\n{} {}, {}\n{}\n{}".format(
@@ -273,8 +276,8 @@ class MultiModalMunger:
             contact_info = contact_info.title()
         
         self.results = contact_info
-        # prefix_plus_key = transcription_mode_text_contact + " " + raw_transcription
-
+        print( "    self.results:", self.results )
+        
         return raw_transcription, mode
     def munge_text_proofread( self, raw_transcription, mode ):
     
