@@ -101,6 +101,22 @@ class MultiModalMunger:
 
         prefix_count = len( transcription_mode_default.split() )
         
+        # First and foremost: Are we in multi-modal editor/command mode?
+        if self.prefix == "multimodal editor":
+        
+            du.print_banner( "MODE: [{}]".format( self.prefix ), end="\n" )
+            result, mode = self.munge_text_punctuation( raw_transcription, transcription_mode_default )
+            
+            if result in [ "zoom in", "zoom out", "zoom reset" ]:
+                print( "Exact match [{}]".format( result ) )
+            else:
+                # TODO: fuzzy match, e.g.: "zooming" -> "zoom in"
+                print( "NOT exact match [{}]".format( result ) )
+                print( "TODO: to find a fuzzy/interpreted match..." )
+                
+            print()
+            return result, mode
+        
         # If we have fewer than 'prefix_count' words, just assign default transcription mode.
         if len( words ) < prefix_count and ( self.prefix == "" or self.prefix not in self.modes_to_methods_dict ):
             method_name = self.modes_to_methods_dict[ transcription_mode_default ]
@@ -117,7 +133,6 @@ class MultiModalMunger:
                 raw_transcription = " ".join( raw_words[ prefix_count: ] )
             else:
                 print( "first_words [{}] of raw_transcription not found in modes_to_methods_dict".format( first_words ) )
-                
                 # If we have a prefix, try to use it to determine the transcription mode.
                 if self.prefix in self.modes_to_methods_dict:
                     print( "prefix [{}] in modes_to_methods_dict".format( self.prefix ) )

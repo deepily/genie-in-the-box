@@ -85,7 +85,7 @@ def upload_and_transcribe_mp3_file():
 
     print( "Result: [{}]".format( result ) )
     
-    munger = mmm.MultiModalMunger( result, prefix=prefix, prompt_key=prompt_key )
+    munger = mmm.MultiModalMunger( result, prefix=prefix, prompt_key=prompt_key, debug=True )
 
     if munger.is_text_proofread():
         
