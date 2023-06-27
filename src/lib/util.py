@@ -2,6 +2,7 @@ import json
 import os
 import time
 import regex as re
+import random
 
 debug = False
 
@@ -54,7 +55,7 @@ def get_name_value_pairs( arg_list, debug=False ):
     names.sort()
     
     for name in names:
-        if debug: print( "{0}] = [{1}]".format( ("[" + name).rjust( max_len, " " ), name_value_pairs[ name ] ) )
+        if debug: print( "{0}] = [{1}]".format( ("[ " + name).rjust( max_len, " " ), name_value_pairs[ name ] ) )
     if debug: print()
     
     return name_value_pairs
@@ -184,31 +185,55 @@ def get_project_root_path():
     else:
         return "/var/genie-in-the-box"
 
+def generate_domains( count=10 ):
+    
+    adjectives        = [ "amazing", "beautiful", "exciting", "fantastic", "hilarious", "incredible", "jubilant", "magnificent", "remarkable", "spectacular", "wonderful" ]
+    nouns             = [ "apple", "banana", "cherry", "dolphin", "elephant", "giraffe", "hamburger", "iceberg", "jellyfish", "kangaroo", "lemur", "mango", "november", "octopus", "penguin", "quartz", "rainbow", "strawberry", "tornado", "unicorn", "volcano", "walrus", "xylophone", "yogurt", "zebra" ]
+    
+    top_level_domains = [ ".com", ".org", ".gov", ".info", ".net", ".io" ]
+    sub_domains       = [ "", "www.", "blog.", "login.", "mail.", "dev." ]
+    
+    domain_names = [ ]
+    for _ in range( count ):
+        
+        adj = random.choice(adjectives)
+        noun = random.choice(nouns)
+        tld = random.choice(top_level_domains)
+        sub = random.choice(sub_domains)
+        
+        domain_name = f"{sub}{adj}{noun}{tld}"
+        domain_names.append( domain_name )
+        print( domain_name )
+
+    return domain_names
+
 if __name__ == "__main__":
+    
+    generate_domains( 100 )
     
     # raw = "r-i-c-o dot f-e-l-i-p dot j-o-n-e-s at gmail.com"
     # dashes_regex = re.compile( "[a-z]-+", re.IGNORECASE )
     # # x = dashes_regex.sub( "[a-z]", raw )
     # x = dashes_regex.match( raw )
     # print( x )
-    raw_txt = [ "multimodel text email", "MulTi mOdel text email", "MulTi-mOdel text email", "MulTi-mOdal text email" ]
-    
-    multimodal_regex = re.compile( "multi([ -]){0,1}mod[ae]l", re.IGNORECASE )
-    for i in range( 0, len( raw_txt ) ):
-        txt = raw_txt[ i ]
-        x = multimodal_regex.sub( "multimodal", txt, 1 )
-        print( x )
+    # raw_txt = [ "multimodel text email", "MulTi mOdel text email", "MulTi-mOdel text email", "MulTi-mOdal text email" ]
+    #
+    # multimodal_regex = re.compile( "multi([ -]){0,1}mod[ae]l", re.IGNORECASE )
+    # for i in range( 0, len( raw_txt ) ):
+    #     txt = raw_txt[ i ]
+    #     x = multimodal_regex.sub( "multimodal", txt, 1 )
+    #     print( x )
     
     # regex = re.compile( r"(\w+)(\s+)(\w+)" )
-    
     #
-    regex_str = "^\||\|$"
-    regex_pattern = re.compile( regex_str )
-    print( regex_pattern.sub( "", "|1|2|" ) )
-    print( "|1|2|".replace( regex_str, "" ) )
-    
-    xlation_dict = get_file_as_dictionary( "conf/translation-dictionary.map", debug=True )
-    print( "xlation_dict[ 'pipe' ] = [{}]".format( xlation_dict[ "pipe" ] ) )
-    print( "xlation_dict[ 'space' ] = [{}]".format( xlation_dict[ "space" ] ) )
-    print( "xlation_dict[ ' dot com' ] = [{}]".format( xlation_dict[ " dot com" ] ) )
-    print( "xlation_dict[ 'comma ' ] = [{}]".format( xlation_dict[ "comma " ] ) )
+    # #
+    # regex_str = "^\||\|$"
+    # regex_pattern = re.compile( regex_str )
+    # print( regex_pattern.sub( "", "|1|2|" ) )
+    # print( "|1|2|".replace( regex_str, "" ) )
+    #
+    # xlation_dict = get_file_as_dictionary( "conf/translation-dictionary.map", debug=True )
+    # print( "xlation_dict[ 'pipe' ] = [{}]".format( xlation_dict[ "pipe" ] ) )
+    # print( "xlation_dict[ 'space' ] = [{}]".format( xlation_dict[ "space" ] ) )
+    # print( "xlation_dict[ ' dot com' ] = [{}]".format( xlation_dict[ " dot com" ] ) )
+    # print( "xlation_dict[ 'comma ' ] = [{}]".format( xlation_dict[ "comma " ] ) )
