@@ -31,19 +31,21 @@ modes_to_methods_dict = {
 }
 class MultiModalMunger:
 
-    def __init__(self, raw_transcription, prefix="", prompt_key="generic", config_path="conf/modes-vox.json", debug=False, verbose=False ):
+    def __init__( self, raw_transcription, prefix="", prompt_key="generic", config_path="conf/modes-vox.json", use_exact_matching=True, use_ai_matching=True, debug=False, verbose=False ):
 
         self.debug                  = debug
         self.verbose                = verbose
         self.config_path            = config_path
         self.raw_transcription      = raw_transcription
         self.prefix                 = prefix
+        self.use_ai_matching        = use_ai_matching
+        self.use_exact_matching     = use_exact_matching
 
         self.punctuation            = du.get_file_as_dictionary( "conf/translation-dictionary.map", lower_case=True, debug=self.debug )
-        self.domain_names           = du.get_file_as_dictionary( "conf/domain-names.map", lower_case=True )
-        self.numbers                = du.get_file_as_dictionary( "conf/numbers.map", lower_case=True )
-        self.contact_info           = du.get_file_as_dictionary( "conf/contact-information.map", lower_case=True )
-        self.prompt_dictionary      = du.get_file_as_dictionary( "conf/prompt-dictionary.map", lower_case=True )
+        self.domain_names           = du.get_file_as_dictionary( "conf/domain-names.map",           lower_case=True )
+        self.numbers                = du.get_file_as_dictionary( "conf/numbers.map",                lower_case=True )
+        self.contact_info           = du.get_file_as_dictionary( "conf/contact-information.map",    lower_case=True )
+        self.prompt_dictionary      = du.get_file_as_dictionary( "conf/prompt-dictionary.map",      lower_case=True )
         self.prompt                 = du.get_file_as_string( self.prompt_dictionary.get( prompt_key, "generic" ) )
         self.exact_matches          = self._get_exact_matching_strings()
         
@@ -107,22 +109,36 @@ class MultiModalMunger:
         # First and foremost: Are we in multi-modal editor/command mode?
         if self.prefix == "multimodal editor":
         
-            du.print_banner( "START MODE: [{}]".format( self.prefix ), end="\n" )
-            transcription, mode = self.munge_vox_command( raw_transcription, transcription_mode_vox_command )
+            transcription, mode = self._handle_vox_command_parsing( raw_transcription )
+            du.print_banner( "  END MODE: [{}] for [{}] == [{}]".format( self.prefix, raw_transcription, self.results ), end="\n\n" )
             
-            # regex = re.compile( '[^a-zA-Z ]' )
-            # transcription = regex.sub( '', transcription )
-            
-            if transcription in self.exact_matches:
-                print( "Exact match [{}]".format( transcription ) )
-            else:
-                # TODO: fuzzy match, e.g.: "zooming" -> "zoom in"
-                self.results = "TODO: implement fuzzy/interpreted matching"
-                print( "NOT exact match [{}]".format( transcription ) )
-                print( "Results [{}]".format( self.results ) )
-                
-            du.print_banner( "  END MODE: [{}]".format( self.prefix ), end="\n\n" )
-            
+            # du.print_banner( "START MODE: [{}] for [{}]".format( self.prefix, transcription ), end="\n" )
+            # transcription, mode = self.munge_vox_command( raw_transcription, transcription_mode_vox_command )
+            #
+            # # Try exact match first, then AI match if no exact match is found.
+            # if self.use_exact_matching:
+            #
+            #     if self._is_exact_match( transcription ):
+            #
+            #         print( "Exact match [{}]".format( transcription ) )
+            #         self.results = transcription
+            #
+            #         return transcription, mode
+            #
+            #     else:
+            #
+            #         # Set results to something just in case we're not using AI matching below.
+            #         print( "NOT exact match [{}]".format( transcription ) )
+            #         self.results = transcription
+            #
+            # if self.use_ai_matching:
+            #
+            #     # TODO: fuzzy match, e.g.: "zooming" -> "zoom in"
+            #     self.results = self._get_ai_match( transcription )
+            #     print( "Results [{}]".format( self.results ) )
+            #
+            # du.print_banner( "  END MODE: [{}] for [{}]".format( self.prefix, transcription ), end="\n\n" )
+
             return transcription, mode
         
         # If we have fewer than 'prefix_count' words, just assign default transcription mode.
@@ -161,6 +177,37 @@ class MultiModalMunger:
         
         return transcription, mode
         
+    def _handle_vox_command_parsing( self, raw_transcription ):
+    
+        du.print_banner( "START MODE: [{}] for [{}]".format( self.prefix, raw_transcription ), end="\n" )
+        transcription, mode = self.munge_vox_command( raw_transcription, transcription_mode_vox_command )
+
+        # Try exact match first, then AI match if no exact match is found.
+        if self.use_exact_matching:
+
+            if self._is_exact_match( transcription ):
+
+                # print( "Exact match [{}]".format( transcription ) )
+                self.results = transcription
+
+                return transcription, mode
+
+            else:
+
+                # Set results to something just in case we're not using AI matching below.
+                print( "NOT exact match [{}]".format( transcription ) )
+                self.results = transcription
+
+        if self.use_ai_matching:
+
+            # TODO: fuzzy match, e.g.: "zooming" -> "zoom in"
+            self.results = self._get_ai_match( transcription )
+            print( "Results [{}]".format( self.results ) )
+
+        # du.print_banner( "  END MODE: [{}] for [{}]".format( self.prefix, transcription ), end="\n\n" )
+
+        return transcription, mode
+    
     def _adhoc_prefix_cleanup( self, raw_transcription ):
         
         # Find the first instance of "multi________" and replace it with "multimodal".
@@ -409,6 +456,25 @@ class MultiModalMunger:
         
         return self.mode == transcription_mode_run_prompt
     
+    def _is_exact_match( self, transcription ):
+        
+        for command in self.exact_matches:
+            
+            if transcription == command:
+                print( "EXACT MATCH: [{}] == [{}]".format( transcription, command ) )
+                return True
+            elif transcription.startswith( command ):
+                print( "[{}] STARTS WITH: [{}]".format( transcription, command ) )
+                print( "TODO: Make sure we are handling startswith() properly. Can we do better than this?" )
+                return True
+        
+        return False
+    
+    def _get_ai_match( self, transcription ):
+        
+        print( "TODO: implement ai based vox command classification" )
+        return transcription
+        
     def _get_exact_matching_strings( self ):
     
         exact_matches = du.get_file_as_list( "conf/constants.js", lower_case=True, clean=True )
@@ -429,6 +495,9 @@ class MultiModalMunger:
             else:
                 if self.debug: print( "SKIPPING [{}]...".format( match ) )
                 
+        # Sort the sending order by length of string, longest first.  From: https://stackoverflow.com/questions/60718330/sort-list-of-strings-in-decreasing-order-according-to-length
+        vox_commands = sorted( vox_commands, key=lambda command: ( -len( command ), command) )
+        
         return vox_commands
 
 if __name__ == "__main__":
@@ -456,15 +525,16 @@ if __name__ == "__main__":
     # transcription = "multimodal ai fetch this information: Large, language models."
     
     prefix        = "multimodal editor"
-    transcription = "Take Me Too https://NPR.org!"
-    
-    munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
+    # transcription = "Take Me Too https://NPR.org!"
+    # transcription = "Zoom, In!"
+    transcription = "ZoomInG!"
+    munger = MultiModalMunger( transcription, prefix=prefix, debug=False )
     # print( munger, end="\n\n" )
     # print( munger.get_json(), end="\n\n" )
     # print( "munger.is_ddg_search()", munger.is_ddg_search() )
     # print( "munger.is_run_prompt()", munger.is_run_prompt(), end="\n\n" )
     # exact_matches = munger._get_exact_matching_strings()
-
+    #
     # for match in exact_matches: print( match )
     
     # transcription = "http://npr.org"
