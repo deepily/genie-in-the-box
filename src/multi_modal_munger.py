@@ -104,7 +104,7 @@ class MultiModalMunger:
         # First and foremost: Are we in multi-modal editor/command mode?
         if self.prefix == "multimodal editor":
         
-            du.print_banner( "MODE: [{}]".format( self.prefix ), end="\n" )
+            du.print_banner( "START MODE: [{}]".format( self.prefix ), end="\n" )
             result, mode = self.munge_text_punctuation( raw_transcription, transcription_mode_default )
             
             if result in [ "zoom in", "zoom out", "zoom reset" ]:
@@ -114,7 +114,7 @@ class MultiModalMunger:
                 print( "NOT exact match [{}]".format( result ) )
                 print( "TODO: to find a fuzzy/interpreted match..." )
                 
-            print()
+            du.print_banner( "  END MODE: [{}]".format( self.prefix ), end="\n\n" )
             return result, mode
         
         # If we have fewer than 'prefix_count' words, just assign default transcription mode.
