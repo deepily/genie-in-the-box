@@ -461,7 +461,7 @@ class MultiModalMunger:
                 print( "EXACT MATCH: [{}] == [{}]".format( transcription, command ) )
                 return True
             elif transcription.startswith( command ):
-                print( "[{}] STARTS WITH: [{}]".format( transcription, command ) )
+                print( "[{}] STARTS WITH [{}]".format( transcription, command ) )
                 print( "TODO: Make sure we are handling startswith() properly. Can we do better than this?" )
                 return True
         
