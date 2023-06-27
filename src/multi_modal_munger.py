@@ -13,10 +13,12 @@ transcription_mode_python_punctuation = "multimodal python punctuation"
 transcription_mode_python_proofread   = "multimodal python proofread"
 transcription_mode_server_search      = "multimodal server search"
 transcription_mode_run_prompt         = "multimodal run prompt"
+transcription_mode_vox_command        = "multimodal editor"
 transcription_mode_default            = transcription_mode_text_punctuation
 
 modes_to_methods_dict = {
     
+    transcription_mode_vox_command       : "munge_vox_command",
     transcription_mode_text_raw          : "munge_text_raw",
     transcription_mode_text_email        : "munge_text_email",
     transcription_mode_text_punctuation  : "munge_text_punctuation",
@@ -59,9 +61,9 @@ class MultiModalMunger:
         # When all processing is refactored and consistent across all functionality. ¡TODO!
         self.results       = ""
         
-        parsing_results = self.parse( raw_transcription )
-        self.transcription = parsing_results[ 0 ]
-        self.mode          = parsing_results[ 1 ]
+        parsed_fields      = self.parse( raw_transcription )
+        self.transcription = parsed_fields[ 0 ]
+        self.mode          = parsed_fields[ 1 ]
         
     def __str__(self):
 
@@ -105,17 +107,22 @@ class MultiModalMunger:
         if self.prefix == "multimodal editor":
         
             du.print_banner( "START MODE: [{}]".format( self.prefix ), end="\n" )
-            result, mode = self.munge_text_punctuation( raw_transcription, transcription_mode_default )
+            transcription, mode = self.munge_vox_command( raw_transcription, transcription_mode_vox_command )
             
-            if result in [ "zoom in", "zoom out", "zoom reset" ]:
-                print( "Exact match [{}]".format( result ) )
+            # regex = re.compile( '[^a-zA-Z ]' )
+            # transcription = regex.sub( '', transcription )
+            
+            if transcription in [ "zoom in", "zoom out", "zoom reset" ]:
+                print( "Exact match [{}]".format( transcription ) )
             else:
                 # TODO: fuzzy match, e.g.: "zooming" -> "zoom in"
-                print( "NOT exact match [{}]".format( result ) )
-                print( "TODO: to find a fuzzy/interpreted match..." )
+                self.results = "TODO: implement fuzzy/interpreted matching"
+                print( "NOT exact match [{}]".format( transcription ) )
+                print( "Results [{}]".format( self.results ) )
                 
             du.print_banner( "  END MODE: [{}]".format( self.prefix ), end="\n\n" )
-            return result, mode
+            
+            return transcription, mode
         
         # If we have fewer than 'prefix_count' words, just assign default transcription mode.
         if len( words ) < prefix_count and ( self.prefix == "" or self.prefix not in self.modes_to_methods_dict ):
@@ -146,12 +153,12 @@ class MultiModalMunger:
             print( "Calling [{}] w/ mode [{}]...".format( method_name, mode ) )
             print( "raw_transcription [{}]".format( raw_transcription ) )
             
-        result, mode = getattr( self, method_name )( raw_transcription, mode )
+        transcription, mode = getattr( self, method_name )( raw_transcription, mode )
         if self.debug:
-            print( "result after:", result )
+            print( "result after:", transcription )
             print( "mode:", mode )
         
-        return result, mode
+        return transcription, mode
         
     def _adhoc_prefix_cleanup( self, raw_transcription ):
         
@@ -163,6 +170,14 @@ class MultiModalMunger:
         raw_transcription = multimodal_regex.sub( "toggle", raw_transcription, 1 )
         
         return raw_transcription
+    
+    def _remove_protocols( self, words ):
+        
+        multimodal_regex = re.compile( "http([s]){0,1}://", re.IGNORECASE )
+        words = multimodal_regex.sub( "", words, 1 )
+        
+        return words
+    
     def _remove_spaces_around_punctuation( self, prose ):
     
         # Remove extra spaces.
@@ -236,12 +251,40 @@ class MultiModalMunger:
         
         return email, mode
     
+    def munge_vox_command( self, raw_transcription, mode ):
+        
+        command = raw_transcription.lower()
+
+        # Remove the protocol from URLs
+        command = self._remove_protocols( command )
+        
+        # Encode domain names as plain text before removing dots below
+        for key, value in self.domain_names.items():
+            command = command.replace( key, value )
+            
+        command = re.sub( r'[,.?!]', '', command )
+        
+        # Translate punctuation mark words into single characters.
+        for key, value in self.punctuation.items():
+            command = command.replace( key, value )
+        
+        # Remove extra spaces.
+        command = self._remove_spaces_around_punctuation( command )
+        
+        # Remove protocol from URLs
+        # https: // npr.org
+        
+        return command, mode
+    
     def munge_text_punctuation( self, raw_transcription, mode ):
     
         # print( "BEFORE raw_transcription:", raw_transcription )
         prose = raw_transcription.lower()
+        
+        # Remove the protocol from URLs
+        prose = self._remove_protocols( prose )
     
-        # Encode domain names
+        # Encode domain names as plain text before removing dots below
         for key, value in self.domain_names.items():
             prose = prose.replace( key, value )
 
@@ -290,7 +333,7 @@ class MultiModalMunger:
         elif contact_info_key != "email":
             contact_info = contact_info.title()
         
-        self.results = contact_info
+        self.results     = contact_info
         print( "    self.results:", self.results )
         
         return raw_transcription, mode
@@ -377,27 +420,34 @@ if __name__ == "__main__":
     # transcription = "multi-mode text punctuation Here's my email address. r-i-c-a-r-d-o.f-e-l-i-p-e-.r-u-i-z at gmail.com."
     # transcription = "blah blah blah"
     # transcription = "multimodal text proofread i go to market yesterday comma Tonight i go to the dance, comma, and im very happy that exclamation point."
-    # transcription = "multimodal editor proof"
     
     # transcription = "multimodal python punctuation Deaf, Munch, Underscore Python, Underscore Punctuation, Open Parenthesis, Space, Self, Comma, Raw Underscore transcription, Comma, Space, Mode, Space, Close Parenthesis, Colon, newline newline foo equals six divided by four newline newline bar equals brackets"
     
     # transcription = "multimodal contact information name"
     # transcription = "multimodal contact information address"
-    transcription = "City, State, Zip."
-    prefix        = "multimodal contact information"
+    # transcription = "City, State, Zip."
+    # prefix        = "multimodal contact information"
     # prefix = ""
     
     # transcription = "full"
     # transcription = "multimodal ai fetch this information: Large, language models."
     
-    # prefix = transcription_mode_run_prompt
-    # transcription = "you are a professional prompt creator"
-    #
+    prefix        = "multimodal editor"
+    transcription = "Take Me Too https://NPR.org!"
+    
     munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
     print( munger, end="\n\n" )
     print( munger.get_json(), end="\n\n" )
     print( "munger.is_ddg_search()", munger.is_ddg_search() )
     print( "munger.is_run_prompt()", munger.is_run_prompt(), end="\n\n" )
+    
+    # transcription = "http://npr.org"
+    
+    # multimodal_regex = re.compile( "http([s]){0,1}://", re.IGNORECASE )
+    # transcription = multimodal_regex.sub( "", transcription, 1 )
+    # transcription = transcription.replace( ("https://")|("http://"), "" )
+    # print( transcription )
+    
     
     # raw_prompt = """
     # Your task is to generate a short summary of a product review from an ecommerce site.
