@@ -45,6 +45,7 @@ class MultiModalMunger:
         self.contact_info           = du.get_file_as_dictionary( "conf/contact-information.map", lower_case=True )
         self.prompt_dictionary      = du.get_file_as_dictionary( "conf/prompt-dictionary.map", lower_case=True )
         self.prompt                 = du.get_file_as_string( self.prompt_dictionary.get( prompt_key, "generic" ) )
+        self.exact_matches          = self._get_exact_matching_strings()
         
         print( "prompt_key:", prompt_key )
         if self.debug and self.verbose:
@@ -112,7 +113,7 @@ class MultiModalMunger:
             # regex = re.compile( '[^a-zA-Z ]' )
             # transcription = regex.sub( '', transcription )
             
-            if transcription in [ "zoom in", "zoom out", "zoom reset" ]:
+            if transcription in self.exact_matches:
                 print( "Exact match [{}]".format( transcription ) )
             else:
                 # TODO: fuzzy match, e.g.: "zooming" -> "zoom in"
@@ -408,6 +409,28 @@ class MultiModalMunger:
         
         return self.mode == transcription_mode_run_prompt
     
+    def _get_exact_matching_strings( self ):
+    
+        exact_matches = du.get_file_as_list( "conf/constants.js", lower_case=True, clean=True )
+        vox_commands = [ ]
+        
+        for raw_line in exact_matches :
+            
+            # Skip comments and other lines that don't split into two pieces.
+            if len( raw_line.split( " = " ) ) == 1:
+                continue
+            
+            match = raw_line.split( " = " )[ 1 ].strip()
+            
+            if match.startswith( '"' ) and match.endswith( '";' ) and not match.startswith( '"http' ):
+                # Remove the quotes and semicolon.
+                match = match[ 1 : -2 ]
+                vox_commands.append( match )
+            else:
+                if self.debug: print( "SKIPPING [{}]...".format( match ) )
+                
+        return vox_commands
+
 if __name__ == "__main__":
 
     prefix = ""
@@ -436,10 +459,13 @@ if __name__ == "__main__":
     transcription = "Take Me Too https://NPR.org!"
     
     munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
-    print( munger, end="\n\n" )
-    print( munger.get_json(), end="\n\n" )
-    print( "munger.is_ddg_search()", munger.is_ddg_search() )
-    print( "munger.is_run_prompt()", munger.is_run_prompt(), end="\n\n" )
+    # print( munger, end="\n\n" )
+    # print( munger.get_json(), end="\n\n" )
+    # print( "munger.is_ddg_search()", munger.is_ddg_search() )
+    # print( "munger.is_run_prompt()", munger.is_run_prompt(), end="\n\n" )
+    # exact_matches = munger._get_exact_matching_strings()
+
+    # for match in exact_matches: print( match )
     
     # transcription = "http://npr.org"
     
