@@ -60,7 +60,7 @@ class MultiModalMunger:
             print( "modes_to_methods_dict", self.modes_to_methods_dict, end="\n\n" )
             print( "methods_to_modes_dict", self.methods_to_modes_dict, end="\n\n" )
         
-        # This field added to hold the data of a calculation, e.g.: ddg search, contact information, or eventually proofreading
+        # This field added to hold the Results of a calculation, e.g.: ddg search, contact information, or eventually proofreading
         # When all processing is refactored and consistent across all functionality. ¡TODO!
         self.results       = ""
         
@@ -187,15 +187,12 @@ class MultiModalMunger:
 
             if self._is_exact_match( transcription ):
 
-                # print( "Exact match [{}]".format( transcription ) )
                 self.results = transcription
-
                 return transcription, mode
 
             else:
 
                 # Set results to something just in case we're not using AI matching below.
-                print( "NOT exact match [{}]".format( transcription ) )
                 self.results = transcription
 
         if self.use_ai_matching:
@@ -468,6 +465,9 @@ class MultiModalMunger:
                 print( "TODO: Make sure we are handling startswith() properly. Can we do better than this?" )
                 return True
         
+        print( "NOT exact match        [{}]".format( transcription ) )
+        print( "NOT startswith() match [{}]".format( transcription ) )
+        
         return False
     
     def _get_ai_match( self, transcription ):
@@ -527,12 +527,14 @@ if __name__ == "__main__":
     prefix        = "multimodal editor"
     # transcription = "Take Me Too https://NPR.org!"
     # transcription = "Zoom, In!"
-    transcription = "ZoomInG!"
+    transcription = "Go ZoomInG!"
     munger = MultiModalMunger( transcription, prefix=prefix, debug=False )
-    # print( munger, end="\n\n" )
-    # print( munger.get_json(), end="\n\n" )
+    print( "munger.use_exact_matching [{}]".format( munger.use_exact_matching ) )
+    print( "munger.use_ai_matching    [{}]".format( munger.use_ai_matching ) )
     # print( "munger.is_ddg_search()", munger.is_ddg_search() )
     # print( "munger.is_run_prompt()", munger.is_run_prompt(), end="\n\n" )
+    # print( munger, end="\n\n" )
+    # print( munger.get_json(), end="\n\n" )
     # exact_matches = munger._get_exact_matching_strings()
     #
     # for match in exact_matches: print( match )
