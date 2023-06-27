@@ -62,7 +62,8 @@ def get_name_value_pairs( arg_list, debug=False ):
 
 
 # Load a plain text file as a list of lines.
-def get_file_as_list( path, lower_case=False, clean=False ):
+def get_file_as_list( path, lower_case=False, clean=False, randomize=False ):
+    
     with open( path, "r" ) as file:
         lines = file.readlines()
     
@@ -71,6 +72,9 @@ def get_file_as_list( path, lower_case=False, clean=False ):
         
     if clean:
         lines = [ line.strip() for line in lines ]
+        
+    if randomize:
+        random.shuffle( lines )
     
     return lines
 
@@ -185,7 +189,7 @@ def get_project_root_path():
     else:
         return "/var/genie-in-the-box"
 
-def generate_domains( count=10 ):
+def generate_domains( count=10, debug=False ):
     
     adjectives        = [ "amazing", "beautiful", "exciting", "fantastic", "hilarious", "incredible", "jubilant", "magnificent", "remarkable", "spectacular", "wonderful" ]
     nouns             = [ "apple", "banana", "cherry", "dolphin", "elephant", "giraffe", "hamburger", "iceberg", "jellyfish", "kangaroo", "lemur", "mango", "november", "octopus", "penguin", "quartz", "rainbow", "strawberry", "tornado", "unicorn", "volcano", "walrus", "xylophone", "yogurt", "zebra" ]
@@ -203,13 +207,19 @@ def generate_domains( count=10 ):
         
         domain_name = f"{sub}{adj}{noun}{tld}"
         domain_names.append( domain_name )
-        print( domain_name )
+        
+        if debug: print( domain_name )
 
     return domain_names
 
+
 if __name__ == "__main__":
     
-    generate_domains( 100 )
+    # generate_domains( 10, debug=True )
+    
+    search_terms = get_file_as_list( get_project_root_path() + "/src/conf/search-terms.txt", lower_case=True, clean=True, randomize=True )
+    
+    for search_term in search_terms: print( search_term )
     
     # raw = "r-i-c-o dot f-e-l-i-p dot j-o-n-e-s at gmail.com"
     # dashes_regex = re.compile( "[a-z]-+", re.IGNORECASE )
