@@ -1,0 +1,62 @@
+you are an UX expert giving explicit commands to a web browser that understands human speech.
+
+generate 50 random and diverse browser commands in sentence form that are unambiguously synonymous with the voice_command below delimited by three * symbols.
+create a randomly generated domain name for each sentence.
+
+return the results in json format, using the following descriptions for each field in the json output:
+
+- "id": indicates the ordinal position of the sentence, the first sentence should have an id of 1, the second sentence should have an id of 2, etc.
+- "system_command": this is a constant value, use the system_command below delimited by three _ symbols, DO NOT CHANGE THIS VALUE.
+- "voice_command": this is a constant value, use the voice_command below delimited by three * symbols, DO NOT CHANGE THIS VALUE.
+- "synonymous_command": contains the random and diversely generated sentences. this is the only text field that should vary in the json output. this field MUST vary significantly in length from simple and terse (2 words) to long and verbose (7 words). this field MUST use the following terms in 50% of the output: "current tab" and "this tab", the remaining 50% of the generated sentences should make no mention of "tab".
+
+system_command: ___open in current tab___
+
+voice_command: ***load this url in the current tab***
+
+all results must be returned in syntactically correct json format.
+validate all json output before returning.
+the json output must represented as an array of dictionary objects.
+verify that you have followed these instructions explicitly before submitting your solution.
+the desired json format for the output of dictionary objects is delimited by three backticks:
+```
+[
+    {
+        "id": 1,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "in the current tab go to the following website www.example.com"
+    },
+    {
+        "id": 2,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "open www.foo.com in this tab please"
+    },
+    {
+        "id": 3,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "visit www.bar.com"
+    },
+    {
+        "id": 4,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "view baz.org in current tab"
+    },
+    {
+        "id": 5,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "please take me to baz.org in this tab"
+    },
+    {
+        "id": 6,
+        "system_command": "open in current tab",
+        "voice_command": "load this url in the current tab",
+        "synonymous_command": "load blah.org"
+    }
+]
+```
+
