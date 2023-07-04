@@ -11,7 +11,7 @@ def init( d ):
     global debug
     debug = d
 
-def get_name_value_pairs( arg_list, debug=False ):
+def get_name_value_pairs( arg_list, debug=False, verbose=False ):
     
     """
     Parses a list of strings -- name=value -- into dictionary format { "name":"value" }
@@ -55,8 +55,8 @@ def get_name_value_pairs( arg_list, debug=False ):
     names.sort()
     
     for name in names:
-        if debug: print( "{0}] = [{1}]".format( ("[ " + name).rjust( max_len, " " ), name_value_pairs[ name ] ) )
-    if debug: print()
+        if debug and verbose: print( "[{0}] = [{1}]".format( ("[ " + name).rjust( max_len, " " ), name_value_pairs[ name ] ) )
+    if debug and verbose: print()
     
     return name_value_pairs
 
@@ -89,7 +89,7 @@ def get_file_as_json( path ):
         return json.load( file )
 
 
-def get_file_as_dictionary( path, lower_case=False, omit_comments=True, debug=False ):
+def get_file_as_dictionary( path, lower_case=False, omit_comments=True, debug=False, verbose=False ):
     # ¡OJO! The pipe symbol is a reserved character used to delimit white space. See the keywords "space" or "| at |" below.
     
     lines = get_file_as_list( path, lower_case=lower_case )
@@ -107,7 +107,7 @@ def get_file_as_dictionary( path, lower_case=False, omit_comments=True, debug=Fa
         
         pair = line.strip().split( " = " )
         if len( pair ) > 1:
-            if debug: print( "[{}] = [{}]".format( pair[ 0 ], pair[ 1 ] ) )
+            if debug and verbose: print( "[{}] = [{}]".format( pair[ 0 ], pair[ 1 ] ) )
             # Only pull pipes after the key and values have been stripped.
             p0 = pipe_regex.sub( "", pair[ 0 ].strip() )
             p1 = pipe_regex.sub( "", pair[ 1 ].strip() )
@@ -170,7 +170,7 @@ def print_banner( msg, expletive=False, chunk="¡@#!-$?%^_¿", end="\n\n", prepe
         print( "-", msg )
     print( bar_str, end=end )
     
-def get_project_root_path():
+def get_project_root():
     
     """
     Returns the path to the root of the project.
@@ -189,21 +189,21 @@ def get_project_root_path():
     else:
         return "/var/genie-in-the-box"
 
-def generate_domains( count=10, debug=False ):
+def generate_domain_names( count=10, debug=False ):
     
     adjectives        = [ "amazing", "beautiful", "exciting", "fantastic", "hilarious", "incredible", "jubilant", "magnificent", "remarkable", "spectacular", "wonderful" ]
     nouns             = [ "apple", "banana", "cherry", "dolphin", "elephant", "giraffe", "hamburger", "iceberg", "jellyfish", "kangaroo", "lemur", "mango", "november", "octopus", "penguin", "quartz", "rainbow", "strawberry", "tornado", "unicorn", "volcano", "walrus", "xylophone", "yogurt", "zebra" ]
     
     top_level_domains = [ ".com", ".org", ".gov", ".info", ".net", ".io" ]
-    sub_domains       = [ "", "www.", "blog.", "login.", "mail.", "dev." ]
+    sub_domains       = [ "", "", "www.", "blog.", "login.", "mail.", "dev.", "beta.", "alpha.", "test.", "stage.", "prod." ]
     
     domain_names = [ ]
     for _ in range( count ):
         
-        adj = random.choice(adjectives)
+        adj  = random.choice(adjectives)
         noun = random.choice(nouns)
-        tld = random.choice(top_level_domains)
-        sub = random.choice(sub_domains)
+        tld  = random.choice(top_level_domains)
+        sub  = random.choice(sub_domains)
         
         domain_name = f"{sub}{adj}{noun}{tld}"
         domain_names.append( domain_name )
@@ -215,11 +215,12 @@ def generate_domains( count=10, debug=False ):
 
 if __name__ == "__main__":
     
-    # generate_domains( 10, debug=True )
+    # generate_domain_names( 10, debug=True )
     
-    search_terms = get_file_as_list( get_project_root_path() + "/src/conf/search-terms.txt", lower_case=True, clean=True, randomize=True )
-    
+    search_terms = get_file_as_list( get_project_root() + "/src/conf/search-terms.txt", lower_case=True, clean=True, randomize=True )
+    #
     for search_term in search_terms: print( search_term )
+    print( len( search_terms ) )
     
     # raw = "r-i-c-o dot f-e-l-i-p dot j-o-n-e-s at gmail.com"
     # dashes_regex = re.compile( "[a-z]-+", re.IGNORECASE )
