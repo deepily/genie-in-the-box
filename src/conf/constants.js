@@ -21,7 +21,7 @@ export const VOX_CMD_OPEN_FILE      = "open file";
 export const VOX_CMD_OPEN_URL_BUCKET= "open url bucket";
 export const VOX_CMD_PROOFREAD      = "proofread";
 export const VOX_CMD_PROOFREAD_STEM = "proof";
-export const VOX_CMD_VIEW_CHEAT_SHEET= "view cheat sheet";
+export const VOX_CMD_VIEW_CONSTANTS= "view constan";
 
 export const VOX_CMD_ZOOM_IN        = "zoom in";
 export const VOX_CMD_ZOOM_OUT       = "zoom out";
