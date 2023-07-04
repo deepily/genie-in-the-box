@@ -47,7 +47,7 @@ class MultiModalMunger:
         self.contact_info           = du.get_file_as_dictionary( "conf/contact-information.map",    lower_case=True )
         self.prompt_dictionary      = du.get_file_as_dictionary( "conf/prompt-dictionary.map",      lower_case=True )
         self.prompt                 = du.get_file_as_string( self.prompt_dictionary.get( prompt_key, "generic" ) )
-        self.exact_matches          = self._get_exact_matching_strings()
+        self.command_strings        = self._get_command_strings()
         
         print( "prompt_key:", prompt_key )
         if self.debug and self.verbose:
@@ -185,7 +185,7 @@ class MultiModalMunger:
         # Try exact match first, then AI match if no exact match is found.
         if self.use_exact_matching:
 
-            if self._is_exact_match( transcription ):
+            if self._is_match( transcription ):
 
                 self.results = transcription
                 return transcription, mode
@@ -200,8 +200,6 @@ class MultiModalMunger:
             # TODO: fuzzy match, e.g.: "zooming" -> "zoom in"
             self.results = self._get_ai_match( transcription )
             print( "Results [{}]".format( self.results ) )
-
-        # du.print_banner( "  END MODE: [{}] for [{}]".format( self.prefix, transcription ), end="\n\n" )
 
         return transcription, mode
     
@@ -453,20 +451,24 @@ class MultiModalMunger:
         
         return self.mode == transcription_mode_run_prompt
     
-    def _is_exact_match( self, transcription ):
+    def _is_match( self, transcription ):
         
-        for command in self.exact_matches:
+        for command in self.command_strings:
             
             if transcription == command:
-                print( "EXACT MATCH: [{}] == [{}]".format( transcription, command ) )
+                print( "EXACT MATCH: Transcription [{}] == command [{}]".format( transcription, command ) )
                 return True
             elif transcription.startswith( command ):
-                print( "[{}] STARTS WITH [{}]".format( transcription, command ) )
+                print( "Transcription [{}] STARTS WITH command [{}]".format( transcription, command ) )
+                print( "TODO: Make sure we are handling startswith() properly. Can we do better than this?" )
+                return True
+            elif command.startswith( transcription ):
+                print( "Command [{}] STARTS WITH transcription [{}]".format( command, transcription ) )
                 print( "TODO: Make sure we are handling startswith() properly. Can we do better than this?" )
                 return True
         
-        print( "NOT exact match        [{}]".format( transcription ) )
-        print( "NOT startswith() match [{}]".format( transcription ) )
+        print( "NO exact match        [{}]".format( transcription ) )
+        print( "NO startswith() match [{}]".format( transcription ) )
         
         return False
     
@@ -475,7 +477,7 @@ class MultiModalMunger:
         print( "TODO: implement ai based vox command classification" )
         return transcription
         
-    def _get_exact_matching_strings( self ):
+    def _get_command_strings( self ):
     
         exact_matches = du.get_file_as_list( "conf/constants.js", lower_case=True, clean=True )
         vox_commands = [ ]
