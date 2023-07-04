@@ -61,7 +61,7 @@ class GenieClient:
 
         self.startup_mode       = startup_mode
         
-        self.project_root       = du.get_project_root_path()
+        self.project_root       = du.get_project_root()
         
         print( "         self.project_root [{}]".format( self.project_root ) )
         print( "translation-dictionary.map [{}]".format( self.project_root + "/src/conf/translation-dictionary.map" ) )
@@ -305,11 +305,11 @@ class GenieClient:
             top_p=0.5,
             max_tokens=3400,
             # From: https://community.openai.com/t/difference-between-frequency-and-presence-penalties/2777/2
-            # frequency_penalty=0.5,
-            # presence_penalty=0.5
+            frequency_penalty=0.5,
+            presence_penalty=0.5
             # # Non-zero values break JSON formatting.
-            frequency_penalty=0.0,
-            presence_penalty=0.0
+            # frequency_penalty=0.0,
+            # presence_penalty=0.0
         )
         if self.debug: print( response )
         
