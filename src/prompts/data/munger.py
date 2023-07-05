@@ -1,6 +1,6 @@
 import src.lib.util as du
 
-def remove_line_numbers( path ):
+def remove_line_numbers( path, write_back=True ):
     
     lines = du.get_file_as_list( path, clean=True )
     
@@ -13,10 +13,17 @@ def remove_line_numbers( path ):
         print( line )
     
     # Write lines back to the same file
-    du.write_lines_to_file( path, lines )
+    if write_back:
+        du.write_lines_to_file( path, lines )
 
 # Create main method
 if __name__ == "__main__":
 
-    # remove_line_numbers( path = du.get_project_root() + "/src/prompts/data/synthetic-data-search-in-current-tab.txt" )
-    pass
+    # remove_line_numbers( path = du.get_project_root() + "/src/prompts/data/synthetic-data-search-in-current-tab.txt", write_back=True )
+    # remove_line_numbers( path = du.get_project_root() + "/src/prompts/data/synthetic-data-search-google-in-current-tab.txt", write_back=True )
+    # remove_line_numbers( path = du.get_project_root() + "/src/prompts/data/synthetic-data-search-google-scholar-in-current-tab.txt", write_back=True )
+    # remove_line_numbers( path = du.get_project_root() + "/src/prompts/data/synthetic-data-search-in-new-tab.txt", write_back=True )
+    # remove_line_numbers( path = du.get_project_root() + "/src/prompts/data/synthetic-data-search-google-in-new-tab.txt", write_back=True )
+    remove_line_numbers( path = du.get_project_root() + "/src/prompts/data/synthetic-data-search-google-scholar-in-new-tab.txt", write_back=False )
+
+    # pass
