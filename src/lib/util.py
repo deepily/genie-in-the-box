@@ -117,6 +117,11 @@ def get_file_as_dictionary( path, lower_case=False, omit_comments=True, debug=Fa
     
     return lines_as_dict
 
+def write_lines_to_file( path, lines ):
+
+    with open( path, "w" ) as outfile:
+        outfile.write( "\n".join( lines ) )
+
 def print_banner( msg, expletive=False, chunk="¡@#!-$?%^_¿", end="\n\n", prepend_nl=False, flex=False ):
 
     """
