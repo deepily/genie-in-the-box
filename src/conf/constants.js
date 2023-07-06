@@ -1,6 +1,6 @@
 console.log( "Loading constants.js..." );
-
 // These constants will be parsed by the multimodal munger object, and should be listed from top to bottom by longest string first.
+
 export const VOX_CMD_CUT            = "cut";
 export const VOX_CMD_COPY           = "copy";
 export const VOX_CMD_PASTE          = "paste from clipboard";
@@ -13,6 +13,7 @@ export const VOX_CMD_TAB_BACK       = "go backwards";
 export const VOX_CMD_TAB_FORWARD    = "go forwards";
 export const VOX_CMD_TAB_REFRESH    = "refresh this tab";
 export const VOX_CMD_OPEN_NEW_TAB   = "open new tab";
+export const VOX_CMD_IN_CURRENT_TAB = "in current tab";
 export const VOX_TAB_COMMANDS    = [ VOX_CMD_TAB_BACK, VOX_CMD_TAB_FORWARD, VOX_CMD_TAB_REFRESH, VOX_CMD_TAB_CLOSE, VOX_CMD_OPEN_NEW_TAB ];
 
 export const VOX_CMD_OPEN_EDITOR    = "open editor";
@@ -21,7 +22,7 @@ export const VOX_CMD_OPEN_FILE      = "open file";
 export const VOX_CMD_OPEN_URL_BUCKET= "open url bucket";
 export const VOX_CMD_PROOFREAD      = "proofread";
 export const VOX_CMD_PROOFREAD_STEM = "proof";
-export const VOX_CMD_VIEW_CONSTANTS= "view constan";
+export const VOX_CMD_VIEW_CONSTANTS = "view constan";
 
 export const VOX_CMD_ZOOM_IN        = "zoom in";
 export const VOX_CMD_ZOOM_OUT       = "zoom out";
@@ -32,6 +33,8 @@ export const VOX_CMD_MODE_EXIT      = "exit";
 export const VOX_CMD_SET_LINK_MODE  = "set link mode";
 export const LINK_MODE_DRILL_DOWN   = "drill down";
 export const LINK_MODE_NEW_TAB      = "new tab";
+
+export const LINK_MODE_CURRENT_TAB  = "current tab";
 export const LINK_MODE_DEFAULT      = LINK_MODE_DRILL_DOWN;
 
 export const VOX_CMD_SET_PROMPT_MODE  = "set prompt mode";
@@ -39,18 +42,21 @@ export const PROMPT_MODE_VERBOSE      = "verbose";
 export const PROMPT_MODE_QUIET        = "quiet";
 export const PROMPT_MODE_DEFAULT      = PROMPT_MODE_VERBOSE;
 
-export const VOX_CMD_SEARCH_DDG              = "search";
-export const VOX_CMD_SEARCH_GOOGLE           = "search google";
-export const VOX_CMD_SEARCH_GOOGLE_SCHOLAR   = "search google scholar";
-export const VOX_CMD_SEARCH_CLIPBOARD_DDG    = "search using clipboard";
-export const VOX_CMD_SEARCH_CLIPBOARD_GOOGLE = "search google using clipboard";
+export const VOX_CMD_SEARCH_DDG               = "search new tab";
+export const VOX_CMD_SEARCH_CURRENT_TAB_DDG   = "search current tab";
+export const VOX_CMD_SEARCH_GOOGLE            = "search google new tab";
+export const VOX_CMD_SEARCH_GOOGLE_CURRENT_TAB= "search google current tab";
+export const VOX_CMD_SEARCH_GOOGLE_SCHOLAR    = "search google scholar new tab";
+export const VOX_CMD_SEARCH_GOOGLE_SCHOLAR_CURRENT_TAB= "search google scholar current tab";
 export const VOX_CMD_SEARCH_CLIPBOARD_GOOGLE_SCHOLAR = "search google scholar using clipboard";
+export const VOX_CMD_SEARCH_CLIPBOARD_DDG     = "search using clipboard";
+export const VOX_CMD_SEARCH_CLIPBOARD_GOOGLE  = "search google using clipboard";
 
 export const MULTIMODAL_CONTACT_INFO  = "multimodal contact information";
 export const MULTIMODAL_TEXT_PYTHON   = "multimodal python punctuation";
 export const MULTIMODAL_TEXT_EMAIL    = "multimodal text email";
 export const STEM_MULTIMODAL_EDITOR   = "multimodal editor";
-export const STEM_MULTIMODAL_SERVER_SEARCH = "multimodal server search";
+export const STEM_MULTIMODAL_SERVER_SEARCH = "multimodal server search"
 
 export const VOX_CMD_RUN_PROMPT           = "run prompt";
 export const VOX_CMD_SUFFIX_FROM_FILE     = "from file";
