@@ -1,100 +1,200 @@
-1. "New tab, Google Scholar SEARCH_TERMS"
-2. "Do a Google Scholar search for SEARCH_TERMS in a new tab"
-3. "Display Google Scholar search results for SEARCH_TERMS in a new tab"
-4. "Run a Google Scholar search for SEARCH_TERMS and show in new tab"
-5. "Google Scholar SEARCH_TERMS, new tab"
-6. "Google Scholar search in a new tab, SEARCH_TERMS"
-7. "New tab: Google Scholar, SEARCH_TERMS"
-8. "Open Google Scholar and search SEARCH_TERMS in a new tab"
-9. "Look up SEARCH_TERMS on Google Scholar in a new tab"
-10. "Open new tab with Google Scholar search results for SEARCH_TERMS"
-11. "Display in a new tab: Google Scholar results for SEARCH_TERMS"
-12. "Go to Google Scholar and search SEARCH_TERMS in a new tab"
-13. "Bring up Google Scholar, SEARCH_TERMS, in a new tab"
-14. "Run Google Scholar search on SEARCH_TERMS, new tab please"
-15. "Initiate a Google Scholar search for SEARCH_TERMS, new tab"
-16. "Start a new tab and perform Google Scholar search for SEARCH_TERMS"
-17. "Let's see the Google Scholar results for SEARCH_TERMS in a new tab"
-18. "Please open a new tab and search SEARCH_TERMS on Google Scholar"
-19. "Conduct a Google Scholar search for SEARCH_TERMS in a new tab"
-20. "New tab: run a Google Scholar search for SEARCH_TERMS"
-21. "Execute Google Scholar search for SEARCH_TERMS in a new tab"
-22. "Open a new tab, then Google Scholar SEARCH_TERMS"
-23. "Proceed with Google Scholar search for SEARCH_TERMS in a new tab"
-24. "Show me Google Scholar results for SEARCH_TERMS in a new tab"
-25. "Tab new: Google Scholar SEARCH_TERMS"
-26. "In a new tab, Google Scholar search for SEARCH_TERMS"
-27. "Pull up Google Scholar results for SEARCH_TERMS in a new tab"
-28. "Initiate Google Scholar SEARCH_TERMS in a new tab"
-29. "Look up SEARCH_TERMS in Google Scholar, new tab"
-30. "Bring up Google Scholar SEARCH_TERMS in a fresh tab"
-31. "Perform Google Scholar search: SEARCH_TERMS in new tab"
-32. "Open a new tab for Google Scholar and search SEARCH_TERMS"
-33. "Generate Google Scholar results for SEARCH_TERMS in a new tab"
-34. "Start Google Scholar search for SEARCH_TERMS in a new tab"
-35. "Please Google Scholar SEARCH_TERMS in a new tab"
-36. "Fetch Google Scholar results for SEARCH_TERMS in a new tab"
-37. "Google Scholar SEARCH_TERMS, open new tab"
-38. "Find SEARCH_TERMS on Google Scholar in a new tab"
-39. "Go fetch Google Scholar results for SEARCH_TERMS in a new tab"
-40. "Search Google Scholar for SEARCH_TERMS, new tab"
-41. "New tab with Google Scholar search for SEARCH_TERMS"
-42. "Perform a Google Scholar search in a new tab for SEARCH_TERMS"
-43. "Google Scholar search for SEARCH_TERMS, new tab please"
-44. "Show Google Scholar results for SEARCH_TERMS in a new tab"
-45. "Please show Google Scholar results for SEARCH_TERMS in a new tab"
-46. "Let's do a Google Scholar search for SEARCH_TERMS, new tab"
-47. "Google Scholar, search SEARCH_TERMS in a new tab"
-48. "Can you Google Scholar SEARCH_TERMS in a new tab?"
-49. "Run a new tab and Google Scholar SEARCH_TERMS"
-50. "Use Google Scholar to search SEARCH_TERMS in a new tab"
-51. "Search for SEARCH_TERMS on Google Scholar, new tab"
-52. "Proceed to Google Scholar in a new tab and search for SEARCH_TERMS"
-53. "Start a Google Scholar search on SEARCH_TERMS in a new tab"
-54. "Perform SEARCH_TERMS search on Google Scholar in a new tab"
-55. "Do a search on Google Scholar for SEARCH_TERMS, new tab please"
-56. "Get Google Scholar to search SEARCH_TERMS, new tab"
-57. "Please conduct a Google Scholar search for SEARCH_TERMS in a new tab"
-58. "Search Google Scholar for SEARCH_TERMS in a new tab, please"
-59. "Go to Google Scholar and search for SEARCH_TERMS, new tab"
-60. "Pull up a new tab and Google Scholar search for SEARCH_TERMS"
-61. "Go fetch SEARCH_TERMS on Google Scholar, new tab"
-62. "Look for SEARCH_TERMS on Google Scholar in a new tab"
-63. "New tab and Google Scholar SEARCH_TERMS please"
-64. "Please find SEARCH_TERMS in Google Scholar, new tab"
-65. "Tab new, and search Google Scholar for SEARCH_TERMS"
-66. "Execute a Google Scholar search in a new tab for SEARCH_TERMS"
-67. "Open a fresh tab, search Google Scholar for SEARCH_TERMS"
-68. "Get me Google Scholar results for SEARCH_TERMS, new tab"
-69. "In a new tab, please Google Scholar search SEARCH_TERMS"
-70. "Could you please Google Scholar SEARCH_TERMS in a new tab?"
-71. "Run Google Scholar SEARCH_TERMS search in a new tab"
-72. "Fetch me SEARCH_TERMS on Google Scholar, new tab"
-73. "Start a new tab with Google Scholar search for SEARCH_TERMS"
-74. "Go look up SEARCH_TERMS on Google Scholar in a new tab"
-75. "Initiate a new tab, Google Scholar SEARCH_TERMS"
-76. "Open a new tab, find SEARCH_TERMS on Google Scholar"
-77. "Could you search Google Scholar for SEARCH_TERMS in a new tab?"
-78. "Google Scholar SEARCH_TERMS, pull up in a new tab"
-79. "Please open Google Scholar SEARCH_TERMS in a new tab"
-80. "Run Google Scholar for SEARCH_TERMS, new tab"
-81. "Open a new tab and fetch Google Scholar results for SEARCH_TERMS"
-82. "Show SEARCH_TERMS on Google Scholar in a new tab"
-83. "Go to new tab, Google Scholar SEARCH_TERMS"
-84. "Do a Google Scholar SEARCH_TERMS search in a new tab"
-85. "Find me SEARCH_TERMS on Google Scholar in a new tab"
-86. "New tab, perform Google Scholar search for SEARCH_TERMS"
-87. "Search Google Scholar in a new tab for SEARCH_TERMS"
-88. "Find Google Scholar results for SEARCH_TERMS in a new tab"
-89. "Let's look up Google Scholar for SEARCH_TERMS in a new tab"
-90. "In a new tab, find SEARCH_TERMS on Google Scholar"
-91. "Google Scholar SEARCH_TERMS, display in a new tab"
-92. "Get Google Scholar results for SEARCH_TERMS in a new tab"
-93. "Do a Google Scholar search in a new tab for SEARCH_TERMS"
-94. "Google Scholar SEARCH_TERMS, open in a new tab"
-95. "Look up Google Scholar for SEARCH_TERMS, new tab"
-96. "New tab: search Google Scholar for SEARCH_TERMS"
-97. "Please search Google Scholar for SEARCH_TERMS, new tab"
-98. "Perform a new tab search on Google Scholar for SEARCH_TERMS"
-99. "Google Scholar SEARCH_TERMS, initiate in a new tab"
-100. "Please run a Google Scholar search in a new tab for SEARCH_TERMS"
+New tab, Google Scholar SEARCH_TERMS
+Do a Google Scholar search for SEARCH_TERMS in a new tab
+Display Google Scholar search results for SEARCH_TERMS in a new tab
+Run a Google Scholar search for SEARCH_TERMS and show in new tab
+Google Scholar SEARCH_TERMS, new tab
+Google Scholar search in a new tab, SEARCH_TERMS
+New tab: Google Scholar, SEARCH_TERMS
+Open Google Scholar and search SEARCH_TERMS in a new tab
+Look up SEARCH_TERMS on Google Scholar in a new tab
+Open new tab with Google Scholar search results for SEARCH_TERMS
+Display in a new tab: Google Scholar results for SEARCH_TERMS
+Go to Google Scholar and search SEARCH_TERMS in a new tab
+Bring up Google Scholar, SEARCH_TERMS, in a new tab
+Run Google Scholar search on SEARCH_TERMS, new tab please
+Initiate a Google Scholar search for SEARCH_TERMS, new tab
+Start a new tab and perform Google Scholar search for SEARCH_TERMS
+Let's see the Google Scholar results for SEARCH_TERMS in a new tab
+Please open a new tab and search SEARCH_TERMS on Google Scholar
+Conduct a Google Scholar search for SEARCH_TERMS in a new tab
+New tab: run a Google Scholar search for SEARCH_TERMS
+Execute Google Scholar search for SEARCH_TERMS in a new tab
+Open a new tab, then Google Scholar SEARCH_TERMS
+Proceed with Google Scholar search for SEARCH_TERMS in a new tab
+Show me Google Scholar results for SEARCH_TERMS in a new tab
+Tab new: Google Scholar SEARCH_TERMS
+In a new tab, Google Scholar search for SEARCH_TERMS
+Pull up Google Scholar results for SEARCH_TERMS in a new tab
+Initiate Google Scholar SEARCH_TERMS in a new tab
+Look up SEARCH_TERMS in Google Scholar, new tab
+Bring up Google Scholar SEARCH_TERMS in a fresh tab
+Perform Google Scholar search: SEARCH_TERMS in new tab
+Open a new tab for Google Scholar and search SEARCH_TERMS
+Generate Google Scholar results for SEARCH_TERMS in a new tab
+Start Google Scholar search for SEARCH_TERMS in a new tab
+Please Google Scholar SEARCH_TERMS in a new tab
+Fetch Google Scholar results for SEARCH_TERMS in a new tab
+Google Scholar SEARCH_TERMS, open new tab
+Find SEARCH_TERMS on Google Scholar in a new tab
+Go fetch Google Scholar results for SEARCH_TERMS in a new tab
+Search Google Scholar for SEARCH_TERMS, new tab
+New tab with Google Scholar search for SEARCH_TERMS
+Perform a Google Scholar search in a new tab for SEARCH_TERMS
+Google Scholar search for SEARCH_TERMS, new tab please
+Show Google Scholar results for SEARCH_TERMS in a new tab
+Please show Google Scholar results for SEARCH_TERMS in a new tab
+Let's do a Google Scholar search for SEARCH_TERMS, new tab
+Google Scholar, search SEARCH_TERMS in a new tab
+Can you Google Scholar SEARCH_TERMS in a new tab?
+Run a new tab and Google Scholar SEARCH_TERMS
+Use Google Scholar to search SEARCH_TERMS in a new tab
+Search for SEARCH_TERMS on Google Scholar, new tab
+Proceed to Google Scholar in a new tab and search for SEARCH_TERMS
+Start a Google Scholar search on SEARCH_TERMS in a new tab
+Perform SEARCH_TERMS search on Google Scholar in a new tab
+Do a search on Google Scholar for SEARCH_TERMS, new tab please
+Get Google Scholar to search SEARCH_TERMS, new tab
+Please conduct a Google Scholar search for SEARCH_TERMS in a new tab
+Search Google Scholar for SEARCH_TERMS in a new tab, please
+Go to Google Scholar and search for SEARCH_TERMS, new tab
+Pull up a new tab and Google Scholar search for SEARCH_TERMS
+Go fetch SEARCH_TERMS on Google Scholar, new tab
+Look for SEARCH_TERMS on Google Scholar in a new tab
+New tab and Google Scholar SEARCH_TERMS please
+Please find SEARCH_TERMS in Google Scholar, new tab
+Tab new, and search Google Scholar for SEARCH_TERMS
+Execute a Google Scholar search in a new tab for SEARCH_TERMS
+Open a fresh tab, search Google Scholar for SEARCH_TERMS
+Get me Google Scholar results for SEARCH_TERMS, new tab
+In a new tab, please Google Scholar search SEARCH_TERMS
+Could you please Google Scholar SEARCH_TERMS in a new tab?
+Run Google Scholar SEARCH_TERMS search in a new tab
+Fetch me SEARCH_TERMS on Google Scholar, new tab
+Start a new tab with Google Scholar search for SEARCH_TERMS
+Go look up SEARCH_TERMS on Google Scholar in a new tab
+Initiate a new tab, Google Scholar SEARCH_TERMS
+Open a new tab, find SEARCH_TERMS on Google Scholar
+Could you search Google Scholar for SEARCH_TERMS in a new tab?
+Google Scholar SEARCH_TERMS, pull up in a new tab
+Please open Google Scholar SEARCH_TERMS in a new tab
+Run Google Scholar for SEARCH_TERMS, new tab
+Open a new tab and fetch Google Scholar results for SEARCH_TERMS
+Show SEARCH_TERMS on Google Scholar in a new tab
+Go to new tab, Google Scholar SEARCH_TERMS
+Do a Google Scholar SEARCH_TERMS search in a new tab
+Find me SEARCH_TERMS on Google Scholar in a new tab
+New tab, perform Google Scholar search for SEARCH_TERMS
+Search Google Scholar in a new tab for SEARCH_TERMS
+Find Google Scholar results for SEARCH_TERMS in a new tab
+Let's look up Google Scholar for SEARCH_TERMS in a new tab
+In a new tab, find SEARCH_TERMS on Google Scholar
+Google Scholar SEARCH_TERMS, display in a new tab
+Get Google Scholar results for SEARCH_TERMS in a new tab
+Do a Google Scholar search in a new tab for SEARCH_TERMS
+Google Scholar SEARCH_TERMS, open in a new tab
+Look up Google Scholar for SEARCH_TERMS, new tab
+New tab: search Google Scholar for SEARCH_TERMS
+Please search Google Scholar for SEARCH_TERMS, new tab
+Perform a new tab search on Google Scholar for SEARCH_TERMS
+Google Scholar SEARCH_TERMS, initiate in a new tab
+Please run a Google Scholar search in a new tab for SEARCH_TERMS
+New tub, Google scholar SEARCH_TERMS
+Due a Google scalar search for SEARCH_TERMS in a new tab
+Display Google shoulder search results for SEARCH_TERMS in a new tab
+Run a Google choler search for SEARCH_TERMS and show in new tab
+Google collar SEARCH_TERMS, new tab
+Google taller search in a new tab, SEARCH_TERMS
+New cab: Google Scholar, SEARCH_TERMS
+Open Google color and search SEARCH_TERMS in a new tab
+Look up SEARCH_TERMS on Google dollar in a new cab
+Open new table with Google caller search results for SEARCH_TERMS
+Display in a new table: Google sculler results for SEARCH_TERMS
+Go to Google squalor and search SEARCH_TERMS in a new tab
+Bring up Google molar, SEARCH_TERMS, in a new tab
+Run Google holler search on SEARCH_TERMS, new tab please
+Initiate a Google solar search for SEARCH_TERMS, new tab
+Start a new tub and perform Google collar search for SEARCH_TERMS
+Let's see the Google dollar results for SEARCH_TERMS in a new tab
+Please open a new cab and search SEARCH_TERMS on Google Scholar
+Conduct a Google squalor search for SEARCH_TERMS in a new tab
+New tub: run a Google collar search for SEARCH_TERMS
+Execute Google sculler search for SEARCH_TERMS in a new cab
+Open a new cab, then Google taller SEARCH_TERMS
+Proceed with Google holler search for SEARCH_TERMS in a new tab
+Show me Google molar results for SEARCH_TERMS in a new cab
+Tab new: Google collar SEARCH_TERMS
+In a new tub, Google Scholar search for SEARCH_TERMS
+Pull up Google scholar results for SEARCH_TERMS in a new cab
+Initiate Google collar SEARCH_TERMS in a new tub
+Look up SEARCH_TERMS in Google molar, new tab
+Bring up Google solar SEARCH_TERMS in a fresh tub
+Perform Google scholar search: SEARCH_TERMS in new tub
+Open a new cab for Google choler and search SEARCH_TERMS
+Generate Google collar results for SEARCH_TERMS in a new cab
+Start Google taller search for SEARCH_TERMS in a new cab
+Please Google holler SEARCH_TERMS in a new tub
+Fetch Google scholar results for SEARCH_TERMS in a new tub
+Google collar SEARCH_TERMS, open new cab
+Find SEARCH_TERMS on Google scholar in a new tub
+Go fetch Google molar results for SEARCH_TERMS in a new tub
+Search Google collar for SEARCH_TERMS, new cab
+New cab with Google choler search for SEARCH_TERMS
+Perform a Google taller search in a new cab for SEARCH_TERMS
+Google holler search for SEARCH_TERMS, new cab please
+Show Google scholar results for SEARCH_TERMS in a new tub
+Please show Google molar results for SEARCH_TERMS in a new cab
+Let's do a Google scholar search for SEARCH_TERMS, new tub
+Google taller, search SEARCH_TERMS in a new cab
+Can you Google taller SEARCH_TERMS in a new tub?
+Run a new cab and Google Scholar SEARCH_TERMS
+Use Google choler to search SEARCH_TERMS in a new tub
+Search for SEARCH_TERMS on Google scholar, new cab
+Proceed to Google holler in a new cab and search for SEARCH_TERMS
+Start a Google molar search on SEARCH_TERMS in a new tub
+Perform SEARCH_TERMS search on Google scholar in a new cab
+Do a search on Google taller for SEARCH_TERMS, new cab please
+Get Google scholar to search SEARCH_TERMS, new tub
+Please conduct a Google scholar search for SEARCH_TERMS in a new cab
+Search Google scholar for SEARCH_TERMS in a new tub, please
+Go to Google choler and search for SEARCH_TERMS, new cab
+Pull up a new cab and Google holler search for SEARCH_TERMS
+Go fetch SEARCH_TERMS on Google scholar, new tub
+Look for SEARCH_TERMS on Google molar in a new cab
+New tub and Google scholar SEARCH_TERMS please
+Please find SEARCH_TERMS in Google holler, new tub
+Tab new, and search Google scholar for SEARCH_TERMS
+Execute a Google scholar search in a new cab for SEARCH_TERMS
+Open a fresh tub, search Google scholar for SEARCH_TERMS
+Get me Google molar results for SEARCH_TERMS, new cab
+In a new cab, please Google scholar search SEARCH_TERMS
+Could you please Google scholar SEARCH_TERMS in a new tub?
+Run Google scholar SEARCH_TERMS search in a new cab
+Fetch me SEARCH_TERMS on Google holler, new tub
+Start a new cab with Google scholar search for SEARCH_TERMS
+Go look up SEARCH_TERMS on Google choler in a new tub
+Initiate a new tub, Google scholar SEARCH_TERMS
+Open a new tub, find SEARCH_TERMS on Google molar
+Could you search Google scholar for SEARCH_TERMS in a new cab?
+Google scholar SEARCH_TERMS, pull up in a new tub
+Please open Google scholar SEARCH_TERMS in a new cab
+Run Google scholar for SEARCH_TERMS, new tub
+Open a new cab and fetch Google scholar results for SEARCH_TERMS
+Show SEARCH_TERMS on Google molar in a new tub
+Go to new cab, Google scholar SEARCH_TERMS
+Do a Google scholar SEARCH_TERMS search in a new tub
+Find me SEARCH_TERMS on Google holler in a new cab
+New tub, perform Google scholar search for SEARCH_TERMS
+Search Google scholar in a new cab for SEARCH_TERMS
+Find Google scholar results for SEARCH_TERMS in a new tub
+Let's look up Google scholar for SEARCH_TERMS in a new cab
+In a new tub, find SEARCH_TERMS on Google molar
+Google scholar SEARCH_TERMS, display in a new cab
+Get Google scholar results for SEARCH_TERMS in a new tub
+Do a Google scholar search in a new cab for SEARCH_TERMS
+Google scholar SEARCH_TERMS, open in a new tub
+Look up Google Scholar for SEARCH_TERMS, new tab
+Google scholar SEARCH_TERMS, new cab
+Google scholar SEARCH_TERMS, new tub
+do a Google scholar search for SEARCH_TERMS, in a new tab
+Google scholar SEARCH_TERMS, in another tab
+Go look up SEARCH_TERMS on Google choler in a new tub
