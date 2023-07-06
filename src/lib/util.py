@@ -217,14 +217,29 @@ def generate_domain_names( count=10, debug=False ):
 
     return domain_names
 
+def get_search_terms( requested_length ):
+    
+    # Load search terms file
+    search_terms = get_file_as_list( get_project_root() + "/src/conf/search-terms.txt", lower_case=False, clean=True, randomize=True )
+    
+    # If we don't have enough search terms, append copies of the search term list until we do
+    while requested_length > len( search_terms ):
+        search_terms += search_terms
+        
+    # Truncate the search terms list to equal the requested len
+    search_terms = search_terms[ :requested_length ]
+    
+    return search_terms
+
 
 if __name__ == "__main__":
     
     # generate_domain_names( 10, debug=True )
     
-    search_terms = get_file_as_list( get_project_root() + "/src/conf/search-terms.txt", lower_case=True, clean=True, randomize=True )
-    #
-    for search_term in search_terms: print( search_term )
+    # search_terms = get_file_as_list( get_project_root() + "/src/conf/search-terms.txt", lower_case=True, clean=True, randomize=True )
+    # #
+    # for search_term in search_terms: print( search_term )
+    search_terms = get_search_terms( 120 )
     print( len( search_terms ) )
     
     # raw = "r-i-c-o dot f-e-l-i-p dot j-o-n-e-s at gmail.com"
