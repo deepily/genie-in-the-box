@@ -205,10 +205,10 @@ def generate_domain_names( count=10, debug=False ):
     domain_names = [ ]
     for _ in range( count ):
         
-        adj  = random.choice(adjectives)
-        noun = random.choice(nouns)
-        tld  = random.choice(top_level_domains)
-        sub  = random.choice(sub_domains)
+        adj  = random.choice( adjectives )
+        noun = random.choice( nouns )
+        tld  = random.choice( top_level_domains )
+        sub  = random.choice( sub_domains )
         
         domain_name = f"{sub}{adj}{noun}{tld}"
         domain_names.append( domain_name )

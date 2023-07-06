@@ -6,7 +6,7 @@ def remove_line_numbers( path, write_back=True ):
     
     print( "Total number of lines: [{}]".format( len( lines ) ) )
     
-    # This assumes "number dot space" formatting plus remove extraneous double quotes
+    # This assumes "number dot space" formatting. removes extraneous double quotes too
     lines = [ line.split( ". " )[ 1 ].replace( '"', '' ) for line in lines ]
     
     for line in lines[ 0:5 ]:
