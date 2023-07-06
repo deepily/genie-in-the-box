@@ -1,0 +1,8 @@
+synthetic-data-search-in-new-tab.txt                     = search new tab
+synthetic-data-search-in-current-tab.txt                 = search current tab
+synthetic-data-search-google-in-new-tab.txt              = search google new tab
+synthetic-data-search-google-in-current-tab.txt          = search google current tab
+synthetic-data-search-google-scholar-in-new-tab.txt      = search google scholar new tab
+synthetic-data-search-google-scholar-in-current-tab.txt  = search google scholar current tab
+synthetic-data-load-url-new-tab.txt                      = open new tab
+synthetic-data-load-url-current-tab.txt                  = in current tab
