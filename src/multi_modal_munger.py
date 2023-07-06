@@ -491,12 +491,18 @@ class MultiModalMunger:
             match = raw_line.split( " = " )[ 1 ].strip()
             
             if match.startswith( '"' ) and match.endswith( '";' ) and not match.startswith( '"http' ):
-                # Remove the quotes and semicolon.
+                # Remove quotes and semicolon.
                 match = match[ 1 : -2 ]
                 vox_commands.append( match )
             else:
                 if self.debug: print( "SKIPPING [{}]...".format( match ) )
                 
+        
+        if self.debug:
+            # Sort keys alphabetically before printing them out.
+            vox_commands.sort()
+            for vox_command in vox_commands: print( vox_command )
+        
         # Sort the sending order by length of string, longest first.  From: https://stackoverflow.com/questions/60718330/sort-list-of-strings-in-decreasing-order-according-to-length
         vox_commands = sorted( vox_commands, key=lambda command: ( -len( command ), command) )
         
@@ -530,7 +536,7 @@ if __name__ == "__main__":
     # transcription = "Take Me Too https://NPR.org!"
     # transcription = "Zoom, In!"
     transcription = "Go ZoomInG!"
-    munger = MultiModalMunger( transcription, prefix=prefix, debug=False )
+    munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
     print( "munger.use_exact_matching [{}]".format( munger.use_exact_matching ) )
     print( "munger.use_ai_matching    [{}]".format( munger.use_ai_matching ) )
     # print( "munger.is_ddg_search()", munger.is_ddg_search() )
