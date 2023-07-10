@@ -1,6 +1,11 @@
 import re
+import os
+import openai
+import ast
+import numpy as np
 
 from lib import util as du
+from lib import util_stopwatch as sw
 
 # Currently, comma, all transcription mode descriptors are three words long.
 # This will become important or more important in the future.
@@ -31,7 +36,9 @@ modes_to_methods_dict = {
 }
 class MultiModalMunger:
 
-    def __init__( self, raw_transcription, prefix="", prompt_key="generic", config_path="conf/modes-vox.json", use_exact_matching=True, use_ai_matching=True, debug=False, verbose=False ):
+    def __init__( self, raw_transcription, prefix="", prompt_key="generic", config_path="conf/modes-vox.json",
+                  use_exact_matching=True, use_ai_matching=True, vox_command_model="ada:ft-deepily-2023-06-20-17-49-29",
+                  debug=False, verbose=False ):
 
         self.debug                  = debug
         self.verbose                = verbose
@@ -40,6 +47,8 @@ class MultiModalMunger:
         self.prefix                 = prefix
         self.use_ai_matching        = use_ai_matching
         self.use_exact_matching     = use_exact_matching
+        self.vox_command_model      = vox_command_model
+        self.vox_command_threshold  = 50.0
 
         self.punctuation            = du.get_file_as_dictionary( "conf/translation-dictionary.map", lower_case=True, debug=self.debug )
         self.domain_names           = du.get_file_as_dictionary( "conf/domain-names.map",           lower_case=True )
@@ -48,6 +57,7 @@ class MultiModalMunger:
         self.prompt_dictionary      = du.get_file_as_dictionary( "conf/prompt-dictionary.map",      lower_case=True )
         self.prompt                 = du.get_file_as_string( self.prompt_dictionary.get( prompt_key, "generic" ) )
         self.command_strings        = self._get_command_strings()
+        self.class_dictionary       = self._get_class_dictionary()
         
         print( "prompt_key:", prompt_key )
         if self.debug and self.verbose:
@@ -67,6 +77,7 @@ class MultiModalMunger:
         parsed_fields      = self.parse( raw_transcription )
         self.transcription = parsed_fields[ 0 ]
         self.mode          = parsed_fields[ 1 ]
+        
         
     def __str__(self):
 
@@ -197,7 +208,7 @@ class MultiModalMunger:
 
         if self.use_ai_matching:
 
-            # TODO: fuzzy match, e.g.: "zooming" -> "zoom in"
+            print( "Attempting fuzzy match, e.g.: zooming -> zoom in" )
             self.results = self._get_ai_match( transcription )
             print( "Results [{}]".format( self.results ) )
 
@@ -474,9 +485,55 @@ class MultiModalMunger:
     
     def _get_ai_match( self, transcription ):
         
-        print( "TODO: implement ai based vox command classification" )
-        return transcription
+        best_guess = self._get_best_guess( transcription )
         
+        # Setting a threshold allows us to return a raw transcription when an utterance represents a command that's not currently fine-tuned within the model.
+        if best_guess[ 1 ] >= self.vox_command_threshold:
+        
+            print( "TODO: Create a second model That's trained to extract arguments from within the voice command string, such as URLs and search terms" )
+            print( "Best guess is GREATER than threshold [{}]".format( self.vox_command_threshold ) )
+            return best_guess[ 0 ]
+        
+        else:
+            
+            print( "Best guess is LESS than threshold [{}], returning raw transcription".format( self.vox_command_threshold ) )
+            return transcription
+    
+    def _log_odds_to_probabilities( self, log_odds ):
+        
+        # Convert dictionary to a list of tuples
+        log_odds = log_odds.items()
+        probabilities = [ ]
+        
+        for item in log_odds:
+            
+            class_name = self.class_dictionary[ item[ 0 ].strip() ]
+            print( "{}: {:.4f}%".format( class_name, np.exp( float( item[ 1 ] ) ) * 100 ) )
+            probabilities.append( (class_name, np.exp( item[ 1 ] ) * 100) )
+        
+        return probabilities[ 0 ]
+    
+    def _get_best_guess( self, command_str ):
+        
+        openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
+        
+        timer = sw.Stopwatch()
+        
+        response = openai.Completion.create(
+            model=self.vox_command_model,
+            prompt=command_str + "\n\n###\n\n",
+            max_tokens=1,
+            temperature=0,
+            logprobs=len( self.class_dictionary.keys() )
+        )
+        
+        timer.print( "Call to [{}]".format( self.vox_command_model ), use_millis=True, end="\n" )
+        
+        # convert OPENAI object into a native Python dictionary... ugly!
+        best_guess = ast.literal_eval( str( response[ "choices" ][ 0 ][ "logprobs" ][ "top_logprobs" ][ 0 ] ) )
+        
+        return self._log_odds_to_probabilities( best_guess )
+    
     def _get_command_strings( self ):
     
         exact_matches = du.get_file_as_list( "conf/constants.js", lower_case=True, clean=True )
@@ -507,6 +564,14 @@ class MultiModalMunger:
         vox_commands = sorted( vox_commands, key=lambda command: ( -len( command ), command) )
         
         return vox_commands
+    
+    def _get_class_dictionary( self ):
+        
+        class_dictionary = dict()
+        class_dictionary[ "0" ] = "open-current-tab"
+        class_dictionary[ "1" ] = "open-new-tab"
+        
+        return class_dictionary
 
 if __name__ == "__main__":
 
@@ -535,7 +600,8 @@ if __name__ == "__main__":
     prefix        = "multimodal editor"
     # transcription = "Take Me Too https://NPR.org!"
     # transcription = "Zoom, In!"
-    transcription = "Go ZoomInG!"
+    # transcription = "Go ZoomInG!"
+    transcription = "Open a new tab and go to FOO.com"
     munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
     print( "munger.use_exact_matching [{}]".format( munger.use_exact_matching ) )
     print( "munger.use_ai_matching    [{}]".format( munger.use_ai_matching ) )
@@ -603,4 +669,5 @@ if __name__ == "__main__":
     # response = genie_client.ask_chat_gpt_text( munger.transcription, preamble=preamble )
     # print( response )
     # timer.print( "Proofread", use_millis=True )
+    
     
