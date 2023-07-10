@@ -295,6 +295,8 @@ class GenieClient:
         
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo-0613",
+            # Not yet available, comma, still waiting for July's bill to be submitted before I can get access.
+            # model="gpt-4",
             messages=[
                 { "role": "system", "content": prompt },
                 { "role": "user", "content": content }
