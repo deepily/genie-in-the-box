@@ -6,3 +6,4 @@ synthetic-data-search-google-scholar-in-new-tab.txt      = search google scholar
 synthetic-data-search-google-scholar-in-current-tab.txt  = search google scholar current tab
 synthetic-data-load-url-new-tab.txt                      = open new tab
 synthetic-data-load-url-in-current-tab.txt               = in current tab
+synthetic-data-none-of-the-above.txt                     = none of the above
