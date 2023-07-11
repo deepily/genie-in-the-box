@@ -37,7 +37,7 @@ modes_to_methods_dict = {
 class MultiModalMunger:
 
     def __init__( self, raw_transcription, prefix="", prompt_key="generic", config_path="conf/modes-vox.json",
-                  use_exact_matching=True, use_ai_matching=True, vox_command_model="ada:ft-deepily-2023-06-20-17-49-29",
+                  use_exact_matching=True, use_ai_matching=True, vox_command_model="ada:ft-deepily-2023-07-10-23-39-03",
                   debug=False, verbose=False ):
 
         self.debug                  = debug
@@ -568,8 +568,14 @@ class MultiModalMunger:
     def _get_class_dictionary( self ):
         
         class_dictionary = dict()
-        class_dictionary[ "0" ] = "open-current-tab"
-        class_dictionary[ "1" ] = "open-new-tab"
+        class_dictionary[ "0" ] =                       "in current tab"
+        class_dictionary[ "1" ] =                         "open new tab"
+        class_dictionary[ "2" ] =            "search google current tab"
+        class_dictionary[ "3" ] =                "search google new tab"
+        class_dictionary[ "4" ] =    "search google scholar current tab"
+        class_dictionary[ "5" ] =        "search google scholar new tab"
+        class_dictionary[ "6" ] =                   "search current tab"
+        class_dictionary[ "7" ] =                       "search new tab"
         
         return class_dictionary
 
