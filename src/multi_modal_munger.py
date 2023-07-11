@@ -555,7 +555,7 @@ class MultiModalMunger:
             # model="gpt-4",
             messages=[
                 { "role": "system", "content": system },
-                { "role": "user", "content": content }
+                { "role": "user",   "content": content }
             ],
             # From: https://community.openai.com/t/cheat-sheet-mastering-temperature-and-top-p-in-chatgpt-api-a-few-tips-and-tricks-on-controlling-the-creativity-deterministic-output-of-prompt-responses/172683
             temperature=0.0,
@@ -569,6 +569,33 @@ class MultiModalMunger:
         if self.debug: print( response )
         
         return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
+    
+    def extract_args( self, raw_text, model="ada:ft-deepily-2023-07-11-20-18-37" ):
+        
+        openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
+        print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
+        
+        if self.debug: print( " raw_text [{}]".format( raw_text ) )
+        
+        timer = sw.Stopwatch()
+        
+        response = openai.Completion.create(
+            model=model,
+            prompt=raw_text,
+            # From: https://community.openai.com/t/cheat-sheet-mastering-temperature-and-top-p-in-chatgpt-api-a-few-tips-and-tricks-on-controlling-the-creativity-deterministic-output-of-prompt-responses/172683
+            temperature=0.0,
+            top_p=0.0,
+            max_tokens=12,
+            frequency_penalty=0.0,
+            presence_penalty=0.0,
+            stop=["\n"]
+        )
+        timer.print( "Call to [{}]".format( model ), use_millis=True, end="\n" )
+        
+        if self.debug: print( response )
+        
+        return response.choices[ 0 ].text.strip()
+        
     def _get_command_strings( self ):
     
         exact_matches = du.get_file_as_list( "conf/constants.js", lower_case=True, clean=True )
@@ -643,12 +670,14 @@ if __name__ == "__main__":
     # transcription = "Take Me Too https://NPR.org!"
     # transcription = "Zoom, In!"
     # transcription = "Go ZoomInG!"
-    transcription = "Open a new tab and go to blahblah"
-    munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
+    # transcription = "Open a new tab and go to blahblah"
+    # transcription = "Open the door and go to blahblah"
+    transcription = "In a new tab, search for blah blah blah."
+    munger = MultiModalMunger( transcription, prefix="", debug=True )
     # munger = MultiModalMunger( transcription )
     # print( "munger.use_exact_matching [{}]".format( munger.use_exact_matching ) )
     # print( "munger.use_ai_matching    [{}]".format( munger.use_ai_matching ) )
-    # print( munger.extract_domain_name( transcription ) )
+    print( munger.extract_args( transcription ) )
     # print( "munger.is_ddg_search()", munger.is_ddg_search() )
     # print( "munger.is_run_prompt()", munger.is_run_prompt(), end="\n\n" )
     # print( munger, end="\n\n" )
