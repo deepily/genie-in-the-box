@@ -194,13 +194,17 @@ def get_project_root():
     else:
         return "/var/genie-in-the-box"
 
-def generate_domain_names( count=10, debug=False ):
+def generate_domain_names( count=10, remove_dots=False, debug=False ):
     
     adjectives        = [ "amazing", "beautiful", "exciting", "fantastic", "hilarious", "incredible", "jubilant", "magnificent", "remarkable", "spectacular", "wonderful" ]
     nouns             = [ "apple", "banana", "cherry", "dolphin", "elephant", "giraffe", "hamburger", "iceberg", "jellyfish", "kangaroo", "lemur", "mango", "november", "octopus", "penguin", "quartz", "rainbow", "strawberry", "tornado", "unicorn", "volcano", "walrus", "xylophone", "yogurt", "zebra" ]
     
     top_level_domains = [ ".com", ".org", ".gov", ".info", ".net", ".io" ]
     sub_domains       = [ "", "", "www.", "blog.", "login.", "mail.", "dev.", "beta.", "alpha.", "test.", "stage.", "prod." ]
+    
+    if remove_dots:
+        top_level_domains = [ tld.replace( ".", "" ) for tld in top_level_domains ]
+        sub_domains       = [ sub.replace( ".", "" ) for sub in sub_domains ]
     
     domain_names = [ ]
     for _ in range( count ):
