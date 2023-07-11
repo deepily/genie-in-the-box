@@ -1,7 +1,9 @@
 import re
 import os
-import openai
 import ast
+from collections import defaultdict
+
+import openai
 import numpy as np
 
 from lib import util as du
@@ -208,9 +210,9 @@ class MultiModalMunger:
 
         if self.use_ai_matching:
 
-            print( "Attempting fuzzy match, e.g.: zooming -> zoom in" )
+            print( "Attempting fuzzy match, e.g.: zooming -> zoom in..." )
             self.results = self._get_ai_match( transcription )
-            print( "Results [{}]".format( self.results ) )
+            print( "Attempting fuzzy match, e.g.: zooming -> zoom in... Done: results [{}]".format( self.results ) )
 
         return transcription, mode
     
@@ -501,8 +503,9 @@ class MultiModalMunger:
     
     def _log_odds_to_probabilities( self, log_odds ):
         
-        # Convert dictionary to a list of tuples
-        log_odds = log_odds.items()
+        # Convert dictionary to a sorted list of tuples
+        log_odds = sorted( log_odds.items(), key=lambda tup: tup[ 1 ], reverse=True )
+        
         probabilities = [ ]
         
         for item in log_odds:
@@ -511,7 +514,7 @@ class MultiModalMunger:
             print( "{}: {:.4f}%".format( class_name, np.exp( float( item[ 1 ] ) ) * 100 ) )
             probabilities.append( (class_name, np.exp( item[ 1 ] ) * 100) )
         
-        return probabilities[ 0 ]
+        return probabilities
     
     def _get_best_guess( self, command_str ):
         
@@ -532,8 +535,40 @@ class MultiModalMunger:
         # convert OPENAI object into a native Python dictionary... ugly!
         best_guess = ast.literal_eval( str( response[ "choices" ][ 0 ][ "logprobs" ][ "top_logprobs" ][ 0 ] ) )
         
-        return self._log_odds_to_probabilities( best_guess )
+        # Return the first value in the sorted list of tuples.
+        return self._log_odds_to_probabilities( best_guess )[ 0 ]
     
+    def extract_domain_name( self, raw_text ):
+        
+        openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
+        print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
+        
+        if self.debug: print( " raw_text [{}]".format( raw_text ) )
+        
+        timer = sw.Stopwatch()
+        system   = "You are an expert in internet protocols and naming conventions."
+        content  = """Extract the domain name contained within the text delimited by three backticks. If you are unable
+                      to find a valid domain name, return NO_DOMAIN_NAME_FOUND.```""" + raw_text + "```"
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo-0613",
+            # Not yet available, comma, still waiting for July's bill to be submitted before I can get access.
+            # model="gpt-4",
+            messages=[
+                { "role": "system", "content": system },
+                { "role": "user", "content": content }
+            ],
+            # From: https://community.openai.com/t/cheat-sheet-mastering-temperature-and-top-p-in-chatgpt-api-a-few-tips-and-tricks-on-controlling-the-creativity-deterministic-output-of-prompt-responses/172683
+            temperature=0.0,
+            top_p=0.0,
+            max_tokens=12,
+            frequency_penalty=0.0,
+            presence_penalty=0.0
+        )
+        timer.print( "Call to [{}]".format( "gpt-3.5-turbo-0613" ), use_millis=True, end="\n" )
+        
+        if self.debug: print( response )
+        
+        return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
     def _get_command_strings( self ):
     
         exact_matches = du.get_file_as_list( "conf/constants.js", lower_case=True, clean=True )
@@ -567,7 +602,8 @@ class MultiModalMunger:
     
     def _get_class_dictionary( self ):
         
-        class_dictionary = dict()
+        class_dictionary = defaultdict( lambda: "unknown command" )
+        # class_dictionary = { }
         class_dictionary[ "0" ] =                       "in current tab"
         class_dictionary[ "1" ] =                         "open new tab"
         class_dictionary[ "2" ] =            "search google current tab"
@@ -607,10 +643,12 @@ if __name__ == "__main__":
     # transcription = "Take Me Too https://NPR.org!"
     # transcription = "Zoom, In!"
     # transcription = "Go ZoomInG!"
-    transcription = "Open a new tab and go to FOO.com"
-    munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
-    print( "munger.use_exact_matching [{}]".format( munger.use_exact_matching ) )
-    print( "munger.use_ai_matching    [{}]".format( munger.use_ai_matching ) )
+    transcription = "Open a new tab and go to blah.blah.com"
+    # munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
+    munger = MultiModalMunger( transcription )
+    # print( "munger.use_exact_matching [{}]".format( munger.use_exact_matching ) )
+    # print( "munger.use_ai_matching    [{}]".format( munger.use_ai_matching ) )
+    print( munger.extract_domain_name( transcription ) )
     # print( "munger.is_ddg_search()", munger.is_ddg_search() )
     # print( "munger.is_run_prompt()", munger.is_run_prompt(), end="\n\n" )
     # print( munger, end="\n\n" )
