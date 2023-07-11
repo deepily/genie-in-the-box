@@ -548,7 +548,7 @@ class MultiModalMunger:
         timer = sw.Stopwatch()
         system   = "You are an expert in internet protocols and naming conventions."
         content  = """Extract the domain name contained within the text delimited by three backticks. If you are unable
-                      to find a valid domain name, return NO_DOMAIN_NAME_FOUND.```""" + raw_text + "```"
+                      to find a valid domain name, return NO_VALID_DOMAIN_NAME_FOUND.```""" + raw_text + "```"
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo-0613",
             # Not yet available, comma, still waiting for July's bill to be submitted before I can get access.
@@ -606,14 +606,14 @@ class MultiModalMunger:
         # class_dictionary = { }
         class_dictionary[ "0" ] =                       "in current tab"
         class_dictionary[ "1" ] =                         "open new tab"
-        class_dictionary[ "2" ] =            "search google current tab"
-        class_dictionary[ "3" ] =                "search google new tab"
-        class_dictionary[ "4" ] =    "search google scholar current tab"
-        class_dictionary[ "5" ] =        "search google scholar new tab"
-        class_dictionary[ "6" ] =                   "search current tab"
-        class_dictionary[ "7" ] =                       "search new tab"
-        
-        return class_dictionary
+        class_dictionary[ "2" ] =                    "none of the above"
+        class_dictionary[ "3" ] =            "search google current tab"
+        class_dictionary[ "4" ] =                "search google new tab"
+        class_dictionary[ "5" ] =    "search google scholar current tab"
+        class_dictionary[ "6" ] =        "search google scholar new tab"
+        class_dictionary[ "7" ] =                   "search current tab"
+        class_dictionary[ "8" ] =                       "search new tab"
+    
 
 if __name__ == "__main__":
 
@@ -643,12 +643,12 @@ if __name__ == "__main__":
     # transcription = "Take Me Too https://NPR.org!"
     # transcription = "Zoom, In!"
     # transcription = "Go ZoomInG!"
-    transcription = "Open a new tab and go to blah.blah.com"
-    # munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
-    munger = MultiModalMunger( transcription )
+    transcription = "Open a new tab and go to blahblah"
+    munger = MultiModalMunger( transcription, prefix=prefix, debug=True )
+    # munger = MultiModalMunger( transcription )
     # print( "munger.use_exact_matching [{}]".format( munger.use_exact_matching ) )
     # print( "munger.use_ai_matching    [{}]".format( munger.use_ai_matching ) )
-    print( munger.extract_domain_name( transcription ) )
+    # print( munger.extract_domain_name( transcription ) )
     # print( "munger.is_ddg_search()", munger.is_ddg_search() )
     # print( "munger.is_run_prompt()", munger.is_run_prompt(), end="\n\n" )
     # print( munger, end="\n\n" )
