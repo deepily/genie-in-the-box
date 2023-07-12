@@ -39,7 +39,7 @@ modes_to_methods_dict = {
 class MultiModalMunger:
 
     def __init__( self, raw_transcription, prefix="", prompt_key="generic", config_path="conf/modes-vox.json",
-                  use_exact_matching=True, use_ai_matching=True, vox_command_model="ada:ft-deepily-2023-07-10-23-39-03",
+                  use_exact_matching=True, use_ai_matching=True, vox_command_model="ada:ft-deepily-2023-07-12-00-02-27",
                   debug=False, verbose=False ):
 
         self.debug                  = debug
@@ -51,7 +51,10 @@ class MultiModalMunger:
         self.use_exact_matching     = use_exact_matching
         self.vox_command_model      = vox_command_model
         self.vox_command_threshold  = 50.0
-
+        
+        self.domain_name_model      = "ada:ft-deepily:domain-names-2023-07-12-17-15-41"
+        self.search_terms_model     = "NO_MODEL_SPECIFIED"
+        
         self.punctuation            = du.get_file_as_dictionary( "conf/translation-dictionary.map", lower_case=True, debug=self.debug )
         self.domain_names           = du.get_file_as_dictionary( "conf/domain-names.map",           lower_case=True )
         self.numbers                = du.get_file_as_dictionary( "conf/numbers.map",                lower_case=True )
@@ -121,37 +124,10 @@ class MultiModalMunger:
         
         # First and foremost: Are we in multi-modal editor/command mode?
         if self.prefix == "multimodal editor":
-        
+            
             transcription, mode = self._handle_vox_command_parsing( raw_transcription )
             du.print_banner( "  END MODE: [{}] for [{}] == [{}]".format( self.prefix, raw_transcription, self.results ), end="\n\n" )
             
-            # du.print_banner( "START MODE: [{}] for [{}]".format( self.prefix, transcription ), end="\n" )
-            # transcription, mode = self.munge_vox_command( raw_transcription, transcription_mode_vox_command )
-            #
-            # # Try exact match first, then AI match if no exact match is found.
-            # if self.use_exact_matching:
-            #
-            #     if self._is_exact_match( transcription ):
-            #
-            #         print( "Exact match [{}]".format( transcription ) )
-            #         self.results = transcription
-            #
-            #         return transcription, mode
-            #
-            #     else:
-            #
-            #         # Set results to something just in case we're not using AI matching below.
-            #         print( "NOT exact match [{}]".format( transcription ) )
-            #         self.results = transcription
-            #
-            # if self.use_ai_matching:
-            #
-            #     # TODO: fuzzy match, e.g.: "zooming" -> "zoom in"
-            #     self.results = self._get_ai_match( transcription )
-            #     print( "Results [{}]".format( self.results ) )
-            #
-            # du.print_banner( "  END MODE: [{}] for [{}]".format( self.prefix, transcription ), end="\n\n" )
-
             return transcription, mode
         
         # If we have fewer than 'prefix_count' words, just assign default transcription mode.
@@ -318,7 +294,7 @@ class MultiModalMunger:
         for key, value in self.domain_names.items():
             command = command.replace( key, value )
             
-        command = re.sub( r'[,.?!]', '', command )
+        command = re.sub( r'[,?!]', '', command )
         
         # Translate punctuation mark words into single characters.
         for key, value in self.punctuation.items():
@@ -494,7 +470,13 @@ class MultiModalMunger:
         
             print( "TODO: Create a second model That's trained to extract arguments from within the voice command string, such as URLs and search terms" )
             print( "Best guess is GREATER than threshold [{}]".format( self.vox_command_threshold ) )
-            return best_guess[ 0 ]
+            
+            # AddHocTest for argument extraction period
+            # First up: extract domain names
+            if best_guess[ 0 ] in [ "open new tab", "in current tab" ]:
+                return best_guess[ 0 ] + " " + self.extract_args( transcription, model=self.domain_name_model )
+            else:
+                return best_guess[ 0 ]
         
         else:
             
@@ -521,7 +503,6 @@ class MultiModalMunger:
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
         
         timer = sw.Stopwatch()
-        
         response = openai.Completion.create(
             model=self.vox_command_model,
             prompt=command_str + "\n\n###\n\n",
@@ -538,39 +519,39 @@ class MultiModalMunger:
         # Return the first value in the sorted list of tuples.
         return self._log_odds_to_probabilities( best_guess )[ 0 ]
     
-    def extract_domain_name( self, raw_text ):
-        
-        openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
-        print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
-        
-        if self.debug: print( " raw_text [{}]".format( raw_text ) )
-        
-        timer = sw.Stopwatch()
-        system   = "You are an expert in internet protocols and naming conventions."
-        content  = """Extract the domain name contained within the text delimited by three backticks. If you are unable
-                      to find a valid domain name, return NO_VALID_DOMAIN_NAME_FOUND.```""" + raw_text + "```"
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-0613",
-            # Not yet available, comma, still waiting for July's bill to be submitted before I can get access.
-            # model="gpt-4",
-            messages=[
-                { "role": "system", "content": system },
-                { "role": "user",   "content": content }
-            ],
-            # From: https://community.openai.com/t/cheat-sheet-mastering-temperature-and-top-p-in-chatgpt-api-a-few-tips-and-tricks-on-controlling-the-creativity-deterministic-output-of-prompt-responses/172683
-            temperature=0.0,
-            top_p=0.0,
-            max_tokens=12,
-            frequency_penalty=0.0,
-            presence_penalty=0.0
-        )
-        timer.print( "Call to [{}]".format( "gpt-3.5-turbo-0613" ), use_millis=True, end="\n" )
-        
-        if self.debug: print( response )
-        
-        return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
+    # def extract_domain_name( self, raw_text ):
+    #
+    #     openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
+    #     print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
+    #
+    #     if self.debug: print( " raw_text [{}]".format( raw_text ) )
+    #
+    #     timer = sw.Stopwatch()
+    #     system   = "You are an expert in internet protocols and naming conventions."
+    #     content  = """Extract the domain name contained within the text delimited by three backticks. If you are unable
+    #                   to find a valid domain name, return NO_VALID_DOMAIN_NAME_FOUND.```""" + raw_text + "```"
+    #     response = openai.ChatCompletion.create(
+    #         model="gpt-3.5-turbo-0613",
+    #         # Not yet available, comma, still waiting for July's bill to be submitted before I can get access.
+    #         # model="gpt-4",
+    #         messages=[
+    #             { "role": "system", "content": system },
+    #             { "role": "user",   "content": content }
+    #         ],
+    #         # From: https://community.openai.com/t/cheat-sheet-mastering-temperature-and-top-p-in-chatgpt-api-a-few-tips-and-tricks-on-controlling-the-creativity-deterministic-output-of-prompt-responses/172683
+    #         temperature=0.0,
+    #         top_p=0.0,
+    #         max_tokens=12,
+    #         frequency_penalty=0.0,
+    #         presence_penalty=0.0
+    #     )
+    #     timer.print( "Call to [{}]".format( "gpt-3.5-turbo-0613" ), use_millis=True, end="\n" )
+    #
+    #     if self.debug: print( response )
+    #
+    #     return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
     
-    def extract_args( self, raw_text, model="ada:ft-deepily-2023-07-11-20-18-37" ):
+    def extract_args( self, raw_text, model="NO_MODEL_SPECIFIED" ):
         
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
         print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
@@ -581,7 +562,7 @@ class MultiModalMunger:
         
         response = openai.Completion.create(
             model=model,
-            prompt=raw_text,
+            prompt=raw_text + "\n\n###\n\n",
             # From: https://community.openai.com/t/cheat-sheet-mastering-temperature-and-top-p-in-chatgpt-api-a-few-tips-and-tricks-on-controlling-the-creativity-deterministic-output-of-prompt-responses/172683
             temperature=0.0,
             top_p=0.0,
@@ -641,7 +622,8 @@ class MultiModalMunger:
         class_dictionary[ "7" ] =                   "search current tab"
         class_dictionary[ "8" ] =                       "search new tab"
     
-
+        return class_dictionary
+    
 if __name__ == "__main__":
 
     prefix = ""
@@ -666,18 +648,23 @@ if __name__ == "__main__":
     # transcription = "full"
     # transcription = "multimodal ai fetch this information: Large, language models."
     
-    prefix        = "multimodal editor"
     # transcription = "Take Me Too https://NPR.org!"
     # transcription = "Zoom, In!"
     # transcription = "Go ZoomInG!"
     # transcription = "Open a new tab and go to blahblah"
-    # transcription = "Open the door and go to blahblah"
-    transcription = "In a new tab, search for blah blah blah."
-    munger = MultiModalMunger( transcription, prefix="", debug=True )
-    # munger = MultiModalMunger( transcription )
+    transcription = "get a fabulous blue dinner plate this tab"
+    # transcription = "In a new tab, search for this that and the other."
+    # transcription = "Get search results for Google Scholar blah blah blah."
+    # transcription = "Head to stage.magnificentrainbow.com in a new tab"
+    # transcription = "Head to stagemagnificentrainbowcom in a new tab"
+    
+    prefix        = "multimodal editor"
+    # prefix        = ""
+    munger = MultiModalMunger( transcription, prefix=prefix, debug=False )
+    # print( munger.extract_args( transcription, model=munger.domain_name_model ) )
+    
     # print( "munger.use_exact_matching [{}]".format( munger.use_exact_matching ) )
     # print( "munger.use_ai_matching    [{}]".format( munger.use_ai_matching ) )
-    print( munger.extract_args( transcription ) )
     # print( "munger.is_ddg_search()", munger.is_ddg_search() )
     # print( "munger.is_run_prompt()", munger.is_run_prompt(), end="\n\n" )
     # print( munger, end="\n\n" )
