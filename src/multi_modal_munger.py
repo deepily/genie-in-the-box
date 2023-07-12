@@ -53,7 +53,7 @@ class MultiModalMunger:
         self.vox_command_threshold  = 50.0
         
         self.domain_name_model      = "ada:ft-deepily:domain-names-2023-07-12-17-15-41"
-        self.search_terms_model     = "NO_MODEL_SPECIFIED"
+        self.search_terms_model     = "ada:ft-deepily:search-terms-2023-07-12-19-27-22"
         
         self.punctuation            = du.get_file_as_dictionary( "conf/translation-dictionary.map", lower_case=True, debug=self.debug )
         self.domain_names           = du.get_file_as_dictionary( "conf/domain-names.map",           lower_case=True )
@@ -186,9 +186,9 @@ class MultiModalMunger:
 
         if self.use_ai_matching:
 
-            print( "Attempting fuzzy match, e.g.: zooming -> zoom in..." )
+            print( "Attempting AI match..." )
             self.results = self._get_ai_match( transcription )
-            print( "Attempting fuzzy match, e.g.: zooming -> zoom in... Done: results [{}]".format( self.results ) )
+            print( "Attempting AI match... Done: results [{}]".format( self.results ) )
 
         return transcription, mode
     
@@ -471,7 +471,7 @@ class MultiModalMunger:
             print( "Best guess is GREATER than threshold [{}]".format( self.vox_command_threshold ) )
             
             # Tests for argument extraction
-            # extract domain names -- or -- search terms?
+            # extract domain names & search terms
             if best_guess[ 0 ] in [ "open new tab", "in current tab" ]:
                 return best_guess[ 0 ] + " " + self.extract_args( transcription, model=self.domain_name_model )
             elif best_guess[ 0 ].startswith( "search" ):
@@ -486,17 +486,22 @@ class MultiModalMunger:
     
     def _log_odds_to_probabilities( self, log_odds ):
         
-        # Convert dictionary to a sorted list of tuples
+        # Convert dictionary to a sorted list of tuples ( class_name, log_odds_value )
         log_odds = sorted( log_odds.items(), key=lambda tup: tup[ 1 ], reverse=True )
+        
+        # Create list comprehension & get the length of the longest class name allows us to right-justify the class names when printing.
+        max_class_len = max( [ len( self.class_dictionary[ item[ 0 ].strip() ] ) for item in log_odds ] )
         
         probabilities = [ ]
         
         for item in log_odds:
             
             class_name = self.class_dictionary[ item[ 0 ].strip() ]
-            print( "{}: {:.4f}%".format( class_name, np.exp( float( item[ 1 ] ) ) * 100 ) )
-            probabilities.append( (class_name, np.exp( item[ 1 ] ) * 100) )
-        
+            percent    = np.exp( float( item[ 1 ] ) ) * 100.0
+            probabilities.append( ( class_name, percent ) )
+            
+            print( "{}: {:2.4f}%".format( class_name.rjust( max_class_len, ' ' ), percent ) )
+            
         return probabilities
     
     def _get_best_guess( self, command_str ):
@@ -509,7 +514,8 @@ class MultiModalMunger:
             prompt=command_str + "\n\n###\n\n",
             max_tokens=1,
             temperature=0,
-            logprobs=len( self.class_dictionary.keys() )
+            logprobs=len( self.class_dictionary.keys() ),
+            stop="\n"
         )
         
         timer.print( "Call to [{}]".format( self.vox_command_model ), use_millis=True, end="\n" )
@@ -517,7 +523,7 @@ class MultiModalMunger:
         # convert OPENAI object into a native Python dictionary... ugly!
         best_guess = ast.literal_eval( str( response[ "choices" ][ 0 ][ "logprobs" ][ "top_logprobs" ][ 0 ] ) )
         
-        # Return the first value in the sorted list of tuples.
+        # Return the first tuple in the sorted list of tuples.
         return self._log_odds_to_probabilities( best_guess )[ 0 ]
     
     # def extract_domain_name( self, raw_text ):
@@ -576,7 +582,10 @@ class MultiModalMunger:
         
         if self.debug: print( response )
         
-        return response.choices[ 0 ].text.strip()
+        response = response.choices[ 0 ].text.strip()
+        print( "extract_args response [{}]".format( response ) )
+        
+        return response
         
     def _get_command_strings( self ):
     
@@ -653,7 +662,9 @@ if __name__ == "__main__":
     # transcription = "Zoom, In!"
     # transcription = "Go ZoomInG!"
     # transcription = "Open a new tab and go to blahblah"
-    transcription = "get a fabulous blue dinner plate this tab"
+    # transcription = "search for fabulous blue dinner plates this tab"
+    # transcription = "I'm looking for the best cobalt blue China set in another tab."
+    transcription = "Look up the best cobalt blue China set in another tab."
     # transcription = "In a new tab, search for this that and the other."
     # transcription = "Get search results for Google Scholar blah blah blah."
     # transcription = "Head to stage.magnificentrainbow.com in a new tab"
