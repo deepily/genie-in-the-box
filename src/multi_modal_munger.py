@@ -468,13 +468,14 @@ class MultiModalMunger:
         # Setting a threshold allows us to return a raw transcription when an utterance represents a command that's not currently fine-tuned within the model.
         if best_guess[ 1 ] >= self.vox_command_threshold:
         
-            print( "TODO: Create a second model That's trained to extract arguments from within the voice command string, such as URLs and search terms" )
             print( "Best guess is GREATER than threshold [{}]".format( self.vox_command_threshold ) )
             
-            # AddHocTest for argument extraction period
-            # First up: extract domain names
+            # Tests for argument extraction
+            # extract domain names -- or -- search terms?
             if best_guess[ 0 ] in [ "open new tab", "in current tab" ]:
                 return best_guess[ 0 ] + " " + self.extract_args( transcription, model=self.domain_name_model )
+            elif best_guess[ 0 ].startswith( "search" ):
+                return best_guess[ 0 ] + " " + self.extract_args( transcription, model=self.search_terms_model )
             else:
                 return best_guess[ 0 ]
         
