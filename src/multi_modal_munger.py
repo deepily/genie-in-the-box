@@ -299,6 +299,9 @@ class MultiModalMunger:
             
         command = re.sub( r'[,?!]', '', command )
         
+        # Remove periods between words + trailing periods
+        command = command.replace( ". ", " " ).rstrip( "." )
+        
         # Translate punctuation mark words into single characters.
         for key, value in self.punctuation.items():
             command = command.replace( key, value )
