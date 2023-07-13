@@ -110,21 +110,31 @@ class MultiModalMunger:
         return methods_to_modes_dict
     def parse( self, raw_transcription ):
         
-        # ¡OJO! super special ad hoc prefix cleanup due to the use of multi, please don't do this often!
+        # ¡OJO! super special ad hoc prefix cleanup due to the use of 'multi'... please don't do this often!
         raw_transcription = self._adhoc_prefix_cleanup( raw_transcription )
         
         # knock everything down to alphabetic characters and spaces so that we can analyze what transcription mode we're in.
         regex = re.compile( '[^a-zA-Z ]' )
         transcription = regex.sub( '', raw_transcription ).replace( "-", " " ).lower()
 
-        print( transcription )
+        print( "transcription [{}]".format( transcription ) )
         words = transcription.split()
 
         prefix_count = len( transcription_mode_default.split() )
         
         # First and foremost: Are we in multi-modal editor/command mode?
-        if self.prefix == "multimodal editor":
-            
+        if self.prefix == transcription_mode_vox_command or transcription.startswith( transcription_mode_vox_command ):
+
+            # strip out the prefix and move it into its own field before continuing
+            if transcription.startswith( transcription_mode_vox_command ):
+                
+                # Strip out the first two words, regardless of punctuation
+                # words_sans_prefix = "multimodal? editor! search, new tab, y tu mamá, también!".split( " " )[ 2: ]
+                words_sans_prefix = raw_transcription.split( " " )[ 2: ]
+                raw_transcription = " ".join( words_sans_prefix )
+                self.prefix = transcription_mode_vox_command
+
+            du.print_banner( "START MODE: [{}] for [{}]".format( self.prefix, raw_transcription ), end="\n" )
             transcription, mode = self._handle_vox_command_parsing( raw_transcription )
             print( "commmand_dict: {}".format( self.results ) )
             du.print_banner( "  END MODE: [{}] for [{}]".format( self.prefix, raw_transcription ), end="\n\n" )
@@ -169,7 +179,6 @@ class MultiModalMunger:
         
     def _handle_vox_command_parsing( self, raw_transcription ):
     
-        du.print_banner( "START MODE: [{}] for [{}]".format( self.prefix, raw_transcription ), end="\n" )
         transcription, mode = self.munge_vox_command( raw_transcription, transcription_mode_vox_command )
 
         # Try exact match first, then AI match if no exact match is found.
