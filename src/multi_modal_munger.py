@@ -39,7 +39,7 @@ modes_to_methods_dict = {
 class MultiModalMunger:
 
     def __init__( self, raw_transcription, prefix="", prompt_key="generic", config_path="conf/modes-vox.json",
-                  use_exact_matching=True, use_ai_matching=True, vox_command_model="ada:ft-deepily-2023-07-12-00-02-27",
+                  use_string_matching=True, use_ai_matching=True, vox_command_model="ada:ft-deepily-2023-07-12-00-02-27",
                   debug=False, verbose=False ):
 
         self.debug                  = debug
@@ -48,7 +48,7 @@ class MultiModalMunger:
         self.raw_transcription      = raw_transcription
         self.prefix                 = prefix
         self.use_ai_matching        = use_ai_matching
-        self.use_exact_matching     = use_exact_matching
+        self.use_string_matching    = use_string_matching
         self.vox_command_model      = vox_command_model
         self.vox_command_threshold  = 50.0
         
@@ -126,7 +126,8 @@ class MultiModalMunger:
         if self.prefix == "multimodal editor":
             
             transcription, mode = self._handle_vox_command_parsing( raw_transcription )
-            du.print_banner( "  END MODE: [{}] for [{}] == [{}]".format( self.prefix, raw_transcription, self.results ), end="\n\n" )
+            print( "commmand_dict: {}".format( self.results ) )
+            du.print_banner( "  END MODE: [{}] for [{}]".format( self.prefix, raw_transcription ), end="\n\n" )
             
             return transcription, mode
         
@@ -172,23 +173,25 @@ class MultiModalMunger:
         transcription, mode = self.munge_vox_command( raw_transcription, transcription_mode_vox_command )
 
         # Try exact match first, then AI match if no exact match is found.
-        if self.use_exact_matching:
+        if self.use_string_matching:
 
-            if self._is_match( transcription ):
+            is_match, match_suffix = self._is_match( transcription )
+            
+            if is_match:
 
-                self.results = transcription
+                self.results = self._get_command_dict( command=transcription, confidence=100.0, match_type="string_matching_" + match_suffix )
                 return transcription, mode
 
             else:
 
                 # Set results to something just in case we're not using AI matching below.
-                self.results = transcription
+                self.results = self._get_command_dict( command="none of the above", confidence=100.0, match_type="string_matching_" + match_suffix )
 
         if self.use_ai_matching:
 
             print( "Attempting AI match..." )
-            self.results = self._get_ai_match( transcription )
-            print( "Attempting AI match... Done: results [{}]".format( self.results ) )
+            self.results = self._get_ai_command( transcription )
+            print( "Attempting AI match... done!")
 
         return transcription, mode
     
@@ -446,43 +449,57 @@ class MultiModalMunger:
             
             if transcription == command:
                 print( "EXACT MATCH: Transcription [{}] == command [{}]".format( transcription, command ) )
-                return True
+                return True, "exact"
             elif transcription.startswith( command ):
                 print( "Transcription [{}] STARTS WITH command [{}]".format( transcription, command ) )
-                print( "TODO: Make sure we are handling startswith() properly. Can we do better than this?" )
-                return True
+                print( "TODO: Make sure we are handling startswith() properly" )
+                return True, "startswith"
             elif command.startswith( transcription ):
                 print( "Command [{}] STARTS WITH transcription [{}]".format( command, transcription ) )
-                print( "TODO: Make sure we are handling startswith() properly. Can we do better than this?" )
-                return True
+                print( "TODO: Make sure we are handling startswith() properly" )
+                return True, "startswith"
         
         print( "NO exact match        [{}]".format( transcription ) )
         print( "NO startswith() match [{}]".format( transcription ) )
         
-        return False
+        return False, "none"
     
-    def _get_ai_match( self, transcription ):
+    def _get_command_dict( self, command="none of the above", confidence=0.0, args=[ "" ], match_type="none" ):
         
-        best_guess = self._get_best_guess( transcription )
+        command_dict = {
+            "match_type": match_type,
+               "command": command,
+            "confidence": confidence,
+                  "args": args,
+        }
+        return command_dict
+    
+    def _get_ai_command( self, transcription ):
         
-        # Setting a threshold allows us to return a raw transcription when an utterance represents a command that's not currently fine-tuned within the model.
-        if best_guess[ 1 ] >= self.vox_command_threshold:
+        command_dict = self._get_best_guess( transcription )
+        
+        # Setting a threshold allows us to return a raw transcription when an utterance represents a command that's doesn't currently
+        # an associated command within the fine-tuned model.
+        if command_dict[ "confidence" ] >= self.vox_command_threshold:
         
             print( "Best guess is GREATER than threshold [{}]".format( self.vox_command_threshold ) )
             
-            # Tests for argument extraction
-            # extract domain names & search terms
-            if best_guess[ 0 ] in [ "open new tab", "in current tab" ]:
-                return best_guess[ 0 ] + " " + self.extract_args( transcription, model=self.domain_name_model )
-            elif best_guess[ 0 ].startswith( "search" ):
-                return best_guess[ 0 ] + " " + self.extract_args( transcription, model=self.search_terms_model )
-            else:
-                return best_guess[ 0 ]
+            # Extract domain names & search terms
+            if command_dict[ "command" ] in [ "open new tab", "in current tab" ]:
+                
+                command_dict[ "args" ] = self.extract_args( transcription, model=self.domain_name_model )
+                return command_dict
+            
+            elif command_dict[ "command" ].startswith( "search" ):
+            
+                command_dict[ "args" ] = self.extract_args( transcription, model=self.search_terms_model )
+                return command_dict
         
         else:
             
-            print( "Best guess is LESS than threshold [{}], returning raw transcription".format( self.vox_command_threshold ) )
-            return transcription
+            print( "Best guess is LESS than threshold [{}]".format( self.vox_command_threshold ) )
+            
+        return command_dict
     
     def _log_odds_to_probabilities( self, log_odds ):
         
@@ -521,10 +538,14 @@ class MultiModalMunger:
         timer.print( "Call to [{}]".format( self.vox_command_model ), use_millis=True, end="\n" )
         
         # convert OPENAI object into a native Python dictionary... ugly!
-        best_guess = ast.literal_eval( str( response[ "choices" ][ 0 ][ "logprobs" ][ "top_logprobs" ][ 0 ] ) )
+        log_odds = ast.literal_eval( str( response[ "choices" ][ 0 ][ "logprobs" ][ "top_logprobs" ][ 0 ] ) )
+        
+        best_guesses = self._log_odds_to_probabilities( log_odds )
         
         # Return the first tuple in the sorted list of tuples.
-        return self._log_odds_to_probabilities( best_guess )[ 0 ]
+        command_dict = self._get_command_dict( command=best_guesses[ 0 ][ 0 ], confidence=best_guesses[ 0 ][ 1 ], match_type="ai_matching" )
+        
+        return command_dict
     
     # def extract_domain_name( self, raw_text ):
     #
@@ -561,9 +582,10 @@ class MultiModalMunger:
     def extract_args( self, raw_text, model="NO_MODEL_SPECIFIED" ):
         
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
-        print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
         
-        if self.debug: print( " raw_text [{}]".format( raw_text ) )
+        if self.debug:
+            print( " raw_text [{}]".format( raw_text ) )
+            print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
         
         timer = sw.Stopwatch()
         
@@ -585,7 +607,7 @@ class MultiModalMunger:
         response = response.choices[ 0 ].text.strip()
         print( "extract_args response [{}]".format( response ) )
         
-        return response
+        return [ response ]
         
     def _get_command_strings( self ):
     
@@ -658,21 +680,25 @@ if __name__ == "__main__":
     # transcription = "full"
     # transcription = "multimodal ai fetch this information: Large, language models."
     
-    # transcription = "Take Me Too https://NPR.org!"
+    # transcription = "Take Me To https://NPR.org!"
+    # transcription = "fetch https://NPR.org for me in another tab!"
     # transcription = "Zoom, In!"
     # transcription = "Go ZoomInG!"
     # transcription = "Open a new tab and go to blahblah"
     # transcription = "search for fabulous blue dinner plates this tab"
     # transcription = "I'm looking for the best cobalt blue China set in another tab."
-    transcription = "Look up the best cobalt blue China set in another tab."
+    # transcription = "Look up the best cobalt blue China set in another tab."
     # transcription = "In a new tab, search for this that and the other."
     # transcription = "Get search results for Google Scholar blah blah blah."
     # transcription = "Head to stage.magnificentrainbow.com in a new tab"
     # transcription = "Head to stagemagnificentrainbowcom in a new tab"
+    # transcription = "search new tab"
+    transcription = "search current tab for blah blah blah"
     
     prefix        = "multimodal editor"
     # prefix        = ""
     munger = MultiModalMunger( transcription, prefix=prefix, debug=False )
+    print( munger.get_json() )
     # print( munger.extract_args( transcription, model=munger.domain_name_model ) )
     
     # print( "munger.use_exact_matching [{}]".format( munger.use_exact_matching ) )
