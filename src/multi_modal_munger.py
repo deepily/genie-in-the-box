@@ -116,11 +116,6 @@ class MultiModalMunger:
         # knock everything down to alphabetic characters and spaces so that we can analyze what transcription mode we're in.
         regex = re.compile( '[^a-zA-Z ]' )
         transcription = regex.sub( '', raw_transcription ).replace( "-", " " ).lower()
-
-        print( "transcription [{}]".format( transcription ) )
-        words = transcription.split()
-
-        prefix_count = len( transcription_mode_default.split() )
         
         # First and foremost: Are we in multi-modal editor/command mode?
         if self.prefix == transcription_mode_vox_command or transcription.startswith( transcription_mode_vox_command ):
@@ -140,6 +135,11 @@ class MultiModalMunger:
             du.print_banner( "  END MODE: [{}] for [{}]".format( self.prefix, raw_transcription ), end="\n\n" )
             
             return transcription, mode
+        
+        print( "transcription [{}]".format( transcription ) )
+        words = transcription.split()
+
+        prefix_count = len( transcription_mode_default.split() )
         
         # If we have fewer than 'prefix_count' words, just assign default transcription mode.
         if len( words ) < prefix_count and ( self.prefix == "" or self.prefix not in self.modes_to_methods_dict ):
@@ -184,17 +184,17 @@ class MultiModalMunger:
         # Try exact match first, then AI match if no exact match is found.
         if self.use_string_matching:
 
-            is_match, match_suffix = self._is_match( transcription )
+            is_match, command_dict = self._is_match( transcription )
             
             if is_match:
 
-                self.results = self._get_command_dict( command=transcription, confidence=100.0, match_type="string_matching_" + match_suffix )
+                self.results = command_dict
                 return transcription, mode
 
             else:
 
                 # Set results to something just in case we're not using AI matching below.
-                self.results = self._get_command_dict( command="none of the above", confidence=100.0, match_type="string_matching_" + match_suffix )
+                self.results = command_dict
 
         if self.use_ai_matching:
 
@@ -457,24 +457,42 @@ class MultiModalMunger:
     
     def _is_match( self, transcription ):
         
+        # set default values
+        command_dict = self._get_command_dict( confidence=100.0 )
+        
         for command in self.command_strings:
             
             if transcription == command:
+                
                 print( "EXACT MATCH: Transcription [{}] == command [{}]".format( transcription, command ) )
-                return True, "exact"
+                command_dict[ "command"    ] = command
+                command_dict[ "match_type" ] = "string_matching_exact"
+                
+                return True, command_dict
+                
             elif transcription.startswith( command ):
+                
                 print( "Transcription [{}] STARTS WITH command [{}]".format( transcription, command ) )
-                print( "TODO: Make sure we are handling startswith() properly" )
-                return True, "startswith"
-            elif command.startswith( transcription ):
-                print( "Command [{}] STARTS WITH transcription [{}]".format( command, transcription ) )
-                print( "TODO: Make sure we are handling startswith() properly" )
-                return True, "startswith"
+                
+                # Grab the arguments associated with this command
+                # TODO: Move this into its own method so that we only have to update it in one place
+                if command in [ "open new tab", "in current tab" ] or command.startswith( "search" ):
+                    command_dict[ "args" ] = transcription.replace( command, "" ).strip()
+                    
+                command_dict[ "command"    ] = command
+                command_dict[ "match_type" ] = "string_matching_startswith"
+                
+                return True, command_dict
+            
+            # elif command.startswith( transcription ):
+            #     print( "Command [{}] STARTS WITH transcription [{}]".format( command, transcription ) )
+            #     print( "TODO: Make sure we are handling startswith() properly" )
+            #     return True, "startswith" "args"
         
         print( "NO exact match        [{}]".format( transcription ) )
         print( "NO startswith() match [{}]".format( transcription ) )
         
-        return False, "none"
+        return False, command_dict
     
     def _get_command_dict( self, command="none of the above", confidence=0.0, args=[ "" ], match_type="none" ):
         
