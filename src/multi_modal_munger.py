@@ -477,7 +477,7 @@ class MultiModalMunger:
                 # Grab the arguments associated with this command
                 # TODO: Move this into its own method so that we only have to update it in one place
                 if command in [ "open new tab", "in current tab" ] or command.startswith( "search" ):
-                    command_dict[ "args" ] = transcription.replace( command, "" ).strip()
+                    command_dict[ "args" ] = [ transcription.replace( command, "" ).strip() ]
                     
                 command_dict[ "command"    ] = command
                 command_dict[ "match_type" ] = "string_matching_startswith"
