@@ -23,15 +23,15 @@
       // let elem = document.getElementById('type-here');
 
       window.addEventListener( "keydown", function (event) {
-          // console.log( "event [" + event + "]" );
-          // console.log( "event.key [" + event.key + "]" );
+          // console.log( "event [ " + event + "]" );
+          // console.log( "event.key [ " + event.key + "]" );
           if ( event.ctrlKey && event.key == "r" ) {
             console.log( "'Ctrl r' pressed" );
             document.getElementById('record').click();
           } else if ( event.ctrlKey && event.key == "s" ) {
             console.log( "'Ctrl s' pressed" );
             document.getElementById('stop').click();
-            console.log( "Key pressed [" + event.key + "]" );
+            console.log( "Key pressed [ " + event.key + "]" );
           } else if ( event.ctrlKey && event.key == "p" ) {
             console.log( "Ctrl 'p' pressed" );
             document.getElementById('play').click();
@@ -132,10 +132,10 @@
             if (res.ok == true) {
               console.log('Successfully transcribed audio message');
               let text = res.text().then( respText => {
-                console.log( "respText [" + respText + "]" )
+                console.log( "respText [ " + respText + "]" )
                 pushToClipboard( respText );
               });
-              console.log( "text [" + text + "]" );
+              console.log( "text [ " + text + "]" );
               // alert(text);
             } else
               console.log('Invalid status saving audio message: ' + res.status);
@@ -143,7 +143,7 @@
         };
       });
       pushToClipboard = (msg ) => {
-        console.log("Pushing to clipboard [" + msg + "]...");
+        console.log("Pushing to clipboard [ " + msg + "]...");
         navigator.clipboard.writeText(msg).then(() => {
           console.log("Success!");
         }, () => {
