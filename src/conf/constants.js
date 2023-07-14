@@ -42,11 +42,11 @@ export const PROMPT_MODE_VERBOSE      = "verbose";
 export const PROMPT_MODE_QUIET        = "quiet";
 export const PROMPT_MODE_DEFAULT      = PROMPT_MODE_VERBOSE;
 
-export const VOX_CMD_SEARCH_DDG               = "search new tab";
-export const VOX_CMD_SEARCH_DDG_CURRENT_TAB   = "search current tab";
-export const VOX_CMD_SEARCH_GOOGLE            = "search google new tab";
-export const VOX_CMD_SEARCH_GOOGLE_CURRENT_TAB= "search google current tab";
-export const VOX_CMD_SEARCH_GOOGLE_SCHOLAR    = "search google scholar new tab";
+export const VOX_CMD_SEARCH_DDG                = "search new tab";
+export const VOX_CMD_SEARCH_DDG_CURRENT_TAB    = "search current tab";
+export const VOX_CMD_SEARCH_GOOGLE             = "search google new tab";
+export const VOX_CMD_SEARCH_GOOGLE_CURRENT_TAB = "search google current tab";
+export const VOX_CMD_SEARCH_GOOGLE_SCHOLAR     = "search google scholar new tab";
 export const VOX_CMD_SEARCH_GOOGLE_SCHOLAR_CURRENT_TAB           = "search google scholar current tab";
 export const VOX_CMD_SEARCH_CLIPBOARD_DDG                        = "search using clipboard new tab";
 export const VOX_CMD_SEARCH_CLIPBOARD_DDG_CURRENT_TAB            = "search using clipboard current tab";
