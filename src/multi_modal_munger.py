@@ -641,16 +641,16 @@ class MultiModalMunger:
         
     def _get_command_strings( self ):
     
-        exact_matches = du.get_file_as_list( "conf/constants.js", lower_case=True, clean=True )
+        command_strings = du.get_file_as_list( "conf/constants.js", lower_case=True, clean=True )
         vox_commands = [ ]
         
-        for raw_line in exact_matches :
+        for line in command_strings :
             
             # Skip comments and other lines that don't split into two pieces.
-            if len( raw_line.split( " = " ) ) == 1:
+            if len( line.split( " = " ) ) == 1:
                 continue
             
-            match = raw_line.split( " = " )[ 1 ].strip()
+            match = line.split( " = " )[ 1 ].strip()
             
             if match.startswith( '"' ) and match.endswith( '";' ) and not match.startswith( '"http' ):
                 # Remove quotes and semicolon.
