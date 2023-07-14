@@ -42,7 +42,7 @@ export const PROMPT_MODE_VERBOSE      = "verbose";
 export const PROMPT_MODE_QUIET        = "quiet";
 export const PROMPT_MODE_DEFAULT      = PROMPT_MODE_VERBOSE;
 
-xport const VOX_CMD_SEARCH_DDG               = "search new tab";
+export const VOX_CMD_SEARCH_DDG               = "search new tab";
 export const VOX_CMD_SEARCH_DDG_CURRENT_TAB   = "search current tab";
 export const VOX_CMD_SEARCH_GOOGLE            = "search google new tab";
 export const VOX_CMD_SEARCH_GOOGLE_CURRENT_TAB= "search google current tab";
@@ -59,7 +59,7 @@ export const MULTIMODAL_CONTACT_INFO  = "multimodal contact information";
 export const MULTIMODAL_TEXT_PYTHON   = "multimodal python punctuation";
 export const MULTIMODAL_TEXT_EMAIL    = "multimodal text email";
 export const STEM_MULTIMODAL_EDITOR   = "multimodal editor";
-export const STEM_MULTIMODAL_SERVER_SEARCH = "multimodal server search"
+export const STEM_MULTIMODAL_SERVER_SEARCH = "multimodal server search";
 
 export const VOX_CMD_RUN_PROMPT           = "run prompt";
 export const VOX_CMD_SUFFIX_FROM_FILE     = "from file";
