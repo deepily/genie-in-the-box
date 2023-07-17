@@ -476,7 +476,7 @@ class MultiModalMunger:
                 
                 # Grab the arguments associated with this command
                 # TODO: Move this into its own method so that we only have to update it in one place
-                if command in [ "open new tab", "in current tab" ] or command.startswith( "search" ):
+                if command.startswith( "load " ) or command.startswith( "search " ):
                     command_dict[ "args" ] = [ transcription.replace( command, "" ).strip() ]
                     
                 command_dict[ "command"    ] = command
@@ -644,13 +644,13 @@ class MultiModalMunger:
         command_strings = du.get_file_as_list( "conf/constants.js", lower_case=True, clean=True )
         vox_commands = [ ]
         
-        for line in command_strings :
+        for command in command_strings :
             
             # Skip comments and other lines that don't split into two pieces.
-            if len( line.split( " = " ) ) == 1:
+            if len( command.split( " = " ) ) == 1:
                 continue
             
-            match = line.split( " = " )[ 1 ].strip()
+            match = command.split( " = " )[ 1 ].strip()
             
             if match.startswith( '"' ) and match.endswith( '";' ) and not match.startswith( '"http' ):
                 # Remove quotes and semicolon.
@@ -674,8 +674,8 @@ class MultiModalMunger:
         
         class_dictionary = defaultdict( lambda: "unknown command" )
         # class_dictionary = { }
-        class_dictionary[ "0" ] =                       "in current tab"
-        class_dictionary[ "1" ] =                         "open new tab"
+        class_dictionary[ "0" ] =                     "load current tab"
+        class_dictionary[ "1" ] =                         "load new tab"
         class_dictionary[ "2" ] =                    "none of the above"
         class_dictionary[ "3" ] =            "search google current tab"
         class_dictionary[ "4" ] =                "search google new tab"
