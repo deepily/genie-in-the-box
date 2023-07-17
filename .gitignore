@@ -14,7 +14,11 @@ genie.app/**
 # Omit the script because it contains the open API key
 run-genie-gui.command
 
+# This is personal information
 src/conf/contact-information.map
+
+# This is also personal information.
+src/conf/memory/**
 
 # Omit Mail Map
 .mailmap
