@@ -515,7 +515,7 @@ class GenieClient:
         if self.debug: print( "Before punctuation translation: \n\n{}".format( code ), end="\n\n" )
         
         # Remove "space, ", commas, and periods.
-        code = re.sub( r'space, |[,.]', '', code.lower() )
+        code = re.sub( r'space, |[,]', '', code.lower() )
 
         # Translate punctuation mark words into single characters.
         for key, value in self.punctuation.items():
@@ -532,6 +532,7 @@ class GenieClient:
         code = code.replace( " ( ", "( " )
         # code = code.replace( " ) ", " ) " )
         
+        # Remove extra spaces
         code = ' '.join( code.split() )
 
         if self.debug: print( "After punctuation substitution: \n\n{}".format( code ), end="\n\n" )
