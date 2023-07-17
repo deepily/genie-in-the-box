@@ -393,9 +393,10 @@ class MultiModalMunger:
     def munge_python_punctuation( self, raw_transcription, mode ):
     
         code = raw_transcription.lower()
+        print( "BEFORE code:", code )
 
         # Remove "space, ", commas, and periods.
-        code = re.sub( r'space, |[,.-]', '', code.lower() )
+        # code = re.sub( r'space, |[,.-]', '', code.lower() )
 
         # Translate punctuation mark words into single characters.
         for key, value in self.punctuation.items():
@@ -415,10 +416,13 @@ class MultiModalMunger:
         code = code.replace( " ( )", "()" )
         code = code.replace( ") :", "):" )
         code = code.replace( " ( ", "( " )
+        code = code.replace( ") ;", ");" )
         # code = code.replace( " ) ", " ) " )
 
         # Remove extra spaces.
         code = ' '.join( code.split() )
+        
+        print( "AFTER code:", code )
         
         return code, mode
     
@@ -474,11 +478,8 @@ class MultiModalMunger:
                 
                 print( "Transcription [{}] STARTS WITH command [{}]".format( transcription, command ) )
                 
-                # Grab the arguments associated with this command
-                # TODO: Move this into its own method so that we only have to update it in one place
-                if command.startswith( "load " ) or command.startswith( "search " ):
-                    command_dict[ "args" ] = [ transcription.replace( command, "" ).strip() ]
-                    
+                # Grab the metadata associated with this command: Strip out the command and use the remainder as the arguments
+                command_dict[ "args"       ] = [ transcription.replace( command, "" ).strip() ]
                 command_dict[ "command"    ] = command
                 command_dict[ "match_type" ] = "string_matching_startswith"
                 
@@ -723,10 +724,13 @@ if __name__ == "__main__":
     # transcription = "Head to stage.magnificentrainbow.com in a new tab"
     # transcription = "Head to stagemagnificentrainbowcom in a new tab"
     # transcription = "search new tab"
-    transcription = "search current tab for blah blah blah"
+    # transcription = "search current tab for blah blah blah"
+    # transcription = "multimodal python punctuation console.log. open parenthesis quote foober. close quote. close parenthesis. semicolon."
+    transcription = "multimodal python punctuation console dot log open parentheses one plus one equals two closed parentheses"
     
-    prefix        = "multimodal editor"
-    # prefix        = ""
+    # prefix        = "multimodal editor"
+    prefix        = ""
+    # prefix          = "multimodal python punctuation"
     munger = MultiModalMunger( transcription, prefix=prefix, debug=False )
     print( munger.get_json() )
     # print( munger.extract_args( transcription, model=munger.domain_name_model ) )
