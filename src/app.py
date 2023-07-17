@@ -13,7 +13,7 @@ import base64
 # print( "GENIE_IN_THE_BOX_ROOT [{}]".format( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) ) )
 
 import genie_client       as gc
-import multi_modal_munger as mmm
+import multimodal_munger  as mmm
 import lib.util_stopwatch as sw
 
 app = Flask( __name__ )
