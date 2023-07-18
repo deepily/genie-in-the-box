@@ -12,8 +12,8 @@ export const VOX_CMD_TAB_CLOSE        = "close current tab";
 export const VOX_CMD_TAB_BACK         = "go backwards";
 export const VOX_CMD_TAB_FORWARD      = "go forwards";
 export const VOX_CMD_TAB_REFRESH      = "refresh current tab";
-export const VOX_CMD_LOAD_NEW_TAB     = "load new tab";
-export const VOX_CMD_LOAD_CURRENT_TAB = "load current tab";
+export const VOX_CMD_LOAD_NEW_TAB     = "go to new tab";
+export const VOX_CMD_LOAD_CURRENT_TAB = "go to current tab";
 export const VOX_TAB_COMMANDS       = [ VOX_CMD_TAB_BACK, VOX_CMD_TAB_FORWARD, VOX_CMD_TAB_REFRESH, VOX_CMD_TAB_CLOSE, VOX_CMD_LOAD_NEW_TAB ];
 
 export const VOX_CMD_OPEN_EDITOR    = "open editor";
