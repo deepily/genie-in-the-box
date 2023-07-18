@@ -84,7 +84,7 @@ class MultiModalMunger:
         self.mode          = parsed_fields[ 1 ]
         
         
-    def __str__(self):
+    def __str__( self ):
 
         summary = """
                        Mode: [{}]
@@ -516,7 +516,7 @@ class MultiModalMunger:
             print( "Best guess is GREATER than threshold [{}]".format( self.vox_command_threshold ) )
             
             # Extract domain names & search terms
-            if command_dict[ "command" ] in [ "open new tab", "in current tab" ]:
+            if command_dict[ "command" ] in [ "go to new tab", "go to current tab" ]:
                 
                 command_dict[ "args" ] = self.extract_args( transcription, model=self.domain_name_model )
                 return command_dict
@@ -675,8 +675,8 @@ class MultiModalMunger:
         
         class_dictionary = defaultdict( lambda: "unknown command" )
         # class_dictionary = { }
-        class_dictionary[ "0" ] =                     "load current tab"
-        class_dictionary[ "1" ] =                         "load new tab"
+        class_dictionary[ "0" ] =                    "go to current tab"
+        class_dictionary[ "1" ] =                        "go to new tab"
         class_dictionary[ "2" ] =                    "none of the above"
         class_dictionary[ "3" ] =            "search google current tab"
         class_dictionary[ "4" ] =                "search google new tab"
