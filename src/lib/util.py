@@ -3,6 +3,7 @@ import os
 import time
 import regex as re
 import random
+import sys
 
 debug = False
 
@@ -10,6 +11,14 @@ def init( d ):
     
     global debug
     debug = d
+    
+def add_to_path( path ):
+
+    if path not in sys.path:
+        sys.path.append( path )
+        print( "Added [{}] to sys.path".format( path ) )
+    else:
+        print( "Path [{}] already in sys.path".format( path ) )
 
 def get_name_value_pairs( arg_list, debug=False, verbose=False ):
     
