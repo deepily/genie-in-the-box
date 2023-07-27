@@ -44,7 +44,7 @@ def generate_events( num_events, start_date_str, end_date_str ):
     
     # Setting start and end dates
     start_date = datetime.strptime( start_date_str, "%Y-%m-%d" )
-    end_date = datetime.strptime( end_date_str, "%Y-%m-%d" )
+    end_date   = datetime.strptime( end_date_str, "%Y-%m-%d" )
     
     data = [ ]
     for i in range( num_events ):
@@ -52,7 +52,10 @@ def generate_events( num_events, start_date_str, end_date_str ):
         event_type, properties = random.choice( list( event_types.items() ) )
         
         # Generate random date within the given range
-        date = start_date + (end_date - start_date) * random.random()
+        start_date = start_date + (end_date - start_date) * random.random()
+        # Generate random end dates between from 0 to 7 days after the start date
+        duration = random.randint( 0, 7 )
+        end_date = start_date + pd.DateOffset( days=duration )
         
         # If the event is all day, then the start and end times are set to cover the whole day
         if properties[ "all_day" ]:
@@ -66,7 +69,7 @@ def generate_events( num_events, start_date_str, end_date_str ):
         if properties[ "recurrent" ]:
             recurrence_interval = f"{random.randint( 1, 5 )} {random.choice( [ 'day', 'week', 'month', 'year' ] )}"
         else:
-            recurrence_interval = None
+            recurrence_interval = ""
         
         # Generate a random priority level
         priority_level = random.choice( priority_levels )
@@ -79,7 +82,9 @@ def generate_events( num_events, start_date_str, end_date_str ):
         
         # Create the dictionary representing the event
         event = {
-            "date"               : date.strftime( "%Y-%m-%d" ),
+            "start_date"         : start_date.strftime( "%Y-%m-%d" ),
+            "end_date"           : end_date.strftime( "%Y-%m-%d" ),
+            "duration"           : duration,
             "start_time"         : start_time,
             "end_time"           : end_time,
             "event_type"         : event_type,
@@ -90,6 +95,9 @@ def generate_events( num_events, start_date_str, end_date_str ):
         }
         
         data.append( event )
+        
+        # Sort list by date and start time
+        data = sorted( data, key=lambda k: (k[ "start_date" ], k[ "start_time" ]) )
     
     # Convert the list of dictionaries to a DataFrame
     df = pd.DataFrame( data )
@@ -98,8 +106,10 @@ def generate_events( num_events, start_date_str, end_date_str ):
 
 
 # Test the function
-df = generate_events( 60, "2023-07-25", "2023-10-25" )
-print( df.head() )
+df = generate_events( 90, "2023-07-25", "2023-10-26" )
+cols = [ "start_date", "end_date", "duration" ]
+print( df[ cols ].head( 10 ) )
+print( df[ cols ].tail( 10 ) )
 
 # Write data frame
-df.to_csv( du.get_project_root() + "/src/conf/long-term-memory/events.csv", index=False )
+# df.to_csv( du.get_project_root() + "/src/conf/long-term-memory/events.csv", index=False )
