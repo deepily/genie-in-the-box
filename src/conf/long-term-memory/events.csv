@@ -1,61 +1,91 @@
-date,start_time,end_time,event_type,recurrent,recurrence_interval,description,priority_level
-2023-09-16,20:15,05:22,Task,False,,This is a task.,none
-2023-09-08,19:50,04:49,TODO,False,,This is a todo.,none
-2023-10-10,00:00,23:59,Concert,False,,This is a concert.,low
-2023-08-27,00:00,23:59,Performance,False,,This is a performance.,medium
-2023-08-01,00:00,23:59,Birthday,True,4 week,John (coworker)'s birthday,high
-2023-09-10,01:24,12:25,Appointment,False,,This is a appointment.,medium
-2023-08-05,00:00,23:59,Anniversary,True,5 week,Juan (Neighbor)'s anniversary,medium
-2023-10-22,00:00,23:59,Conference,False,,This is a conference.,low
-2023-09-25,11:52,10:12,Workshop,False,,This is a workshop.,low
-2023-07-29,00:00,23:59,Birthday,True,4 week,Leroy Ruiz (father)'s birthday,none
-2023-09-21,16:17,23:31,Meeting,False,,This is a meeting.,low
-2023-08-26,00:00,23:59,Anniversary,True,1 day,Barbara Jane Ruiz (mother)'s anniversary,high
-2023-09-25,22:49,23:56,Workout,False,,This is a workout.,high
-2023-10-02,08:26,11:37,TODO,False,,This is a todo.,highest
-2023-09-26,18:38,09:20,TODO,False,,This is a todo.,none
-2023-09-23,06:41,17:01,Appointment,False,,This is a appointment.,medium
-2023-09-04,00:00,23:59,Subscription,True,5 month,This is a subscription.,high
-2023-09-16,11:10,16:50,Workshop,False,,This is a workshop.,low
-2023-07-29,00:00,23:59,Subscription,True,4 year,This is a subscription.,high
-2023-10-16,00:00,23:59,Birthday,True,5 month,Inash (girlfriend)'s birthday,medium
-2023-10-07,18:00,05:15,Task,False,,This is a task.,none
-2023-09-16,00:00,23:59,Birthday,True,1 week,Bob (brother)'s birthday,high
-2023-08-02,09:59,16:41,Appointment,False,,This is a appointment.,none
-2023-07-28,00:00,23:59,Birthday,True,1 week,Bob (brother)'s birthday,medium
-2023-10-12,00:00,23:59,Conference,False,,This is a conference.,low
-2023-08-28,15:34,23:22,Workout,False,,This is a workout.,medium
-2023-08-16,00:00,23:59,Anniversary,True,2 month,John (coworker)'s anniversary,low
-2023-08-02,00:00,23:59,Conference,False,,This is a conference.,highest
-2023-08-22,00:00,23:59,Performance,False,,This is a performance.,medium
-2023-10-13,00:00,23:59,Conference,False,,This is a conference.,low
-2023-09-23,00:00,23:59,Subscription,True,4 week,This is a subscription.,highest
-2023-08-03,00:09,06:30,TODO,False,,This is a todo.,none
-2023-08-09,01:11,02:56,Interview,False,,This is a interview.,high
-2023-10-14,00:00,23:59,Birthday,True,2 day,Bob (brother)'s birthday,low
-2023-07-31,00:00,23:59,Conference,False,,This is a conference.,none
-2023-09-21,00:00,23:59,Subscription,True,2 year,This is a subscription.,low
-2023-08-09,17:22,09:13,Interview,False,,This is a interview.,high
-2023-09-15,00:00,23:59,Performance,False,,This is a performance.,none
-2023-08-04,09:36,10:15,Workshop,False,,This is a workshop.,none
-2023-10-15,00:00,23:59,Conference,False,,This is a conference.,medium
-2023-09-05,10:55,20:31,TODO,False,,This is a todo.,none
-2023-08-05,03:20,05:14,Workout,False,,This is a workout.,high
-2023-10-20,00:59,06:28,Meeting,False,,This is a meeting.,low
-2023-09-01,00:00,23:59,Subscription,True,1 day,This is a subscription.,medium
-2023-09-21,00:00,23:59,Anniversary,True,4 year,Pablo (friend)'s anniversary,highest
-2023-09-22,00:00,23:59,Birthday,True,5 year,Jenny (coworker)'s birthday,low
-2023-08-25,00:00,23:59,Conference,False,,This is a conference.,highest
-2023-08-05,00:00,23:59,Subscription,True,2 day,This is a subscription.,none
-2023-07-31,00:00,23:59,Subscription,True,5 day,This is a subscription.,low
-2023-09-12,00:00,23:59,Conference,False,,This is a conference.,medium
-2023-08-21,05:23,13:03,Workout,False,,This is a workout.,medium
-2023-07-31,00:00,23:59,Subscription,True,3 year,This is a subscription.,highest
-2023-08-14,00:00,23:59,Birthday,True,1 month,Juan (Neighbor)'s birthday,highest
-2023-09-05,09:49,02:02,Task,False,,This is a task.,low
-2023-10-22,18:33,11:37,Appointment,False,,This is a appointment.,low
-2023-10-05,00:00,23:59,Anniversary,True,5 day,Tom Ruiz (brother)'s anniversary,high
-2023-07-27,00:00,23:59,Subscription,True,3 year,This is a subscription.,none
-2023-10-23,12:53,02:48,Workout,False,,This is a workout.,medium
-2023-08-08,13:28,21:58,Task,False,,This is a task.,none
-2023-08-28,20:11,03:55,Task,False,,This is a task.,high
+start_date,end_date,duration,start_time,end_time,event_type,recurrent,recurrence_interval,description,priority_level
+2023-10-04,2023-10-10,6,00:00,23:59,Anniversary,True,3 week,Leroy Ruiz (father)'s anniversary,highest
+2023-10-09,2023-10-13,4,02:29,12:28,Meeting,False,,This is a meeting.,low
+2023-10-12,2023-10-19,7,17:38,20:18,Workshop,False,,This is a workshop.,none
+2023-10-13,2023-10-17,4,03:45,05:15,Meeting,False,,This is a meeting.,medium
+2023-10-15,2023-10-21,6,00:00,23:59,Concert,False,,This is a concert.,none
+2023-10-19,2023-10-21,2,22:24,10:15,Appointment,False,,This is a appointment.,high
+2023-10-20,2023-10-23,3,00:24,02:40,Task,False,,This is a task.,medium
+2023-10-21,2023-10-22,1,00:00,23:59,Subscription,True,5 week,This is a subscription.,medium
+2023-10-21,2023-10-22,1,20:03,20:22,Appointment,False,,This is a appointment.,none
+2023-10-22,2023-10-26,4,19:55,02:38,Appointment,False,,This is a appointment.,highest
+2023-10-24,2023-10-26,2,13:11,22:23,Interview,False,,This is a interview.,low
+2023-10-25,2023-10-25,0,00:00,23:59,Birthday,True,1 year,Inash (girlfriend)'s birthday,high
+2023-10-25,2023-10-27,2,21:54,10:25,Workout,False,,This is a workout.,low
+2023-10-27,2023-10-31,4,02:14,08:47,Interview,False,,This is a interview.,none
+2023-10-29,2023-11-04,6,03:57,12:07,Interview,False,,This is a interview.,medium
+2023-11-03,2023-11-09,6,00:00,23:59,Performance,False,,This is a performance.,medium
+2023-11-06,2023-11-10,4,00:00,23:59,Anniversary,True,5 month,Tom Ruiz (brother)'s anniversary,high
+2023-11-10,2023-11-13,3,00:00,23:59,Subscription,True,4 day,This is a subscription.,medium
+2023-11-10,2023-11-16,6,00:00,23:59,Anniversary,True,1 week,Barbara Jane Ruiz (mother)'s anniversary,high
+2023-11-15,2023-11-17,2,00:00,23:59,Birthday,True,3 day,Jenny (coworker)'s birthday,low
+2023-11-17,2023-11-18,1,00:00,23:59,Anniversary,True,1 month,Alice (aunt)'s anniversary,high
+2023-11-18,2023-11-24,6,09:30,22:09,Meeting,False,,This is a meeting.,medium
+2023-11-21,2023-11-27,6,00:00,23:59,Birthday,True,3 day,Gregorio (friend)'s birthday,low
+2023-11-25,2023-12-02,7,00:00,23:59,Performance,False,,This is a performance.,none
+2023-11-29,2023-12-04,5,21:56,18:46,Task,False,,This is a task.,highest
+2023-12-01,2023-12-03,2,14:26,15:45,Meeting,False,,This is a meeting.,low
+2023-12-02,2023-12-07,5,00:00,23:59,Subscription,True,5 day,This is a subscription.,high
+2023-12-06,2023-12-08,2,08:10,09:55,Appointment,False,,This is a appointment.,none
+2023-12-07,2023-12-08,1,00:00,23:59,Anniversary,True,2 day,Leroy Ruiz (father)'s anniversary,medium
+2023-12-08,2023-12-12,4,00:00,23:59,Concert,False,,This is a concert.,none
+2023-12-10,2023-12-16,6,03:03,03:58,Task,False,,This is a task.,medium
+2023-12-15,2023-12-18,3,16:59,11:04,Task,False,,This is a task.,low
+2023-12-17,2023-12-17,0,00:00,23:59,Conference,False,,This is a conference.,medium
+2023-12-17,2023-12-19,2,00:00,23:59,Anniversary,True,1 day,John (coworker)'s anniversary,medium
+2023-12-18,2023-12-24,6,14:22,08:37,TODO,False,,This is a todo.,none
+2023-12-23,2023-12-29,6,20:34,18:26,Interview,False,,This is a interview.,low
+2023-12-26,2023-12-28,2,00:00,23:59,Birthday,True,2 day,Sally (sister)'s birthday,high
+2023-12-26,2023-12-27,1,03:49,11:04,Workshop,False,,This is a workshop.,none
+2023-12-28,2024-01-04,7,00:00,23:59,Concert,False,,This is a concert.,medium
+2023-12-30,2024-01-04,5,18:38,16:50,Workout,False,,This is a workout.,high
+2024-01-04,2024-01-10,6,16:14,06:57,Workshop,False,,This is a workshop.,highest
+2024-01-07,2024-01-10,3,00:00,23:59,Subscription,True,2 day,This is a subscription.,high
+2024-01-10,2024-01-14,4,00:00,23:59,Performance,False,,This is a performance.,low
+2024-01-12,2024-01-17,5,10:20,03:28,Appointment,False,,This is a appointment.,none
+2024-01-17,2024-01-24,7,00:00,23:59,Performance,False,,This is a performance.,highest
+2024-01-17,2024-01-21,4,04:03,12:25,Meeting,False,,This is a meeting.,none
+2024-01-18,2024-01-25,7,02:09,18:08,Workout,False,,This is a workout.,highest
+2024-01-24,2024-01-25,1,00:00,23:59,Subscription,True,3 year,This is a subscription.,none
+2024-01-25,2024-02-01,7,00:00,23:59,Performance,False,,This is a performance.,highest
+2024-01-26,2024-02-02,7,00:00,23:59,Birthday,True,5 month,Inash (girlfriend)'s birthday,highest
+2024-01-28,2024-01-29,1,06:01,15:28,Workshop,False,,This is a workshop.,high
+2024-01-28,2024-01-28,0,10:39,05:07,Workshop,False,,This is a workshop.,high
+2024-01-29,2024-01-31,2,00:11,04:38,Task,False,,This is a task.,medium
+2024-01-29,2024-02-01,3,04:15,02:22,Workshop,False,,This is a workshop.,high
+2024-01-31,2024-02-03,3,07:06,16:12,Meeting,False,,This is a meeting.,medium
+2024-02-02,2024-02-02,0,04:31,03:44,Task,False,,This is a task.,low
+2024-02-02,2024-02-03,1,11:17,23:06,Task,False,,This is a task.,highest
+2024-02-02,2024-02-03,1,20:12,13:58,Task,False,,This is a task.,high
+2024-02-03,2024-02-06,3,00:00,23:59,Performance,False,,This is a performance.,none
+2024-02-04,2024-02-04,0,00:00,23:59,Subscription,True,5 month,This is a subscription.,highest
+2024-02-04,2024-02-10,6,11:23,05:04,Workout,False,,This is a workout.,medium
+2024-02-06,2024-02-08,2,02:30,18:22,Workshop,False,,This is a workshop.,medium
+2024-02-08,2024-02-11,3,23:44,14:58,TODO,False,,This is a todo.,high
+2024-02-09,2024-02-13,4,00:00,23:59,Subscription,True,2 day,This is a subscription.,low
+2024-02-13,2024-02-20,7,12:23,10:16,Meeting,False,,This is a meeting.,low
+2024-02-16,2024-02-21,5,05:23,18:40,TODO,False,,This is a todo.,high
+2024-02-17,2024-02-20,3,00:00,23:59,Concert,False,,This is a concert.,highest
+2024-02-19,2024-02-23,4,07:30,07:14,TODO,False,,This is a todo.,high
+2024-02-22,2024-02-26,4,00:00,23:59,Concert,False,,This is a concert.,high
+2024-02-26,2024-03-04,7,00:00,23:59,Concert,False,,This is a concert.,low
+2024-03-03,2024-03-06,3,00:00,23:59,Birthday,True,3 day,Juan (Neighbor)'s birthday,low
+2024-03-05,2024-03-10,5,00:00,23:59,Concert,False,,This is a concert.,highest
+2024-03-05,2024-03-08,3,06:43,06:24,Interview,False,,This is a interview.,highest
+2024-03-08,2024-03-13,5,00:00,23:59,Subscription,True,2 month,This is a subscription.,low
+2024-03-11,2024-03-11,0,00:00,23:59,Concert,False,,This is a concert.,low
+2024-03-11,2024-03-18,7,00:00,23:59,Anniversary,True,5 month,Sally (sister)'s anniversary,medium
+2024-03-17,2024-03-19,2,00:00,23:59,Birthday,True,4 day,Barbara Jane Ruiz (mother)'s birthday,high
+2024-03-18,2024-03-25,7,00:00,23:59,Concert,False,,This is a concert.,high
+2024-03-18,2024-03-19,1,01:01,18:18,Interview,False,,This is a interview.,high
+2024-03-20,2024-03-25,5,03:15,19:33,TODO,False,,This is a todo.,high
+2024-03-24,2024-03-25,1,08:29,09:43,Meeting,False,,This is a meeting.,medium
+2024-03-24,2024-03-26,2,12:21,05:03,Task,False,,This is a task.,medium
+2024-03-25,2024-03-29,4,10:16,04:55,Workout,False,,This is a workout.,highest
+2024-03-26,2024-03-31,5,18:03,02:56,Workout,False,,This is a workout.,highest
+2024-03-27,2024-04-01,5,16:44,01:20,Workshop,False,,This is a workshop.,none
+2024-04-01,2024-04-03,2,00:00,23:59,Subscription,True,1 month,This is a subscription.,high
+2024-04-02,2024-04-07,5,00:00,23:59,Performance,False,,This is a performance.,medium
+2024-04-06,2024-04-11,5,00:00,23:59,Conference,False,,This is a conference.,highest
+2024-04-06,2024-04-07,1,19:27,09:34,Task,False,,This is a task.,highest
+2024-04-07,2024-04-07,0,17:52,15:03,Workout,False,,This is a workout.,medium
