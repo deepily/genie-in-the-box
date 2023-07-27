@@ -46,17 +46,30 @@ def generate_events( num_events, start_date_str, end_date_str ):
     start_date = datetime.strptime( start_date_str, "%Y-%m-%d" )
     end_date   = datetime.strptime( end_date_str, "%Y-%m-%d" )
     
+    print( f"Generating {num_events} events between {start_date_str} and {end_date_str}...")
+    
     data = [ ]
+    days_diff = ( end_date - start_date ).days
+    print( f"Days difference between {end_date_str} and {start_date_str}: {days_diff}" )
+    # return data
+    
     for i in range( num_events ):
         # Randomly select an event type
         event_type, properties = random.choice( list( event_types.items() ) )
-        
+
         # Generate random date within the given range
-        start_date = start_date + (end_date - start_date) * random.random()
+        # start_date = start_date + (end_date - start_date) * random.random()
+        new_start_date = start_date + pd.DateOffset( days=random.randint( 0, days_diff ) )
+        # print( f"new_start_date: {new_start_date}" )
+        # data.append( new_start_date )
+
         # Generate random end dates between from 0 to 7 days after the start date
         duration = random.randint( 0, 7 )
-        end_date = start_date + pd.DateOffset( days=duration )
-        
+        # If the duration is even, then the event is not a multi-day event
+        if duration % 2 == 0: duration = 0
+        # Calculate end date
+        end_date = new_start_date + pd.DateOffset( days=duration )
+
         # If the event is all day, then the start and end times are set to cover the whole day
         if properties[ "all_day" ]:
             start_time = "00:00"
@@ -64,25 +77,25 @@ def generate_events( num_events, start_date_str, end_date_str ):
         else:
             start_time = f"{random.randint( 0, 23 ):02d}:{random.randint( 0, 59 ):02d}"
             end_time = f"{random.randint( 0, 23 ):02d}:{random.randint( 0, 59 ):02d}"
-        
+
         # If the event is recurrent, generate a random recurrence interval
         if properties[ "recurrent" ]:
             recurrence_interval = f"{random.randint( 1, 5 )} {random.choice( [ 'day', 'week', 'month', 'year' ] )}"
         else:
             recurrence_interval = ""
-        
+
         # Generate a random priority level
         priority_level = random.choice( priority_levels )
-        
+
         # Create a description for the event
         if event_type in [ "Birthday", "Anniversary" ]:
             description = f"{random.choice( names )}'s {event_type.lower()}"
         else:
             description = f"This is a {event_type.lower()}."
-        
+
         # Create the dictionary representing the event
         event = {
-            "start_date"         : start_date.strftime( "%Y-%m-%d" ),
+            "start_date"         : new_start_date.strftime( "%Y-%m-%d" ),
             "end_date"           : end_date.strftime( "%Y-%m-%d" ),
             "duration"           : duration,
             "start_time"         : start_time,
@@ -93,23 +106,24 @@ def generate_events( num_events, start_date_str, end_date_str ):
             "description"        : description,
             "priority_level"     : priority_level
         }
-        
+
         data.append( event )
-        
-        # Sort list by date and start time
-        data = sorted( data, key=lambda k: (k[ "start_date" ], k[ "start_time" ]) )
-    
+    #
+    # Sort list by date and start time
+    data = sorted( data, key=lambda k: (k[ "start_date" ], k[ "start_time" ]) )
+    # data = sorted( data )
     # Convert the list of dictionaries to a DataFrame
     df = pd.DataFrame( data )
-    
+
     return df
 
 
 # Test the function
-df = generate_events( 90, "2023-07-25", "2023-10-26" )
+df = generate_events( 200, "2023-07-01", "2023-09-01" )
 cols = [ "start_date", "end_date", "duration" ]
+# cols = [ "start_date" ]
 print( df[ cols ].head( 10 ) )
 print( df[ cols ].tail( 10 ) )
 
 # Write data frame
-# df.to_csv( du.get_project_root() + "/src/conf/long-term-memory/events.csv", index=False )
+df.to_csv( du.get_project_root() + "/src/conf/long-term-memory/events.csv", index=False )
