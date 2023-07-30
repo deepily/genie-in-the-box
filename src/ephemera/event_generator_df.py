@@ -5,6 +5,7 @@ import pandas as pd
 
 from src.lib import util as du
 
+# Do something useful here.
 
 def generate_events( num_events, start_date_str, end_date_str ):
     
@@ -51,7 +52,6 @@ def generate_events( num_events, start_date_str, end_date_str ):
     data = [ ]
     days_diff = ( end_date - start_date ).days
     print( f"Days difference between {end_date_str} and {start_date_str}: {days_diff}" )
-    # return data
     
     for i in range( num_events ):
         # Randomly select an event type
@@ -60,8 +60,6 @@ def generate_events( num_events, start_date_str, end_date_str ):
         # Generate random date within the given range
         # start_date = start_date + (end_date - start_date) * random.random()
         new_start_date = start_date + pd.DateOffset( days=random.randint( 0, days_diff ) )
-        # print( f"new_start_date: {new_start_date}" )
-        # data.append( new_start_date )
 
         # Generate random end dates between from 0 to 7 days after the start date
         duration = random.randint( 0, 7 )
@@ -109,9 +107,9 @@ def generate_events( num_events, start_date_str, end_date_str ):
 
         data.append( event )
     #
-    # Sort list by date and start time
+    # Sort list by date and start time,
     data = sorted( data, key=lambda k: (k[ "start_date" ], k[ "start_time" ]) )
-    # data = sorted( data )
+    
     # Convert the list of dictionaries to a DataFrame
     df = pd.DataFrame( data )
 
