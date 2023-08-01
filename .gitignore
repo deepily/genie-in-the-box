@@ -20,5 +20,8 @@ src/conf/contact-information.map
 # This is also personal information.
 src/conf/memory/**
 
+# Skip the logs directory
+logs/**
+
 # Omit Mail Map
 .mailmap
