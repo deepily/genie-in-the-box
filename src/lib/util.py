@@ -130,6 +130,11 @@ def write_lines_to_file( path, lines ):
 
     with open( path, "w" ) as outfile:
         outfile.write( "\n".join( lines ) )
+        
+def write_string_to_file( path, string ):
+    
+    with open( path, "w" ) as outfile:
+        outfile.write( string )
 
 def print_banner( msg, expletive=False, chunk="¡@#!-$?%^_¿", end="\n\n", prepend_nl=False, flex=False ):
 
