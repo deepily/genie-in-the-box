@@ -1,3 +1,4 @@
+import json
 import re
 import os
 import ast
@@ -40,7 +41,7 @@ class MultiModalMunger:
 
     def __init__( self, raw_transcription, prefix="", prompt_key="generic", config_path="conf/modes-vox.json",
                   use_string_matching=True, use_ai_matching=True, vox_command_model="ada:ft-deepily-2023-07-12-00-02-27",
-                  debug=False, verbose=False ):
+                  debug=False, verbose=False, last_response=None ):
 
         self.debug                  = debug
         self.verbose                = verbose
@@ -79,6 +80,12 @@ class MultiModalMunger:
         # When all processing is refactored and consistent across all functionality. ¡TODO!
         self.results       = ""
         
+        # Print out last response.
+        # if self.debug and self.verbose:
+        print( "last_response:", last_response )
+        
+        self.last_response = last_response
+        
         parsed_fields      = self.parse( raw_transcription )
         self.transcription = parsed_fields[ 0 ]
         self.mode          = parsed_fields[ 1 ]
@@ -96,6 +103,7 @@ class MultiModalMunger:
 
     def get_json( self ):
         
+        # ¡TODO! This currently looks like it returns json when it's actually a python dictionary
         json = { "mode": self.mode, "prefix": self.prefix, "raw_transcription": self.raw_transcription, "transcription": self.transcription, "results": self.results }
         
         return json
@@ -118,7 +126,25 @@ class MultiModalMunger:
         transcription = regex.sub( '', raw_transcription ).replace( "-", " " ).lower()
         
         # First and foremost: Are we in multi-modal editor/command mode?
+        print( "self.prefix:", self.prefix )
+        print( "transcription:", transcription )
+        
         if self.prefix == transcription_mode_vox_command or transcription.startswith( transcription_mode_vox_command ):
+            
+            # ad hoc short circuit for the 'repeat' command
+            if ( transcription == "repeat" or transcription == transcription_mode_vox_command + " repeat" ) and self.last_response is not None:
+                
+                # unpack string representation of a JSON object and reassign values
+                temp_response          = json.loads( self.last_response )
+                
+                self.prefix            = temp_response[ "prefix" ]
+                self.results           = temp_response[ "results" ]
+                self.raw_transcription = temp_response[ "raw_transcription" ]
+                
+                return temp_response[ "transcription" ], temp_response[ "mode" ]
+            
+            elif ( transcription == "repeat" or transcription == transcription_mode_vox_command + " repeat" ) and self.last_response is None:
+                print( "No previous response to repeat" )
 
             # strip out the prefix and move it into its own field before continuing
             if transcription.startswith( transcription_mode_vox_command ):
