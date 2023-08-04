@@ -80,8 +80,9 @@ def upload_and_transcribe_mp3_file():
     print( " Done!" )
     
     print( "Transcribing {}...".format( path ) )
+    timer = sw.Stopwatch()
     result = model.transcribe( path )
-    print( "Done!", end="\n\n" )
+    timer.print( "Done!", use_millis=True, end="\n\n" )
     
     result = result[ "text" ].strip()
     
@@ -89,8 +90,14 @@ def upload_and_transcribe_mp3_file():
     
     # Fetch last response processed, currently assumes that this file exists!
     # ¡OJO! This is absolutely not thread safe!
-    last_response = du.get_file_as_string( du.get_project_root() + "/io/last_response.json" )
-    munger = mmm.MultiModalMunger( result, prefix=prefix, prompt_key=prompt_key, debug=True, last_response=last_response )
+    if os.path.isfile( du.get_project_root() + "/io/last_response.json" ):
+        with open( du.get_project_root() + "/io/last_response.json" ) as json_file:
+            last_response = json.load( json_file )
+            print( "READ last_response.type():", type( last_response ) )
+    else:
+        last_response = None
+        
+    munger = mmm.MultiModalMunger( result, prefix=prefix, prompt_key=prompt_key, debug=False, last_response=last_response )
     
     if munger.is_text_proofread():
         
@@ -116,13 +123,13 @@ def upload_and_transcribe_mp3_file():
         print( results )
         munger.results = results
     
-    # Serialized last response is a string representation of a dictionary
+    # Write JSON string to file system.
     last_response = munger.get_json()
-    # Convert Python dictionary to JSON object
-    last_response = json.dumps( last_response )
+    print( "WRITE last_response.type():", type( last_response ) )
+    print( "WRITE last_response:", last_response )
     du.write_string_to_file( du.get_project_root() + "/io/last_response.json", last_response )
-    
-    return munger.get_json()
+
+    return last_response
 
 
 @app.route( "/api/run-raw-prompt-text" )
