@@ -79,16 +79,10 @@ class MultiModalMunger:
         # This field added to hold the Results of a calculation, e.g.: ddg search, contact information, or eventually proofreading
         # When all processing is refactored and consistent across all functionality. ¡TODO!
         self.results       = ""
-        
-        # if last_response is not None:
-        #     self.last_response = json.load( last_response )
-        # else:
-        #     self.last_response = None
         self.last_response = last_response
         
-        # if self.debug and self.verbose:
-        print( "self.last_response:", self.last_response )
-        print( "type()", type( self.last_response ) )
+        if self.debug and self.verbose:
+            print( "self.last_response:", self.last_response )
         
         parsed_fields      = self.parse( raw_transcription )
         self.transcription = parsed_fields[ 0 ]
@@ -688,10 +682,10 @@ class MultiModalMunger:
                 match = match[ 1 : -2 ]
                 vox_commands.append( match )
             else:
-                if self.debug: print( "SKIPPING [{}]...".format( match ) )
+                if self.debug and self.verbose: print( "SKIPPING [{}]...".format( match ) )
                 
         
-        if self.debug:
+        if self.debug and self.verbose:
             # Sort keys alphabetically before printing them out.
             vox_commands.sort()
             for vox_command in vox_commands: print( vox_command )
