@@ -581,6 +581,7 @@ class MultiModalMunger:
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
         
         timer = sw.Stopwatch()
+        print( "Calling [{}]...".format( self.vox_command_model ), end="" )
         response = openai.Completion.create(
             model=self.vox_command_model,
             prompt=command_str + "\n\n###\n\n",
@@ -589,8 +590,7 @@ class MultiModalMunger:
             logprobs=len( self.class_dictionary.keys() ),
             stop="\n"
         )
-        
-        timer.print( "Call to [{}]".format( self.vox_command_model ), use_millis=True, end="\n" )
+        timer.print( "Calling [{}]... Done!".format( self.vox_command_model ), use_millis=True, end="\n" )
         
         # convert OPENAI object into a native Python dictionary... ugly!
         log_odds = ast.literal_eval( str( response[ "choices" ][ 0 ][ "logprobs" ][ "top_logprobs" ][ 0 ] ) )
@@ -601,39 +601,7 @@ class MultiModalMunger:
         command_dict = self._get_command_dict( command=best_guesses[ 0 ][ 0 ], confidence=best_guesses[ 0 ][ 1 ], match_type="ai_matching" )
         
         return command_dict
-    
-    # def extract_domain_name( self, raw_text ):
-    #
-    #     openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
-    #     print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
-    #
-    #     if self.debug: print( " raw_text [{}]".format( raw_text ) )
-    #
-    #     timer = sw.Stopwatch()
-    #     system   = "You are an expert in internet protocols and naming conventions."
-    #     content  = """Extract the domain name contained within the text delimited by three backticks. If you are unable
-    #                   to find a valid domain name, return NO_VALID_DOMAIN_NAME_FOUND.```""" + raw_text + "```"
-    #     response = openai.ChatCompletion.create(
-    #         model="gpt-3.5-turbo-0613",
-    #         # Not yet available, comma, still waiting for July's bill to be submitted before I can get access.
-    #         # model="gpt-4",
-    #         messages=[
-    #             { "role": "system", "content": system },
-    #             { "role": "user",   "content": content }
-    #         ],
-    #         # From: https://community.openai.com/t/cheat-sheet-mastering-temperature-and-top-p-in-chatgpt-api-a-few-tips-and-tricks-on-controlling-the-creativity-deterministic-output-of-prompt-responses/172683
-    #         temperature=0.0,
-    #         top_p=0.0,
-    #         max_tokens=12,
-    #         frequency_penalty=0.0,
-    #         presence_penalty=0.0
-    #     )
-    #     timer.print( "Call to [{}]".format( "gpt-3.5-turbo-0613" ), use_millis=True, end="\n" )
-    #
-    #     if self.debug: print( response )
-    #
-    #     return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
-    
+
     def extract_args( self, raw_text, model="NO_MODEL_SPECIFIED" ):
         
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
@@ -643,7 +611,7 @@ class MultiModalMunger:
             print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
         
         timer = sw.Stopwatch()
-        
+        print( "Calling [{}]...".format( model ), end="" )
         response = openai.Completion.create(
             model=model,
             prompt=raw_text + "\n\n###\n\n",
@@ -655,7 +623,7 @@ class MultiModalMunger:
             presence_penalty=0.0,
             stop=["\n"]
         )
-        timer.print( "Call to [{}]".format( model ), use_millis=True, end="\n" )
+        timer.print( "Calling [{}]... Done!".format( model ), use_millis=True, end="\n" )
         
         if self.debug: print( response )
         
@@ -746,7 +714,7 @@ if __name__ == "__main__":
     # transcription = "In a new tab, search for this that and the other."
     # transcription = "Get search results for Google Scholar blah blah blah."
     # transcription = "Head to stage.magnificentrainbow.com in a new tab"
-    # transcription = "Head to stagemagnificentrainbowcom in a new tab"
+    transcription = "Head to stagemagnificentrainbowcom in a new tab"
     # transcription = "search new tab"
     # transcription = "search current tab for blah blah blah"
     # transcription = "multimodal python punctuation console.log. open parenthesis quote foober. close quote. close parenthesis. semicolon."
@@ -755,8 +723,8 @@ if __name__ == "__main__":
     # prefix        = "multimodal editor"
     prefix        = ""
     # prefix          = "multimodal python punctuation"
-    munger = MultiModalMunger( transcription, prefix=prefix, debug=False )
-    print( munger.get_json() )
+    # munger = MultiModalMunger( transcription, prefix=prefix, debug=False )
+    # print( munger.get_json() )
     # print( munger.extract_args( transcription, model=munger.domain_name_model ) )
     
     # print( "munger.use_exact_matching [{}]".format( munger.use_exact_matching ) )
@@ -818,11 +786,15 @@ if __name__ == "__main__":
     # print( "type( munger.get_json() )", type( munger.get_json() ) )
     # print( munger.get_json()[ "transcription" ] )
     # print( munger.is_text_proofread() )
-
+    
+    # munger = MultiModalMunger( transcription, prefix=prefix, debug=False )
+    # print( munger.get_json() )
+    
     # genie_client = gc.GenieClient( debug=True )
     # timer = sw.Stopwatch()
     # preamble = "You are an expert proofreader. Correct grammar. Correct tense. Correct spelling. Correct contractions. Correct punctuation. Correct capitalization. Correct word choice. Correct sentence structure. Correct paragraph structure. Correct paragraph length. Correct paragraph flow. Correct paragraph topic. Correct paragraph tone. Correct paragraph style. Correct paragraph voice. Correct paragraph mood. Correct paragraph theme."
-    # response = genie_client.ask_chat_gpt_text( munger.transcription, preamble=preamble )
+    # transcription = "Yesterday I go to work, Tonight I go dancing friends. Tomorrow I go to work again."
+    # response = genie_client.ask_chat_gpt_text( transcription, preamble=preamble )
     # print( response )
     # timer.print( "Proofread", use_millis=True )
     
