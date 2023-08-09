@@ -39,7 +39,7 @@ write_method = "file" # "file" or "flask"
 
 class GenieClient:
     
-    def __init__( self, calling_gui=None, startup_mode="transcribe", copy_transx_to_clipboard=True, runtime_context="docker", write_method="flask",
+    def __init__( self, model="gpt-4-0613", calling_gui=None, startup_mode="transcribe", copy_transx_to_clipboard=True, runtime_context="docker", write_method="flask",
                   debug=False, recording_timeout=30, stt_address="127.0.0.1:7999", tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav" ):
         
         self.debug = debug
@@ -60,8 +60,8 @@ class GenieClient:
         if debug: print( "Setting runtime output_path to [{}]".format( self.output_path ) )
 
         self.startup_mode       = startup_mode
-        
         self.project_root       = du.get_project_root()
+        self.model              = model
         
         print( "         self.project_root [{}]".format( self.project_root ) )
         print( "translation-dictionary.map [{}]".format( self.project_root + "/src/conf/translation-dictionary.map" ) )
@@ -294,9 +294,7 @@ class GenieClient:
             print( "content [{}]".format( content ) )
         
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-0613",
-            # Not yet available, comma, still waiting for July's bill to be submitted before I can get access.
-            # model="gpt-4",
+            model=self.model,
             messages=[
                 { "role": "system", "content": prompt },
                 { "role": "user", "content": content }
@@ -327,11 +325,12 @@ class GenieClient:
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
         print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
     
+        timer = sw.Stopwatch()
+        print( "Asking ChatGPT [{}]...".format( self.model ), end="" )
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model=self.model,
             messages=[ { "role": "system", "content": "You are ChatGPT, a large language model trained by OpenAI. "
-                                                      "Answer as concisely as possible."
-                                                      "\nKnowledge cutoff: =2021-09-01\nCurrent date: 2023-03-02" },
+                                                      "Answer as concisely as possible." },
                        { "role": "system", "content": preamble },
                        { "role": "user", "content": query } ],
             temperature=0,
@@ -340,6 +339,7 @@ class GenieClient:
             frequency_penalty=0.0,
             presence_penalty=0.0
         )
+        timer.print( "Done!".format( self.model ), use_millis=True )
         if self.debug: print( response )
         
         return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
@@ -349,7 +349,7 @@ class GenieClient:
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
     
         response = openai.Completion.create(
-            model="gpt-3.5-turbo",
+            model=self.model,
             prompt="{}\n\n###{}###".format( preamble, query ),
             temperature=0,
             max_tokens=600,
@@ -543,7 +543,7 @@ class GenieClient:
 
         print( "munge_prose() Before punctuation translation: \n\n{}".format( prose ), end="\n\n" )
 
-        # Remove "space, ", commas, and periods.
+        # Remove commas, and periods.
         prose = re.sub( r'[,.]', '', prose.lower() )
 
         # Translate punctuation mark words into single characters.
@@ -642,12 +642,13 @@ if __name__ == "__main__":
         recording_timeout=recording_timeout
     )
 
+    # gc.do_gpt_by_voice()
     # code = gc.munge_code( "Deaf key underscore event open parenthesis self comma event close parenthesis colon new line new line")
     # print( code )
 
 
-    transcription = gc.do_transcription()
-    print( transcription )
+    # transcription = gc.do_transcription()
+    # print( transcription )
     # gc.do_gpt_by_voice()
     # gc.do_gpt_from_clipboard()
     # gc.do_transcribe_and_clean()
@@ -656,10 +657,17 @@ if __name__ == "__main__":
     # preamble = "Clean up the following raw text transcription created by whisper.ai. Correct spelling and format " \
     #           "output as Python source code w/o any capitalization. Source code must compile" \
     #
-    # query = "Let me stop you right there, Colin. First, comma. You'd better stop shouting so much comma. Okay, question mark. By the way comma, what's it like to open bracket almost exclusively, close bracket, use your voice comma instead of your hands. question mark. "
-    #
-    # print( gc.munge_prose( query ) )
-
+    query = "Let me stop you right there, Colin. First, comma. You'd better stop shouting so much comma. Okay, question mark. By the way comma, what's it like to open bracket almost exclusively, close bracket, use your voice comma instead of your hands. question mark. "
+    munged_prose = gc.munge_prose( query )
+    print( munged_prose )
+    preamble = "You are an expert copy editor. Clean up the following text, including using proper capitalization, " \
+               "contractions, grammar, and translation of punctuation mark words into single characters. Format " \
+               "output as formal technical prose."
+    
+    for i in range( 1 ):
+        gpt_response = gc.ask_chat_gpt_text( munged_prose, preamble=preamble )
+        print( gpt_response )
+    
     #
     # print( "1) Before punctuation translation: \n\n{}".format( query ), end="\n\n" )
     # # query = query.lower().replace( ",", "" ).replace( "space, ", "" )
