@@ -1,4 +1,4 @@
-start_date,end_date,duration,start_time,end_time,event_type,recurrent,recurrence_interval,description,priority_level
+start_date,end_date,duration,start_time,end_time,event,recurrent,recurrence_interval,description,priority_level
 2023-07-01,2023-07-01,0,00:00,23:59,Conference,False,,This is a conference.,low
 2023-07-01,2023-07-01,0,00:00,23:59,Performance,False,,This is a performance.,highest
 2023-07-02,2023-07-02,0,00:00,23:59,Concert,False,,This is a concert.,low
