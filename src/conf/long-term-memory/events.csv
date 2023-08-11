@@ -1,201 +1,201 @@
-start_date,end_date,duration,start_time,end_time,event_type,recurrent,recurrence_interval,description,priority_level
-2023-07-01,2023-07-01,0,00:00,23:59,Conference,False,,This is a conference.,low
-2023-07-01,2023-07-01,0,00:00,23:59,Performance,False,,This is a performance.,highest
-2023-07-02,2023-07-02,0,00:00,23:59,Concert,False,,This is a concert.,low
-2023-07-02,2023-07-05,3,02:38,11:03,Task,False,,This is a task.,highest
-2023-07-02,2023-07-07,5,09:26,04:56,Workout,False,,This is a workout.,high
-2023-07-02,2023-07-09,7,13:49,06:49,TODO,False,,This is a todo.,highest
-2023-07-02,2023-07-05,3,20:45,14:49,Workout,False,,This is a workout.,none
-2023-07-03,2023-07-04,1,03:20,09:26,TODO,False,,This is a todo.,highest
-2023-07-03,2023-07-10,7,14:51,03:18,Task,False,,This is a task.,medium
-2023-07-03,2023-07-10,7,16:52,22:16,Interview,False,,This is a interview.,none
-2023-07-04,2023-07-04,0,10:00,19:11,TODO,False,,This is a todo.,high
-2023-07-04,2023-07-09,5,18:06,08:32,Workout,False,,This is a workout.,medium
-2023-07-05,2023-07-05,0,00:00,23:59,Performance,False,,This is a performance.,low
-2023-07-05,2023-07-05,0,03:44,03:41,Meeting,False,,This is a meeting.,medium
-2023-07-05,2023-07-05,0,09:52,12:03,Workshop,False,,This is a workshop.,none
-2023-07-05,2023-07-05,0,14:04,20:18,Task,False,,This is a task.,highest
-2023-07-06,2023-07-07,1,00:00,23:59,Concert,False,,This is a concert.,highest
-2023-07-06,2023-07-06,0,00:00,23:59,Anniversary,True,1 day,Bob (brother)'s anniversary,highest
-2023-07-06,2023-07-07,1,00:00,23:59,Birthday,True,2 year,Tom Ruiz (brother)'s birthday,high
-2023-07-06,2023-07-07,1,17:13,05:59,TODO,False,,This is a todo.,highest
-2023-07-07,2023-07-07,0,00:00,23:59,Conference,False,,This is a conference.,medium
-2023-07-07,2023-07-08,1,00:00,23:59,Concert,False,,This is a concert.,high
-2023-07-07,2023-07-14,7,00:00,23:59,Concert,False,,This is a concert.,highest
-2023-07-07,2023-07-07,0,08:58,23:53,Meeting,False,,This is a meeting.,highest
-2023-07-07,2023-07-10,3,08:59,04:35,Interview,False,,This is a interview.,none
-2023-07-08,2023-07-08,0,00:00,23:59,Anniversary,True,3 year,Tom Ruiz (brother)'s anniversary,low
-2023-07-08,2023-07-15,7,00:00,23:59,Anniversary,True,5 week,Bob (brother)'s anniversary,medium
-2023-07-08,2023-07-08,0,00:00,23:59,Anniversary,True,5 year,John (coworker)'s anniversary,low
-2023-07-08,2023-07-08,0,00:00,23:59,Concert,False,,This is a concert.,low
-2023-07-08,2023-07-08,0,07:07,01:59,TODO,False,,This is a todo.,highest
-2023-07-09,2023-07-09,0,00:00,23:59,Birthday,True,2 year,Bob (brother)'s birthday,high
-2023-07-09,2023-07-14,5,00:35,21:39,Workshop,False,,This is a workshop.,low
-2023-07-09,2023-07-09,0,03:56,18:20,Workout,False,,This is a workout.,none
-2023-07-09,2023-07-09,0,13:02,11:09,Workout,False,,This is a workout.,none
-2023-07-10,2023-07-15,5,00:00,23:59,Birthday,True,1 year,Jenny (coworker)'s birthday,highest
-2023-07-10,2023-07-13,3,00:00,23:59,Concert,False,,This is a concert.,low
-2023-07-11,2023-07-12,1,01:34,18:35,Interview,False,,This is a interview.,highest
-2023-07-12,2023-07-17,5,00:00,23:59,Concert,False,,This is a concert.,highest
-2023-07-13,2023-07-20,7,00:00,23:59,Birthday,True,5 day,Tom Ruiz (brother)'s birthday,high
-2023-07-13,2023-07-13,0,00:00,23:59,Conference,False,,This is a conference.,none
-2023-07-13,2023-07-13,0,08:20,18:13,Task,False,,This is a task.,high
-2023-07-14,2023-07-14,0,00:00,23:59,Birthday,True,5 day,John (coworker)'s birthday,highest
-2023-07-15,2023-07-15,0,16:54,19:36,Workshop,False,,This is a workshop.,none
-2023-07-16,2023-07-16,0,01:25,05:36,Appointment,False,,This is a appointment.,highest
-2023-07-16,2023-07-16,0,14:11,18:11,Interview,False,,This is a interview.,medium
-2023-07-16,2023-07-16,0,20:05,19:46,Workshop,False,,This is a workshop.,highest
-2023-07-16,2023-07-17,1,23:05,00:01,TODO,False,,This is a todo.,high
-2023-07-18,2023-07-18,0,00:00,23:59,Birthday,True,3 year,Pablo (friend)'s birthday,low
-2023-07-18,2023-07-18,0,00:00,23:59,Subscription,True,5 day,This is a subscription.,highest
-2023-07-18,2023-07-18,0,00:30,04:55,Appointment,False,,This is a appointment.,highest
-2023-07-18,2023-07-25,7,03:11,20:37,Appointment,False,,This is a appointment.,none
-2023-07-19,2023-07-20,1,22:13,10:07,Task,False,,This is a task.,high
-2023-07-20,2023-07-20,0,00:00,23:59,Anniversary,True,5 day,Inash (girlfriend)'s anniversary,low
-2023-07-20,2023-07-25,5,02:37,21:54,Workout,False,,This is a workout.,highest
-2023-07-20,2023-07-27,7,10:06,17:46,Interview,False,,This is a interview.,high
-2023-07-21,2023-07-28,7,16:14,00:57,Appointment,False,,This is a appointment.,none
-2023-07-22,2023-07-22,0,00:00,23:59,Subscription,True,3 year,This is a subscription.,medium
-2023-07-23,2023-07-23,0,00:00,23:59,Concert,False,,This is a concert.,highest
-2023-07-23,2023-07-26,3,00:00,23:59,Performance,False,,This is a performance.,high
-2023-07-23,2023-07-23,0,10:52,23:48,Task,False,,This is a task.,medium
-2023-07-23,2023-07-23,0,16:44,22:50,Appointment,False,,This is a appointment.,low
-2023-07-24,2023-07-31,7,00:40,05:37,TODO,False,,This is a todo.,none
-2023-07-24,2023-07-24,0,00:53,07:08,TODO,False,,This is a todo.,medium
-2023-07-24,2023-07-25,1,05:36,13:15,Appointment,False,,This is a appointment.,highest
-2023-07-25,2023-07-28,3,01:55,09:49,Workshop,False,,This is a workshop.,highest
-2023-07-25,2023-07-25,0,02:16,06:58,Appointment,False,,This is a appointment.,high
-2023-07-26,2023-07-31,5,00:00,23:59,Anniversary,True,4 year,Sally (sister)'s anniversary,none
-2023-07-26,2023-07-26,0,00:00,23:59,Performance,False,,This is a performance.,none
-2023-07-26,2023-07-31,5,00:00,23:59,Concert,False,,This is a concert.,low
-2023-07-26,2023-07-26,0,00:00,23:59,Conference,False,,This is a conference.,highest
-2023-07-26,2023-07-31,5,21:54,06:08,Workout,False,,This is a workout.,low
-2023-07-27,2023-07-27,0,00:00,23:59,Anniversary,True,2 week,Gregorio (friend)'s anniversary,high
-2023-07-27,2023-07-30,3,00:00,23:59,Subscription,True,3 day,This is a subscription.,low
-2023-07-27,2023-07-28,1,05:03,06:50,TODO,False,,This is a todo.,highest
-2023-07-27,2023-07-27,0,22:07,03:01,TODO,False,,This is a todo.,low
-2023-07-28,2023-08-04,7,00:00,23:59,Concert,False,,This is a concert.,high
-2023-07-28,2023-07-28,0,00:00,23:59,Anniversary,True,2 week,Alice (aunt)'s anniversary,none
-2023-07-28,2023-07-31,3,02:22,08:46,Workshop,False,,This is a workshop.,none
-2023-07-28,2023-07-31,3,20:14,01:33,Interview,False,,This is a interview.,highest
-2023-07-29,2023-07-29,0,00:00,23:59,Anniversary,True,4 week,Inash (girlfriend)'s anniversary,low
-2023-07-30,2023-08-02,3,07:36,00:01,Workshop,False,,This is a workshop.,medium
-2023-07-30,2023-07-30,0,22:13,22:08,Appointment,False,,This is a appointment.,medium
-2023-07-31,2023-08-01,1,00:00,23:59,Concert,False,,This is a concert.,highest
-2023-07-31,2023-08-03,3,22:00,14:55,Task,False,,This is a task.,none
-2023-08-01,2023-08-01,0,00:00,23:59,Subscription,True,1 week,This is a subscription.,none
-2023-08-01,2023-08-01,0,00:00,23:59,Conference,False,,This is a conference.,none
-2023-08-01,2023-08-01,0,00:00,23:59,Subscription,True,1 month,This is a subscription.,medium
-2023-08-01,2023-08-04,3,00:00,23:59,Performance,False,,This is a performance.,low
-2023-08-01,2023-08-01,0,12:23,16:05,Interview,False,,This is a interview.,low
-2023-08-02,2023-08-02,0,00:00,23:59,Birthday,True,5 month,Gregorio (friend)'s birthday,none
-2023-08-02,2023-08-02,0,00:00,23:59,Subscription,True,5 month,This is a subscription.,medium
-2023-08-02,2023-08-07,5,00:00,23:59,Performance,False,,This is a performance.,low
-2023-08-02,2023-08-02,0,00:00,23:59,Birthday,True,5 week,Sally (sister)'s birthday,medium
-2023-08-02,2023-08-02,0,05:55,00:20,Workout,False,,This is a workout.,high
-2023-08-02,2023-08-02,0,10:44,00:13,Interview,False,,This is a interview.,highest
-2023-08-02,2023-08-09,7,19:15,17:38,Task,False,,This is a task.,high
-2023-08-02,2023-08-03,1,22:51,19:29,TODO,False,,This is a todo.,low
-2023-08-03,2023-08-03,0,00:00,23:59,Conference,False,,This is a conference.,highest
-2023-08-04,2023-08-11,7,00:00,23:59,Performance,False,,This is a performance.,medium
-2023-08-04,2023-08-07,3,00:00,23:59,Concert,False,,This is a concert.,low
-2023-08-04,2023-08-07,3,00:00,23:59,Performance,False,,This is a performance.,low
-2023-08-04,2023-08-05,1,00:00,23:59,Concert,False,,This is a concert.,highest
-2023-08-04,2023-08-04,0,00:00,23:59,Concert,False,,This is a concert.,low
-2023-08-04,2023-08-04,0,19:36,06:52,Interview,False,,This is a interview.,medium
-2023-08-05,2023-08-12,7,00:00,23:59,Subscription,True,5 week,This is a subscription.,low
-2023-08-05,2023-08-06,1,06:18,14:17,Workout,False,,This is a workout.,highest
-2023-08-05,2023-08-05,0,07:21,06:27,Task,False,,This is a task.,low
-2023-08-05,2023-08-08,3,11:01,09:50,Interview,False,,This is a interview.,highest
-2023-08-05,2023-08-08,3,16:00,12:20,TODO,False,,This is a todo.,low
-2023-08-06,2023-08-13,7,20:51,22:32,Interview,False,,This is a interview.,low
-2023-08-07,2023-08-07,0,00:00,23:59,Birthday,True,4 month,John (coworker)'s birthday,low
-2023-08-07,2023-08-07,0,00:00,23:59,Performance,False,,This is a performance.,medium
-2023-08-07,2023-08-07,0,04:59,19:46,Task,False,,This is a task.,low
-2023-08-07,2023-08-07,0,05:21,17:30,Task,False,,This is a task.,medium
-2023-08-07,2023-08-07,0,05:24,00:12,Meeting,False,,This is a meeting.,low
-2023-08-07,2023-08-07,0,22:28,13:49,TODO,False,,This is a todo.,none
-2023-08-09,2023-08-09,0,07:40,15:42,Workshop,False,,This is a workshop.,medium
-2023-08-10,2023-08-10,0,00:00,23:59,Anniversary,True,4 month,Barbara Jane Ruiz (mother)'s anniversary,none
-2023-08-10,2023-08-13,3,00:00,23:59,Anniversary,True,3 day,Alice (aunt)'s anniversary,high
-2023-08-10,2023-08-11,1,00:00,23:59,Birthday,True,3 day,Pablo (friend)'s birthday,low
-2023-08-10,2023-08-15,5,00:00,23:59,Conference,False,,This is a conference.,low
-2023-08-10,2023-08-11,1,12:35,04:36,Interview,False,,This is a interview.,low
-2023-08-10,2023-08-10,0,19:25,10:18,Appointment,False,,This is a appointment.,medium
-2023-08-10,2023-08-13,3,19:54,21:56,TODO,False,,This is a todo.,none
-2023-08-11,2023-08-18,7,00:00,23:59,Subscription,True,4 day,This is a subscription.,low
-2023-08-11,2023-08-12,1,06:52,07:22,Meeting,False,,This is a meeting.,medium
-2023-08-11,2023-08-14,3,09:50,08:20,Interview,False,,This is a interview.,high
-2023-08-11,2023-08-11,0,10:04,06:02,TODO,False,,This is a todo.,high
-2023-08-11,2023-08-11,0,12:52,12:21,TODO,False,,This is a todo.,none
-2023-08-11,2023-08-14,3,17:54,14:36,Workout,False,,This is a workout.,none
-2023-08-11,2023-08-12,1,18:38,14:02,TODO,False,,This is a todo.,highest
-2023-08-11,2023-08-11,0,21:07,07:46,Appointment,False,,This is a appointment.,highest
-2023-08-12,2023-08-12,0,00:00,23:59,Birthday,True,3 day,Jenny (coworker)'s birthday,medium
-2023-08-12,2023-08-15,3,00:00,23:59,Anniversary,True,1 day,Barbara Jane Ruiz (mother)'s anniversary,none
-2023-08-12,2023-08-12,0,02:14,09:39,Workout,False,,This is a workout.,none
-2023-08-13,2023-08-13,0,00:00,23:59,Birthday,True,4 year,Gregorio (friend)'s birthday,medium
-2023-08-13,2023-08-20,7,00:00,23:59,Anniversary,True,3 day,Leroy Ruiz (father)'s anniversary,high
-2023-08-13,2023-08-16,3,01:16,11:42,Meeting,False,,This is a meeting.,low
-2023-08-13,2023-08-14,1,08:27,14:06,Meeting,False,,This is a meeting.,low
-2023-08-13,2023-08-14,1,11:27,05:03,Meeting,False,,This is a meeting.,medium
-2023-08-14,2023-08-14,0,00:00,23:59,Concert,False,,This is a concert.,highest
-2023-08-14,2023-08-14,0,00:00,23:59,Concert,False,,This is a concert.,high
-2023-08-14,2023-08-17,3,00:00,23:59,Subscription,True,3 week,This is a subscription.,none
-2023-08-14,2023-08-21,7,00:00,23:59,Birthday,True,3 year,Bob (brother)'s birthday,low
-2023-08-14,2023-08-15,1,00:00,23:59,Performance,False,,This is a performance.,high
-2023-08-14,2023-08-14,0,00:00,23:59,Subscription,True,1 year,This is a subscription.,highest
-2023-08-14,2023-08-14,0,19:47,16:12,Task,False,,This is a task.,none
-2023-08-15,2023-08-15,0,00:00,23:59,Performance,False,,This is a performance.,none
-2023-08-15,2023-08-15,0,00:00,23:59,Conference,False,,This is a conference.,none
-2023-08-15,2023-08-15,0,00:00,23:59,Performance,False,,This is a performance.,none
-2023-08-15,2023-08-15,0,00:00,23:59,Anniversary,True,4 month,Sally (sister)'s anniversary,high
-2023-08-15,2023-08-18,3,02:33,11:32,Interview,False,,This is a interview.,low
-2023-08-15,2023-08-15,0,17:27,20:26,Appointment,False,,This is a appointment.,low
-2023-08-16,2023-08-16,0,00:00,23:59,Birthday,True,3 year,Pablo (friend)'s birthday,none
-2023-08-16,2023-08-19,3,00:00,23:59,Anniversary,True,3 day,Alice (aunt)'s anniversary,low
-2023-08-17,2023-08-18,1,02:22,09:34,Workout,False,,This is a workout.,none
-2023-08-17,2023-08-24,7,09:36,02:37,Interview,False,,This is a interview.,medium
-2023-08-18,2023-08-23,5,00:00,23:59,Performance,False,,This is a performance.,none
-2023-08-18,2023-08-18,0,00:00,23:59,Subscription,True,4 year,This is a subscription.,low
-2023-08-18,2023-08-19,1,00:00,23:59,Performance,False,,This is a performance.,high
-2023-08-18,2023-08-23,5,00:00,23:59,Concert,False,,This is a concert.,medium
-2023-08-19,2023-08-20,1,00:00,23:59,Anniversary,True,2 month,Gregorio (friend)'s anniversary,medium
-2023-08-19,2023-08-22,3,00:00,23:59,Conference,False,,This is a conference.,low
-2023-08-19,2023-08-19,0,12:09,10:58,Interview,False,,This is a interview.,high
-2023-08-20,2023-08-20,0,00:00,23:59,Concert,False,,This is a concert.,high
-2023-08-20,2023-08-20,0,21:22,15:33,Task,False,,This is a task.,low
-2023-08-21,2023-08-21,0,00:00,23:59,Anniversary,True,4 week,Tom Ruiz (brother)'s anniversary,none
-2023-08-21,2023-08-21,0,06:12,12:45,Appointment,False,,This is a appointment.,high
-2023-08-21,2023-08-21,0,10:50,07:58,Task,False,,This is a task.,high
-2023-08-22,2023-08-29,7,00:00,23:59,Birthday,True,3 day,Bob (brother)'s birthday,high
-2023-08-22,2023-08-23,1,00:00,23:59,Subscription,True,5 week,This is a subscription.,low
-2023-08-22,2023-08-25,3,09:57,22:40,Workout,False,,This is a workout.,low
-2023-08-22,2023-08-22,0,14:52,10:03,Workshop,False,,This is a workshop.,highest
-2023-08-23,2023-08-23,0,04:16,18:51,Workout,False,,This is a workout.,medium
-2023-08-23,2023-08-28,5,20:11,19:17,Task,False,,This is a task.,medium
-2023-08-24,2023-08-24,0,00:00,23:59,Birthday,True,3 month,Barbara Jane Ruiz (mother)'s birthday,highest
-2023-08-24,2023-08-31,7,00:00,23:59,Subscription,True,3 year,This is a subscription.,high
-2023-08-24,2023-08-31,7,00:00,23:59,Anniversary,True,3 week,Barbara Jane Ruiz (mother)'s anniversary,high
-2023-08-24,2023-08-31,7,22:08,16:11,Workout,False,,This is a workout.,low
-2023-08-25,2023-08-25,0,00:00,23:59,Concert,False,,This is a concert.,none
-2023-08-25,2023-08-25,0,05:28,21:12,Workshop,False,,This is a workshop.,low
-2023-08-25,2023-08-26,1,07:11,07:18,TODO,False,,This is a todo.,none
-2023-08-25,2023-08-25,0,08:21,08:55,Interview,False,,This is a interview.,none
-2023-08-25,2023-08-25,0,23:16,06:30,TODO,False,,This is a todo.,low
-2023-08-26,2023-08-26,0,01:21,14:44,Workout,False,,This is a workout.,highest
-2023-08-26,2023-08-26,0,16:56,05:52,Workout,False,,This is a workout.,highest
-2023-08-27,2023-08-30,3,00:00,23:59,Birthday,True,1 month,Inash (girlfriend)'s birthday,highest
-2023-08-28,2023-08-28,0,00:00,23:59,Concert,False,,This is a concert.,none
-2023-08-28,2023-09-02,5,07:44,00:33,Appointment,False,,This is a appointment.,high
-2023-08-29,2023-09-03,5,00:00,23:59,Conference,False,,This is a conference.,high
-2023-08-29,2023-08-29,0,16:06,02:57,TODO,False,,This is a todo.,highest
-2023-08-29,2023-09-01,3,16:35,11:57,Task,False,,This is a task.,medium
-2023-08-30,2023-08-30,0,00:00,23:59,Anniversary,True,4 week,Inash (girlfriend)'s anniversary,none
-2023-08-30,2023-08-30,0,20:33,09:25,Task,False,,This is a task.,medium
-2023-08-31,2023-08-31,0,00:00,23:59,Performance,False,,This is a performance.,high
-2023-08-31,2023-09-05,5,00:00,23:59,Anniversary,True,5 year,John (coworker)'s anniversary,highest
-2023-09-01,2023-09-06,5,04:10,02:49,Workshop,False,,This is a workshop.,none
-2023-09-01,2023-09-01,0,12:14,01:55,Workout,False,,This is a workout.,low
-2023-09-01,2023-09-08,7,15:50,08:22,TODO,False,,This is a todo.,none
-2023-09-01,2023-09-08,7,18:50,22:56,Workshop,False,,This is a workshop.,none
+start_date,end_date,start_time,end_time,event_type,recurrent,recurrence_interval,priority_level,name,relationship,description_who_what_where
+2023-07-01,2023-07-04,00:00,23:59,Concert,False,,none,Jenny,coworker,Concert of Jenny at the city center
+2023-07-01,2023-07-01,05:25,17:22,TODO,False,,highest,Gregorio,friend,Send out invitations for the party for Gregorio (friend)
+2023-07-01,2023-07-01,13:27,01:59,Appointment,False,,high,Leroy Ruiz,father,Appointment with Leroy Ruiz at the clinic
+2023-07-02,2023-07-03,13:18,02:40,Interview,False,,highest,John,coworker,Job interview with John at Google
+2023-07-03,2023-07-04,00:00,23:59,Performance,False,,medium,Sue,sister,Theatre performance with Sue
+2023-07-03,2023-07-04,00:00,23:59,Subscription,True,4 year,highest,Leroy Ruiz,father,Renewal of Leroy Ruiz's subscription
+2023-07-03,2023-07-04,00:00,23:59,Anniversary,True,4 week,none,Juan,neighbor,Juan's anniversary celebration at the park
+2023-07-04,2023-07-04,00:00,23:59,Anniversary,True,4 week,medium,Leroy Ruiz,father,Leroy Ruiz's anniversary celebration at the park
+2023-07-04,2023-07-07,00:00,23:59,Performance,False,,high,Inash,girlfriend,Theatre performance with Inash
+2023-07-04,2023-07-07,00:00,23:59,Birthday,True,3 year,low,Alice,aunt,Alice's birthday party at their favorite bar
+2023-07-04,2023-07-04,01:06,23:23,Workout,False,,highest,Jenny,coworker,Workout session with Jenny at the gym
+2023-07-04,2023-07-04,15:55,11:28,Workshop,False,,medium,Pablo,friend,Exciting workshop with Pablo on AGI
+2023-07-05,2023-07-08,14:26,08:14,Appointment,False,,highest,Sally,sister,Appointment with Sally at the clinic
+2023-07-05,2023-07-05,22:06,03:53,Interview,False,,medium,Bob,brother,Job interview with Bob at Google
+2023-07-06,2023-07-13,00:00,23:59,Concert,False,,highest,Juan,neighbor,Concert of Juan at the city center
+2023-07-06,2023-07-06,00:00,23:59,Birthday,True,4 month,highest,Alice,aunt,Alice's birthday party at their favorite bar
+2023-07-06,2023-07-06,06:55,07:02,Interview,False,,high,Pablo,friend,Job interview with Pablo at Google
+2023-07-06,2023-07-06,14:03,14:43,Workout,False,,medium,Sally,sister,Workout session with Sally at the gym
+2023-07-07,2023-07-12,00:00,23:59,Conference,False,,medium,Sue,sister,Conference with Sue on AI advancements
+2023-07-07,2023-07-10,00:00,23:59,Performance,False,,high,Tom Ruiz,brother,Theatre performance with Tom Ruiz
+2023-07-08,2023-07-11,00:00,23:59,Performance,False,,highest,Gregorio,friend,Theatre performance with Gregorio
+2023-07-08,2023-07-11,00:00,23:59,Conference,False,,none,Sally,sister,Conference with Sally on AI advancements
+2023-07-08,2023-07-08,13:03,19:20,Meeting,False,,none,Pablo,friend,Another boring meeting with Pablo
+2023-07-09,2023-07-10,00:00,23:59,Concert,False,,medium,Barbara Jane Ruiz,mother,Concert of Barbara Jane Ruiz at the city center
+2023-07-09,2023-07-09,00:00,23:59,Performance,False,,highest,Tom Ruiz,brother,Theatre performance with Tom Ruiz
+2023-07-09,2023-07-16,17:50,18:06,TODO,False,,medium,Sally,sister,Pay electric bill for Sally (sister)
+2023-07-10,2023-07-10,00:00,23:59,Performance,False,,high,Gregorio,friend,Theatre performance with Gregorio
+2023-07-10,2023-07-11,00:00,23:59,Performance,False,,none,Juan,neighbor,Theatre performance with Juan
+2023-07-10,2023-07-10,02:31,18:31,Workshop,False,,highest,Inash,girlfriend,Exciting workshop with Inash on AGI
+2023-07-11,2023-07-18,00:00,23:59,Performance,False,,medium,Gregorio,friend,Theatre performance with Gregorio
+2023-07-11,2023-07-11,08:41,01:27,Meeting,False,,highest,Barbara Jane Ruiz,mother,Another boring meeting with Barbara Jane Ruiz
+2023-07-11,2023-07-14,18:26,11:14,Workout,False,,high,Sue,sister,Workout session with Sue at the gym
+2023-07-12,2023-07-12,00:00,23:59,Concert,False,,medium,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
+2023-07-12,2023-07-15,00:00,23:59,Anniversary,True,2 week,highest,Sally,sister,Sally's anniversary celebration at the park
+2023-07-12,2023-07-12,07:23,03:06,Appointment,False,,none,Jenny,coworker,Appointment with Jenny at the clinic
+2023-07-12,2023-07-13,17:06,04:10,TODO,False,,highest,Gregorio,friend,Pay electric bill for Gregorio (friend)
+2023-07-13,2023-07-13,00:00,23:59,Conference,False,,high,Bob,brother,Conference with Bob on AI advancements
+2023-07-13,2023-07-13,23:48,01:17,Appointment,False,,medium,Barbara Jane Ruiz,mother,Appointment with Barbara Jane Ruiz at the clinic
+2023-07-14,2023-07-14,00:00,23:59,Performance,False,,low,Gregorio,friend,Theatre performance with Gregorio
+2023-07-14,2023-07-14,00:00,23:59,Anniversary,True,1 week,none,Bob,brother,Bob's anniversary celebration at the park
+2023-07-14,2023-07-19,00:00,23:59,Anniversary,True,1 month,highest,Jenny,coworker,Jenny's anniversary celebration at the park
+2023-07-15,2023-07-15,05:24,14:03,Meeting,False,,highest,Gregorio,friend,Another boring meeting with Gregorio
+2023-07-15,2023-07-15,18:21,01:40,Workout,False,,low,Inash,girlfriend,Workout session with Inash at the gym
+2023-07-16,2023-07-16,00:00,23:59,Conference,False,,highest,Barbara Jane Ruiz,mother,Conference with Barbara Jane Ruiz on AI advancements
+2023-07-16,2023-07-21,00:00,23:59,Subscription,True,3 day,none,Bob,brother,Renewal of Bob's subscription
+2023-07-16,2023-07-19,10:20,01:34,Interview,False,,none,Gregorio,friend,Job interview with Gregorio at Google
+2023-07-17,2023-07-17,00:00,23:59,Conference,False,,high,Inash,girlfriend,Conference with Inash on AI advancements
+2023-07-17,2023-07-17,00:00,23:59,Subscription,True,5 year,highest,Jenny,coworker,Renewal of Jenny's subscription
+2023-07-17,2023-07-18,11:28,19:39,Meeting,False,,low,Pablo,friend,Another boring meeting with Pablo
+2023-07-17,2023-07-17,16:41,02:25,Workout,False,,none,Alice,aunt,Workout session with Alice at the gym
+2023-07-17,2023-07-18,21:10,06:20,Workshop,False,,none,Barbara Jane Ruiz,mother,Exciting workshop with Barbara Jane Ruiz on AGI
+2023-07-18,2023-07-21,00:00,23:59,Performance,False,,medium,Sally,sister,Theatre performance with Sally
+2023-07-18,2023-07-21,03:31,01:36,TODO,False,,low,Juan,neighbor,Fix the leaky faucet for Juan (neighbor)
+2023-07-18,2023-07-18,18:17,21:54,Meeting,False,,high,Juan,neighbor,Another boring meeting with Juan
+2023-07-19,2023-07-19,00:00,23:59,Conference,False,,medium,Sue,sister,Conference with Sue on AI advancements
+2023-07-19,2023-07-22,00:00,23:59,Performance,False,,high,Alice,aunt,Theatre performance with Alice
+2023-07-19,2023-07-19,09:23,02:40,Interview,False,,medium,Sally,sister,Job interview with Sally at Google
+2023-07-20,2023-07-20,00:00,23:59,Birthday,True,2 month,medium,Tom Ruiz,brother,Tom Ruiz's birthday party at their favorite bar
+2023-07-20,2023-07-20,00:00,23:59,Conference,False,,high,Sally,sister,Conference with Sally on AI advancements
+2023-07-20,2023-07-20,00:00,23:59,Concert,False,,highest,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
+2023-07-20,2023-07-20,03:21,10:45,Workshop,False,,none,Barbara Jane Ruiz,mother,Exciting workshop with Barbara Jane Ruiz on AGI
+2023-07-20,2023-07-25,11:40,20:59,TODO,False,,highest,Bob,brother,Take the car for servicing for Bob (brother)
+2023-07-20,2023-07-20,23:37,07:36,Meeting,False,,medium,John,coworker,Another boring meeting with John
+2023-07-21,2023-07-21,00:00,23:59,Performance,False,,none,Barbara Jane Ruiz,mother,Theatre performance with Barbara Jane Ruiz
+2023-07-21,2023-07-22,00:46,04:16,TODO,False,,high,Tom Ruiz,brother,Take the car for servicing for Tom Ruiz (brother)
+2023-07-21,2023-07-21,05:14,15:37,Workshop,False,,none,Alice,aunt,Exciting workshop with Alice on AGI
+2023-07-21,2023-07-28,06:00,23:57,Workshop,False,,highest,Sally,sister,Exciting workshop with Sally on AGI
+2023-07-21,2023-07-21,14:13,14:37,Appointment,False,,highest,Sally,sister,Appointment with Sally at the clinic
+2023-07-21,2023-07-21,18:26,20:50,TODO,False,,none,Juan,neighbor,Plan meals for the week for Juan (neighbor)
+2023-07-22,2023-07-27,00:00,23:59,Subscription,True,1 day,high,Pablo,friend,Renewal of Pablo's subscription
+2023-07-22,2023-07-27,16:14,02:22,Workout,False,,low,Bob,brother,Workout session with Bob at the gym
+2023-07-23,2023-07-23,00:00,23:59,Birthday,True,4 day,high,Alice,aunt,Alice's birthday party at their favorite bar
+2023-07-23,2023-07-23,09:49,11:09,Workout,False,,medium,Sue,sister,Workout session with Sue at the gym
+2023-07-24,2023-07-31,00:00,23:59,Anniversary,True,5 week,medium,Gregorio,friend,Gregorio's anniversary celebration at the park
+2023-07-24,2023-07-31,00:00,23:59,Subscription,True,2 week,high,Juan,neighbor,Renewal of Juan's subscription
+2023-07-24,2023-07-31,00:00,23:59,Conference,False,,high,Tom Ruiz,brother,Conference with Tom Ruiz on AI advancements
+2023-07-24,2023-07-25,00:00,23:59,Performance,False,,high,Barbara Jane Ruiz,mother,Theatre performance with Barbara Jane Ruiz
+2023-07-24,2023-07-31,07:12,07:59,Workout,False,,none,Alice,aunt,Workout session with Alice at the gym
+2023-07-24,2023-07-29,16:17,02:57,Appointment,False,,none,Tom Ruiz,brother,Appointment with Tom Ruiz at the clinic
+2023-07-26,2023-07-31,00:00,23:59,Performance,False,,highest,Sue,sister,Theatre performance with Sue
+2023-07-26,2023-07-29,00:00,23:59,Anniversary,True,4 week,high,Pablo,friend,Pablo's anniversary celebration at the park
+2023-07-27,2023-07-27,00:00,23:59,Subscription,True,3 week,highest,John,coworker,Renewal of John's subscription
+2023-07-27,2023-08-01,00:00,23:59,Concert,False,,low,Pablo,friend,Concert of Pablo at the city center
+2023-07-27,2023-07-27,04:46,12:34,Meeting,False,,high,Barbara Jane Ruiz,mother,Another boring meeting with Barbara Jane Ruiz
+2023-07-28,2023-07-28,00:00,23:59,Anniversary,True,2 year,highest,Juan,neighbor,Juan's anniversary celebration at the park
+2023-07-28,2023-07-28,00:00,23:59,Concert,False,,highest,John,coworker,Concert of John at the city center
+2023-07-28,2023-07-29,01:10,13:08,Interview,False,,high,John,coworker,Job interview with John at Google
+2023-07-28,2023-07-28,21:57,18:50,Workout,False,,none,Pablo,friend,Workout session with Pablo at the gym
+2023-07-29,2023-07-29,00:00,23:59,Conference,False,,none,Sue,sister,Conference with Sue on AI advancements
+2023-07-29,2023-07-29,01:42,21:32,Workout,False,,none,Tom Ruiz,brother,Workout session with Tom Ruiz at the gym
+2023-07-29,2023-07-29,05:46,23:31,Workshop,False,,high,Leroy Ruiz,father,Exciting workshop with Leroy Ruiz on AGI
+2023-07-29,2023-07-29,07:44,15:37,Appointment,False,,high,Alice,aunt,Appointment with Alice at the clinic
+2023-07-29,2023-07-29,18:02,12:06,Appointment,False,,highest,Leroy Ruiz,father,Appointment with Leroy Ruiz at the clinic
+2023-07-30,2023-07-30,00:00,23:59,Concert,False,,medium,Sue,sister,Concert of Sue at the city center
+2023-07-30,2023-08-06,02:56,06:16,TODO,False,,none,Gregorio,friend,Fix the leaky faucet for Gregorio (friend)
+2023-07-30,2023-08-06,09:34,19:01,Appointment,False,,medium,Tom Ruiz,brother,Appointment with Tom Ruiz at the clinic
+2023-07-31,2023-08-03,00:00,23:59,Concert,False,,none,Inash,girlfriend,Concert of Inash at the city center
+2023-07-31,2023-08-01,00:00,23:59,Conference,False,,none,Pablo,friend,Conference with Pablo on AI advancements
+2023-07-31,2023-08-05,00:59,17:10,Meeting,False,,low,Tom Ruiz,brother,Another boring meeting with Tom Ruiz
+2023-07-31,2023-08-03,20:52,17:37,Appointment,False,,highest,Gregorio,friend,Appointment with Gregorio at the clinic
+2023-08-01,2023-08-04,00:00,23:59,Performance,False,,low,Inash,girlfriend,Theatre performance with Inash
+2023-08-02,2023-08-02,00:00,23:59,Birthday,True,2 month,none,Barbara Jane Ruiz,mother,Barbara Jane Ruiz's birthday party at their favorite bar
+2023-08-02,2023-08-03,00:00,23:59,Anniversary,True,3 month,none,John,coworker,John's anniversary celebration at the park
+2023-08-02,2023-08-07,00:00,23:59,Birthday,True,2 day,highest,Leroy Ruiz,father,Leroy Ruiz's birthday party at their favorite bar
+2023-08-02,2023-08-02,00:00,23:59,Performance,False,,highest,Juan,neighbor,Theatre performance with Juan
+2023-08-03,2023-08-06,00:00,23:59,Performance,False,,high,John,coworker,Theatre performance with John
+2023-08-03,2023-08-03,00:00,23:59,Concert,False,,high,Inash,girlfriend,Concert of Inash at the city center
+2023-08-03,2023-08-03,09:46,22:09,Appointment,False,,none,Alice,aunt,Appointment with Alice at the clinic
+2023-08-03,2023-08-08,15:35,07:47,Workshop,False,,medium,John,coworker,Exciting workshop with John on AGI
+2023-08-03,2023-08-10,19:38,05:22,Interview,False,,none,Leroy Ruiz,father,Job interview with Leroy Ruiz at Google
+2023-08-04,2023-08-05,00:00,23:59,Birthday,True,5 month,medium,Barbara Jane Ruiz,mother,Barbara Jane Ruiz's birthday party at their favorite bar
+2023-08-04,2023-08-05,15:06,19:39,Workout,False,,highest,Gregorio,friend,Workout session with Gregorio at the gym
+2023-08-04,2023-08-09,15:26,12:23,Interview,False,,highest,Inash,girlfriend,Job interview with Inash at Google
+2023-08-05,2023-08-06,00:00,23:59,Subscription,True,2 year,low,Gregorio,friend,Renewal of Gregorio's subscription
+2023-08-06,2023-08-06,16:34,18:42,Interview,False,,highest,Inash,girlfriend,Job interview with Inash at Google
+2023-08-07,2023-08-14,00:00,23:59,Conference,False,,low,Bob,brother,Conference with Bob on AI advancements
+2023-08-07,2023-08-07,00:00,23:59,Conference,False,,none,Jenny,coworker,Conference with Jenny on AI advancements
+2023-08-07,2023-08-07,00:00,23:59,Concert,False,,low,Inash,girlfriend,Concert of Inash at the city center
+2023-08-07,2023-08-07,14:43,07:14,Workshop,False,,high,Tom Ruiz,brother,Exciting workshop with Tom Ruiz on AGI
+2023-08-07,2023-08-14,18:33,18:28,Meeting,False,,low,Gregorio,friend,Another boring meeting with Gregorio
+2023-08-09,2023-08-09,00:00,23:59,Birthday,True,3 day,highest,Alice,aunt,Alice's birthday party at their favorite bar
+2023-08-09,2023-08-09,00:00,23:59,Conference,False,,medium,Inash,girlfriend,Conference with Inash on AI advancements
+2023-08-10,2023-08-11,16:22,07:17,Appointment,False,,low,Barbara Jane Ruiz,mother,Appointment with Barbara Jane Ruiz at the clinic
+2023-08-10,2023-08-10,22:02,03:23,Interview,False,,highest,Gregorio,friend,Job interview with Gregorio at Google
+2023-08-11,2023-08-11,00:00,23:59,Anniversary,True,1 month,low,John,coworker,John's anniversary celebration at the park
+2023-08-11,2023-08-11,00:00,23:59,Birthday,True,5 month,highest,Sue,sister,Sue's birthday party at their favorite bar
+2023-08-11,2023-08-11,00:00,23:59,Birthday,True,2 day,none,Leroy Ruiz,father,Leroy Ruiz's birthday party at their favorite bar
+2023-08-11,2023-08-11,00:03,16:23,Appointment,False,,low,Jenny,coworker,Appointment with Jenny at the clinic
+2023-08-11,2023-08-11,20:51,05:50,Appointment,False,,medium,Jenny,coworker,Appointment with Jenny at the clinic
+2023-08-12,2023-08-19,00:00,23:59,Subscription,True,3 day,medium,John,coworker,Renewal of John's subscription
+2023-08-12,2023-08-12,00:00,23:59,Conference,False,,highest,Tom Ruiz,brother,Conference with Tom Ruiz on AI advancements
+2023-08-12,2023-08-12,00:00,23:59,Subscription,True,3 week,medium,Sue,sister,Renewal of Sue's subscription
+2023-08-12,2023-08-19,00:00,23:59,Anniversary,True,3 week,highest,Leroy Ruiz,father,Leroy Ruiz's anniversary celebration at the park
+2023-08-12,2023-08-12,06:37,21:16,TODO,False,,medium,Pablo,friend,Buy birthday gift for Pablo (friend)
+2023-08-13,2023-08-16,00:00,23:59,Birthday,True,4 year,highest,Juan,neighbor,Juan's birthday party at their favorite bar
+2023-08-13,2023-08-13,00:00,23:59,Concert,False,,highest,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
+2023-08-13,2023-08-13,04:08,01:25,Workout,False,,high,Tom Ruiz,brother,Workout session with Tom Ruiz at the gym
+2023-08-13,2023-08-14,23:08,08:33,Workout,False,,high,Pablo,friend,Workout session with Pablo at the gym
+2023-08-14,2023-08-17,00:00,23:59,Anniversary,True,2 year,medium,Leroy Ruiz,father,Leroy Ruiz's anniversary celebration at the park
+2023-08-14,2023-08-14,00:00,23:59,Conference,False,,high,Alice,aunt,Conference with Alice on AI advancements
+2023-08-14,2023-08-19,00:00,23:59,Anniversary,True,4 week,highest,Gregorio,friend,Gregorio's anniversary celebration at the park
+2023-08-14,2023-08-19,00:00,23:59,Subscription,True,5 week,medium,Barbara Jane Ruiz,mother,Renewal of Barbara Jane Ruiz's subscription
+2023-08-14,2023-08-14,00:00,23:59,Conference,False,,medium,Gregorio,friend,Conference with Gregorio on AI advancements
+2023-08-14,2023-08-14,10:35,18:11,Workshop,False,,medium,Inash,girlfriend,Exciting workshop with Inash on AGI
+2023-08-15,2023-08-15,00:00,23:59,Performance,False,,none,Leroy Ruiz,father,Theatre performance with Leroy Ruiz
+2023-08-15,2023-08-18,00:00,23:59,Conference,False,,none,Bob,brother,Conference with Bob on AI advancements
+2023-08-15,2023-08-15,00:00,23:59,Concert,False,,high,Tom Ruiz,brother,Concert of Tom Ruiz at the city center
+2023-08-15,2023-08-16,00:00,23:59,Birthday,True,4 day,low,Gregorio,friend,Gregorio's birthday party at their favorite bar
+2023-08-15,2023-08-15,07:13,19:00,Workout,False,,medium,Alice,aunt,Workout session with Alice at the gym
+2023-08-15,2023-08-18,20:40,13:35,Workshop,False,,medium,Inash,girlfriend,Exciting workshop with Inash on AGI
+2023-08-16,2023-08-16,00:00,23:59,Subscription,True,2 month,high,Tom Ruiz,brother,Renewal of Tom Ruiz's subscription
+2023-08-16,2023-08-16,06:29,00:09,Workout,False,,low,Leroy Ruiz,father,Workout session with Leroy Ruiz at the gym
+2023-08-17,2023-08-20,00:00,23:59,Performance,False,,none,Alice,aunt,Theatre performance with Alice
+2023-08-17,2023-08-17,00:00,23:59,Performance,False,,low,John,coworker,Theatre performance with John
+2023-08-17,2023-08-17,05:56,12:05,Workshop,False,,highest,Inash,girlfriend,Exciting workshop with Inash on AGI
+2023-08-17,2023-08-24,09:57,12:43,Workshop,False,,highest,Tom Ruiz,brother,Exciting workshop with Tom Ruiz on AGI
+2023-08-17,2023-08-20,11:52,18:18,TODO,False,,highest,John,coworker,Order new shoes online for John (coworker)
+2023-08-17,2023-08-17,23:47,23:49,Workout,False,,highest,Sue,sister,Workout session with Sue at the gym
+2023-08-18,2023-08-23,00:00,23:59,Subscription,True,5 month,none,Tom Ruiz,brother,Renewal of Tom Ruiz's subscription
+2023-08-18,2023-08-19,00:00,23:59,Conference,False,,medium,Pablo,friend,Conference with Pablo on AI advancements
+2023-08-18,2023-08-18,06:40,15:31,Interview,False,,none,Bob,brother,Job interview with Bob at Google
+2023-08-19,2023-08-19,00:00,23:59,Subscription,True,4 month,low,John,coworker,Renewal of John's subscription
+2023-08-19,2023-08-19,00:00,23:59,Concert,False,,none,John,coworker,Concert of John at the city center
+2023-08-19,2023-08-26,00:00,23:59,Conference,False,,medium,Sue,sister,Conference with Sue on AI advancements
+2023-08-19,2023-08-19,00:01,00:53,Workshop,False,,high,Juan,neighbor,Exciting workshop with Juan on AGI
+2023-08-19,2023-08-20,04:20,23:49,Meeting,False,,high,Inash,girlfriend,Another boring meeting with Inash
+2023-08-19,2023-08-19,17:30,13:39,TODO,False,,highest,Inash,girlfriend,Pick up groceries for Inash (girlfriend)
+2023-08-20,2023-08-27,00:00,23:59,Birthday,True,2 week,medium,Gregorio,friend,Gregorio's birthday party at their favorite bar
+2023-08-20,2023-08-23,00:00,23:59,Concert,False,,medium,Bob,brother,Concert of Bob at the city center
+2023-08-20,2023-08-21,02:27,05:06,Meeting,False,,none,Pablo,friend,Another boring meeting with Pablo
+2023-08-21,2023-08-21,00:00,23:59,Performance,False,,none,Jenny,coworker,Theatre performance with Jenny
+2023-08-21,2023-08-28,00:00,23:59,Concert,False,,high,Juan,neighbor,Concert of Juan at the city center
+2023-08-21,2023-08-21,09:40,11:15,Workout,False,,none,Sue,sister,Workout session with Sue at the gym
+2023-08-22,2023-08-27,00:00,23:59,Concert,False,,none,Gregorio,friend,Concert of Gregorio at the city center
+2023-08-22,2023-08-29,00:00,23:59,Conference,False,,none,Barbara Jane Ruiz,mother,Conference with Barbara Jane Ruiz on AI advancements
+2023-08-22,2023-08-22,00:00,23:59,Subscription,True,2 year,medium,Jenny,coworker,Renewal of Jenny's subscription
+2023-08-22,2023-08-23,00:00,23:59,Anniversary,True,5 year,medium,Bob,brother,Bob's anniversary celebration at the park
+2023-08-24,2023-08-31,12:01,04:55,TODO,False,,medium,Juan,neighbor,Prepare presentation for next week's meeting for Juan (neighbor)
+2023-08-25,2023-08-25,00:00,23:59,Conference,False,,none,Leroy Ruiz,father,Conference with Leroy Ruiz on AI advancements
+2023-08-25,2023-08-25,20:45,10:03,Appointment,False,,medium,Leroy Ruiz,father,Appointment with Leroy Ruiz at the clinic
+2023-08-25,2023-08-26,21:49,12:57,Appointment,False,,medium,Sally,sister,Appointment with Sally at the clinic
+2023-08-25,2023-09-01,21:58,00:54,Meeting,False,,low,Sally,sister,Another boring meeting with Sally
+2023-08-26,2023-08-26,00:00,23:59,Conference,False,,high,Pablo,friend,Conference with Pablo on AI advancements
+2023-08-27,2023-09-01,00:00,23:59,Conference,False,,highest,Leroy Ruiz,father,Conference with Leroy Ruiz on AI advancements
+2023-08-27,2023-08-28,00:00,23:59,Birthday,True,2 month,none,Juan,neighbor,Juan's birthday party at their favorite bar
+2023-08-27,2023-09-03,00:00,23:59,Birthday,True,1 year,none,Gregorio,friend,Gregorio's birthday party at their favorite bar
+2023-08-27,2023-08-27,18:55,05:58,TODO,False,,low,Pablo,friend,Prepare presentation for next week's meeting for Pablo (friend)
+2023-08-28,2023-09-04,00:00,23:59,Concert,False,,low,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
+2023-08-28,2023-08-28,00:00,23:59,Concert,False,,low,Sally,sister,Concert of Sally at the city center
+2023-08-28,2023-08-28,20:06,08:32,Appointment,False,,high,Juan,neighbor,Appointment with Juan at the clinic
+2023-08-29,2023-09-03,00:00,23:59,Conference,False,,none,Pablo,friend,Conference with Pablo on AI advancements
+2023-08-29,2023-08-30,00:00,23:59,Anniversary,True,5 month,medium,Pablo,friend,Pablo's anniversary celebration at the park
+2023-08-29,2023-09-05,16:58,13:49,TODO,False,,medium,Juan,neighbor,Renew gym membership for Juan (neighbor)
+2023-08-30,2023-08-30,00:00,23:59,Concert,False,,highest,Sue,sister,Concert of Sue at the city center
+2023-08-31,2023-09-05,00:00,23:59,Anniversary,True,4 year,highest,Pablo,friend,Pablo's anniversary celebration at the park
+2023-08-31,2023-09-07,04:11,16:53,Workshop,False,,none,John,coworker,Exciting workshop with John on AGI
+2023-09-01,2023-09-02,00:00,23:59,Concert,False,,highest,Gregorio,friend,Concert of Gregorio at the city center
+2023-09-01,2023-09-01,00:00,23:59,Birthday,True,3 day,low,Bob,brother,Bob's birthday party at their favorite bar
+2023-09-01,2023-09-01,00:00,23:59,Anniversary,True,3 week,highest,Tom Ruiz,brother,Tom Ruiz's anniversary celebration at the park
+2023-09-01,2023-09-04,00:00,23:59,Concert,False,,highest,John,coworker,Concert of John at the city center
