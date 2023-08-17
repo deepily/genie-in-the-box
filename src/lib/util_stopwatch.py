@@ -1,7 +1,4 @@
 import datetime as dt
-import os
-
-import util as du
 
 class Stopwatch:
     
@@ -80,17 +77,6 @@ class Stopwatch:
         millis = int( delta.total_seconds() * 1000 )
         
         return millis
-
-
-def about( self ):
-    
-    du.print_banner( "{0} about() called".format( os.path.basename( __file__ ) ), end="\n\n" )
-    
-    file_name = os.path.basename( __file__ )
-    file_path = os.path.abspath( __file__ )
-    
-    du.generic_about( self, file_name, file_path )
-
 
 if __name__ == '__main__':
     
