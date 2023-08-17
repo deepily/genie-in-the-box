@@ -168,8 +168,8 @@ if __name__ == "__main__":
     #
     #     score = today.get_problem_similarity( snapshot )
     #     print( f"Score: [{score}] for [{snapshot.problem}] == [{today.problem}]" )
+    #     snapshot.write_to_file()
         
-    # today.write_to_file()
     # foo = SolutionSnapshot.from_json_file( du.get_project_root() + "/src/conf/long-term-memory/solutions/what-day-is-today-0.json" )
     # print( foo.to_json() )
     pass
