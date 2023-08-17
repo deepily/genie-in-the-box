@@ -9,6 +9,19 @@ class Stopwatch:
     def __init__( self ):
         
         self.start_time = dt.datetime.now()
+        
+    def __enter__( self, msg=None ):
+        
+        if msg: print( msg + " ", end="" )
+        self.start_time = dt.datetime.now()
+        return self
+    
+    def __exit__( self ):
+        
+        self.end_time = dt.datetime.now()
+        self.interval = int( (self.end_time - self.start_time) * 1000 )
+        
+        print( f"Done in [{self.interval:,}] ms" )
     
     def print( self, msg=None, prepend_nl=False, end="\n\n", use_millis=False ):
         
