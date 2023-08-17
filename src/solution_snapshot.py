@@ -3,6 +3,7 @@ import glob
 import json
 from datetime import datetime
 import time
+import regex as re
 
 import lib.util as du
 
@@ -43,8 +44,10 @@ class SolutionSnapshot:
                   solution_directory="/src/conf/long-term-memory/solutions/", solution_file=None
         ):
 
-        # The question and the solution
-        self.question             = question
+        # The question, sans anything that's not alphanumeric
+        regex                     = re.compile( '[^a-zA-Z ]' )
+        self.question             = regex.sub( '', question ).lower()
+        # self.question             = "".join( c if c.isalnum() else "" for c in question ).lower()
         # Note: for the moment we're not interested in the answer to the question, rather how the agent arrived at the answer
         self.solution_summary     = solution_summary
         self.code                 = code
@@ -97,25 +100,25 @@ class SolutionSnapshot:
             )
         return response[ "data" ][ 0 ][ "embedding" ]
 
-    def get_problem_similarity( self, other_snapshot ):
+    def get_question_similarity( self, other_snapshot ):
 
         if not self.question_embedding or not other_snapshot.question_embedding:
             raise ValueError( "Both snapshots must have a question embedding to compare." )
-        return np.dot( self.question_embedding, other_snapshot.question_embedding )
+        return np.dot( self.question_embedding, other_snapshot.question_embedding ) * 100
 
     def get_solution_summary_similarity( self, other_snapshot ):
 
         if not self.solution_embedding or not other_snapshot.solution_embedding:
             raise ValueError( "Both snapshots must have a solution summary embedding to compare." )
 
-        return np.dot( self.solution_embedding, other_snapshot.solution_embedding )
+        return np.dot( self.solution_embedding, other_snapshot.solution_embedding ) * 100
 
     def get_code_similarity( self, other_snapshot ):
 
         if not self.code_embedding or not other_snapshot.code_embedding:
             raise ValueError( "Both snapshots must have a code embedding to compare." )
 
-        return np.dot( self.code_embedding, other_snapshot.code_embedding )
+        return np.dot( self.code_embedding, other_snapshot.code_embedding ) * 100
 
     def to_json( self ):
 
@@ -132,9 +135,11 @@ class SolutionSnapshot:
 
             print( "NO solution_file value provided (Must be a new object). Generating a unique file name..." )
             # Generate filename based on first 64 characters of the question
-            filename_base = self.question[ :64 ]
-            # Replace any character that is not alphanumeric or underscore with underscore
-            filename_base = "".join( c if c.isalnum() else "-" for c in filename_base )
+            filename_base = self.question[ :64 ].replace( " ", "-" )
+            # Replace any character that is not alphanumeric with underscore
+            # regex = re.compile( '[^a-zA-Z ]' )
+            # filename_base = regex.sub( '', filename_base ).lower()
+            # filename_base = "".join( c if c.isalnum() else "-" for c in filename_base ).lower()
             # Get a list of all files that start with the filename base
             existing_files = glob.glob( f"{directory}{filename_base}-*.json" )
             # The count of existing files will be used to make the filename unique
@@ -158,21 +163,21 @@ class SolutionSnapshot:
 # Add main method
 if __name__ == "__main__":
 
-    # today     = SolutionSnapshot( question="what day is today" )
-    # tomorrow  = SolutionSnapshot( question="what day is tomorrow" )
-    # blah      = SolutionSnapshot( question="i feel so blah today" )
-    # color     = SolutionSnapshot( question="what color is the sky" )
-    # date      = SolutionSnapshot( question="what is today's date" )
-    #
-    # snapshots = [ today, tomorrow, blah, color, date ]
-    #
-    # for snapshot in snapshots:
-    #
-    #     score = today.get_problem_similarity( snapshot )
-    #     print( f"Score: [{score}] for [{snapshot.question}] == [{today.question}]" )
-    #     snapshot.write_to_file()
+    today     = SolutionSnapshot( question="what day is today" )
+    tomorrow  = SolutionSnapshot( question="what day is tomorrow" )
+    blah      = SolutionSnapshot( question="i feel so blah today" )
+    color     = SolutionSnapshot( question="what color is the sky" )
+    date      = SolutionSnapshot( question="what is today's date" )
+
+    snapshots = [ today, tomorrow, blah, color, date ]
+
+    for snapshot in snapshots:
+
+        score = today.get_question_similarity( snapshot )
+        print( f"Score: [{score}] for [{snapshot.question}] == [{today.question}]" )
+        snapshot.write_to_file()
         
     # foo = SolutionSnapshot.from_json_file( du.get_project_root() + "/src/conf/long-term-memory/solutions/what-day-is-today-0.json" )
     # print( foo.to_json() )
-    pass
+    # pass
     
