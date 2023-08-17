@@ -37,32 +37,42 @@ class SolutionSnapshot:
         now = datetime.now()
         return now.strftime( "%Y-%m-%d @ %H-%M-%S" )
 
-    def __init__( self, problem, created_date=get_timestamp(), updated_date=get_timestamp(), solution_summary="", code="",
+    def __init__( self, question, created_date=get_timestamp(), updated_date=get_timestamp(), solution_summary="", code="",
                   programming_language="python", language_version="3.10",
-                  problem_embedding=[], solution_embedding=[ ], code_embedding=[ ],
+                  question_embedding=[], solution_embedding=[ ], code_embedding=[ ],
                   solution_directory="/src/conf/long-term-memory/solutions/", solution_file=None
         ):
 
-        self.created_date         = created_date
-        self.updated_date         = updated_date
-        self.problem              = problem
+        # The question and the solution
+        self.question             = question
+        # Note: for the moment we're not interested in the answer to the question, rather how the agent arrived at the answer
         self.solution_summary     = solution_summary
         self.code                 = code
+        
+        # metadata about the question and the solution
+        self.updated_date         = updated_date
+        self.created_date         = created_date
         self.programming_language = programming_language
         self.language_version     = language_version
         self.solution_directory   = solution_directory
         self.solution_file        = solution_file
 
-        # If the problem embedding is empty, generate it
-        if not problem_embedding:
-            self.problem_embedding = self._generate_embedding( problem )
+        # If the question embedding is empty, generate it
+        if not question_embedding:
+            self.question_embedding = self._generate_embedding( question )
         else:
-            self.problem_embedding = problem_embedding
+            self.question_embedding = question_embedding
 
         self.solution_embedding   = solution_embedding
         self.code_embedding       = code_embedding
-
-
+    
+    @classmethod
+    def from_json_file( cls, filename ):
+        
+        with open( filename, 'r' ) as f:
+            data = json.load( f )
+        return cls( **data )
+    
     def set_solution_summary( self, solution_summary ):
 
         self.solution_summary   = solution_summary
@@ -89,9 +99,9 @@ class SolutionSnapshot:
 
     def get_problem_similarity( self, other_snapshot ):
 
-        if not self.problem_embedding or not other_snapshot.problem_embedding:
-            raise ValueError( "Both snapshots must have a problem embedding to compare." )
-        return np.dot( self.problem_embedding, other_snapshot.problem_embedding )
+        if not self.question_embedding or not other_snapshot.question_embedding:
+            raise ValueError( "Both snapshots must have a question embedding to compare." )
+        return np.dot( self.question_embedding, other_snapshot.question_embedding )
 
     def get_solution_summary_similarity( self, other_snapshot ):
 
@@ -121,8 +131,8 @@ class SolutionSnapshot:
         if self.solution_file is None:
 
             print( "NO solution_file value provided (Must be a new object). Generating a unique file name..." )
-            # Generate filename based on first 64 characters of the problem
-            filename_base = self.problem[ :64 ]
+            # Generate filename based on first 64 characters of the question
+            filename_base = self.question[ :64 ]
             # Replace any character that is not alphanumeric or underscore with underscore
             filename_base = "".join( c if c.isalnum() else "-" for c in filename_base )
             # Get a list of all files that start with the filename base
@@ -145,29 +155,21 @@ class SolutionSnapshot:
         with open( file_path, "w" ) as f:
             f.write( self.to_json() )
 
-    @classmethod
-    def from_json_file( cls, filename ):
-
-        with open( filename, 'r' ) as f:
-            data = json.load( f )
-        return cls( **data )
-
-
 # Add main method
 if __name__ == "__main__":
 
-    # today     = SolutionSnapshot( problem="what day is today" )
-    # tomorrow  = SolutionSnapshot( problem="what day is tomorrow" )
-    # blah      = SolutionSnapshot( problem="i feel so blah today" )
-    # color     = SolutionSnapshot( problem="what color is the sky" )
-    # date      = SolutionSnapshot( problem="what is today's date" )
+    # today     = SolutionSnapshot( question="what day is today" )
+    # tomorrow  = SolutionSnapshot( question="what day is tomorrow" )
+    # blah      = SolutionSnapshot( question="i feel so blah today" )
+    # color     = SolutionSnapshot( question="what color is the sky" )
+    # date      = SolutionSnapshot( question="what is today's date" )
     #
     # snapshots = [ today, tomorrow, blah, color, date ]
     #
     # for snapshot in snapshots:
     #
     #     score = today.get_problem_similarity( snapshot )
-    #     print( f"Score: [{score}] for [{snapshot.problem}] == [{today.problem}]" )
+    #     print( f"Score: [{score}] for [{snapshot.question}] == [{today.question}]" )
     #     snapshot.write_to_file()
         
     # foo = SolutionSnapshot.from_json_file( du.get_project_root() + "/src/conf/long-term-memory/solutions/what-day-is-today-0.json" )
