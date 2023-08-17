@@ -1,19 +1,19 @@
 import datetime as dt
 import os
 
-from lib import util as du
-
+import util as du
 
 class Stopwatch:
     
-    def __init__( self ):
-        
-        self.start_time = dt.datetime.now()
-        
-    def __enter__( self, msg=None ):
+    def __init__( self, msg=None  ):
         
         if msg: print( msg + " ", end="" )
         self.start_time = dt.datetime.now()
+        
+    def __enter__( self ):
+        
+        self.start_time = dt.datetime.now()
+        
         return self
     
     def __exit__( self ):
@@ -93,6 +93,7 @@ def about( self ):
 
 
 if __name__ == '__main__':
+    
     timer = Stopwatch()
     timer.print( "Finished doing foo" )
     timer.print( None )
