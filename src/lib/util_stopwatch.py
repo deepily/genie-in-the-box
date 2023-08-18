@@ -1,10 +1,9 @@
 import datetime as dt
-
 class Stopwatch:
     
     def __init__( self, msg=None  ):
         
-        if msg: print( msg + " ", end="" )
+        if msg: print( msg )
         self.start_time = dt.datetime.now()
         
     def __enter__( self ):
