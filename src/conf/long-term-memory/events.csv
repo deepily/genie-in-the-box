@@ -1,6 +1,6 @@
 start_date,end_date,start_time,end_time,event_type,recurrent,recurrence_interval,priority_level,name,relationship,description_who_what_where
 2023-07-01,2023-07-04,00:00,23:59,Concert,False,,none,Jenny,coworker,Concert of Jenny at the city center
-2023-07-01,2023-07-01,05:25,17:22,TODO,False,,highest,Gregorio,friend,Send out invitations for the party for Gregorio (friend)
+2023-07-01,2023-07-01,05:25,17:22,TODO,False,,highest,Gregorio,friend,Send out invitations for the party for Gregorio
 2023-07-01,2023-07-01,13:27,01:59,Appointment,False,,high,Leroy Ruiz,father,Appointment with Leroy Ruiz at the clinic
 2023-07-02,2023-07-03,13:18,02:40,Interview,False,,highest,John,coworker,Job interview with John at Google
 2023-07-03,2023-07-04,00:00,23:59,Performance,False,,medium,Sue,sister,Theatre performance with Sue
@@ -34,7 +34,7 @@ start_date,end_date,start_time,end_time,event_type,recurrent,recurrence_interval
 2023-07-12,2023-07-12,00:00,23:59,Concert,False,,medium,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
 2023-07-12,2023-07-15,00:00,23:59,Anniversary,True,2 week,highest,Sally,sister,Sally's anniversary celebration at the park
 2023-07-12,2023-07-12,07:23,03:06,Appointment,False,,none,Jenny,coworker,Appointment with Jenny at the clinic
-2023-07-12,2023-07-13,17:06,04:10,TODO,False,,highest,Gregorio,friend,Pay electric bill for Gregorio (friend)
+2023-07-12,2023-07-13,17:06,04:10,TODO,False,,highest,Gregorio,friend,Pay electric bill for Gregorio
 2023-07-13,2023-07-13,00:00,23:59,Conference,False,,high,Bob,brother,Conference with Bob on AI advancements
 2023-07-13,2023-07-13,23:48,01:17,Appointment,False,,medium,Barbara Jane Ruiz,mother,Appointment with Barbara Jane Ruiz at the clinic
 2023-07-14,2023-07-14,00:00,23:59,Performance,False,,low,Gregorio,friend,Theatre performance with Gregorio
@@ -93,7 +93,7 @@ start_date,end_date,start_time,end_time,event_type,recurrent,recurrence_interval
 2023-07-29,2023-07-29,07:44,15:37,Appointment,False,,high,Alice,aunt,Appointment with Alice at the clinic
 2023-07-29,2023-07-29,18:02,12:06,Appointment,False,,highest,Leroy Ruiz,father,Appointment with Leroy Ruiz at the clinic
 2023-07-30,2023-07-30,00:00,23:59,Concert,False,,medium,Sue,sister,Concert of Sue at the city center
-2023-07-30,2023-08-06,02:56,06:16,TODO,False,,none,Gregorio,friend,Fix the leaky faucet for Gregorio (friend)
+2023-07-30,2023-08-06,02:56,06:16,TODO,False,,none,Gregorio,friend,Fix the leaky faucet for Gregorio
 2023-07-30,2023-08-06,09:34,19:01,Appointment,False,,medium,Tom Ruiz,brother,Appointment with Tom Ruiz at the clinic
 2023-07-31,2023-08-03,00:00,23:59,Concert,False,,none,Inash,girlfriend,Concert of Inash at the city center
 2023-07-31,2023-08-01,00:00,23:59,Conference,False,,none,Pablo,friend,Conference with Pablo on AI advancements
@@ -132,7 +132,7 @@ start_date,end_date,start_time,end_time,event_type,recurrent,recurrence_interval
 2023-08-12,2023-08-12,00:00,23:59,Conference,False,,highest,Tom Ruiz,brother,Conference with Tom Ruiz on AI advancements
 2023-08-12,2023-08-12,00:00,23:59,Subscription,True,3 week,medium,Sue,sister,Renewal of Sue's subscription
 2023-08-12,2023-08-19,00:00,23:59,Anniversary,True,3 week,highest,Leroy Ruiz,father,Leroy Ruiz's anniversary celebration at the park
-2023-08-12,2023-08-12,06:37,21:16,TODO,False,,medium,Pablo,friend,Buy birthday gift for Pablo (friend)
+2023-08-12,2023-08-12,06:37,21:16,TODO,False,,medium,Pablo,friend,Buy birthday gift for Pablo
 2023-08-13,2023-08-16,00:00,23:59,Birthday,True,4 year,highest,Juan,neighbor,Juan's birthday party at their favorite bar
 2023-08-13,2023-08-13,00:00,23:59,Concert,False,,highest,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
 2023-08-13,2023-08-13,04:08,01:25,Workout,False,,high,Tom Ruiz,brother,Workout session with Tom Ruiz at the gym
@@ -185,7 +185,7 @@ start_date,end_date,start_time,end_time,event_type,recurrent,recurrence_interval
 2023-08-27,2023-09-01,00:00,23:59,Conference,False,,highest,Leroy Ruiz,father,Conference with Leroy Ruiz on AI advancements
 2023-08-27,2023-08-28,00:00,23:59,Birthday,True,2 month,none,Juan,neighbor,Juan's birthday party at their favorite bar
 2023-08-27,2023-09-03,00:00,23:59,Birthday,True,1 year,none,Gregorio,friend,Gregorio's birthday party at their favorite bar
-2023-08-27,2023-08-27,18:55,05:58,TODO,False,,low,Pablo,friend,Prepare presentation for next week's meeting for Pablo (friend)
+2023-08-27,2023-08-27,18:55,05:58,TODO,False,,low,Pablo,friend,Prepare presentation for next week's meeting for Pablo
 2023-08-28,2023-09-04,00:00,23:59,Concert,False,,low,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
 2023-08-28,2023-08-28,00:00,23:59,Concert,False,,low,Sally,sister,Concert of Sally at the city center
 2023-08-28,2023-08-28,20:06,08:32,Appointment,False,,high,Juan,neighbor,Appointment with Juan at the clinic
