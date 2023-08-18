@@ -28,7 +28,7 @@ class SolutionSnapshotManager:
         
         return question in self.snapshots_by_question
     
-    def get_snapshot_by_question_similarity( self, question, threshold=85.0, limit=7 ):
+    def get_snapshots_by_question_similarity( self, question, threshold=85.0, limit=7 ):
         
         similar_snapshots = [ ]
         question_snapshot = ss.SolutionSnapshot( question=question )
@@ -70,7 +70,7 @@ if __name__ == "__main__":
         print( f"Exact match: Snapshot with question [{question}] exists!" )
         similar_snapshots.append( ( 100.0, manager.snapshots_by_question[ question ] ) )
     else:
-        similar_snapshots = manager.get_snapshot_by_question_similarity( question )
+        similar_snapshots = manager.get_snapshots_by_question_similarity( question )
         
     if len( similar_snapshots ) > 0:
         print( f"Found [{len( similar_snapshots )}] similar snapshots!" )
