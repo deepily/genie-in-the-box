@@ -45,7 +45,31 @@ class SolutionSnapshotManager:
         similar_snapshots.sort( key=lambda x: x[ 0 ], reverse=True )
         
         return similar_snapshots[ :limit ]
-    
+        
+    def get_snapshots_by_question( self, question, threshold=85.0, limit=7 ):
+        
+        question = ss.SolutionSnapshot.clean_question( question )
+        
+        print( f"get_snapshots_by_question( '{question}' )..." )
+        
+        if self.question_exists( question ):
+            
+            print( f"Exact match: Snapshot with question [{question}] exists!" )
+            similar_snapshots = [ (100.0, self.snapshots_by_question[ question ]) ]
+        
+        else:
+            similar_snapshots = self.get_snapshots_by_question_similarity( question, threshold=threshold, limit=limit )
+        
+        if len( similar_snapshots ) > 0:
+            
+            print( f"Found [{len( similar_snapshots )}] similar snapshots" )
+            for snapshot in similar_snapshots:
+                print( f"score [{snapshot[ 0 ]}] for [{question}] == [{snapshot[ 1 ].question}]" )
+        else:
+            print( f"Could not find any snapshots similar to [{question}]" )
+            
+        return similar_snapshots
+        
     def __str__( self ):
         
         return f"[{len( self.snapshots_by_question )}] snapshots by question loaded from [{self.path}]"
@@ -54,29 +78,18 @@ class SolutionSnapshotManager:
 if __name__ == "__main__":
     
     path_to_snapshots = os.path.join( du.get_project_root(), "src/conf/long-term-memory/solutions/" )
-    manager = SolutionSnapshotManager( path_to_snapshots )
-    print( manager )
-
-    # Let's see if we can find a snapshot using a question
-    # question = ss.SolutionSnapshot.clean_question( "what day is today" )
-    # question = ss.SolutionSnapshot.clean_question( "what day comes after tomorrow?" )
-    question = ss.SolutionSnapshot.clean_question( "what day comes after today?" )
+    self = SolutionSnapshotManager( path_to_snapshots )
+    print( self )
     
-    print( f"Looking for a snapshot with question: [{question}]" )
-    similar_snapshots = [ ]
-    if manager.question_exists( question ):
-        
-        print( f"Exact match: Snapshot with question [{question}] exists!" )
-        similar_snapshots.append( ( 100.0, manager.snapshots_by_question[ question ] ) )
-        
-    else:
-        similar_snapshots = manager.get_snapshots_by_question_similarity( question )
-        
+    # Let's see if we can find a snapshot using a question
+    # question = "what day comes after tomorrow?"
+    # question = "what day is today?"
+    question = "Why is the sky blue?"
+    similar_snapshots = self.get_snapshots_by_question( question )
+    
     if len( similar_snapshots ) > 0:
-        
-        print( f"Found [{len( similar_snapshots )}] similar snapshots" )
-        for snapshot in similar_snapshots:
-            print( f"score [{snapshot[ 0 ]}] for [{question}] == [{snapshot[ 1 ].question}]" )
-    else:
-        print( f"Could not find any snapshots similar to [{question}]" )
+        lines_of_code = similar_snapshots[ 0 ][ 1 ].code
+        for line in lines_of_code:
+            print( line )
+    
         
