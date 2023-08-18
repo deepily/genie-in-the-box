@@ -57,23 +57,24 @@ if __name__ == "__main__":
     manager = SolutionSnapshotManager( path_to_snapshots )
     print( manager )
 
-    # Let's see if we can find a sap shot using the question, what day is today?
-    # question = "what day is today"
-    # question = "what day comes after tomorrow?"
-    question = "what day comes after today?"
-    regex = re.compile( '[^a-zA-Z ]' )
-    question = regex.sub( '', question ).lower()
+    # Let's see if we can find a snapshot using a question
+    # question = ss.SolutionSnapshot.clean_question( "what day is today" )
+    # question = ss.SolutionSnapshot.clean_question( "what day comes after tomorrow?" )
+    question = ss.SolutionSnapshot.clean_question( "what day comes after today?" )
     
-    print( f"Looking for snapshot with question: [{question}]" )
+    print( f"Looking for a snapshot with question: [{question}]" )
     similar_snapshots = [ ]
     if manager.question_exists( question ):
+        
         print( f"Exact match: Snapshot with question [{question}] exists!" )
         similar_snapshots.append( ( 100.0, manager.snapshots_by_question[ question ] ) )
+        
     else:
         similar_snapshots = manager.get_snapshots_by_question_similarity( question )
         
     if len( similar_snapshots ) > 0:
-        print( f"Found [{len( similar_snapshots )}] similar snapshots!" )
+        
+        print( f"Found [{len( similar_snapshots )}] similar snapshots" )
         for snapshot in similar_snapshots:
             print( f"score [{snapshot[ 0 ]}] for [{question}] == [{snapshot[ 1 ].question}]" )
     else:
