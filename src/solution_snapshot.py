@@ -49,8 +49,8 @@ class SolutionSnapshot:
         
         return cleaned_question
     
-    def __init__( self, question, created_date=get_timestamp(), updated_date=get_timestamp(), solution_summary="", code="",
-                  programming_language="python", language_version="3.10",
+    def __init__( self, question, created_date=get_timestamp(), updated_date=get_timestamp(), solution_summary="", code=[],
+                  programming_language="Python", language_version="3.10",
                   question_embedding=[ ], solution_embedding=[ ], code_embedding=[ ],
                   solution_directory="/src/conf/long-term-memory/solutions/", solution_file=None
         ):
@@ -93,9 +93,10 @@ class SolutionSnapshot:
     
     def set_code( self, code ):
         
-        self.code = code
-        self.code_embedding = self._generate_embedding( code )
-        self.updated_date = self.get_timestamp()
+        # ¡OJO! code is a list of strings, not a string!
+        self.code           = code
+        self.code_embedding = self._generate_embedding( " ".join( code ) )
+        self.updated_date   = self.get_timestamp()
     
     def _generate_embedding( self, text ):
         
