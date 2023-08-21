@@ -25,3 +25,6 @@ io/**
 
 # Omit Mail Map
 .mailmap
+
+# Skip the question embeddings dictionary, this can always be regenerated
+src/conf/long-term-memory/solutions/question-embeddings-dictionary.pickle
