@@ -39,7 +39,7 @@ write_method = "file" # "file" or "flask"
 
 class GenieClient:
     
-    def __init__( self, model="gpt-4-0613", calling_gui=None, startup_mode="transcribe", copy_transx_to_clipboard=True, runtime_context="docker", write_method="flask",
+    def __init__( self, model="gpt-4-0613", calling_gui=None, startup_mode="transcribe_and_clean_prose", prefix="multimodal text punctuation", copy_transx_to_clipboard=True, runtime_context="docker", write_method="flask",
                   debug=False, recording_timeout=30, stt_address="127.0.0.1:7999", tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav" ):
         
         self.debug = debug
@@ -60,6 +60,7 @@ class GenieClient:
         if debug: print( "Setting runtime output_path to [{}]".format( self.output_path ) )
 
         self.startup_mode       = startup_mode
+        self.prefix             = prefix
         self.project_root       = du.get_project_root()
         self.model              = model
         
@@ -239,8 +240,8 @@ class GenieClient:
             
             # Post temp file to flask server
             files = [ ( "file", ( wav_file, open( temp_file, "rb" ), "multipart/form-data" ) ) ]
-            url   = "http://{}/api/upload-and-transcribe-wav".format( self.stt_address )
-            
+            url   = "http://{}/api/upload-and-transcribe-wav?prefix={}".format( self.stt_address, self.prefix )
+            # and now for something completely and utterly different?!?
             if self.debug: print( "POST'ing tempfile [{}] to [{}]...".format( temp_file, url ), end="" )
             response = requests.request( "POST", url, headers={ }, data={ }, files=files )
             if self.debug: print( " Done!" )
@@ -468,6 +469,7 @@ class GenieClient:
 
     def do_transcribe_and_clean_prose( self ):
     
+        self.prefix = "multimodal text punctuation"
         raw_text = self.do_transcription()
     
         preamble = "You are an expert copy editor. Clean up the following text, including using proper capitalization, " \
@@ -480,9 +482,9 @@ class GenieClient:
 
     def do_transcribe_and_clean_python( self ):
     
-        # This is a big long comment
+        self.prefix = "multimodal python punctuation"
         python_code = self.do_transcription( copy_to_clipboard=self.copy_transx_to_clipboard )
-        python_code = self.munge_code( python_code )
+        # python_code = self.munge_code( python_code )
         if self.copy_transx_to_clipboard: self.copy_to_clipboard( python_code )
 
         return python_code
@@ -573,6 +575,7 @@ class GenieClient:
     
     def do_transcription( self, copy_to_clipboard=True ):
     
+        self.prefix      = "multimodal text punctuation"
         transcribed_text = self.start_recording()
         
         # transcribed_text = self._get_transcription( self.stt_address, self.serialized_audio_path )
@@ -624,23 +627,25 @@ if __name__ == "__main__":
     print( "Starting GenieClient in [{}]...".format( os.getcwd() ) )
     cli_args = du.get_name_value_pairs( sys.argv )
 
-    runtime_context   = cli_args.get( "runtime_context", "docker" )
-    write_method      = cli_args.get( "write_method", "flask" )
-    # default_mode      = cli_args.get( "default_mode", "transcribe_and_clean_python" )
-    default_mode      = cli_args.get( "default_mode", "transcribe" )
-    recording_timeout = int( cli_args.get( "recording_timeout", 3 ) )
+    # runtime_context   = cli_args.get( "runtime_context", "docker" )
+    # write_method      = cli_args.get( "write_method", "flask" )
+    # startup_mode      = cli_args.get( "startup_mode", "transcribe_and_clean_python" )
+    startup_mode      = cli_args.get( "startup_mode", "transcribe_and_clean_prose" )
+    recording_timeout = int( cli_args.get( "recording_timeout", 5 ) )
     
-    print( "     default_mode: [{}]".format( default_mode ) )
-    print( "  runtime_context: [{}]".format( runtime_context ) )
-    print( "     write_method: [{}]".format( write_method ) )
+    print( "     startup_mode: [{}]".format( startup_mode ) )
+    # print( "  runtime_context: [{}]".format( runtime_context ) )
+    # print( "     write_method: [{}]".format( write_method ) )
     print( "recording_timeout: [{}]".format( recording_timeout ) )
     
     gc = GenieClient(
-        startup_mode=default_mode,
-        runtime_context=runtime_context,
-        write_method=write_method,
-        recording_timeout=recording_timeout
+        startup_mode=startup_mode,
+        # runtime_context=runtime_context,
+        # write_method=write_method,
+        recording_timeout=recording_timeout,
+        debug=True
     )
+    gc.do_transcribe_and_clean_python()
 
     # gc.do_gpt_by_voice()
     # code = gc.munge_code( "Deaf key underscore event open parenthesis self comma event close parenthesis colon new line new line")
@@ -657,16 +662,16 @@ if __name__ == "__main__":
     # preamble = "Clean up the following raw text transcription created by whisper.ai. Correct spelling and format " \
     #           "output as Python source code w/o any capitalization. Source code must compile" \
     #
-    query = "Let me stop you right there, Colin. First, comma. You'd better stop shouting so much comma. Okay, question mark. By the way comma, what's it like to open bracket almost exclusively, close bracket, use your voice comma instead of your hands. question mark. "
-    munged_prose = gc.munge_prose( query )
-    print( munged_prose )
-    preamble = "You are an expert copy editor. Clean up the following text, including using proper capitalization, " \
-               "contractions, grammar, and translation of punctuation mark words into single characters. Format " \
-               "output as formal technical prose."
-    
-    for i in range( 1 ):
-        gpt_response = gc.ask_chat_gpt_text( munged_prose, preamble=preamble )
-        print( gpt_response )
+    # query = "Let me stop you right there, Colin. First, comma. You'd better stop shouting so much comma. Okay, question mark. By the way comma, what's it like to open bracket almost exclusively, close bracket, use your voice comma instead of your hands. question mark. "
+    # munged_prose = gc.munge_prose( query )
+    # print( munged_prose )
+    # preamble = "You are an expert copy editor. Clean up the following text, including using proper capitalization, " \
+    #            "contractions, grammar, and translation of punctuation mark words into single characters. Format " \
+    #            "output as formal technical prose."
+    #
+    # for i in range( 1 ):
+    #     gpt_response = gc.ask_chat_gpt_text( munged_prose, preamble=preamble )
+    #     print( gpt_response )
     
     #
     # print( "1) Before punctuation translation: \n\n{}".format( query ), end="\n\n" )
