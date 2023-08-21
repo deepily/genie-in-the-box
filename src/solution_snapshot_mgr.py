@@ -35,6 +35,7 @@ class SolutionSnapshotManager:
         # Generate the embedding for the question, if it doesn't already exist
         if question not in self.embeddings_by_question:
             question_embedding = ss.SolutionSnapshot.generate_embedding( question )
+            self.embeddings_by_question[ question ] = question_embedding
         else:
             print( f"Embedding for question [{question}] already exists!" )
             question_embedding = self.embeddings_by_question[ question ]
@@ -94,10 +95,17 @@ if __name__ == "__main__":
     # Let's see if we can find a snapshot using a question
     # question = "what day comes after tomorrow?"
     # question = "what day is today?"
-    question = "Why is the sky blue?"
+    # question = "Why is the sky blue?"
+    # similar_snapshots = self.get_snapshots_by_question( question )
+    
+    question = "What is today's date?"
     similar_snapshots = self.get_snapshots_by_question( question )
     
-    if len( similar_snapshots ) > 0:
+    # let's do this twice to see if the cache is working
+    question = "What is today's date?"
+    similar_snapshots = self.get_snapshots_by_question( question )
+
+if len( similar_snapshots ) > 0:
         lines_of_code = similar_snapshots[ 0 ][ 1 ].code
         for line in lines_of_code:
             print( line )
