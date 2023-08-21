@@ -11,7 +11,7 @@ import lib.util as du
 
 class GenieGui:
     
-    def __init__( self, default_mode="transcription", copy_transx_to_clipboard=True, record_once_on_startup=False, runtime_context="docker", write_method="flask", recording_timeout=30, debug=False ):
+    def __init__( self, startup_mode="transcribe_and_clean_prose", copy_transx_to_clipboard=True, record_once_on_startup=False, runtime_context="docker", write_method="flask", recording_timeout=30, debug=False ):
         
         # TODO: Move configuration values into the same kind of format that we used in AMPE
         self.last_text_with_focus = None
@@ -21,7 +21,7 @@ class GenieGui:
         
         self.copy_transx_to_clipboard = copy_transx_to_clipboard
         self.record_once_on_startup = record_once_on_startup
-        self.default_mode = default_mode
+        self.startup_mode = startup_mode
         
         # Kludgey flag to get around mainloop error.
         self.record_once_on_startup_finished = False
@@ -37,7 +37,7 @@ class GenieGui:
 
         # Now that we have a GUI object to point to, instantiate headless client object
         self.genie_client = gc.GenieClient(
-            calling_gui=self.main, startup_mode=default_mode, copy_transx_to_clipboard=copy_transx_to_clipboard, runtime_context=runtime_context, write_method=write_method, recording_timeout=recording_timeout, debug=debug
+            calling_gui=self.main, startup_mode=startup_mode, copy_transx_to_clipboard=copy_transx_to_clipboard, runtime_context=runtime_context, write_method=write_method, recording_timeout=recording_timeout, debug=debug
         )
         self.font_size = 18
         self.font_obj_big = tkf.Font( size=self.font_size )
@@ -449,12 +449,15 @@ if __name__ == "__main__":
 
     # runtime_context        = cli_args.get( "runtime_context", "docker" )
     # write_method           = cli_args.get( "write_method", "flask" )
-    default_mode           = cli_args.get( "default_mode", "transcribe_and_clean_prose" )
+    # startup_mode           = cli_args.get( "startup_mode", "transcribe_and_clean_prose" )
+    
+    startup_mode           = cli_args.get( "startup_mode", "transcribe_and_clean_python" )
     recording_timeout      = int( cli_args.get( "recording_timeout", 30 ) )
     record_once_on_startup = cli_args.get( "record_once_on_startup", "False" ) == "True"
 
+    # and now for something completely different !
     gg = GenieGui(
-        default_mode=default_mode,
+        startup_mode=startup_mode,
         # runtime_context=runtime_context,
         # write_method=write_method,
         recording_timeout=recording_timeout,
