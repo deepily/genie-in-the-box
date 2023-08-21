@@ -93,22 +93,21 @@ if __name__ == "__main__":
     self = SolutionSnapshotManager( path_to_snapshots )
     print( self )
     
-    # Let's see if we can find a snapshot using a question
-    # question = "what day comes after tomorrow?"
-    # question = "what day is today?"
-    # question = "Why is the sky blue?"
-    # similar_snapshots = self.get_snapshots_by_question( question )
-    
-    question = "What is today's date?"
-    similar_snapshots = self.get_snapshots_by_question( question )
-    
-    # let's do this twice to see if the cache is working
-    question = "What is today's date?"
-    similar_snapshots = self.get_snapshots_by_question( question )
-
-if len( similar_snapshots ) > 0:
-        lines_of_code = similar_snapshots[ 0 ][ 1 ].code
-        for line in lines_of_code:
-            print( line )
-    
+    questions = [
+        "what day comes after tomorrow?",
+        "what day is today?",
+        "Why is the sky blue?",
+        "What's today's date?",
+        "What is today's date?"
+    ]
+    for question in questions:
+        
+        du.print_banner( f"Question: [{question}]", prepend_nl=True )
+        similar_snapshots = self.get_snapshots_by_question( question )
+        
+        if len( similar_snapshots ) > 0:
+                lines_of_code = similar_snapshots[ 0 ][ 1 ].code
+                for line in lines_of_code:
+                    print( line )
+        
         
