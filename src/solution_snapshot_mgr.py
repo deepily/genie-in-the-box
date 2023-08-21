@@ -3,6 +3,7 @@ import regex as re
 
 import lib.util as du
 import solution_snapshot as ss
+import question_embeddings_dict as qed
 
 class SolutionSnapshotManager:
     def __init__( self, path, debug=False ):
@@ -10,9 +11,9 @@ class SolutionSnapshotManager:
         self.debug                           = debug
         self.path                            = path
         self.snapshots_by_question           = self.load_snapshots()
-        # add a dictionary to cache previously and generated embeddings
-        self.embeddings_by_question          = { }
-    
+        # add a dictionary to cache previously generated embeddings
+        self.embeddings_by_question          = qed.QuestionEmbeddingsDict()
+        
     def load_snapshots( self ):
         
         snapshots_by_question = { }
