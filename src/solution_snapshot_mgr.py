@@ -10,6 +10,8 @@ class SolutionSnapshotManager:
         self.debug                           = debug
         self.path                            = path
         self.snapshots_by_question           = self.load_snapshots()
+        # add a dictionary to cache previously and generated embeddings
+        self.embeddings_by_question          = { }
     
     def load_snapshots( self ):
         
@@ -30,8 +32,15 @@ class SolutionSnapshotManager:
     
     def get_snapshots_by_question_similarity( self, question, threshold=85.0, limit=7 ):
         
-        similar_snapshots = [ ]
-        question_snapshot = ss.SolutionSnapshot( question=question )
+        # Generate the embedding for the question, if it doesn't already exist
+        if question not in self.embeddings_by_question:
+            question_embedding = ss.SolutionSnapshot.generate_embedding( question )
+        else:
+            print( f"Embedding for question [{question}] already exists!" )
+            question_embedding = self.embeddings_by_question[ question ]
+            
+        question_snapshot  = ss.SolutionSnapshot( question=question, question_embedding=question_embedding )
+        similar_snapshots  = [ ]
         
         for snapshot in self.snapshots_by_question.values():
             
@@ -42,6 +51,7 @@ class SolutionSnapshotManager:
             else:
                 if self.debug: print( f"Score [{similarity_score}] for question [{snapshot.question}] is not similar enough to [{question}]" )
         
+        # Sort by similarity score, descending
         similar_snapshots.sort( key=lambda x: x[ 0 ], reverse=True )
         
         return similar_snapshots[ :limit ]
