@@ -17,18 +17,6 @@ import pyperclip
 
 import lib.util_stopwatch as sw
 
-# gib_path = os.getenv( "GENIE_IN_THE_BOX_ROOT" )
-# print( "GENIE_IN_THE_BOX_ROOT [{}]".format( gib_path ) )
-# path = os.getenv( "GENIE_IN_THE_BOX_ROOT" ) + "/src/lib"
-# if path not in sys.path:
-#
-#     print( "Adding [{}] to sys.path".format( path ) )
-#     sys.path.append( path )
-# else:
-#     print( "[{}] already in sys.path".format( path ) )
-#
-# print( sys.path )
-
 # from src.lib import util as du
 import lib.util as du
 
@@ -90,11 +78,7 @@ class GenieClient:
 
         # Do we want to automatically stash the data of a transcription or processing of a transcription to the clipboard when we're done?
         self.copy_transx_to_clipboard   = copy_transx_to_clipboard
-
-        # ad hoc addition to the translation dictionary.
-        # This is superfluous, now that I found a way to escape white space characters
-        # self.punctuation[ "space" ] = " "
-        
+ 
     def get_titles( self ):
     
         titles = [ ]
@@ -150,19 +134,6 @@ class GenieClient:
         print()
         if self.debug: print( "Calling [{}]...".format( function_name ) )
         getattr( self, function_name )()
-        #
-        # if   mode == "ChatGPT (Vox)":
-        #     self.do_gpt_by_voice()
-        # elif mode == "Transcribe":
-        #     self.do_transcription()
-        # elif mode == "Transcribe & Clean":
-        #     self.do_transcribe_and_clean()
-        # elif mode == "ChatGPT (Clipboard)":
-        #     self.do_gpt_from_clipboard()
-        # elif mode == "Read to me (Clipboard)":
-        #     self.do_read_to_me()
-        # else:
-        #     print( "ERROR: Mode not recognized" )
             
     def is_recording( self ):
         
@@ -241,7 +212,7 @@ class GenieClient:
             # Post temp file to flask server
             files = [ ( "file", ( wav_file, open( temp_file, "rb" ), "multipart/form-data" ) ) ]
             url   = "http://{}/api/upload-and-transcribe-wav?prefix={}".format( self.stt_address, self.prefix )
-            # and now for something completely and utterly different?!?
+            
             if self.debug: print( "POST'ing tempfile [{}] to [{}]...".format( temp_file, url ), end="" )
             response = requests.request( "POST", url, headers={ }, data={ }, files=files )
             if self.debug: print( " Done!" )
@@ -254,33 +225,9 @@ class GenieClient:
             transcribed_text = response.text
             if self.debug: print( "Transcription returned [{}]".format( transcribed_text ) )
             return transcribed_text
-
-        else:
-            
-            # print( "Writing audio to [{}]...".format( self.output_path ), end="" )
-            # self._write_audio_file( self.output_path, frames_buffer )
-            # print( " Done!" )
-            # self.serialized_audio_path = self.output_path
-
-            print( self.bar )
-            print( "Writing to anything but flask is deprecated.")
-            print( self.bar )
             
         self.finished_serializing_audio = True
         
-    # def _get_transcription( self, ip_and_port, input_path ):
-    #
-    #     url = "http://{ip_and_port}/api/vox2text?path={input_path}".format(
-    #         ip_and_port=ip_and_port,
-    #         input_path=input_path
-    #     )
-    #     print( "Calling transcription [{}]...".format( url ) )
-    #     response = ur.urlopen( url ).read()
-    #
-    #     transcribed_text = response.decode( "utf-8" )
-    #     print( "Transcription returned [{}]".format( transcribed_text ) )
-    #     return transcribed_text
-    
     def ask_chat_gpt_using_raw_prompt_and_content( self, prompt_and_content ):
         
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
@@ -484,7 +431,6 @@ class GenieClient:
     
         self.prefix = "multimodal python punctuation"
         python_code = self.do_transcription( copy_to_clipboard=self.copy_transx_to_clipboard )
-        # python_code = self.munge_code( python_code )
         if self.copy_transx_to_clipboard: self.copy_to_clipboard( python_code )
 
         return python_code
