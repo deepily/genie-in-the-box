@@ -521,7 +521,6 @@ class GenieClient:
     
     def do_transcription( self, copy_to_clipboard=True ):
     
-        self.prefix      = "multimodal text punctuation"
         transcribed_text = self.start_recording()
         
         # transcribed_text = self._get_transcription( self.stt_address, self.serialized_audio_path )
@@ -647,7 +646,7 @@ if __name__ == "__main__":
 
     
     # data = gc.ask_chat_gpt_code( query, preamble=preamble )
-    #
+    # question _ embedding
     # print( "Results: \n\n{}".format( data ), end="\n\n" )
     #
     # gc.process_by_mode_title( gc.modes_dict[ default_mode ][ "title" ] )
