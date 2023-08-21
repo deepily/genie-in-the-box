@@ -49,6 +49,17 @@ class SolutionSnapshot:
         
         return cleaned_question
     
+    @staticmethod
+    def generate_embedding( text ):
+
+        with Stopwatch( f"Generating embedding for [{text}]..." ):
+            openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
+
+            response = openai.Embedding.create(
+                input=text,
+                model="text-embedding-ada-002"
+            )
+        return response[ "data" ][ 0 ][ "embedding" ]
     def __init__( self, question, created_date=get_timestamp(), updated_date=get_timestamp(), solution_summary="", code=[],
                   programming_language="Python", language_version="3.10",
                   question_embedding=[ ], solution_embedding=[ ], code_embedding=[ ],
@@ -70,7 +81,7 @@ class SolutionSnapshot:
         
         # If the question embedding is empty, generate it
         if not question_embedding:
-            self.question_embedding = self._generate_embedding( question )
+            self.question_embedding = self.generate_embedding( question )
         else:
             self.question_embedding = question_embedding
         
@@ -88,26 +99,15 @@ class SolutionSnapshot:
     def set_solution_summary( self, solution_summary ):
         
         self.solution_summary = solution_summary
-        self.solution_embedding = self._generate_embedding( solution_summary )
+        self.solution_embedding = self.generate_embedding( solution_summary )
         self.updated_date = self.get_timestamp()
     
     def set_code( self, code ):
         
         # ¡OJO! code is a list of strings, not a string!
         self.code           = code
-        self.code_embedding = self._generate_embedding( " ".join( code ) )
+        self.code_embedding = self.generate_embedding( " ".join( code ) )
         self.updated_date   = self.get_timestamp()
-    
-    def _generate_embedding( self, text ):
-        
-        with Stopwatch( f"Generating embedding for [{text}]..." ):
-            openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
-            
-            response = openai.Embedding.create(
-                input=text,
-                model="text-embedding-ada-002"
-            )
-        return response[ "data" ][ 0 ][ "embedding" ]
     
     def get_question_similarity( self, other_snapshot ):
         
@@ -170,12 +170,13 @@ class SolutionSnapshot:
 if __name__ == "__main__":
     
     today = SolutionSnapshot( question="what day is today" )
-    tomorrow = SolutionSnapshot( question="what day is tomorrow" )
-    blah = SolutionSnapshot( question="i feel so blah today" )
-    color = SolutionSnapshot( question="what color is the sky" )
-    date = SolutionSnapshot( question="what is today's date" )
+    # tomorrow = SolutionSnapshot( question="what day is tomorrow" )
+    # blah = SolutionSnapshot( question="i feel so blah today" )
+    # color = SolutionSnapshot( question="what color is the sky" )
+    # date = SolutionSnapshot( question="what is today's date" )
     
-    snapshots = [ today, tomorrow, blah, color, date ]
+    # snapshots = [ today, tomorrow, blah, color, date ]
+    snapshots = [ today ]
     
     for snapshot in snapshots:
         score = today.get_question_similarity( snapshot )
