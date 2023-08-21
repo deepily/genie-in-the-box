@@ -152,6 +152,9 @@ def run_raw_prompt_text():
 
 @app.route( "/api/upload-and-transcribe-wav", methods=[ "POST" ] )
 def upload_and_transcribe_wav_file():
+    
+    prefix = request.args.get( "prefix" )
+    
     file = request.files[ "file" ]
     timestamp = str( time.time() ).replace( ".", "-" )
     temp_file = "/tmp/{}-{}".format( timestamp, file.filename )
@@ -171,7 +174,9 @@ def upload_and_transcribe_wav_file():
     os.remove( temp_file )
     print( " Done!" )
     
-    return transcribed_text
+    munger = mmm.MultiModalMunger( transcribed_text, prefix=prefix, debug=True, verbose=False )
+    
+    return munger.transcription
 
 
 @app.route( "/api/vox2text" )
