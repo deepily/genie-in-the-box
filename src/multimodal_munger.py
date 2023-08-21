@@ -420,7 +420,7 @@ class MultiModalMunger:
         print( "BEFORE code:", code )
 
         # Remove "space, ", commas, and periods.
-        # code = re.sub( r'space, |[,.-]', '', code.lower() )
+        code = re.sub( r'space, |[,.-]', '', code.lower() )
 
         # Translate punctuation mark words into single characters.
         for key, value in self.punctuation.items():
