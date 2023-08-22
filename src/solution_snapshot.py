@@ -95,19 +95,19 @@ class SolutionSnapshot:
             data = json.load( f )
         return cls( **data )
     
-    
-    def set_solution_summary( self, solution_summary ):
-        
-        self.solution_summary = solution_summary
-        self.solution_embedding = self.generate_embedding( solution_summary )
-        self.updated_date = self.get_timestamp()
-    
-    def set_code( self, code ):
-        
-        # ¡OJO! code is a list of strings, not a string!
-        self.code           = code
-        self.code_embedding = self.generate_embedding( " ".join( code ) )
-        self.updated_date   = self.get_timestamp()
+    # we're not using this just yet
+    # def set_solution_summary( self, solution_summary ):
+    #
+    #     self.solution_summary = solution_summary
+    #     self.solution_embedding = self.generate_embedding( solution_summary )
+    #     self.updated_date = self.get_timestamp()
+    #
+    # def set_code( self, code ):
+    #
+    #     # ¡OJO! code is a list of strings, not a string!
+    #     self.code           = code
+    #     self.code_embedding = self.generate_embedding( " ".join( code ) )
+    #     self.updated_date   = self.get_timestamp()
     
     def get_question_similarity( self, other_snapshot ):
         
