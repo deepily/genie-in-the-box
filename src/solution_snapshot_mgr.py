@@ -27,10 +27,40 @@ class SolutionSnapshotManager:
         
         return snapshots_by_question
     
+    def add_snapshot( self, snapshot ):
+        
+        self.snapshots_by_question[ snapshot.question ] = snapshot
+        snapshot.write_to_file()
+    
+    # get the questions embedding if it exists otherwise generate it and add it to the dictionary
+    def get_question_embedding( self, question ):
+        
+        if question in self.embeddings_by_question:
+            return self.embeddings_by_question[ question ]
+        else:
+            question_embedding = ss.SolutionSnapshot.generate_embedding( question )
+    
+        return question_embedding
+    
     def question_exists( self, question ):
         
         return question in self.snapshots_by_question
     
+    # create a method to delete a snapshot by exact match with the question string
+    def delete_snapshot( self, question ):
+        
+        # clean up the question string before querying
+        question = ss.SolutionSnapshot.clean_question( question )
+        
+        print( f"Deleting snapshot with question [{question}]..." )
+        if self.question_exists( question ):
+            del self.snapshots_by_question[ question ]
+            print( f"Snapshot with question [{question}] deleted!" )
+            return True
+        else:
+            print( f"Snapshot with question [{question}] does not exist!" )
+            return False
+        
     def get_snapshots_by_question_similarity( self, question, threshold=85.0, limit=7 ):
         
         # Generate the embedding for the question, if it doesn't already exist
@@ -86,6 +116,14 @@ class SolutionSnapshotManager:
         
         return f"[{len( self.snapshots_by_question )}] snapshots by question loaded from [{self.path}]"
 
+    # method to print the snapshots dictionary
+    def print_snapshots( self ):
+        
+        du.print_banner( f"Total snapshots: [{len( self.snapshots_by_question )}]", prepend_nl=True )
+        
+        for question, snapshot in self.snapshots_by_question.items():
+            print( f"Question: [{question}]" )
+            
 
 if __name__ == "__main__":
     
