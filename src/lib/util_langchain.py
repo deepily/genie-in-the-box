@@ -35,7 +35,7 @@ def assemble_and_run_solution( solution_code, path=None, debug=False ):
     if results.returncode != 0:
         if debug: print()
         response = "ERROR:\n{}".format( results.stderr.strip() )
-        print( response )
+        if debug: print( response )
     else:
         if debug: print( "Done!" )
         response = results.stdout.strip()
