@@ -88,15 +88,15 @@ class SolutionSnapshotManager:
         
         return similar_snapshots[ :limit ]
         
-    def get_snapshots_by_question( self, question, threshold=85.0, limit=7 ):
+    def get_snapshots_by_question( self, question, threshold=85.0, limit=7, debug=False ):
         
         question = ss.SolutionSnapshot.clean_question( question )
         
-        print( f"get_snapshots_by_question( '{question}' )..." )
+        if debug: print( f"get_snapshots_by_question( '{question}' )..." )
         
         if self.question_exists( question ):
             
-            print( f"Exact match: Snapshot with question [{question}] exists!" )
+            if debug: print( f"Exact match: Snapshot with question [{question}] exists!" )
             similar_snapshots = [ (100.0, self.snapshots_by_question[ question ]) ]
         
         else:
@@ -104,11 +104,11 @@ class SolutionSnapshotManager:
         
         if len( similar_snapshots ) > 0:
             
-            print( f"Found [{len( similar_snapshots )}] similar snapshots" )
+            if debug: print( f"Found [{len( similar_snapshots )}] similar snapshots" )
             for snapshot in similar_snapshots:
-                print( f"score [{snapshot[ 0 ]}] for [{question}] == [{snapshot[ 1 ].question}]" )
+                if debug: print( f"score [{snapshot[ 0 ]}] for [{question}] == [{snapshot[ 1 ].question}]" )
         else:
-            print( f"Could not find any snapshots similar to [{question}]" )
+            if debug: print( f"Could not find any snapshots similar to [{question}]" )
             
         return similar_snapshots
         
