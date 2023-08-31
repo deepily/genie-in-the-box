@@ -63,7 +63,7 @@ def get_current_datetime():
 Simulate jobs waiting to be processed
 """
 def background_thread():
-    print( "Tracking job queue size..." )
+    print( "Tracking job queue..." )
     while True:
         # only print if we have a client connected
         if connection_count > 0: print( get_current_datetime() )
@@ -88,11 +88,13 @@ Serve static files
 """
 @app.route( "/static/<filename>" )
 def serve_static( filename ):
+    
     return app.send_static_file( filename )
 
 
 @app.route( "/push", methods=[ "GET" ] )
 def push():
+    
     job_name = request.args.get( "job_name" )
     print( job_name )
     job_name = f"{job_queue.get_push_count() + 1}th job: {job_name}"
@@ -134,6 +136,7 @@ def get_audio():
     
     # Check if the request was successful
     if response.status_code == 200:
+        
         # Write the content of the response to a file
         with open( path, "wb" ) as audio_file:
             audio_file.write( response.content )
@@ -175,7 +178,7 @@ def disconnect():
     print( f"Client [{request.sid}] disconnected" )
     print( f"[{connection_count}] Clients connected" )
     
-    
+
 @app.route( "/api/ask-ai-text" )
 def ask_ai_text():
     question = request.args.get( "question" )
