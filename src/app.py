@@ -46,9 +46,9 @@ thread = None
 thread_lock = Lock()
 
 app = Flask( __name__ )
-socketio = SocketIO( app, cors_allowed_origins='*' )
+socketio = SocketIO( app, cors_allowed_origins="*" )
 
-app.config[ 'SERVER_NAME' ] = '127.0.0.1:7999'
+app.config[ "SERVER_NAME" ] = "127.0.0.1:7999"
 connection_count = 0
 
 """
@@ -70,13 +70,13 @@ def background_thread():
         
         if job_queue.has_changed():
             print( "Q size has changed" )
-            socketio.emit( 'time_update', { 'value': job_queue.size(), "date": get_current_datetime() } )
+            socketio.emit( "time_update", { "value": job_queue.size(), "date": get_current_datetime() } )
             with app.app_context():
-                url = url_for( 'get_audio' ) + f"?tts_text={job_queue.size()} jobs waiting"
+                url = url_for( "get_audio" ) + f"?tts_text={job_queue.size()} jobs waiting"
             print( f"Emitting url [{url}]..." )
-            socketio.emit( 'audio_file', { 'audioURL': url } )
+            socketio.emit( "audio_file", { "audioURL": url } )
         else:
-            socketio.emit( 'no_change', { 'value': job_queue.size(), "date": get_current_datetime() } )
+            socketio.emit( "no_change", { "value": job_queue.size(), "date": get_current_datetime() } )
         
         socketio.sleep( 4 )
 @app.route( "/" )
@@ -86,31 +86,31 @@ def root():
 """
 Serve static files
 """
-@app.route( '/static/<filename>' )
+@app.route( "/static/<filename>" )
 def serve_static( filename ):
     return app.send_static_file( filename )
 
 
-@app.route( '/push', methods=[ 'GET' ] )
+@app.route( "/push", methods=[ "GET" ] )
 def push():
-    job_name = request.args.get( 'job_name' )
+    job_name = request.args.get( "job_name" )
     print( job_name )
-    job_name = f'{job_queue.get_push_count() + 1}th job: {job_name}'
+    job_name = f"{job_queue.get_push_count() + 1}th job: {job_name}"
     
     job_queue.push( job_name )
-    return f'Job [{job_name}] added to stack. Stack size [{job_queue.size()}]'
+    return f"Job [{job_name}] added to queue. queue size [{job_queue.size()}]"
 
 
-@app.route( '/pop', methods=[ 'GET' ] )
+@app.route( "/pop", methods=[ "GET" ] )
 def pop():
     popped_job = job_queue.pop()
-    return f'Job [{popped_job}] popped from stack. Stack size [{job_queue.size()}]'
+    return f"Job [{popped_job}] popped from queue. queue size [{job_queue.size()}]"
 
 
-@app.route( '/get_audio', methods=[ 'GET' ] )
+@app.route( "/get_audio", methods=[ "GET" ] )
 def get_audio():
     
-    tts_text = request.args.get( 'tts_text' )
+    tts_text = request.args.get( "tts_text" )
     # ¡OJO! This is a hack to get around the fact that the docker container can't see the host machine's IP address
     # TODO: find a way to get the ip6 address dynamically
     tts_url = "http://172.17.0.1:5002/api/tts?text=" + tts_text
@@ -130,29 +130,29 @@ def get_audio():
     #     path = du.get_project_root() + "/io/failed-to-fetch-tts-file.wav"
     #     print( response )
     #
-    # return send_file( path, mimetype='audio/wav' )
+    # return send_file( path, mimetype="audio/wav" )
     
     # Check if the request was successful
     if response.status_code == 200:
         # Write the content of the response to a file
-        with open( path, 'wb' ) as audio_file:
+        with open( path, "wb" ) as audio_file:
             audio_file.write( response.content )
     else:
         print( f"Failed to get UPDATED audio file: {response.status_code}" )
         path = du.get_project_root() + "/io/failed-to-fetch-tts-file.wav"
     
-    return send_file( path, mimetype='audio/wav' )
+    return send_file( path, mimetype="audio/wav" )
 
 
 """
 Decorator for connect
 """
-@socketio.on( 'connect' )
+@socketio.on( "connect" )
 def connect():
     
     global connection_count
     connection_count += 1
-    print( 'f[{connection_count}] Clients connected' )
+    print( "f[{connection_count}] Clients connected" )
     
     global thread
     with thread_lock:
@@ -163,7 +163,7 @@ def connect():
 """
 Decorator for disconnect
 """
-@socketio.on( 'disconnect' )
+@socketio.on( "disconnect" )
 def disconnect():
     
     global connection_count
@@ -172,8 +172,8 @@ def disconnect():
     if connection_count < 0:
         connection_count = 0
         
-    print( f'Client [{request.sid}] disconnected' )
-    print( f'[{connection_count}] Clients connected' )
+    print( f"Client [{request.sid}] disconnected" )
+    print( f"[{connection_count}] Clients connected" )
     
     
 @app.route( "/api/ask-ai-text" )
@@ -263,7 +263,7 @@ def upload_and_transcribe_mp3_file():
     elif munger.is_ddg_search():
         
         print( "Fetching AI data for [{}]...".format( munger.transcription ) )
-        results = ddg( munger.transcription, region='wt-wt', safesearch='Off', time='y', max_results=20 )
+        results = ddg( munger.transcription, region="wt-wt", safesearch="Off", time="y", max_results=20 )
         print( results )
         munger.results = results
     
