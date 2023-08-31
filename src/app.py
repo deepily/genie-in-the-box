@@ -1,16 +1,27 @@
 import json
 import os
 import time
+from subprocess import PIPE, run
 
 import lib.util as du
+from fifo_queue import FifoQueue
 
 from flask import Flask, request, make_response
 from flask_cors import CORS
+import flask
 
 from duckduckgo_search import ddg
 
 import whisper
 import base64
+
+# Dependencies for socket I/O prototyping
+import requests
+from flask import Flask, render_template, send_file, url_for
+from flask_socketio import SocketIO
+from random import random
+from threading import Lock
+from datetime import datetime
 
 # print( "os.getcwd() [{}]".format( os.getcwd() ) )
 # print( "GENIE_IN_THE_BOX_ROOT [{}]".format( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) ) )
@@ -24,12 +35,133 @@ app = Flask( __name__ )
 # Props to StackOverflow for this workaround:https://stackoverflow.com/questions/25594893/how-to-enable-cors-in-flask
 CORS( app )
 
+# print( "Flask version [{}]".format( flask.__version__ ) )
 
+job_queue = FifoQueue()
+
+"""
+Background Thread
+"""
+thread = None
+thread_lock = Lock()
+
+app = Flask( __name__ )
+socketio = SocketIO( app, cors_allowed_origins='*' )
+
+app.config[ 'SERVER_NAME' ] = '127.0.0.1:7999'
+
+"""
+Get current date time
+"""
+def get_current_datetime():
+    
+    now = datetime.now()
+    return now.strftime( "%m/%d/%Y %H:%M:%S" )
+
+"""
+Simulate jobs waiting to be processed
+"""
+def background_thread():
+    print( "Tracking job queue size..." )
+    while True:
+        print( get_current_datetime() )
+        if job_queue.has_changed():
+            print( "Q size has changed" )
+            socketio.emit( 'time_update', { 'value': job_queue.size(), "date": get_current_datetime() } )
+            with app.app_context():
+                url = url_for( 'get_audio' ) + f"?tts_text={job_queue.size()} jobs waiting"
+            print( f"Emitting url [{url}]..." )
+            socketio.emit( 'audio_file', { 'audioURL': url } )
+        else:
+            socketio.emit( 'no_change', { 'value': job_queue.size(), "date": get_current_datetime() } )
+        
+        socketio.sleep( 4 )
 @app.route( "/" )
 def root():
     return "Genie in the box flask server root"
 
+"""
+Serve static files
+"""
+@app.route( '/static/<filename>' )
+def serve_static( filename ):
+    return app.send_static_file( filename )
 
+
+@app.route( '/push', methods=[ 'GET' ] )
+def push():
+    job_name = request.args.get( 'job_name' )
+    print( job_name )
+    job_name = f'{job_queue.get_push_count() + 1}th job: {job_name}'
+    
+    job_queue.push( job_name )
+    return f'Job [{job_name}] added to stack. Stack size [{job_queue.size()}]'
+
+
+@app.route( '/pop', methods=[ 'GET' ] )
+def pop():
+    popped_job = job_queue.pop()
+    return f'Job [{popped_job}] popped from stack. Stack size [{job_queue.size()}]'
+
+
+@app.route( '/get_audio', methods=[ 'GET' ] )
+def get_audio():
+    
+    tts_text = request.args.get( 'tts_text' )
+    # ¡OJO! This is a hack to get around the fact that the docker container can't see the host machine's IP address
+    # TODO: find a way to get the ip6 address dynamically
+    tts_url = "http://172.17.0.1:5002/api/tts?text=" + tts_text
+    tts_url = tts_url.replace( " ", "%20" )
+    
+    du.print_banner( f"Fetching [{tts_url}]" )
+    response = requests.get( tts_url )
+    path = du.get_project_root() + "/io/tts.wav"
+    
+    # commands = [ "wget", "-O", path, tts_url ]
+    #
+    # results = run( commands, stdout=PIPE, stderr=PIPE, universal_newlines=True )
+    #
+    # if results.returncode != 0:
+    #     print()
+    #     response = "ERROR:\n{}".format( results.stderr.strip() )
+    #     path = du.get_project_root() + "/io/failed-to-fetch-tts-file.wav"
+    #     print( response )
+    #
+    # return send_file( path, mimetype='audio/wav' )
+    
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Write the content of the response to a file
+        with open( path, 'wb' ) as audio_file:
+            audio_file.write( response.content )
+    else:
+        print( f"Failed to get UPDATED audio file: {response.status_code}" )
+        path = du.get_project_root() + "/io/failed-to-fetch-tts-file.wav"
+    
+    return send_file( path, mimetype='audio/wav' )
+
+
+"""
+Decorator for connect
+"""
+@socketio.on( 'connect' )
+def connect():
+    
+    print( 'Client connected' )
+    global thread
+    with thread_lock:
+        if thread is None:
+            thread = socketio.start_background_task( background_thread )
+
+
+"""
+Decorator for disconnect
+"""
+@socketio.on( 'disconnect' )
+def disconnect():
+    
+    print( 'Client disconnected', request.sid )
+    
 @app.route( "/api/ask-ai-text" )
 def ask_ai_text():
     question = request.args.get( "question" )
@@ -153,6 +285,7 @@ def run_raw_prompt_text():
 @app.route( "/api/upload-and-transcribe-wav", methods=[ "POST" ] )
 def upload_and_transcribe_wav_file():
     
+    # Get prefix for multimodal munger
     prefix = request.args.get( "prefix" )
     
     file = request.files[ "file" ]
