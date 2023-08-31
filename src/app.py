@@ -49,6 +49,7 @@ app = Flask( __name__ )
 socketio = SocketIO( app, cors_allowed_origins='*' )
 
 app.config[ 'SERVER_NAME' ] = '127.0.0.1:7999'
+connection_count = 0
 
 """
 Get current date time
@@ -64,7 +65,9 @@ Simulate jobs waiting to be processed
 def background_thread():
     print( "Tracking job queue size..." )
     while True:
-        print( get_current_datetime() )
+        # only print if we have a client connected
+        if connection_count > 0: print( get_current_datetime() )
+        
         if job_queue.has_changed():
             print( "Q size has changed" )
             socketio.emit( 'time_update', { 'value': job_queue.size(), "date": get_current_datetime() } )
@@ -147,7 +150,10 @@ Decorator for connect
 @socketio.on( 'connect' )
 def connect():
     
-    print( 'Client connected' )
+    global connection_count
+    connection_count += 1
+    print( 'f[{connection_count}] Clients connected' )
+    
     global thread
     with thread_lock:
         if thread is None:
@@ -160,7 +166,15 @@ Decorator for disconnect
 @socketio.on( 'disconnect' )
 def disconnect():
     
-    print( 'Client disconnected', request.sid )
+    global connection_count
+    connection_count -= 1
+    # sanity check size
+    if connection_count < 0:
+        connection_count = 0
+        
+    print( f'Client [{request.sid}] disconnected' )
+    print( f'[{connection_count}] Clients connected' )
+    
     
 @app.route( "/api/ask-ai-text" )
 def ask_ai_text():
