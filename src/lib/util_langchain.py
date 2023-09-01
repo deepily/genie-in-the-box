@@ -1,4 +1,4 @@
-import util as du
+import lib.util as du
 
 from subprocess import PIPE, run
 
@@ -59,3 +59,6 @@ def test_assemble_and_run_solution():
     else:
         response = results[ "response" ]
         for line in response.split( "\n" ): print( line )
+        
+if __name__ == "__main__":
+    test_assemble_and_run_solution()
