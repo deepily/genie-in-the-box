@@ -4,6 +4,7 @@ import time
 import regex as re
 import random
 import sys
+import datetime as dt
 
 debug = False
 
@@ -19,6 +20,17 @@ def add_to_path( path ):
         print( "Added [{}] to sys.path".format( path ) )
     else:
         print( "Path [{}] already in sys.path".format( path ) )
+
+
+def get_current_datetime():
+    
+    now = dt.datetime.now()
+    return now.strftime( "%m-%d-%Y @ %H:%M:%S" )
+
+def get_current_date():
+    
+    now = dt.datetime.now()
+    return now.strftime( "%m-%d-%Y" )
 
 def get_name_value_pairs( arg_list, debug=False, verbose=False ):
     
