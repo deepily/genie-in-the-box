@@ -138,9 +138,14 @@ class SolutionSnapshot:
         
         return np.dot( self.code_embedding, other_snapshot.code_embedding ) * 100
     
-    def to_json( self ):
+    def to_jsons( self, verbose=True ):
         
-        return json.dumps( self.__dict__ )
+        if verbose:
+            return json.dumps( self.__dict__ )
+        else:
+            fields_to_exclude = [ field for field in self.__dict__ if field.endswith( '_embedding' ) ]
+            data = { field: value for field, value in self.__dict__.items() if field not in fields_to_exclude }
+            return json.dumps( data )
     
     def write_to_file( self ):
         
@@ -172,7 +177,7 @@ class SolutionSnapshot:
         print( f"File path: {file_path}" )
         # Write the JSON string to the file
         with open( file_path, "w" ) as f:
-            f.write( self.to_json() )
+            f.write( self.to_jsons() )
 
 
 # Add main method
