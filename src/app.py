@@ -4,6 +4,7 @@ import time
 from subprocess import PIPE, run
 
 import lib.util as du
+import lib.util_stopwatch as sw
 from fifo_queue import FifoQueue
 
 from flask import Flask, request, make_response
@@ -29,56 +30,131 @@ from datetime import datetime
 import genie_client as gc
 import multimodal_munger as mmm
 import lib.util_stopwatch as sw
-
-app = Flask( __name__ )
-
-# Props to StackOverflow for this workaround:https://stackoverflow.com/questions/25594893/how-to-enable-cors-in-flask
-CORS( app )
+import lib.util_langchain as ul
+from solution_snapshot_mgr import SolutionSnapshotManager
 
 # print( "Flask version [{}]".format( flask.__version__ ) )
 
-job_queue = FifoQueue()
+"""
+Globally visible queue object
+"""
+jobs_todo_queue = FifoQueue()
+jobs_done_queue = FifoQueue()
 
 """
-Background Thread
+Background Threads
 """
-thread = None
+todo_thread = None
+done_thread = None
+run_thread  = None
 thread_lock = Lock()
 
+announcement_delay = 0
+connection_count   = 0
+
 app = Flask( __name__ )
-socketio = SocketIO( app, cors_allowed_origins="*" )
+# Props to StackOverflow for this workaround:https://stackoverflow.com/questions/25594893/how-to-enable-cors-in-flask
+CORS( app )
+socketio = SocketIO( app, cors_allowed_origins='*' )
+app.config['SERVER_NAME'] = '127.0.0.1:7999'
 
-app.config[ "SERVER_NAME" ] = "127.0.0.1:7999"
-connection_count = 0
+path_to_snapshots = os.path.join( du.get_project_root(), "src/conf/long-term-memory/solutions/" )
+snapshot_mgr = SolutionSnapshotManager( path_to_snapshots, debug=True, verbose=True )
 
 """
-Get current date time
+Track the todo Q
 """
-def get_current_datetime():
+def track_todo_thread():
     
-    now = datetime.now()
-    return now.strftime( "%m/%d/%Y %H:%M:%S" )
+    print( "Tracking job TODO queue..." )
+    while True:
+        
+        # print( du.get_current_datetime() )
+        socketio.emit( 'time_update', { "date": du.get_current_datetime() } )
+        
+        if jobs_todo_queue.has_changed():
+            
+            print( "TODO Q size has changed" )
+            socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
+            
+            with app.app_context():
+                url = url_for( 'get_audio' ) + f"?tts_text={jobs_todo_queue.size()} jobs waiting"
+            
+            print( f"Emitting TODO url [{url}]..." )
+            socketio.emit( 'audio_update', { 'audioURL': url } )
+            
+            # Add a little bit of sleep time between when this audio event is passed to the client and the done Q audio event is passed
+            announcement_delay = 2
+        else:
+            announcement_delay = 0
+            
+        socketio.sleep( 2 )
+
 
 """
-Simulate jobs waiting to be processed
+Track the done Q
 """
-def background_thread():
-    print( "Tracking job queue..." )
+def track_done_thread():
+    
+    print( "Tracking job DONE queue..." )
     while True:
-        # only print if we have a client connected
-        if connection_count > 0: print( get_current_datetime() )
         
-        if job_queue.has_changed():
-            print( "Q size has changed" )
-            socketio.emit( "time_update", { "value": job_queue.size(), "date": get_current_datetime() } )
+        print( du.get_current_datetime() )
+        socketio.emit( 'time_update', { "date": du.get_current_datetime() } )
+        
+        if jobs_done_queue.has_changed():
+            print( "Done Q size has changed" )
+            socketio.emit( 'done_update', { 'value': jobs_done_queue.size() } )
+            
             with app.app_context():
-                url = url_for( "get_audio" ) + f"?tts_text={job_queue.size()} jobs waiting"
-            print( f"Emitting url [{url}]..." )
-            socketio.emit( "audio_file", { "audioURL": url } )
-        else:
-            socketio.emit( "no_change", { "value": job_queue.size(), "date": get_current_datetime() } )
+                url = url_for( 'get_audio' ) + f"?tts_text={jobs_done_queue.size()} jobs finished"
+            
+            print( f"Emitting DONE url [{url}]..." )
+            socketio.sleep( announcement_delay )
+            socketio.emit( 'audio_update', { 'audioURL': url } )
+        # else:
+        #     socketio.emit('no_change', {'value': jobs_done_queue.size(), "date": uj.get_current_datetime()})
         
-        socketio.sleep( 4 )
+        socketio.sleep( 3 )
+
+
+def track_running_thread():
+    
+    print( "Simulating job run execution..." )
+    while True:
+        
+        print( "Jobs running @ " + du.get_current_datetime() )
+        
+        if not jobs_todo_queue.is_empty():
+            
+            print( "popping AND running one job from todo Q" )
+            job = jobs_todo_queue.pop()
+    
+            timer = sw.Stopwatch( f"Executing [{job.question}]..." )
+            results = ul.assemble_and_run_solution( job.code, du.get_project_root() + "/src/conf/long-term-memory/events.csv", debug=True )
+            timer.print( "Done!", use_millis=True )
+            du.print_banner( "¡TODO: Uncomment job.complete() once access to GPT has been restored!", expletive=True, end="\n" )
+            
+            du.print_banner( f"Results for [{job.question}]", prepend_nl=True, end="\n" )
+            if results[ "return_code" ] != 0:
+                print( results[ "response" ] )
+            else:
+                response = results[ "response" ]
+                for line in response.split( "\n" ): print( line )
+                print()
+                
+            # job.complete(
+            #     "I don't know, beats the hell out of me!",
+            #     [ "foo = 31", "bar = 17", "total = foo + bar", "total" ],
+            #     "I did this and then I did that, and then something else."
+            # )
+            # print( job.to_json() )
+            jobs_done_queue.push( job )
+        
+        else:
+            print( "no jobs to pop from todo Q " )
+        
+        socketio.sleep( 10 )
 @app.route( "/" )
 def root():
     return "Genie in the box flask server root"
@@ -95,19 +171,40 @@ def serve_static( filename ):
 @app.route( "/push", methods=[ "GET" ] )
 def push():
     
-    job_name = request.args.get( "job_name" )
-    print( job_name )
-    job_name = f"{job_queue.get_push_count() + 1}th job: {job_name}"
+    question = request.args.get( 'question' )
     
-    job_queue.push( job_name )
-    return f"Job [{job_name}] added to queue. queue size [{job_queue.size()}]"
+    du.print_banner( f"Question: [{question}]", prepend_nl=True )
+    similar_snapshots = snapshot_mgr.get_snapshots_by_question( question )
+    print()
+    
+    if len( similar_snapshots ) > 0:
+        
+        lines_of_code = similar_snapshots[ 0 ][ 1 ].code
+        if len( lines_of_code ) > 0:
+            du.print_banner( f"Code for [{similar_snapshots[ 0 ][ 1 ].question}]:" )
+        else:
+            du.print_banner( "Code: NONE found?" )
+        for line in lines_of_code:
+            print( line )
+        if len( lines_of_code ) > 0:
+            print()
+            
+        job = similar_snapshots[ 0 ][ 1 ]
+        # print( job.to_json() )
+        
+        jobs_todo_queue.push( job )
+        return f'Job [{question}] added to queue. queue size [{jobs_todo_queue.size()}]'
+    
+    else:
+        
+        return f'No similar snapshots found, job [{question}] NOT added to queue. queue size [{jobs_todo_queue.size()}]'
 
 
 @app.route( "/pop", methods=[ "GET" ] )
 def pop():
-    popped_job = job_queue.pop()
-    return f"Job [{popped_job}] popped from queue. queue size [{job_queue.size()}]"
-
+    
+    popped_job = jobs_todo_queue.pop()
+    return f'Job [{popped_job}] popped from queue. queue size [{jobs_todo_queue.size()}]'
 
 @app.route( "/get_audio", methods=[ "GET" ] )
 def get_audio():
@@ -115,7 +212,7 @@ def get_audio():
     tts_text = request.args.get( "tts_text" )
     # ¡OJO! This is a hack to get around the fact that the docker container can't see the host machine's IP address
     # TODO: find a way to get the ip6 address dynamically
-    tts_url = "http://172.17.0.1:5002/api/tts?text=" + tts_text
+    tts_url = "http://172.17.0.4:5002/api/tts?text=" + tts_text
     tts_url = tts_url.replace( " ", "%20" )
     
     du.print_banner( f"Fetching [{tts_url}]" )
@@ -155,12 +252,17 @@ def connect():
     
     global connection_count
     connection_count += 1
-    print( "f[{connection_count}] Clients connected" )
+    print( f"[{connection_count}] Clients connected" )
     
-    global thread
+    global todo_thread
+    global done_thread
+    global exec_thread
+    
     with thread_lock:
-        if thread is None:
-            thread = socketio.start_background_task( background_thread )
+        if todo_thread is None:
+            todo_thread = socketio.start_background_task( track_todo_thread )
+            done_thread = socketio.start_background_task( track_done_thread )
+            exec_thread = socketio.start_background_task( track_running_thread )
 
 
 """
