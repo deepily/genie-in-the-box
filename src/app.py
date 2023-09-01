@@ -148,7 +148,7 @@ def track_running_thread():
             #     [ "foo = 31", "bar = 17", "total = foo + bar", "total" ],
             #     "I did this and then I did that, and then something else."
             # )
-            # print( job.to_json() )
+            print( job.to_jsons( verbose=False) )
             jobs_done_queue.push( job )
         
         else:
