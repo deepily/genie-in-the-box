@@ -6,13 +6,18 @@ import solution_snapshot as ss
 import question_embeddings_dict as qed
 
 class SolutionSnapshotManager:
-    def __init__( self, path, debug=False ):
+    def __init__( self, path, debug=False, verbose=False ):
         
         self.debug                           = debug
         self.path                            = path
         self.snapshots_by_question           = self.load_snapshots()
         # add a dictionary to cache previously generated embeddings
         self.embeddings_by_question          = qed.QuestionEmbeddingsDict()
+        
+        if debug:
+            print( self )
+            if verbose:
+                self.print_snapshots()
         
     def load_snapshots( self ):
         
@@ -80,8 +85,9 @@ class SolutionSnapshotManager:
             
             if similarity_score >= threshold:
                 similar_snapshots.append( ( similarity_score, snapshot ) )
+                if self.debug: print( f"Score [{similarity_score}] for question [{snapshot.question}] IS similar enough to [{question}]" )
             else:
-                if self.debug: print( f"Score [{similarity_score}] for question [{snapshot.question}] is not similar enough to [{question}]" )
+                if self.debug: print( f"Score [{similarity_score}] for question [{snapshot.question}] is NOT similar enough to [{question}]" )
         
         # Sort by similarity score, descending
         similar_snapshots.sort( key=lambda x: x[ 0 ], reverse=True )
@@ -124,12 +130,13 @@ class SolutionSnapshotManager:
         for question, snapshot in self.snapshots_by_question.items():
             print( f"Question: [{question}]" )
             
+        print()
 
 if __name__ == "__main__":
     
     path_to_snapshots = os.path.join( du.get_project_root(), "src/conf/long-term-memory/solutions/" )
-    self = SolutionSnapshotManager( path_to_snapshots )
-    print( self )
+    snapshot_mgr = SolutionSnapshotManager( path_to_snapshots )
+    print( snapshot_mgr )
     
     questions = [
         "what day comes after tomorrow?",
@@ -141,7 +148,7 @@ if __name__ == "__main__":
     for question in questions:
         
         du.print_banner( f"Question: [{question}]", prepend_nl=True )
-        similar_snapshots = self.get_snapshots_by_question( question )
+        similar_snapshots = snapshot_mgr.get_snapshots_by_question( question )
         
         if len( similar_snapshots ) > 0:
                 lines_of_code = similar_snapshots[ 0 ][ 1 ].code
