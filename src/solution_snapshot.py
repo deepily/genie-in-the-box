@@ -60,7 +60,8 @@ class SolutionSnapshot:
                 model="text-embedding-ada-002"
             )
         return response[ "data" ][ 0 ][ "embedding" ]
-    def __init__( self, question, created_date=get_timestamp(), updated_date=get_timestamp(), solution_summary="", code=[],
+    
+    def __init__( self, question="", answer="", created_date=get_timestamp(), updated_date=get_timestamp(), solution_summary="", code=[],
                   programming_language="Python", language_version="3.10",
                   question_embedding=[ ], solution_embedding=[ ], code_embedding=[ ],
                   solution_directory="/src/conf/long-term-memory/solutions/", solution_file=None
@@ -68,6 +69,7 @@ class SolutionSnapshot:
         
         # The question, sans anything that's not alphanumeric
         self.question             = SolutionSnapshot.clean_question( question )
+        self.answer               = answer
         self.solution_summary     = solution_summary
         self.code                 = code
         
@@ -93,21 +95,28 @@ class SolutionSnapshot:
         
         with open( filename, "r" ) as f:
             data = json.load( f )
+            
         return cls( **data )
-    
-    # we're not using this just yet
-    # def set_solution_summary( self, solution_summary ):
-    #
-    #     self.solution_summary = solution_summary
-    #     self.solution_embedding = self.generate_embedding( solution_summary )
-    #     self.updated_date = self.get_timestamp()
-    #
-    # def set_code( self, code ):
-    #
-    #     # ¡OJO! code is a list of strings, not a string!
-    #     self.code           = code
-    #     self.code_embedding = self.generate_embedding( " ".join( code ) )
-    #     self.updated_date   = self.get_timestamp()
+
+    def complete( self, answer, code=[ ], solution_summary="" ):
+        
+        self.answer = answer
+        self.set_code( code )
+        self.set_solution_summary( solution_summary )
+        # self.completion_date  = SolutionSnapshot.get_current_datetime()
+        
+    def set_solution_summary( self, solution_summary ):
+
+        self.solution_summary = solution_summary
+        self.solution_embedding = self.generate_embedding( solution_summary )
+        self.updated_date = self.get_timestamp()
+
+    def set_code( self, code ):
+
+        # ¡OJO! code is a list of strings, not a string!
+        self.code           = code
+        self.code_embedding = self.generate_embedding( " ".join( code ) )
+        self.updated_date   = self.get_timestamp()
     
     def get_question_similarity( self, other_snapshot ):
         
