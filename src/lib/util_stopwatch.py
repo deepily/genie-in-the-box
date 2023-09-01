@@ -4,6 +4,7 @@ class Stopwatch:
     def __init__( self, msg=None  ):
         
         if msg: print( msg )
+        self.msg = msg
         self.start_time = dt.datetime.now()
         
     def __enter__( self ):
@@ -41,8 +42,13 @@ class Stopwatch:
         
         seconds = (dt.datetime.now() - self.start_time).seconds
         
-        # check msg argument
-        if msg is None: msg = "Finished"
+        # build msg argument
+        if msg is None and self.msg is None:
+            msg = "Finished"
+        elif msg is None and self.msg is not None:
+            msg = self.msg
+        elif msg is not None and self.msg is not None:
+            msg = self.msg + " " + msg
         
         # preformat output
         if prepend_nl: print()
