@@ -147,6 +147,13 @@ class SolutionSnapshot:
             data = { field: value for field, value in self.__dict__.items() if field not in fields_to_exclude }
             return json.dumps( data )
     
+    def get_html( self ):
+        
+        if self.answer != "":
+            return f"<li>Q: {self.question}. A: {self.answer}</li>"
+        else:
+            return f"<li>Q: {self.question}</li>"
+    
     def write_to_file( self ):
         
         # Get the project root directory

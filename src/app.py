@@ -40,6 +40,7 @@ Globally visible queue object
 """
 jobs_todo_queue = FifoQueue()
 jobs_done_queue = FifoQueue()
+jobs_run_queue  = FifoQueue()
 
 """
 Background Threads
@@ -90,7 +91,6 @@ def track_todo_thread():
             
         socketio.sleep( 2 )
 
-
 """
 Track the done Q
 """
@@ -127,34 +127,50 @@ def track_running_thread():
         
         if not jobs_todo_queue.is_empty():
             
-            print( "popping AND running one job from todo Q" )
             job = jobs_todo_queue.pop()
-    
-            timer = sw.Stopwatch( f"Executing [{job.question}]..." )
-            results = ul.assemble_and_run_solution( job.code, du.get_project_root() + "/src/conf/long-term-memory/events.csv", debug=True )
+            jobs_run_queue.push( job )
+            
+            socketio.emit( 'run_update', { 'value': jobs_run_queue.size() } )
+            with app.app_context():
+                url = url_for( 'get_audio' ) + f"?tts_text={jobs_run_queue.size()} jobs running"
+            
+            print( f"Emitting RUN url [{url}]..." )
+            socketio.emit( 'audio_update', { 'audioURL': url } )
+            
+            # Point to the head of the queue without popping it
+            running_job = jobs_run_queue.head()
+            timer = sw.Stopwatch( f"Executing [{running_job.question}]..." )
+            results = ul.assemble_and_run_solution( running_job.code, du.get_project_root() + "/src/conf/long-term-memory/events.csv", debug=True )
             timer.print( "Done!", use_millis=True )
             du.print_banner( "¡TODO: Uncomment job.complete() once access to GPT has been restored!", expletive=True, end="\n" )
             
-            du.print_banner( f"Results for [{job.question}]", prepend_nl=True, end="\n" )
+            du.print_banner( f"Results for [{running_job.question}]", prepend_nl=True, end="\n" )
             if results[ "return_code" ] != 0:
                 print( results[ "response" ] )
             else:
                 response = results[ "response" ]
-                for line in response.split( "\n" ): print( line )
+                for line in response.split( "\n" ): print( "* " + line )
                 print()
-                
+            running_job.answer = results[ "response" ]
+            
+            #
             # job.complete(
             #     "I don't know, beats the hell out of me!",
             #     [ "foo = 31", "bar = 17", "total = foo + bar", "total" ],
             #     "I did this and then I did that, and then something else."
             # )
-            print( job.to_jsons( verbose=False) )
-            jobs_done_queue.push( job )
+            print( running_job.to_jsons( verbose=False) )
+            jobs_done_queue.push( running_job )
+            
+            # Remove the job at the head of the queue
+            jobs_run_queue.pop()
+            socketio.emit( 'run_update', { 'value': jobs_run_queue.size() } )
         
         else:
             print( "no jobs to pop from todo Q " )
         
         socketio.sleep( 10 )
+        
 @app.route( "/" )
 def root():
     return "Genie in the box flask server root"
@@ -243,6 +259,28 @@ def get_audio():
     
     return send_file( path, mimetype="audio/wav" )
 
+
+def generate_html_list( fifo_queue ):
+    
+    html_list = [ ]
+    for job in fifo_queue.queue:
+        html_list.append( job.get_html() )
+    
+    return html_list
+
+
+@app.route( '/get_queue/<queue_name>', methods=[ 'GET' ] )
+def get_queue( queue_name ):
+    if queue_name == "todo":
+        jobs = generate_html_list( jobs_todo_queue )
+    elif queue_name == "done":
+        jobs = generate_html_list( jobs_done_queue )
+    elif queue_name == "run":
+        jobs = generate_html_list( jobs_run_queue )
+    else:
+        return json.dumps( { "error": "Invalid queue name. Please specify either 'todo' or 'done'." } )
+    
+    return json.dumps( { f"{queue_name}_jobs": jobs } )
 
 """
 Decorator for connect

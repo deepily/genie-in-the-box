@@ -34,25 +34,48 @@
     } );
 
     function updateClock( date ) {
-        document.getElementById( "clock" ).innerHTML = "Current time [" + date + "]";
+        document.getElementById( "clock" ).innerHTML = "[" + date + "]";
     }
 
     socket.on( "time_update", function( data ) {
         var date = data.date;
-        // document.getElementById("queue-state").innerHTML = "Time [" + date + "]";
         updateClock( date )
     } );
+
+    // handle updates on the todo queue
     socket.on( "todo_update", function( data ) {
         document.getElementById( "todo" ).innerHTML = "Jobs TODO [" + data.value + "]";
+        fetch( "/get_queue/todo" )
+            .then( response => response.json() )
+            .then( data => {
+                document.getElementById( "todo-list" ).innerHTML = data.todo_jobs.join( "" );
+            } )
+            .catch( error => console.error( "Error:", error ) );
     } );
+
+    // handle updates on the run queue
+    socket.on( "run_update", function( data ) {
+        document.getElementById( "run" ).innerHTML = "Jobs RUNNING [" + data.value + "]";
+        fetch( "/get_queue/run" )
+            .then( response => response.json() )
+            .then( data => {
+                document.getElementById( "run-list" ).innerHTML = data.run_jobs.join( "" );
+            } )
+            .catch( error => console.error( "Error:", error ) );
+    } );
+
+    // handle updates on the done queue
     socket.on( "done_update", function( data ) {
         document.getElementById( "done" ).innerHTML = "Jobs DONE [" + data.value + "]";
+        fetch( "/get_queue/done" )
+            .then( response => response.json() )
+            .then( data => {
+                document.getElementById( "done-list" ).innerHTML = data.done_jobs.join( "" );
+            } )
+            .catch( error => console.error( "Error:", error ) );
     } );
-    // socket.on("no_change", function(data) {
-    //     // console.log("No change. Queue still the same size: " + data.value + ", Date: " + data.date);
-    //     updateClock( data.date )
-    // });
 
+    // Handle server notifications to play audio
     socket.on( "audio_update", function( data ) {
 
         var source = audioContext.createBufferSource();
@@ -71,10 +94,28 @@
 
 </script>
 
-<h1 id="clock"></h1>
-<h1 id="todo">Jobs todo [0]</h1>
-<h1 id="done">Jobs done [0]</h1>
-<a href="#" onclick="createAudioContext(); return false;">Enable audio playback</a>
+<h1 id="clock">[00-00-0000 @ 00:00:00]</h1>
+<div>
+    <h2 id="todo">Jobs todo [0]</h2>
+    <ol id="todo-list">
+
+    </ol>
+</div>
+<div>
+    <h2 id="run">Jobs running [0]</h2>
+    <ol id="run-list">
+
+    </ol>
+</div>
+<div>
+    <h2 id="done">Jobs done [0]</h2>
+    <ol id="done-list">
+
+    </ol>
+</div>
+<a href="#" onclick="createAudioContext(); return false;">Enable audio playback</a><br>
+Use this if auto play is disabled. Check about:preferences 'Autoplay'
+
 
 </body>
 </html>
