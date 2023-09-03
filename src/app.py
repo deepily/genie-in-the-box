@@ -1,43 +1,37 @@
 import json
 import os
 import time
-from subprocess import PIPE, run
 
-import lib.util as du
-import lib.util_stopwatch as sw
-from fifo_queue import FifoQueue
-
-from flask import Flask, request, make_response
-from flask_cors import CORS
-import flask
+from threading         import Lock
 
 from duckduckgo_search import ddg
 
 import whisper
 import base64
 
+# from flask import
+from flask_cors import CORS
+
 # Dependencies for socket I/O prototyping
 import requests
-from flask import Flask, render_template, send_file, url_for
+from flask          import Flask, request, make_response, send_file, url_for
 from flask_socketio import SocketIO
-from random import random
-from threading import Lock
-from datetime import datetime
 
 # print( "os.getcwd() [{}]".format( os.getcwd() ) )
 # print( "GENIE_IN_THE_BOX_ROOT [{}]".format( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) ) )
+# print( "Flask version [{}]".format( flask.__version__ ) )
 
-import genie_client as gc
-import multimodal_munger as mmm
+import lib.util           as du
+import genie_client       as gc
+import multimodal_munger  as mmm
 import lib.util_stopwatch as sw
 import lib.util_langchain as ul
-from solution_snapshot_mgr import SolutionSnapshotManager
 
-# print( "Flask version [{}]".format( flask.__version__ ) )
+from solution_snapshot_mgr import SolutionSnapshotManager
+from fifo_queue            import FifoQueue
 
 """
 Globally visible queue object
-TODO: How do we make this visible across sessions?
 """
 jobs_todo_queue = FifoQueue()
 jobs_done_queue = FifoQueue()
@@ -51,8 +45,7 @@ run_thread   = None
 thread_lock  = Lock()
 # Track the number of jobs we've pushed into the queue
 push_count  = 1
-
-announcement_delay = 0
+# Track the number of client connections
 connection_count   = 0
 
 app = Flask( __name__ )
@@ -179,7 +172,7 @@ def push():
         
         return f'No similar snapshots found, job [{question}] NOT added to queue. queue size [{jobs_todo_queue.size()}]'
 
-# Rethink how/why we're killing/poppng jobs in the todo queue
+# Rethink how/why we're killing/popping jobs in the todo queue
 # @app.route( "/pop", methods=[ "GET" ] )
 # def pop():
 #
@@ -190,7 +183,7 @@ def push():
 def get_audio():
     
     tts_text = request.args.get( "tts_text" )
-    # ¡OJO! This is a hack to get around the fact that the docker container can't see the host machine's IP address
+    # ¡OJO! This is a hack to get around the fact that the docker container can't see the host machine's IPv6 address
     # TODO: find a way to get the ip6 address dynamically
     tts_url = "http://172.17.0.4:5002/api/tts?text=" + tts_text
     tts_url = tts_url.replace( " ", "%20" )
@@ -260,13 +253,12 @@ def connect():
     print( f"[{connection_count}] Clients connected" )
     
     global clock_thread
-    # global done_thread
-    global exec_thread
+    global run_thread
     
     with thread_lock:
         if clock_thread is None:
             clock_thread = socketio.start_background_task( enter_clock_loop )
-            exec_thread = socketio.start_background_task( enter_running_loop )
+            run_thread   = socketio.start_background_task( enter_running_loop )
 
 """
 Decorator for disconnect
@@ -277,8 +269,7 @@ def disconnect():
     global connection_count
     connection_count -= 1
     # sanity check size
-    if connection_count < 0:
-        connection_count = 0
+    if connection_count < 0: connection_count = 0
         
     print( f"Client [{request.sid}] disconnected" )
     print( f"[{connection_count}] Clients connected" )
@@ -293,7 +284,7 @@ def ask_ai_text():
     print( "Result: [{}]".format( result ) )
     
     response = make_response( result )
-    response.headers.add( "Access-Control-Allow-Origin", "*" );
+    response.headers.add( "Access-Control-Allow-Origin", "*" )
     
     return response
 
@@ -309,13 +300,13 @@ def proofread():
     timer.print( "Proofread", use_millis=True )
     
     response = make_response( result )
-    response.headers.add( "Access-Control-Allow-Origin", "*" );
+    response.headers.add( "Access-Control-Allow-Origin", "*" )
     
     return response
 
-
 @app.route( "/api/upload-and-transcribe-mp3", methods=[ "POST" ] )
 def upload_and_transcribe_mp3_file():
+    
     print( "upload_and_transcribe_mp3_file() called" )
     
     prefix = request.args.get( "prefix" )
@@ -393,7 +384,7 @@ def run_raw_prompt_text():
     print( "query_string: [{}]".format( request.query_string ) )
     
     prompt_and_content = request.args.get( "prompt_and_content" )
-    prompt_feedback = request.args.get( "prompt_verbose", default="verbose" )
+    # prompt_feedback = request.args.get( "prompt_verbose", default="verbose" )
     
     print( "Running prompt [{}]...".format( prompt_and_content ) )
     
@@ -433,7 +424,6 @@ def upload_and_transcribe_wav_file():
     
     return munger.transcription
 
-
 @app.route( "/api/vox2text" )
 def vox_2_text():
     path = request.args.get( "path" )
@@ -447,14 +437,13 @@ def vox_2_text():
     
     return result[ "text" ].strip()
 
-
 print( "Loading whisper engine... ", end="" )
 model = whisper.load_model( "base.en" )
 print( "Done!" )
 
 print( os.getenv( "FALSE_POSITIVE_API_KEY" ) )
-# genie_client = gc.GenieClient( tts_address="127.0.0.1:5000", runtime_context="local", tts_output_path="/Users/rruiz/Projects/projects-sshfs/io/text-to-vox.wav" )
 genie_client = gc.GenieClient()
 
 if __name__ == "__main__":
+    
     app.run( debug=True )
