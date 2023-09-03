@@ -1,11 +1,14 @@
 {
+  "push_counter": -1,
   "question": "how many records in this dataframe",
+  "answer": "-1",
   "solution_summary": "I used the shape attribute of the pandas dataframe to get the number of records.",
   "code": [
     "df.shape[0]"
   ],
   "updated_date": "2023-08-22 @ 02-35-48",
   "created_date": "2023-08-22 @ 02-35-48",
+  "id_hash": "",
   "programming_language": "Python",
   "language_version": "3.7",
   "solution_directory": "/src/conf/long-term-memory/solutions/",

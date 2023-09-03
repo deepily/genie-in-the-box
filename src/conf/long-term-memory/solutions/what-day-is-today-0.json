@@ -1,5 +1,7 @@
 {
+  "push_counter": -1,
   "question": "what day is today",
+  "answer": "06-12-1962",
   "solution_summary": "I used Python's datetime library to get the current date.",
   "code": [
     "import datetime",
@@ -8,6 +10,7 @@
   ],
   "updated_date": "2023-08-17 @ 17-29-56",
   "created_date": "2023-08-17 @ 17-29-56",
+  "id_hash": "",
   "programming_language": "Python",
   "language_version": "3.7",
   "solution_directory": "/src/conf/long-term-memory/solutions/",
