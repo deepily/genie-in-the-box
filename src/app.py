@@ -47,9 +47,8 @@ jobs_run_queue  = FifoQueue()
 Background Threads
 """
 clock_thread = None
-# done_thread = None
-run_thread  = None
-thread_lock = Lock()
+run_thread   = None
+thread_lock  = Lock()
 # Track the number of jobs we've pushed into the queue
 push_count  = 1
 
@@ -73,56 +72,8 @@ def enter_clock_loop():
     print( "Tracking job TODO queue..." )
     while True:
         
-        # print( du.get_current_datetime() )
         socketio.emit( 'time_update', { "date": du.get_current_datetime() } )
-        
-        # Update the done Q list on the client: if I don't do it here it won't get updated until one job is finished
-        # socketio.emit( 'done_update', { 'value': jobs_done_queue.size() } )
-        
-        # if jobs_todo_queue.has_changed():
-        #
-        #     print( "TODO Q size has changed" )
-        #     socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
-        #
-        #     with app.app_context():
-        #         url = url_for( 'get_audio' ) + f"?tts_text={jobs_todo_queue.size()} jobs waiting"
-        #
-        #     print( f"Emitting TODO url [{url}]..." )
-        #     socketio.emit( 'audio_update', { 'audioURL': url } )
-        #
-        #     # Add a little bit of sleep time between when this audio event is passed to the client and the done Q audio event is passed
-        #     announcement_delay = 2
-        # else:
-        #     announcement_delay = 0
-            
         socketio.sleep( 1 )
-
-"""
-Track the done Q
-"""
-# def track_done_thread():
-#
-#     print( "Tracking job DONE queue..." )
-#     while True:
-#
-#         print( du.get_current_datetime() )
-#         socketio.emit( 'time_update', { "date": du.get_current_datetime() } )
-#
-#         if jobs_done_queue.has_changed():
-#             print( "Done Q size has changed" )
-#             socketio.emit( 'done_update', { 'value': jobs_done_queue.size() } )
-#
-#             with app.app_context():
-#                 url = url_for( 'get_audio' ) + f"?tts_text={jobs_done_queue.size()} jobs finished"
-#
-#             print( f"Emitting DONE url [{url}]..." )
-#             socketio.sleep( announcement_delay )
-#             socketio.emit( 'audio_update', { 'audioURL': url } )
-#         # else:
-#         #     socketio.emit('no_change', {'value': jobs_done_queue.size(), "date": uj.get_current_datetime()})
-#
-#         socketio.sleep( 3 )
-
 
 def enter_running_loop():
     
@@ -315,9 +266,7 @@ def connect():
     with thread_lock:
         if clock_thread is None:
             clock_thread = socketio.start_background_task( enter_clock_loop )
-            # done_thread = socketio.start_background_task( track_done_thread )
             exec_thread = socketio.start_background_task( enter_running_loop )
-
 
 """
 Decorator for disconnect
