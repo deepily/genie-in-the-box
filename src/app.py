@@ -162,6 +162,8 @@ def push():
                 url = url_for( 'get_audio' ) + f"?tts_text={jobs_todo_queue.size()} job{suffix} before this one"
             print( f"Emitting TODO url [{url}]..." )
             socketio.emit( 'audio_update', { 'audioURL': url } )
+        else:
+            print( "No jobs ahead of this one in the todo Q" )
         
         jobs_todo_queue.push( job )
         socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
