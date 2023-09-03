@@ -1,3 +1,4 @@
+import hashlib
 import os
 import glob
 import json
@@ -61,13 +62,13 @@ class SolutionSnapshot:
             )
         return response[ "data" ][ 0 ][ "embedding" ]
     
-    def __init__( self, question="", answer="", created_date=get_timestamp(), updated_date=get_timestamp(), solution_summary="", code=[],
+    def __init__( self, push_counter=-1, question="", answer="", created_date=get_timestamp(), updated_date=get_timestamp(), id_hash="", solution_summary="", code=[],
                   programming_language="Python", language_version="3.10",
                   question_embedding=[ ], solution_embedding=[ ], code_embedding=[ ],
                   solution_directory="/src/conf/long-term-memory/solutions/", solution_file=None
         ):
         
-        # The question, sans anything that's not alphanumeric
+        self.push_counter         = push_counter
         self.question             = SolutionSnapshot.clean_question( question )
         self.answer               = answer
         self.solution_summary     = solution_summary
@@ -76,6 +77,10 @@ class SolutionSnapshot:
         # metadata surrounding the question and the solution
         self.updated_date         = updated_date
         self.created_date         = created_date
+        if id_hash == "":
+            self.id_hash              = hashlib.sha256( (str( self.push_counter ) + self.created_date ).encode() ).hexdigest()
+        else:
+            self.id_hash              = id_hash
         self.programming_language = programming_language
         self.language_version     = language_version
         self.solution_directory   = solution_directory
@@ -150,9 +155,14 @@ class SolutionSnapshot:
     def get_html( self ):
         
         if self.answer != "":
-            return f"<li>Q: {self.question}. A: {self.answer}</li>"
+            if len( self.answer ) > 32:
+                self.answer_short = self.answer[ :16 ] + "..."
+            else:
+                self.answer_short = self.answer
+        
+            return f"<li id='{self.id_hash}'>{self.created_date} Q: {self.question} A: {self.answer_short}</li>"
         else:
-            return f"<li>Q: {self.question}</li>"
+            return f"<li id='{self.id_hash}'>{self.created_date} Q: {self.question}</li>"
     
     def write_to_file( self ):
         
