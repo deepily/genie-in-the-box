@@ -48,36 +48,18 @@
     // handle updates on the todo queue
     socket.on( "todo_update", function( data ) {
         document.getElementById( "todo" ).innerHTML = "Jobs TODO [" + data.value + "]";
-        // fetch( "/get_queue/todo" )
-        //     .then( response => response.json() )
-        //     .then( data => {
-        //         document.getElementById( "todo-list" ).innerHTML = data.todo_jobs.join( "" );
-        //     } )
-        //     .catch( error => console.error( "Error:", error ) );
         updateQueueLists( "todo" );
     } );
 
     // handle updates on the run queue
     socket.on( "run_update", function( data ) {
         document.getElementById( "run" ).innerHTML = "Jobs RUNNING [" + data.value + "]";
-        // fetch( "/get_queue/run" )
-        //     .then( response => response.json() )
-        //     .then( data => {
-        //         document.getElementById( "run-list" ).innerHTML = data.run_jobs.join( "" );
-        //     } )
-        //     .catch( error => console.error( "Error:", error ) );
         updateQueueLists( "run" );
     } );
 
     // handle updates on the done queue
     socket.on( "done_update", function( data ) {
         document.getElementById( "done" ).innerHTML = "Jobs DONE [" + data.value + "]";
-        // fetch( "/get_queue/done" )
-        //     .then( response => response.json() )
-        //     .then( data => {
-        //         document.getElementById( "done-list" ).innerHTML = data.done_jobs.join( "" );
-        //     } )
-        //     .catch( error => console.error( "Error:", error ) );
         updateQueueLists( "done" );
     } );
 
@@ -97,23 +79,89 @@
             } )
             .catch( error => console.error( "Error:", error ) );
     }
+    // Create a global queue for audio clips
+    var audioQueue = [];
+    var isPlaying = false;
+    var looping = false;
 
     // Handle server notifications to play audio
-    socket.on( "audio_update", function( data ) {
+    socket.on( "audio_update", async function( data ) {
 
+        console.log( "Received audio update:", data );
+        // TODO: Currently unable to play audio serially, so I'm just gonna play a simple sound until I can
+        playAudioFromServer( "/static/gentle-gong.mp3" );
+        // audioQueue.push( data.audioURL );
+        // // Print size of the queue to the console
+        // console.log( "Audio queue size:", audioQueue.length );
+        //
+        // // Play the audio if it's the only one in the queue
+        // if ( audioQueue.length <= 1 && !looping ) {
+        //     await startAudioPlayback();
+        // } else {
+        //     console.log( "Already playing audio in the queue, doing nothing..." );
+        //     playAudioFromServer( "/static/gentle-gong.mp3" );
+        // }
+        // var source = audioContext.createBufferSource();
+        // fetch( data.audioURL )
+        //     .then( response => response.arrayBuffer() )
+        //     .then( arrayBuffer => audioContext.decodeAudioData( arrayBuffer ) )
+        //     .then( audioBuffer => {
+        //         source.buffer = audioBuffer;
+        //         source.connect( audioContext.destination );
+        //         source.start();
+        //     } )
+        //     .catch( error => {
+        //         console.log( "Error loading audio file:", error );
+        //     } );
+    } );
+    function playAudioFromServer( audioURL ) {
+        var audio = new Audio( audioURL );
+        audio.play();
+    }
+    async function startAudioPlayback() {
+
+        looping = true;
+        while ( audioQueue.length > 0 ) {
+            if ( !isPlaying ) {
+                await playOneAudio();
+            } else {
+                console.log( "Audio currently playing, waiting..." );
+                await new Promise( resolve => setTimeout( resolve, 1000 ) );
+            }
+        }
+        looping = false;
+    }
+    async function playOneAudio( delay=5000 ) {
+
+        isPlaying = true;
+        // Get the first audio URL from the queue
+        console.log( "audioQueue.length BEFORE popping:", audioQueue.length );
+        var audioURL = audioQueue.shift();
+        console.log( "audioQueue.length  AFTER popping:", audioQueue.length );
+
+        // await new Promise( resolve => setTimeout( resolve, 2000 ) );
         var source = audioContext.createBufferSource();
-        fetch( data.audioURL )
+        fetch( audioURL )
             .then( response => response.arrayBuffer() )
             .then( arrayBuffer => audioContext.decodeAudioData( arrayBuffer ) )
             .then( audioBuffer => {
                 source.buffer = audioBuffer;
                 source.connect( audioContext.destination );
                 source.start();
+                source.onended = () => {
+                    setTimeout( () => {
+                        console.log( `Audio playback ended, pausing {delay} before playing next one...` );
+                    }, delay );
+                };
             } )
             .catch( error => {
                 console.log( "Error loading audio file:", error );
+                // setTimeout( () => {
+                //     console.log( "Audio playback ended, pausing before playing next one..." );
+                // }, delay );
             } );
-    } );
+        isPlaying = false;
+    }
 
 </script>
 
