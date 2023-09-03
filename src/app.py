@@ -37,6 +37,7 @@ from solution_snapshot_mgr import SolutionSnapshotManager
 
 """
 Globally visible queue object
+TODO: How do we make this visible across sessions?
 """
 jobs_todo_queue = FifoQueue()
 jobs_done_queue = FifoQueue()
@@ -45,10 +46,12 @@ jobs_run_queue  = FifoQueue()
 """
 Background Threads
 """
-todo_thread = None
-done_thread = None
+clock_thread = None
+# done_thread = None
 run_thread  = None
 thread_lock = Lock()
+# Track the number of jobs we've pushed into the queue
+push_count  = 1
 
 announcement_delay = 0
 connection_count   = 0
@@ -65,7 +68,7 @@ snapshot_mgr = SolutionSnapshotManager( path_to_snapshots, debug=True, verbose=T
 """
 Track the todo Q
 """
-def track_todo_thread():
+def enter_clock_loop():
     
     print( "Tracking job TODO queue..." )
     while True:
@@ -73,52 +76,55 @@ def track_todo_thread():
         # print( du.get_current_datetime() )
         socketio.emit( 'time_update', { "date": du.get_current_datetime() } )
         
-        if jobs_todo_queue.has_changed():
+        # Update the done Q list on the client: if I don't do it here it won't get updated until one job is finished
+        # socketio.emit( 'done_update', { 'value': jobs_done_queue.size() } )
+        
+        # if jobs_todo_queue.has_changed():
+        #
+        #     print( "TODO Q size has changed" )
+        #     socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
+        #
+        #     with app.app_context():
+        #         url = url_for( 'get_audio' ) + f"?tts_text={jobs_todo_queue.size()} jobs waiting"
+        #
+        #     print( f"Emitting TODO url [{url}]..." )
+        #     socketio.emit( 'audio_update', { 'audioURL': url } )
+        #
+        #     # Add a little bit of sleep time between when this audio event is passed to the client and the done Q audio event is passed
+        #     announcement_delay = 2
+        # else:
+        #     announcement_delay = 0
             
-            print( "TODO Q size has changed" )
-            socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
-            
-            with app.app_context():
-                url = url_for( 'get_audio' ) + f"?tts_text={jobs_todo_queue.size()} jobs waiting"
-            
-            print( f"Emitting TODO url [{url}]..." )
-            socketio.emit( 'audio_update', { 'audioURL': url } )
-            
-            # Add a little bit of sleep time between when this audio event is passed to the client and the done Q audio event is passed
-            announcement_delay = 2
-        else:
-            announcement_delay = 0
-            
-        socketio.sleep( 2 )
+        socketio.sleep( 1 )
 
 """
 Track the done Q
 """
-def track_done_thread():
-    
-    print( "Tracking job DONE queue..." )
-    while True:
-        
-        print( du.get_current_datetime() )
-        socketio.emit( 'time_update', { "date": du.get_current_datetime() } )
-        
-        if jobs_done_queue.has_changed():
-            print( "Done Q size has changed" )
-            socketio.emit( 'done_update', { 'value': jobs_done_queue.size() } )
-            
-            with app.app_context():
-                url = url_for( 'get_audio' ) + f"?tts_text={jobs_done_queue.size()} jobs finished"
-            
-            print( f"Emitting DONE url [{url}]..." )
-            socketio.sleep( announcement_delay )
-            socketio.emit( 'audio_update', { 'audioURL': url } )
-        # else:
-        #     socketio.emit('no_change', {'value': jobs_done_queue.size(), "date": uj.get_current_datetime()})
-        
-        socketio.sleep( 3 )
+# def track_done_thread():
+#
+#     print( "Tracking job DONE queue..." )
+#     while True:
+#
+#         print( du.get_current_datetime() )
+#         socketio.emit( 'time_update', { "date": du.get_current_datetime() } )
+#
+#         if jobs_done_queue.has_changed():
+#             print( "Done Q size has changed" )
+#             socketio.emit( 'done_update', { 'value': jobs_done_queue.size() } )
+#
+#             with app.app_context():
+#                 url = url_for( 'get_audio' ) + f"?tts_text={jobs_done_queue.size()} jobs finished"
+#
+#             print( f"Emitting DONE url [{url}]..." )
+#             socketio.sleep( announcement_delay )
+#             socketio.emit( 'audio_update', { 'audioURL': url } )
+#         # else:
+#         #     socketio.emit('no_change', {'value': jobs_done_queue.size(), "date": uj.get_current_datetime()})
+#
+#         socketio.sleep( 3 )
 
 
-def track_running_thread():
+def enter_running_loop():
     
     print( "Simulating job run execution..." )
     while True:
@@ -127,15 +133,12 @@ def track_running_thread():
         
         if not jobs_todo_queue.is_empty():
             
+            print( "popping one job from todo Q" )
             job = jobs_todo_queue.pop()
+            socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
+            
             jobs_run_queue.push( job )
-            
             socketio.emit( 'run_update', { 'value': jobs_run_queue.size() } )
-            with app.app_context():
-                url = url_for( 'get_audio' ) + f"?tts_text={jobs_run_queue.size()} jobs running"
-            
-            print( f"Emitting RUN url [{url}]..." )
-            socketio.emit( 'audio_update', { 'audioURL': url } )
             
             # Point to the head of the queue without popping it
             running_job = jobs_run_queue.head()
@@ -153,23 +156,19 @@ def track_running_thread():
                 print()
             running_job.answer = results[ "response" ]
             
-            #
-            # job.complete(
-            #     "I don't know, beats the hell out of me!",
-            #     [ "foo = 31", "bar = 17", "total = foo + bar", "total" ],
-            #     "I did this and then I did that, and then something else."
-            # )
-            print( running_job.to_jsons( verbose=False) )
-            jobs_done_queue.push( running_job )
-            
-            # Remove the job at the head of the queue
             jobs_run_queue.pop()
             socketio.emit( 'run_update', { 'value': jobs_run_queue.size() } )
+            jobs_done_queue.push( running_job )
+            socketio.emit( 'done_update', { 'value': jobs_done_queue.size() } )
+            
+            with app.app_context():
+                url = url_for( 'get_audio' ) + f"?tts_text=1 job finished. {running_job.question}? {running_job.answer}"
+            print( f"Emitting DONE url [{url}]..." )
+            socketio.emit( 'audio_update', { 'audioURL': url } )
         
         else:
             print( "no jobs to pop from todo Q " )
-        
-        socketio.sleep( 10 )
+            socketio.sleep( 5 )
         
 @app.route( "/" )
 def root():
@@ -186,6 +185,9 @@ def serve_static( filename ):
 
 @app.route( "/push", methods=[ "GET" ] )
 def push():
+    
+    global push_count
+    push_count += 1
     
     question = request.args.get( 'question' )
     
@@ -206,21 +208,32 @@ def push():
             print()
             
         job = similar_snapshots[ 0 ][ 1 ]
-        # print( job.to_json() )
+        print( job.to_jsons( verbose=False ) )
+        
+        # Only notify the poster if there are jobs ahead of them in the todo Q
+        if jobs_todo_queue.size() != 0:
+            # Generate plurality suffix
+            suffix = "s" if jobs_todo_queue.size() > 1 else ""
+            with app.app_context():
+                url = url_for( 'get_audio' ) + f"?tts_text={jobs_todo_queue.size()} job{suffix} before this one"
+            print( f"Emitting TODO url [{url}]..." )
+            socketio.emit( 'audio_update', { 'audioURL': url } )
         
         jobs_todo_queue.push( job )
+        socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
+        
         return f'Job [{question}] added to queue. queue size [{jobs_todo_queue.size()}]'
-    
+
     else:
         
         return f'No similar snapshots found, job [{question}] NOT added to queue. queue size [{jobs_todo_queue.size()}]'
 
-
-@app.route( "/pop", methods=[ "GET" ] )
-def pop():
-    
-    popped_job = jobs_todo_queue.pop()
-    return f'Job [{popped_job}] popped from queue. queue size [{jobs_todo_queue.size()}]'
+# Rethink how/why we're killing/poppng jobs in the todo queue
+# @app.route( "/pop", methods=[ "GET" ] )
+# def pop():
+#
+#     popped_job = jobs_todo_queue.pop()
+#     return f'Job [{popped_job}] popped from queue. queue size [{jobs_todo_queue.size()}]'
 
 @app.route( "/get_audio", methods=[ "GET" ] )
 def get_audio():
@@ -260,21 +273,24 @@ def get_audio():
     return send_file( path, mimetype="audio/wav" )
 
 
-def generate_html_list( fifo_queue ):
+def generate_html_list( fifo_queue, descending=False ):
     
     html_list = [ ]
     for job in fifo_queue.queue:
         html_list.append( job.get_html() )
+    
+    if descending: html_list.reverse()
     
     return html_list
 
 
 @app.route( '/get_queue/<queue_name>', methods=[ 'GET' ] )
 def get_queue( queue_name ):
+    
     if queue_name == "todo":
-        jobs = generate_html_list( jobs_todo_queue )
+        jobs = generate_html_list( jobs_todo_queue, descending=True )
     elif queue_name == "done":
-        jobs = generate_html_list( jobs_done_queue )
+        jobs = generate_html_list( jobs_done_queue, descending=True )
     elif queue_name == "run":
         jobs = generate_html_list( jobs_run_queue )
     else:
@@ -292,15 +308,15 @@ def connect():
     connection_count += 1
     print( f"[{connection_count}] Clients connected" )
     
-    global todo_thread
-    global done_thread
+    global clock_thread
+    # global done_thread
     global exec_thread
     
     with thread_lock:
-        if todo_thread is None:
-            todo_thread = socketio.start_background_task( track_todo_thread )
-            done_thread = socketio.start_background_task( track_done_thread )
-            exec_thread = socketio.start_background_task( track_running_thread )
+        if clock_thread is None:
+            clock_thread = socketio.start_background_task( enter_clock_loop )
+            # done_thread = socketio.start_background_task( track_done_thread )
+            exec_thread = socketio.start_background_task( enter_running_loop )
 
 
 """
