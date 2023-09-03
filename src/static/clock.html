@@ -26,6 +26,9 @@
     // Call createAudioContext() when the webpage is loaded and DOM is available
     document.addEventListener( "DOMContentLoaded", function() {
         createAudioContext();
+        updateQueueLists( "todo" );
+        updateQueueLists( "run" );
+        updateQueueLists( "done" );
     } );
 
     var socket = io();
@@ -45,35 +48,55 @@
     // handle updates on the todo queue
     socket.on( "todo_update", function( data ) {
         document.getElementById( "todo" ).innerHTML = "Jobs TODO [" + data.value + "]";
-        fetch( "/get_queue/todo" )
-            .then( response => response.json() )
-            .then( data => {
-                document.getElementById( "todo-list" ).innerHTML = data.todo_jobs.join( "" );
-            } )
-            .catch( error => console.error( "Error:", error ) );
+        // fetch( "/get_queue/todo" )
+        //     .then( response => response.json() )
+        //     .then( data => {
+        //         document.getElementById( "todo-list" ).innerHTML = data.todo_jobs.join( "" );
+        //     } )
+        //     .catch( error => console.error( "Error:", error ) );
+        updateQueueLists( "todo" );
     } );
 
     // handle updates on the run queue
     socket.on( "run_update", function( data ) {
         document.getElementById( "run" ).innerHTML = "Jobs RUNNING [" + data.value + "]";
-        fetch( "/get_queue/run" )
-            .then( response => response.json() )
-            .then( data => {
-                document.getElementById( "run-list" ).innerHTML = data.run_jobs.join( "" );
-            } )
-            .catch( error => console.error( "Error:", error ) );
+        // fetch( "/get_queue/run" )
+        //     .then( response => response.json() )
+        //     .then( data => {
+        //         document.getElementById( "run-list" ).innerHTML = data.run_jobs.join( "" );
+        //     } )
+        //     .catch( error => console.error( "Error:", error ) );
+        updateQueueLists( "run" );
     } );
 
     // handle updates on the done queue
     socket.on( "done_update", function( data ) {
         document.getElementById( "done" ).innerHTML = "Jobs DONE [" + data.value + "]";
-        fetch( "/get_queue/done" )
+        // fetch( "/get_queue/done" )
+        //     .then( response => response.json() )
+        //     .then( data => {
+        //         document.getElementById( "done-list" ).innerHTML = data.done_jobs.join( "" );
+        //     } )
+        //     .catch( error => console.error( "Error:", error ) );
+        updateQueueLists( "done" );
+    } );
+
+    function updateQueueLists( queue_name ) {
+        fetch( "/get_queue/" + queue_name )
             .then( response => response.json() )
             .then( data => {
-                document.getElementById( "done-list" ).innerHTML = data.done_jobs.join( "" );
+                if ( queue_name === "todo" ) {
+                    document.getElementById( "todo-list" ).innerHTML = data.todo_jobs.join( "" );
+                } else if ( queue_name === "run" ) {
+                    document.getElementById( "run-list" ).innerHTML = data.run_jobs.join( "" );
+                } else if ( queue_name === "done" ) {
+                    document.getElementById( "done-list" ).innerHTML = data.done_jobs.join( "" );
+                } else {
+                    console.log( "Unknown queue name:", queue_name );
+                }
             } )
             .catch( error => console.error( "Error:", error ) );
-    } );
+    }
 
     // Handle server notifications to play audio
     socket.on( "audio_update", function( data ) {
@@ -97,19 +120,19 @@
 <h1 id="clock">[00-00-0000 @ 00:00:00]</h1>
 <div>
     <h2 id="todo">Jobs todo [0]</h2>
-    <ol id="todo-list">
+    <ol id="todo-list" reversed>
 
     </ol>
 </div>
 <div>
     <h2 id="run">Jobs running [0]</h2>
-    <ol id="run-list">
+    <ol id="run-list" reversed>
 
     </ol>
 </div>
 <div>
     <h2 id="done">Jobs done [0]</h2>
-    <ol id="done-list">
+    <ol id="done-list" reversed>
 
     </ol>
 </div>
