@@ -23,13 +23,23 @@ RUN pip install pandas
 
 RUN pip3 install pydub
 
-RUN pip3 install --upgrade openai
-
 RUN pip3 install pyperclip
 
 RUN pip3 install flask_cors
 
 RUN pip3 install pip install duckduckgo-search
+
+RUN pip3 install --upgrade --no-cache-dir openai
+
+RUN pip install --upgrade --no-cache-dir langchain[llms]
+
+# Switch to run as a non-root user
+RUN groupadd -r rruiz && useradd -r -g rruiz rruiz
+USER rruiz
+
+# TODO: This throws an error
+#WORKDIR /var/genie-in-the-box
+#RUN chown -R rruiz:rruiz /var/genie-in-the-box
 
 CMD [ "/var/genie-in-the-box/run-flask-whisper.sh" ]
 
