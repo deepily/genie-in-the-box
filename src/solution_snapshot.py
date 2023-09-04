@@ -72,11 +72,12 @@ class SolutionSnapshot:
         
     def __init__( self, push_counter=-1, question="", synonymous_questions=OrderedDict(), last_question_asked="", answer="", answer_conversational="",
                   created_date=get_timestamp(), updated_date=get_timestamp(), run_date=get_timestamp(),
+                  run_delta_dict={ "start_time": None, "end_time": None, "elapsed_time": None, "elapsed_time_ms": None },
                   id_hash="", solution_summary="", code=[],
                   programming_language="Python", language_version="3.10",
                   question_embedding=[ ], solution_embedding=[ ], code_embedding=[ ],
                   solution_directory="/src/conf/long-term-memory/solutions/", solution_file=None
-        ):
+                  ):
         
         self.push_counter          = push_counter
         self.question              = SolutionSnapshot.clean_question( question )
@@ -98,6 +99,7 @@ class SolutionSnapshot:
         self.updated_date          = updated_date
         self.created_date          = created_date
         self.run_date              = run_date
+        self.run_delta_dict        = run_delta_dict
         
         if id_hash == "":
             self.id_hash           = SolutionSnapshot.generate_id_hash( self.push_counter, self.run_date )
