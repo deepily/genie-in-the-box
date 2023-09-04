@@ -81,86 +81,69 @@
     }
     // Create a global queue for audio clips
     var audioQueue = [];
-    var isPlaying = false;
-    var looping = false;
+    var playing = false;
+    var quiet   = false
 
     // Handle server notifications to play audio
     socket.on( "audio_update", async function( data ) {
 
         console.log( "Received audio update:", data );
-        // TODO: Currently unable to play audio serially, so I'm just gonna play a simple sound until I can
-        playAudioFromServer( "/static/gentle-gong.mp3" );
-        // audioQueue.push( data.audioURL );
-        // // Print size of the queue to the console
-        // console.log( "Audio queue size:", audioQueue.length );
-        //
-        // // Play the audio if it's the only one in the queue
-        // if ( audioQueue.length <= 1 && !looping ) {
-        //     await startAudioPlayback();
-        // } else {
-        //     console.log( "Already playing audio in the queue, doing nothing..." );
-        //     playAudioFromServer( "/static/gentle-gong.mp3" );
-        // }
-        // var source = audioContext.createBufferSource();
-        // fetch( data.audioURL )
-        //     .then( response => response.arrayBuffer() )
-        //     .then( arrayBuffer => audioContext.decodeAudioData( arrayBuffer ) )
-        //     .then( audioBuffer => {
-        //         source.buffer = audioBuffer;
-        //         source.connect( audioContext.destination );
-        //         source.start();
-        //     } )
-        //     .catch( error => {
-        //         console.log( "Error loading audio file:", error );
-        //     } );
-    } );
-    function playAudioFromServer( audioURL ) {
-        var audio = new Audio( audioURL );
-        audio.play();
-    }
-    async function startAudioPlayback() {
+        if ( quiet ) {
 
-        looping = true;
-        while ( audioQueue.length > 0 ) {
-            if ( !isPlaying ) {
-                await playOneAudio();
-            } else {
-                console.log( "Audio currently playing, waiting..." );
-                await new Promise( resolve => setTimeout( resolve, 1000 ) );
+            console.log( `Quiet mode, not adding ${data.audioURL} to the queue` );
+            // playAudioFromServer( "/static/gentle-gong.mp3" );
+            url = "/static/gentle-gong.mp3"
+
+        } else {
+
+            if ( audioQueue.length === 0 ) {
+                url = "/static/gentle-gong.mp3"
             }
+            url = data.audioURL
         }
-        looping = false;
+        console.log( `Adding audio url to queue: ${url}` );
+        let audio = new Audio( url );
+        audioQueue.push( audio );
+        console.log( "Audio queue size:", audioQueue.length );
+
+        playAll()
+        // if ( !playing ) {
+        //     console.log( "Calling playAll()..." );
+        //     await playAll().then(function() {
+        //         console.log( "Calling playAll()... Done!" );
+        //     })
+        // } else {
+        //     console.log( "Already playing, not calling playAll()" );
+        // }
+    } );
+    // function playAudioFromServer( audioURL ) {
+    //     var audio = new Audio( audioURL );
+    //     audio.play();
+    // }
+    async function playOne( audio ) {
+
+        return new Promise(function(resolve, reject) {
+            audio.onerror = reject;
+            audio.onended = resolve;
+            audio.play()
+        });
     }
-    async function playOneAudio( delay=5000 ) {
+    async function playAll() {
 
-        isPlaying = true;
-        // Get the first audio URL from the queue
-        console.log( "audioQueue.length BEFORE popping:", audioQueue.length );
-        var audioURL = audioQueue.shift();
-        console.log( "audioQueue.length  AFTER popping:", audioQueue.length );
+        if ( playing ){
+            console.log( "Already playing, exiting..." );
+            return
+        }
+        playing = true;
+        while ( audioQueue.length > 0 ) {
 
-        // await new Promise( resolve => setTimeout( resolve, 2000 ) );
-        var source = audioContext.createBufferSource();
-        fetch( audioURL )
-            .then( response => response.arrayBuffer() )
-            .then( arrayBuffer => audioContext.decodeAudioData( arrayBuffer ) )
-            .then( audioBuffer => {
-                source.buffer = audioBuffer;
-                source.connect( audioContext.destination );
-                source.start();
-                source.onended = () => {
-                    setTimeout( () => {
-                        console.log( `Audio playback ended, pausing {delay} before playing next one...` );
-                    }, delay );
-                };
-            } )
-            .catch( error => {
-                console.log( "Error loading audio file:", error );
-                // setTimeout( () => {
-                //     console.log( "Audio playback ended, pausing before playing next one..." );
-                // }, delay );
-            } );
-        isPlaying = false;
+            let audio = audioQueue.shift();
+            console.log( "calling playOne()..." )
+            await playOne( audio ).then(function() {
+                console.log( "calling playOne()... Done!" );
+            })
+        }
+        playing = false;
     }
 
 </script>
@@ -185,7 +168,7 @@
     </ol>
 </div>
 <a href="#" onclick="createAudioContext(); return false;">Enable audio playback</a><br>
-Use this if auto play is disabled. Check about:preferences 'Autoplay'
+Use this if autoplay is disabled. Check about:preferences 'Autoplay'
 
 
 </body>
