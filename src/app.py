@@ -26,6 +26,7 @@ import genie_client       as gc
 import multimodal_munger  as mmm
 import lib.util_stopwatch as sw
 import lib.util_langchain as ul
+from solution_snapshot import SolutionSnapshot
 
 from solution_snapshot_mgr import SolutionSnapshotManager
 from fifo_queue            import FifoQueue
@@ -151,7 +152,14 @@ def push():
         if len( lines_of_code ) > 0:
             print()
             
-        job = similar_snapshots[ 0 ][ 1 ]
+        job = similar_snapshots[ 0 ][ 1 ].get_copy()
+        du.print_banner( "Python object ID:" + str( id( job ) ) )
+        
+        # Update date & count so that we can create id_hash
+        job.run_date     = du.get_current_datetime()
+        job.push_counter = push_count
+        job.id_hash      = SolutionSnapshot.generate_id_hash( push_count, job.run_date )
+        
         print( job.to_jsons( verbose=False ) )
         
         # Only notify the poster if there are jobs ahead of them in the todo Q
@@ -272,7 +280,7 @@ def disconnect():
     connection_count -= 1
     # sanity check size
     if connection_count < 0: connection_count = 0
-        
+    
     print( f"Client [{request.sid}] disconnected" )
     print( f"[{connection_count}] Clients connected" )
     
