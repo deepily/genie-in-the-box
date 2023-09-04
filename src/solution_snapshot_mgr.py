@@ -1,25 +1,26 @@
 import os
 import regex as re
+import pprint
 
 import lib.util as du
 import solution_snapshot as ss
-import question_embeddings_dict as qed
+from question_embeddings_dict import QuestionEmbeddingsDict
 
 class SolutionSnapshotManager:
     def __init__( self, path, debug=False, verbose=False ):
         
-        self.debug                           = debug
-        self.path                            = path
-        self.snapshots_by_question           = self.load_snapshots()
-        # add a dictionary to cache previously generated embeddings
-        self.embeddings_by_question          = qed.QuestionEmbeddingsDict()
+        self.debug                             = debug
+        self.path                              = path
+        self.snapshots_by_question             = self.load_snapshots_by_question()
+        self.snapshots_by_synomymous_questions = self.get_snapshots_by_synomymous_questions( self.snapshots_by_question )
+        self.embeddings_by_question            = QuestionEmbeddingsDict()
         
         if debug:
             print( self )
             if verbose:
                 self.print_snapshots()
         
-    def load_snapshots( self ):
+    def load_snapshots_by_question( self ):
         
         snapshots_by_question = { }
         
@@ -31,6 +32,21 @@ class SolutionSnapshotManager:
                 snapshots_by_question[ snapshot.question ] = snapshot
         
         return snapshots_by_question
+    
+    def get_snapshots_by_synomymous_questions( self, snapshots_by_question ):
+        
+        snapshots_by_synomymous_questions = { }
+        
+        for _, snapshot in snapshots_by_question.items():
+            for question, similarity_score in snapshot.synonymous_questions.items():
+                snapshots_by_synomymous_questions[ question ] = ( similarity_score, snapshot )
+                
+        du.print_banner( f"Found [{len( snapshots_by_synomymous_questions )}] synonymous questions", prepend_nl=True )
+        for question in snapshots_by_synomymous_questions.keys():
+            print( f"Synonymous question [{question}] for snapshot.question [{snapshots_by_synomymous_questions[ question ][ 1 ].question}]" )
+            
+        print()
+        return snapshots_by_synomymous_questions
     
     def add_snapshot( self, snapshot ):
         
@@ -98,14 +114,23 @@ class SolutionSnapshotManager:
         
         question = ss.SolutionSnapshot.clean_question( question )
         
-        if debug: print( f"get_snapshots_by_question( '{question}' )..." )
+        print( f"get_snapshots_by_question( '{question}' )..." )
+        # print( "question in self.snapshots_by_synomymous_questions:", question in self.snapshots_by_synomymous_questions)
         
         if self.question_exists( question ):
             
             if debug: print( f"Exact match: Snapshot with question [{question}] exists!" )
             similar_snapshots = [ (100.0, self.snapshots_by_question[ question ]) ]
+            
+        elif question in self.snapshots_by_synomymous_questions:
+            
+            snapshot = self.snapshots_by_synomymous_questions[ question ][ 1 ]
+            score    = self.snapshots_by_synomymous_questions[ question ][ 0 ]
+            similar_snapshots = [ (score, snapshot) ]
+            print( f"Snapshot with synonymous question for [{question}] exists: [{snapshot.question}] similarity score [{score}]" )
         
         else:
+            print( "No exact match or synonymous question found, searching for similar questions..." )
             similar_snapshots = self.get_snapshots_by_question_similarity( question, threshold=threshold, limit=limit )
         
         if len( similar_snapshots ) > 0:
