@@ -33,6 +33,7 @@
     // Call createAudioContext() when the webpage is loaded and DOM is available
     document.addEventListener( "DOMContentLoaded", function() {
         console.log( "DOM fully loaded and parsed" );
+        setEnterKeyListener();
         createAudioContext();
         updateQueueLists( "todo" );
         updateQueueLists( "run" );
@@ -174,6 +175,13 @@
             } )
             .catch( error => console.error( "Error:", error ) );
     }
+    function setEnterKeyListener() {
+        document.getElementById( "question-input" ).addEventListener( "keyup", ({key}) => {
+            if ( key === "Enter" ) {
+                pushQuestion();
+            }
+        });
+    }
 </script>
 
 <h1 id="clock">[00-00-0000 @ 00:00:00]</h1>
@@ -202,7 +210,7 @@
     <h2>Ask a question: <span id="response-status"></span></h2>
     <p id="response-text"></p>
     <input type="text" id="question-input" placeholder="Enter your question here">
-    <button onclick="pushQuestion(); return false;">Submit</button>
+    <button id="submit-button" onclick="pushQuestion(); return false;">Submit</button>
 </div>
 
 </body>
