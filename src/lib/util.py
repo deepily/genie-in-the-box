@@ -5,6 +5,7 @@ import regex as re
 import random
 import sys
 import datetime as dt
+import pytz
 
 debug = False
 
@@ -22,10 +23,13 @@ def add_to_path( path ):
         print( "Path [{}] already in sys.path".format( path ) )
 
 
-def get_current_datetime():
+def get_current_datetime( tz_name="US/Eastern"):
     
-    now = dt.datetime.now()
-    return now.strftime( "%m-%d-%Y @ %H:%M:%S" )
+    now     = dt.datetime.now()
+    tz      = pytz.timezone( tz_name )
+    tz_date = now.astimezone( tz )
+    
+    return tz_date.strftime( '%m-%d-%Y @ %H:%M:%S %Z' )
 
 def get_current_date():
     
@@ -264,13 +268,14 @@ def get_search_terms( requested_length ):
 
 if __name__ == "__main__":
     
+    print( get_current_datetime() )
     # generate_domain_names( 10, debug=True )
     
     # search_terms = get_file_as_list( get_project_root() + "/src/conf/search-terms.txt", lower_case=True, clean=True, randomize=True )
     # #
     # for search_term in search_terms: print( search_term )
-    search_terms = get_search_terms( 120 )
-    print( len( search_terms ) )
+    # search_terms = get_search_terms( 120 )
+    # print( len( search_terms ) )
     
     # raw = "r-i-c-o dot f-e-l-i-p dot j-o-n-e-s at gmail.com"
     # dashes_regex = re.compile( "[a-z]-+", re.IGNORECASE )
