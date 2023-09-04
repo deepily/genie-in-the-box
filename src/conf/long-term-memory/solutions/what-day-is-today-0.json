@@ -8,8 +8,9 @@
     "today = datetime.date.today()",
     "today"
   ],
-  "updated_date": "2023-08-17 @ 17-29-56",
-  "created_date": "2023-08-17 @ 17-29-56",
+  "updated_date": "2023-08-17 @ 17-29-56 EST",
+  "created_date": "2023-08-17 @ 17-29-56 EST",
+  "run_date": "2023-09-04 @ 11-29-56 EST",
   "id_hash": "",
   "programming_language": "Python",
   "language_version": "3.7",
