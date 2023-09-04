@@ -271,7 +271,7 @@ class GenieClient:
     def ask_chat_gpt_text( self, query, preamble="What does this mean: " ):
 
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
-        print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
+        if self.debug: print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
     
         timer = sw.Stopwatch()
         print( "Asking ChatGPT [{}]...".format( self.model ), end="" )
