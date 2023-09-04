@@ -25,24 +25,38 @@
 
     // Call createAudioContext() when the webpage is loaded and DOM is available
     document.addEventListener( "DOMContentLoaded", function() {
+        console.log( "DOM fully loaded and parsed" );
         createAudioContext();
         updateQueueLists( "todo" );
         updateQueueLists( "run" );
         updateQueueLists( "done" );
+        addClickEventToDoneList();
     } );
 
+    function addClickEventToDoneList() {
+
+        console.log( "Adding click event to done list..." );
+        const doneList = document.getElementById( "done-list" );
+        const items = doneList.getElementsByTagName( "li" );
+
+        for ( let i = 0; i < items.length; i++ ) {
+            console.log( "Adding click event to item:", items[ i ] );
+            items[ i ].onclick = function() {
+                foo( items[ i ].id );
+            };
+        }
+    }
+
+    function foo( id ) {
+        console.log( id );
+    }
     var socket = io();
     socket.on( "connect", function() {
         console.log( "Connected to Flask server" );
     } );
 
-    function updateClock( date ) {
-        document.getElementById( "clock" ).innerHTML = "[" + date + "]";
-    }
-
     socket.on( "time_update", function( data ) {
-        var date = data.date;
-        updateClock( date )
+        document.getElementById( "clock" ).innerHTML = "[" + data.date + "]";
     } );
 
     // handle updates on the todo queue
@@ -73,6 +87,7 @@
                     document.getElementById( "run-list" ).innerHTML = data.run_jobs.join( "" );
                 } else if ( queue_name === "done" ) {
                     document.getElementById( "done-list" ).innerHTML = data.done_jobs.join( "" );
+                    addClickEventToDoneList();
                 } else {
                     console.log( "Unknown queue name:", queue_name );
                 }
@@ -146,6 +161,24 @@
         playing = false;
     }
 
+    function pushQuestion() {
+
+        var question = document.getElementById( "question-input" ).value;
+        fetch( "/push?question=" + question )
+            .then( response => {
+                if ( response.status === 200 ) {
+                    document.getElementById( "response-status" ).textContent = "Success!";
+                } else {
+                    document.getElementById( "response-status" ).textContent = "Error :-( Check the console for more details.";
+                    throw new Error( `HTTP error, status = ${ response.status }` );
+                }
+                return response.text();
+            } )
+            .then( ( text ) => {
+                document.getElementById( "response-text" ).textContent = text;
+            } )
+            .catch( error => console.error( "Error:", error ) );
+    }
 </script>
 
 <h1 id="clock">[00-00-0000 @ 00:00:00]</h1>
@@ -167,9 +200,15 @@
 
     </ol>
 </div>
-<a href="#" onclick="createAudioContext(); return false;">Enable audio playback</a><br>
-Use this if autoplay is disabled. Check about:preferences 'Autoplay'
+<!--<a href="#" onclick="createAudioContext(); return false;">Enable audio playback</a><br>-->
+<!--Use this if autoplay is disabled. Check about:preferences 'Autoplay'-->
 
+<div>
+    <h2>Ask a question: <span id="response-status"></span></h2>
+    <p id="response-text"></p>
+    <input type="text" id="question-input" placeholder="Enter your question here">
+    <button onclick="pushQuestion(); return false;">Submit</button>
+</div>
 
 </body>
 </html>
