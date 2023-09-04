@@ -1,5 +1,6 @@
 import json
 import os
+import pprint
 import time
 
 from threading         import Lock
@@ -78,6 +79,8 @@ def enter_running_loop():
         
         if not jobs_todo_queue.is_empty():
             
+            run_timer = sw.Stopwatch( "Starting run timer..." )
+            
             print( "popping one job from todo Q" )
             job = jobs_todo_queue.pop()
             socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
@@ -109,12 +112,15 @@ def enter_running_loop():
                 running_job.answer_conversational = genie_client.ask_chat_gpt_text( running_job.answer, preamble=preamble ).strip()
                 timer.print( "Done!", use_millis=True )
                 
-                
                 # Arrive if we've arrived at this point, then we've successfully run the job
+                run_timer.print( "Full run complete ", use_millis=True )
+                running_job.run_delta_dict = run_timer.get_delta_dict()
                 du.print_banner( f"Job [{running_job.question}] complete!", prepend_nl=True, end="\n" )
                 print( f"Writing job [{running_job.question}] to file..." )
                 running_job.write_to_file()
                 print( f"Writing job [{running_job.question}] to file... Done!" )
+                du.print_banner( "running_job.run_delta_dict", prepend_nl=True )
+                pprint.pprint( running_job.run_delta_dict )
                 
             jobs_run_queue.pop()
             socketio.emit( 'run_update', { 'value': jobs_run_queue.size() } )
