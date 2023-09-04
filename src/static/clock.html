@@ -122,19 +122,7 @@
         console.log( "Audio queue size:", audioQueue.length );
 
         playAll()
-        // if ( !playing ) {
-        //     console.log( "Calling playAll()..." );
-        //     await playAll().then(function() {
-        //         console.log( "Calling playAll()... Done!" );
-        //     })
-        // } else {
-        //     console.log( "Already playing, not calling playAll()" );
-        // }
     } );
-    // function playAudioFromServer( audioURL ) {
-    //     var audio = new Audio( audioURL );
-    //     audio.play();
-    // }
     async function playOne( audio ) {
 
         return new Promise(function(resolve, reject) {
