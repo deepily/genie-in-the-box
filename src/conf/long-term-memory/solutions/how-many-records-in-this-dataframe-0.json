@@ -1,14 +1,28 @@
 {
-  "push_counter": -1,
+  "push_counter": 5,
   "question": "how many records in this dataframe",
-  "answer": "-1",
+  "answer": "200",
+  "answer_conversational": "The dataframe you're asking about contains 200 records.",
+  "synonymous_questions": {
+    "how many records in this dataframe": 100.0,
+    "how many rows in this table": 85.65284646148298,
+    "how many records in this table": 91.67738282979533
+  },
+  "last_question_asked": "how many records in this table",
   "solution_summary": "I used the shape attribute of the pandas dataframe to get the number of records.",
   "code": [
-    "df.shape[0]"
+    "print( df.shape[0] )"
   ],
-  "updated_date": "2023-08-22 @ 02-35-48",
-  "created_date": "2023-08-22 @ 02-35-48",
-  "id_hash": "",
+  "updated_date": "2023-08-17 @ 17-29-56 EST",
+  "created_date": "2023-08-17 @ 17-29-56 EST",
+  "run_date": "09-04-2023 @ 18:59:10 EDT",
+  "run_delta_dict": {
+    "start_time": "2023-09-04 22:59:15.005261",
+    "end_time": "2023-09-04 22:59:16.650469",
+    "elapsed_time": "0:00:01.645208",
+    "elapsed_time_ms": 1645
+  },
+  "id_hash": "fef7aeab8b8d0cc5262dd9be8842a27b8076ea253ab2eab37e65dbd01cdd6698",
   "programming_language": "Python",
   "language_version": "3.7",
   "solution_directory": "/src/conf/long-term-memory/solutions/",

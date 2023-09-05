@@ -1,16 +1,33 @@
 {
-  "push_counter": -1,
+  "push_counter": 3,
   "question": "what day is today",
-  "answer": "06-12-1962",
+  "answer": "2023-09-04",
+  "answer_conversational": "Today's date is the 4th of September, 2023.",
+  "synonymous_questions": {
+    "what day is today": 100.0,
+    "whats todays date": 91.58513282130653,
+    "whats todays day and date": 90.5381565243548,
+    "what is the day and date for today": 93.80950812937965,
+    "whats the date": 87.63008710282485,
+    "say what day is today": 95.5450009011308
+  },
+  "last_question_asked": "say what day is today",
   "solution_summary": "I used Python's datetime library to get the current date.",
   "code": [
     "import datetime",
     "today = datetime.date.today()",
-    "today"
+    "print( today )"
   ],
-  "updated_date": "2023-08-17 @ 17-29-56",
-  "created_date": "2023-08-17 @ 17-29-56",
-  "id_hash": "",
+  "updated_date": "09-04-2023 @ 18:48:19 EDT",
+  "created_date": "2023-08-17 @ 17-29-56 EST",
+  "run_date": "09-04-2023 @ 18:55:22 EDT",
+  "run_delta_dict": {
+    "start_time": "2023-09-04 22:55:26.129402",
+    "end_time": "2023-09-04 22:55:28.141092",
+    "elapsed_time": "0:00:02.011690",
+    "elapsed_time_ms": 2011
+  },
+  "id_hash": "87951f4ba0842b6af861fcd8cccb1388495a4ce4165da8d069802003496a4f90",
   "programming_language": "Python",
   "language_version": "3.7",
   "solution_directory": "/src/conf/long-term-memory/solutions/",

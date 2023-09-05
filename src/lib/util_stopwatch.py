@@ -70,18 +70,25 @@ class Stopwatch:
         else:
             print( "{0} in {1:,} seconds".format( msg, seconds ), end=end )
     
-    def get_delta( self ):
+    def get_delta_dict( self ):
         
         """
         Calculate the delta between now and when this object was instantiated
 
         :return: Time delta in milliseconds
         """
+        self.end_time        = dt.datetime.now()
+        self.elapsed_time    = self.end_time - self.start_time
+        self.elapsed_time_ms = int( self.elapsed_time.total_seconds() * 1000 )
         
-        delta = dt.datetime.now() - self.start_time
-        millis = int( delta.total_seconds() * 1000 )
+        self.delta_dict = {
+            "start_time"      : str( self.start_time ),
+            "end_time"        : str( self.end_time ),
+            "elapsed_time"    : str( self.elapsed_time ),
+            "elapsed_time_ms" : self.elapsed_time_ms
+        }
         
-        return millis
+        return self.delta_dict
 
 if __name__ == '__main__':
     

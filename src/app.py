@@ -1,5 +1,6 @@
 import json
 import os
+import pprint
 import time
 
 from threading         import Lock
@@ -26,6 +27,7 @@ import genie_client       as gc
 import multimodal_munger  as mmm
 import lib.util_stopwatch as sw
 import lib.util_langchain as ul
+from solution_snapshot import SolutionSnapshot
 
 from solution_snapshot_mgr import SolutionSnapshotManager
 from fifo_queue            import FifoQueue
@@ -77,6 +79,8 @@ def enter_running_loop():
         
         if not jobs_todo_queue.is_empty():
             
+            run_timer = sw.Stopwatch( "Starting run timer..." )
+            
             print( "popping one job from todo Q" )
             job = jobs_todo_queue.pop()
             socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
@@ -89,24 +93,42 @@ def enter_running_loop():
             timer = sw.Stopwatch( f"Executing [{running_job.question}]..." )
             results = ul.assemble_and_run_solution( running_job.code, du.get_project_root() + "/src/conf/long-term-memory/events.csv", debug=True )
             timer.print( "Done!", use_millis=True )
-            du.print_banner( "¡TODO: Uncomment job.complete() once access to GPT has been restored!", expletive=True, end="\n" )
-            
             du.print_banner( f"Results for [{running_job.question}]", prepend_nl=True, end="\n" )
+            
             if results[ "return_code" ] != 0:
                 print( results[ "response" ] )
+                running_job.answer = results[ "response" ]
             else:
                 response = results[ "response" ]
+                running_job.answer = response
+                
                 for line in response.split( "\n" ): print( "* " + line )
                 print()
-            running_job.answer = results[ "response" ]
-            
+                
+                msg = "Calling GPT to reformat the job.answer..."
+                # print( msg )
+                timer = sw.Stopwatch( msg )
+                preamble = get_preamble( running_job.question, running_job.answer )
+                running_job.answer_conversational = genie_client.ask_chat_gpt_text( running_job.answer, preamble=preamble ).strip()
+                timer.print( "Done!", use_millis=True )
+                
+                # Arrive if we've arrived at this point, then we've successfully run the job
+                run_timer.print( "Full run complete ", use_millis=True )
+                running_job.run_delta_dict = run_timer.get_delta_dict()
+                du.print_banner( f"Job [{running_job.question}] complete!", prepend_nl=True, end="\n" )
+                print( f"Writing job [{running_job.question}] to file..." )
+                running_job.write_to_file()
+                print( f"Writing job [{running_job.question}] to file... Done!" )
+                du.print_banner( "running_job.run_delta_dict", prepend_nl=True )
+                pprint.pprint( running_job.run_delta_dict )
+                
             jobs_run_queue.pop()
             socketio.emit( 'run_update', { 'value': jobs_run_queue.size() } )
             jobs_done_queue.push( running_job )
             socketio.emit( 'done_update', { 'value': jobs_done_queue.size() } )
             
             with app.app_context():
-                url = url_for( 'get_audio' ) + f"?tts_text=1 job finished. {running_job.question}? {running_job.answer}"
+                url = url_for( 'get_audio' ) + f"?tts_text=1 job finished. {running_job.last_question_asked}? {running_job.answer_conversational}"
             print( f"Emitting DONE url [{url}]..." )
             socketio.emit( 'audio_update', { 'audioURL': url } )
         
@@ -114,6 +136,21 @@ def enter_running_loop():
             print( "no jobs to pop from todo Q " )
             socketio.sleep( 5 )
         
+def get_preamble( question, answer ):
+
+    preamble = """I'm going to provide you with a question and answer pair like this:
+
+                    Q: <question>
+                    A: <answer>
+
+                    Rephrase the terse answer in a conversational manner.
+                    Your rephrasing of the terse answer must only answer the question and no more:
+
+                    Q: {question}
+                    A: {answer}""".format( question=question, answer=answer )
+    
+    return preamble
+    
 @app.route( "/" )
 def root():
     return "Genie in the box flask server root"
@@ -141,9 +178,13 @@ def push():
     
     if len( similar_snapshots ) > 0:
         
-        lines_of_code = similar_snapshots[ 0 ][ 1 ].code
+        # Get the best match: best[ 0 ] is the score, best[ 1 ] is the snapshot
+        best_snapshot = similar_snapshots[ 0 ][ 1 ]
+        best_score    = similar_snapshots[ 0 ][ 0 ]
+        
+        lines_of_code = best_snapshot.code
         if len( lines_of_code ) > 0:
-            du.print_banner( f"Code for [{similar_snapshots[ 0 ][ 1 ].question}]:" )
+            du.print_banner( f"Code for [{best_snapshot.question}]:" )
         else:
             du.print_banner( "Code: NONE found?" )
         for line in lines_of_code:
@@ -151,8 +192,17 @@ def push():
         if len( lines_of_code ) > 0:
             print()
             
-        job = similar_snapshots[ 0 ][ 1 ]
-        print( job.to_jsons( verbose=False ) )
+        job = best_snapshot.get_copy()
+        print( "Python object ID for copied job: " + str( id( job ) ) )
+        job.add_synonymous_question( question, best_score )
+        
+        # Update date & count so that we can create id_hash
+        job.run_date     = du.get_current_datetime()
+        job.push_counter = push_count
+        job.id_hash      = SolutionSnapshot.generate_id_hash( push_count, job.run_date )
+        
+        print()
+        print( job.to_jsons( verbose=False ), end="\n\n" )
         
         # Only notify the poster if there are jobs ahead of them in the todo Q
         if jobs_todo_queue.size() != 0:
@@ -272,7 +322,7 @@ def disconnect():
     connection_count -= 1
     # sanity check size
     if connection_count < 0: connection_count = 0
-        
+    
     print( f"Client [{request.sid}] disconnected" )
     print( f"[{connection_count}] Clients connected" )
     
