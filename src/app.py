@@ -110,21 +110,20 @@ def enter_running_loop():
                 print()
                 
                 msg = "Calling GPT to reformat the job.answer..."
-                # print( msg )
                 timer = sw.Stopwatch( msg )
-                preamble = get_preamble( running_job.question, running_job.answer )
+                preamble = get_preamble( running_job.last_question_asked, running_job.answer )
                 running_job.answer_conversational = genie_client.ask_chat_gpt_text( query=running_job.answer, preamble=preamble, model=GPT_3_5 )
                 timer.print( "Done!", use_millis=True )
                 
                 # Arrive if we've arrived at this point, then we've successfully run the job
                 run_timer.print( "Full run complete ", use_millis=True )
-                running_job.run_delta_dict = run_timer.get_delta_dict()
+                running_job.update_runtime_stats( run_timer )
                 du.print_banner( f"Job [{running_job.question}] complete!", prepend_nl=True, end="\n" )
                 print( f"Writing job [{running_job.question}] to file..." )
                 running_job.write_to_file()
                 print( f"Writing job [{running_job.question}] to file... Done!" )
-                du.print_banner( "running_job.run_delta_dict", prepend_nl=True )
-                pprint.pprint( running_job.run_delta_dict )
+                du.print_banner( "running_job.runtime_stats", prepend_nl=True )
+                pprint.pprint( running_job.runtime_stats )
                 
             jobs_run_queue.pop()
             socketio.emit( 'run_update', { 'value': jobs_run_queue.size() } )
@@ -132,7 +131,9 @@ def enter_running_loop():
             socketio.emit( 'done_update', { 'value': jobs_done_queue.size() } )
             
             with app.app_context():
-                url = url_for( 'get_audio' ) + f"?tts_text=1 job finished. {running_job.last_question_asked}? {running_job.answer_conversational}"
+                # url = url_for( 'get_audio' ) + f"?tts_text=1 job finished. {running_job.last_question_asked}? {running_job.answer_conversational}"
+                url = url_for( 'get_audio' ) + f"?tts_text=1 job finished. {running_job.answer_conversational}"
+                
             print( f"Emitting DONE url [{url}]..." )
             socketio.emit( 'audio_update', { 'audioURL': url } )
         
@@ -147,7 +148,7 @@ def get_preamble( question, answer ):
                     Q: <question>
                     A: <answer>
 
-                    Rephrase the terse answer in a conversational manner.
+                    Rephrase the terse answer in a conversational manner that matches the tone of the question.
                     Your rephrasing of the terse answer must only answer the question and no more:
 
                     Q: {question}

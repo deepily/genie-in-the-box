@@ -70,9 +70,19 @@ class SolutionSnapshot:
         
         return hashlib.sha256( (str( push_counter ) + run_date ).encode() ).hexdigest()
         
+    @staticmethod
+    def get_default_stats_dict():
+    
+        return {
+            "run_count"   : 0,
+            "total_ms"    : 0,
+            "mean_run_ms" : 0,
+            "last_run_ms" : 0
+        }
+
     def __init__( self, push_counter=-1, question="", synonymous_questions=OrderedDict(), last_question_asked="", answer="", answer_conversational="",
                   created_date=get_timestamp(), updated_date=get_timestamp(), run_date=get_timestamp(),
-                  run_delta_dict={ "start_time": None, "end_time": None, "elapsed_time": None, "elapsed_time_ms": None },
+                  runtime_stats=get_default_stats_dict(),
                   id_hash="", solution_summary="", code=[],
                   programming_language="Python", language_version="3.10",
                   question_embedding=[ ], solution_embedding=[ ], code_embedding=[ ],
@@ -99,7 +109,7 @@ class SolutionSnapshot:
         self.updated_date          = updated_date
         self.created_date          = created_date
         self.run_date              = run_date
-        self.run_delta_dict        = run_delta_dict
+        self.runtime_stats         = runtime_stats
         
         if id_hash == "":
             self.id_hash           = SolutionSnapshot.generate_id_hash( self.push_counter, self.run_date )
@@ -243,23 +253,39 @@ class SolutionSnapshot:
         with open( file_path, "w" ) as f:
             f.write( self.to_jsons() )
 
+    def update_runtime_stats( self, timer ) -> None:
+        """
+        Updates the runtime stats for this object
+        
+        Uses the timer object to calculate the delta between now and when this object was instantiated
 
+        :return: None
+        """
+        delta_ms = timer.get_delta_ms()
+        
+        self.runtime_stats[ "run_count"   ] += 1
+        self.runtime_stats[ "total_ms"    ] += delta_ms
+        self.runtime_stats[ "mean_run_ms" ]  = int( self.runtime_stats[ "total_ms" ] / self.runtime_stats[ "run_count" ] )
+        self.runtime_stats[ "last_run_ms" ]  = delta_ms
+        
 # Add main method
 if __name__ == "__main__":
     
-    today = SolutionSnapshot( question="what day is today" )
-    # tomorrow = SolutionSnapshot( question="what day is tomorrow" )
-    # blah = SolutionSnapshot( question="i feel so blah today" )
-    # color = SolutionSnapshot( question="what color is the sky" )
-    # date = SolutionSnapshot( question="what is today's date" )
-    
-    # snapshots = [ today, tomorrow, blah, color, date ]
-    snapshots = [ today ]
-    
-    for snapshot in snapshots:
-        score = today.get_question_similarity( snapshot )
-        print( f"Score: [{score}] for [{snapshot.question}] == [{today.question}]" )
-        snapshot.write_to_file()
+    embedding = SolutionSnapshot.generate_embedding( "what time is it" )
+    print( embedding )
+    # today = SolutionSnapshot( question="what day is today" )
+    # # tomorrow = SolutionSnapshot( question="what day is tomorrow" )
+    # # blah = SolutionSnapshot( question="i feel so blah today" )
+    # # color = SolutionSnapshot( question="what color is the sky" )
+    # # date = SolutionSnapshot( question="what is today's date" )
+    #
+    # # snapshots = [ today, tomorrow, blah, color, date ]
+    # snapshots = [ today ]
+    #
+    # for snapshot in snapshots:
+    #     score = today.get_question_similarity( snapshot )
+    #     print( f"Score: [{score}] for [{snapshot.question}] == [{today.question}]" )
+    #     snapshot.write_to_file()
     
     # foo = SolutionSnapshot.from_json_file( du.get_project_root() + "/src/conf/long-term-memory/solutions/what-day-is-today-0.json" )
     # print( foo.to_json() )

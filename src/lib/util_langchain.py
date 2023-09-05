@@ -48,11 +48,22 @@ def assemble_and_run_solution( solution_code, path=None, debug=False ):
 
 def test_assemble_and_run_solution():
 
+    # solution_code = [
+    #     "num_records = df.shape[0]",
+    #     "num_records"
+    # ]
+    # results = assemble_and_run_solution( solution_code, du.get_project_root() + "/src/conf/long-term-memory/events.csv" )
+    
     solution_code = [
-        "num_records = df.shape[0]",
-        "num_records"
+        "import datetime",
+        "import pytz",
+        "now = datetime.datetime.now()",
+        "tz_name = 'America/New_York'",
+        "tz = pytz.timezone( tz_name )",
+        "tz_date = now.astimezone( tz )",
+        "print( tz_date.strftime( '%H:%M:%S %Z' ) )"
     ]
-    results = assemble_and_run_solution( solution_code, du.get_project_root() + "/src/conf/long-term-memory/events.csv" )
+    results = assemble_and_run_solution( solution_code )
     
     if results[ "return_code" ] != 0:
         print( results[ "response" ] )
