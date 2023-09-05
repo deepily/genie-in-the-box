@@ -61,7 +61,7 @@ def test_assemble_and_run_solution():
         "tz_name = 'America/New_York'",
         "tz = pytz.timezone( tz_name )",
         "tz_date = now.astimezone( tz )",
-        "print( tz_date.strftime( '%H:%M:%S %Z' ) )"
+        "print( tz_date.strftime( '%I:%M %p %Z' ) )"
     ]
     results = assemble_and_run_solution( solution_code )
     
