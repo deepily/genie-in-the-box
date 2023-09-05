@@ -27,6 +27,10 @@ import genie_client       as gc
 import multimodal_munger  as mmm
 import lib.util_stopwatch as sw
 import lib.util_langchain as ul
+
+from genie_client         import GPT_3_5
+from genie_client         import GPT_4
+
 from solution_snapshot import SolutionSnapshot
 
 from solution_snapshot_mgr import SolutionSnapshotManager
@@ -109,7 +113,7 @@ def enter_running_loop():
                 # print( msg )
                 timer = sw.Stopwatch( msg )
                 preamble = get_preamble( running_job.question, running_job.answer )
-                running_job.answer_conversational = genie_client.ask_chat_gpt_text( running_job.answer, preamble=preamble ).strip()
+                running_job.answer_conversational = genie_client.ask_chat_gpt_text( query=running_job.answer, preamble=preamble, model=GPT_3_5 )
                 timer.print( "Done!", use_millis=True )
                 
                 # Arrive if we've arrived at this point, then we've successfully run the job

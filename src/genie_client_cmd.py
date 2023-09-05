@@ -62,7 +62,9 @@ class CmdUi:
 
         self.btn_start.focus_set()
 
-        self.genie_client = gc.GenieClient( calling_gui=self.root, recording_timeout=recording_timeout, copy_transx_to_clipboard=copy_transx_to_clipboard, debug=debug, cwd=self.cwd )
+        self.genie_client = gc.GenieClient( calling_gui=self.root, copy_transx_to_clipboard=copy_transx_to_clipboard,
+                                            debug=debug, recording_timeout=recording_timeout
+                                            )
 
         self.root.mainloop()
 
