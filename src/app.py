@@ -278,35 +278,6 @@ def get_audio_file( tts_text ):
 def get_tts_audio():
     
     tts_text = request.args.get( "tts_text" )
-    # tts_url  = get_tts_url( tts_text )
-    #
-    # du.print_banner( f"Fetching [{tts_url}]" )
-    # response = requests.get( tts_url )
-    # path     = du.get_project_root() + "/io/tts.wav"
-    #
-    # # commands = [ "wget", "-O", path, tts_url ]
-    # #
-    # # results = run( commands, stdout=PIPE, stderr=PIPE, universal_newlines=True )
-    # #
-    # # if results.returncode != 0:
-    # #     print()
-    # #     response = "ERROR:\n{}".format( results.stderr.strip() )
-    # #     path = du.get_project_root() + "/io/failed-to-fetch-tts-file.wav"
-    # #     print( response )
-    # #
-    # # return send_file( path, mimetype="audio/wav" )
-    #
-    # # Check if the request was successful
-    # if response.status_code == 200:
-    #
-    #     # Write the content of the response to a file
-    #     with open( path, "wb" ) as audio_file:
-    #         audio_file.write( response.content )
-    # else:
-    #     print( f"Failed to get UPDATED audio file: {response.status_code}" )
-    #     path = du.get_project_root() + "/io/failed-to-fetch-tts-file.wav"
-    #
-    # return send_file( path, mimetype="audio/wav" )
 
     return get_audio_file( tts_text )
 
