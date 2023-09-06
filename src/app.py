@@ -236,6 +236,7 @@ def push_job_to_todo_queue( question ):
     
     else:
         
+        socketio.emit( 'audio_update', { 'audioURL': url_for( 'get_tts_audio' ) + "?tts_text=I can't help you with that, my apologies" } )
         return f'No similar snapshots found, job NOT added to queue. Queue size [{jobs_todo_queue.size()}]'
 
 # Rethink how/why we're killing/popping jobs in the todo queue
