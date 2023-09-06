@@ -175,60 +175,6 @@ def push():
     question = request.args.get( 'question' )
     
     return push_job_to_todo_queue( question )
-    # global push_count
-    # push_count += 1
-    #
-    # du.print_banner( f"Question: [{question}]", prepend_nl=True )
-    # similar_snapshots = snapshot_mgr.get_snapshots_by_question( question )
-    # print()
-    #
-    # if len( similar_snapshots ) > 0:
-    #
-    #     # Get the best match: best[ 0 ] is the score, best[ 1 ] is the snapshot
-    #     best_snapshot = similar_snapshots[ 0 ][ 1 ]
-    #     best_score    = similar_snapshots[ 0 ][ 0 ]
-    #
-    #     lines_of_code = best_snapshot.code
-    #     if len( lines_of_code ) > 0:
-    #         du.print_banner( f"Code for [{best_snapshot.question}]:" )
-    #     else:
-    #         du.print_banner( "Code: NONE found?" )
-    #     for line in lines_of_code:
-    #         print( line )
-    #     if len( lines_of_code ) > 0:
-    #         print()
-    #
-    #     job = best_snapshot.get_copy()
-    #     print( "Python object ID for copied job: " + str( id( job ) ) )
-    #     job.add_synonymous_question( question, best_score )
-    #
-    #     # Update date & count so that we can create id_hash
-    #     job.run_date     = du.get_current_datetime()
-    #     job.push_counter = push_count
-    #     job.id_hash      = SolutionSnapshot.generate_id_hash( push_count, job.run_date )
-    #
-    #     print()
-    #     print( job.to_jsons( verbose=False ), end="\n\n" )
-    #
-    #     # Only notify the poster if there are jobs ahead of them in the todo Q
-    #     if jobs_todo_queue.size() != 0:
-    #         # Generate plurality suffix
-    #         suffix = "s" if jobs_todo_queue.size() > 1 else ""
-    #         with app.app_context():
-    #             url = url_for( 'get_audio' ) + f"?tts_text={jobs_todo_queue.size()} job{suffix} before this one"
-    #         print( f"Emitting TODO url [{url}]..." )
-    #         socketio.emit( 'audio_update', { 'audioURL': url } )
-    #     else:
-    #         print( "No jobs ahead of this one in the todo Q" )
-    #
-    #     jobs_todo_queue.push( job )
-    #     socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
-    #
-    #     return f'Job [{question}] added to queue. queue size [{jobs_todo_queue.size()}]'
-    #
-    # else:
-    #
-    #     return f'No similar snapshots found, job [{question}] NOT added to queue. queue size [{jobs_todo_queue.size()}]'
 
 def push_job_to_todo_queue( question ):
     
