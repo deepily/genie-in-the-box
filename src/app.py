@@ -54,6 +54,10 @@ push_count  = 1
 # Track the number of client connections
 connection_count   = 0
 
+# ¡OJO! This is a hack to get around the fact that the docker container can't see the host machine's IPv6 address
+# TODO: find a way to get the ip6 address dynamically
+tts_url_template = "http://172.17.0.4:5002/api/tts?text={tts_text}"
+
 app = Flask( __name__ )
 # Props to StackOverflow for this workaround:https://stackoverflow.com/questions/25594893/how-to-enable-cors-in-flask
 CORS( app )
@@ -76,13 +80,12 @@ def enter_clock_loop():
 
 def enter_running_loop():
     
-    print( "Simulating job run execution..." )
+    print( "Starting job run loop..." )
     while True:
-        
-        print( "Jobs running @ " + du.get_current_datetime() )
         
         if not jobs_todo_queue.is_empty():
             
+            print( "Jobs running @ " + du.get_current_datetime() )
             run_timer = sw.Stopwatch( "Starting run timer..." )
             
             print( "popping one job from todo Q" )
@@ -131,29 +134,30 @@ def enter_running_loop():
             socketio.emit( 'done_update', { 'value': jobs_done_queue.size() } )
             
             with app.app_context():
-                # url = url_for( 'get_audio' ) + f"?tts_text=1 job finished. {running_job.last_question_asked}? {running_job.answer_conversational}"
-                url = url_for( 'get_audio' ) + f"?tts_text={running_job.answer_conversational}"
+                # url = url_for( 'get_tts_audio' ) + f"?tts_text=1 job finished. {running_job.last_question_asked}? {running_job.answer_conversational}"
+                url = url_for( 'get_tts_audio' ) + f"?tts_text={running_job.answer_conversational}"
                 
             print( f"Emitting DONE url [{url}]..." )
             socketio.emit( 'audio_update', { 'audioURL': url } )
         
         else:
-            print( "Still no jobs to pop from todo Q " )
-            socketio.sleep( 5 )
+            print( "No jobs to pop from todo Q " )
+            socketio.sleep( 1 )
         
 def get_preamble( question, answer ):
 
-    preamble = """I'm going to provide you with a question and answer pair like this:
+    preamble = """
+    I'm going to provide you with a question and answer pair like this:
 
-                    Q: <question>
-                    A: <answer>
-
-                    Rephrase the terse answer in a conversational manner that matches the tone of the question.
-                    Your rephrasing of the terse answer must only answer the question and no more:
-
-                    Q: {question}
-                    A: {answer}""".format( question=question, answer=answer )
+    Q: <question>
+    A: <answer>
     
+    Rephrase the terse answer in a conversational manner that matches the tone of the question.
+    Your rephrasing of the terse answer must only answer the question and no more.
+    Do not include the question in your answer.
+    
+    Q: {question}
+    A: {answer}""".format( question=question, answer=answer )    
     return preamble
     
 @app.route( "/" )
@@ -211,14 +215,14 @@ def push_job_to_todo_queue( question ):
         job.id_hash = SolutionSnapshot.generate_id_hash( push_count, job.run_date )
         
         print()
-        print( job.to_jsons( verbose=False ), end="\n\n" )
+        # print( job.to_jsons( verbose=False ), end="\n\n" )
         
         # Only notify the poster if there are jobs ahead of them in the todo Q
         if jobs_todo_queue.size() != 0:
             # Generate plurality suffix
             suffix = "s" if jobs_todo_queue.size() > 1 else ""
             with app.app_context():
-                url = url_for( 'get_audio' ) + f"?tts_text={jobs_todo_queue.size()} job{suffix} before this one"
+                url = url_for( 'get_tts_audio' ) + f"?tts_text={jobs_todo_queue.size()} job{suffix} before this one"
             print( f"Emitting TODO url [{url}]..." )
             socketio.emit( 'audio_update', { 'audioURL': url } )
         else:
@@ -240,30 +244,22 @@ def push_job_to_todo_queue( question ):
 #     popped_job = jobs_todo_queue.pop()
 #     return f'Job [{popped_job}] popped from queue. queue size [{jobs_todo_queue.size()}]'
 
-@app.route( "/get_audio", methods=[ "GET" ] )
-def get_audio():
+def get_tts_url( tts_text ):
     
-    tts_text = request.args.get( "tts_text" )
     # ¡OJO! This is a hack to get around the fact that the docker container can't see the host machine's IPv6 address
     # TODO: find a way to get the ip6 address dynamically
-    tts_url = "http://172.17.0.4:5002/api/tts?text=" + tts_text
+    tts_url = tts_url_template.format( tts_text=tts_text )
     tts_url = tts_url.replace( " ", "%20" )
+
+    return tts_url
+
+def get_audio_file( tts_text ):
+    
+    tts_url = get_tts_url( tts_text )
     
     du.print_banner( f"Fetching [{tts_url}]" )
     response = requests.get( tts_url )
     path = du.get_project_root() + "/io/tts.wav"
-    
-    # commands = [ "wget", "-O", path, tts_url ]
-    #
-    # results = run( commands, stdout=PIPE, stderr=PIPE, universal_newlines=True )
-    #
-    # if results.returncode != 0:
-    #     print()
-    #     response = "ERROR:\n{}".format( results.stderr.strip() )
-    #     path = du.get_project_root() + "/io/failed-to-fetch-tts-file.wav"
-    #     print( response )
-    #
-    # return send_file( path, mimetype="audio/wav" )
     
     # Check if the request was successful
     if response.status_code == 200:
@@ -277,11 +273,17 @@ def get_audio():
     
     return send_file( path, mimetype="audio/wav" )
 
+@app.route( "/get_tts_audio", methods=[ "GET" ] )
+def get_tts_audio():
+    
+    tts_text = request.args.get( "tts_text" )
 
-def generate_html_list( fifo_queue, descending=False ):
+    return get_audio_file( tts_text )
+
+def generate_html_list( fifo_queue, descending=False, add_play_button=False ):
     
     html_list = [ ]
-    for job in fifo_queue.queue:
+    for job in fifo_queue.queue_list:
         html_list.append( job.get_html() )
     
     if descending: html_list.reverse()
@@ -302,6 +304,14 @@ def get_queue( queue_name ):
         return json.dumps( { "error": "Invalid queue name. Please specify either 'todo' or 'done'." } )
     
     return json.dumps( { f"{queue_name}_jobs": jobs } )
+
+
+@app.route( '/get_answer/<string:id_hash>', methods=[ 'GET' ] )
+def get_answer( id_hash ):
+    
+    answer_conversational = jobs_done_queue.get_by_id_hash( id_hash ).answer_conversational
+    
+    return get_audio_file( answer_conversational)
 
 """
 Decorator for connect

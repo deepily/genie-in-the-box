@@ -9,6 +9,14 @@
             cursor: pointer;
             color: blue;
         }
+        /* Set all text to Helvetica Neue */
+        * {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        ol li {
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -50,13 +58,17 @@
         for ( let i = 0; i < items.length; i++ ) {
             console.log( "Adding click event to item:", items[ i ] );
             items[ i ].onclick = function() {
-                foo( items[ i ].id );
+                playAnswer( items[ i ].id );
             };
         }
     }
 
-    function foo( id ) {
-        console.log( id );
+    function playAnswer( id ) {
+
+        url = "/get_answer/" + id;
+        console.log( url );
+        let audio = new Audio( url );
+        audio.play();
     }
     var socket = io();
     socket.on( "connect", function() {
@@ -64,24 +76,24 @@
     } );
 
     socket.on( "time_update", function( data ) {
-        document.getElementById( "clock" ).innerHTML = "[" + data.date + "]";
+        document.getElementById( "clock" ).innerHTML = data.date;
     } );
 
     // handle updates on the todo queue
     socket.on( "todo_update", function( data ) {
-        document.getElementById( "todo" ).innerHTML = "Jobs TODO [" + data.value + "]";
+        document.getElementById( "todo" ).innerHTML = "Jobs TODO: " + data.value;
         updateQueueLists( "todo" );
     } );
 
     // handle updates on the run queue
     socket.on( "run_update", function( data ) {
-        document.getElementById( "run" ).innerHTML = "Jobs RUNNING [" + data.value + "]";
+        document.getElementById( "run" ).innerHTML = "Jobs RUNNING: " + data.value;
         updateQueueLists( "run" );
     } );
 
     // handle updates on the done queue
     socket.on( "done_update", function( data ) {
-        document.getElementById( "done" ).innerHTML = "Jobs DONE [" + data.value + "]";
+        document.getElementById( "done" ).innerHTML = "Jobs DONE: " + data.value;
         updateQueueLists( "done" );
     } );
 
@@ -102,6 +114,9 @@
             } )
             .catch( error => console.error( "Error:", error ) );
     }
+    // I want to programmatically Prepend text to each item in an ordered item list
+    // https://stackoverflow.com/questions/10588688/i-want-to-programmatically-prepend-text-to-each-item-in-an-ordered-item-list
+
     // Create a global queue for audio clips
     var audioQueue = [];
     var playing = false;
@@ -165,13 +180,13 @@
                 if ( response.status === 200 ) {
                     document.getElementById( "response-status" ).textContent = "Success!";
                 } else {
-                    document.getElementById( "response-status" ).textContent = "Error :-( Check the console for more details.";
+                    document.getElementById( "response-status" ).textContent = "Error :-(";
                     throw new Error( `HTTP error, status = ${ response.status }` );
                 }
                 return response.text();
             } )
             .then( ( text ) => {
-                document.getElementById( "response-text" ).textContent = text;
+                // document.getElementById( "response-text" ).textContent = text;
             } )
             .catch( error => console.error( "Error:", error ) );
     }
@@ -184,33 +199,31 @@
     }
 </script>
 
-<h1 id="clock">[00-00-0000 @ 00:00:00]</h1>
+<h4 id="clock" style="text-align: center">00-00-0000 @ 00:00:00</h4>
 <div>
-    <h2 id="todo">Jobs todo [0]</h2>
+    <h4 id="todo">Jobs todo: 0</h4>
     <ol id="todo-list" reversed>
 
     </ol>
 </div>
 <div>
-    <h2 id="run">Jobs running [0]</h2>
+    <h4 id="run">Jobs running: 0</h4>
     <ol id="run-list" reversed>
 
     </ol>
 </div>
 <div>
-    <h2 id="done">Jobs done [0]</h2>
+    <h4 id="done">Jobs done: 0</h4>
     <ol id="done-list" reversed>
 
     </ol>
 </div>
-<!--<a href="#" onclick="createAudioContext(); return false;">Enable audio playback</a><br>-->
-<!--Use this if autoplay is disabled. Check about:preferences 'Autoplay'-->
 
 <div>
-    <h2>Ask a question: <span id="response-status"></span></h2>
-    <p id="response-text"></p>
-    <input type="text" id="question-input" placeholder="Enter your question here">
-    <button id="submit-button" onclick="pushQuestion(); return false;">Submit</button>
+    <h4>Ask a question: <span id="response-status"></span></h4>
+    <!-- <p id="response-text"></p>-->
+    <input type="text" id="question-input" placeholder="Your question here!">
+    <!-- <button id="submit-button" onclick="pushQuestion(); return false;">Submit</button>-->
 </div>
 
 </body>
