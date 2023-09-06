@@ -23,6 +23,7 @@ export const VOX_CMD_OPEN_URL_BUCKET= "open url bucket";
 export const VOX_CMD_PROOFREAD      = "proofread";
 export const VOX_CMD_PROOFREAD_STEM = "proof";
 export const VOX_CMD_VIEW_CONSTANTS = "view constan";
+export const VOX_CMD_VIEW_JOB_QUEUE = "view running jobs";
 
 export const VOX_CMD_ZOOM_IN        = "zoom in";
 export const VOX_CMD_ZOOM_OUT       = "zoom out";
