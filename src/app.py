@@ -157,8 +157,7 @@ def get_preamble( question, answer ):
     Do not include the question in your answer.
     
     Q: {question}
-    A: {answer}""".format( question=question, answer=answer )
-    
+    A: {answer}""".format( question=question, answer=answer )    
     return preamble
     
 @app.route( "/" )
