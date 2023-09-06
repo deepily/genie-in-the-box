@@ -101,7 +101,7 @@ class MultiModalMunger:
                     Results: [{}]""".format( self.mode, self.prefix, self.raw_transcription, self.transcription, self.results )
         return summary
 
-    def get_json( self ):
+    def get_jsons( self ):
         
         # instantiate dictionary and convert to string
         munger_dict = { "mode": self.mode, "prefix": self.prefix, "raw_transcription": self.raw_transcription, "transcription": self.transcription, "results": self.results }
@@ -348,6 +348,9 @@ class MultiModalMunger:
     
     def munge_vox_cmd_agent( self, raw_transcription, mode ):
         
+        du.print_banner( "AGENT MODE for [{}]".format( raw_transcription ), end="\n" )
+        print( "TODO: Implement munge_vox_cmd_agent()... For now this is just a simple passthrough..." )
+        
         return raw_transcription, mode
     
     def munge_text_punctuation( self, raw_transcription, mode ):
@@ -485,6 +488,10 @@ class MultiModalMunger:
     def is_run_prompt( self ):
         
         return self.mode == trans_mode_run_prompt
+    
+    def is_agent( self ):
+        
+        return self.mode == trans_mode_vox_cmd_agent
     
     def _is_match( self, transcription ):
         
