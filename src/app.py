@@ -132,13 +132,13 @@ def enter_running_loop():
             
             with app.app_context():
                 # url = url_for( 'get_audio' ) + f"?tts_text=1 job finished. {running_job.last_question_asked}? {running_job.answer_conversational}"
-                url = url_for( 'get_audio' ) + f"?tts_text=1 job finished. {running_job.answer_conversational}"
+                url = url_for( 'get_audio' ) + f"?tts_text={running_job.answer_conversational}"
                 
             print( f"Emitting DONE url [{url}]..." )
             socketio.emit( 'audio_update', { 'audioURL': url } )
         
         else:
-            print( "no jobs to pop from todo Q " )
+            print( "Still no jobs to pop from todo Q " )
             socketio.sleep( 5 )
         
 def get_preamble( question, answer ):
@@ -172,10 +172,68 @@ def serve_static( filename ):
 @app.route( "/push", methods=[ "GET" ] )
 def push():
     
+    question = request.args.get( 'question' )
+    
+    return push_job_to_todo_queue( question )
+    # global push_count
+    # push_count += 1
+    #
+    # du.print_banner( f"Question: [{question}]", prepend_nl=True )
+    # similar_snapshots = snapshot_mgr.get_snapshots_by_question( question )
+    # print()
+    #
+    # if len( similar_snapshots ) > 0:
+    #
+    #     # Get the best match: best[ 0 ] is the score, best[ 1 ] is the snapshot
+    #     best_snapshot = similar_snapshots[ 0 ][ 1 ]
+    #     best_score    = similar_snapshots[ 0 ][ 0 ]
+    #
+    #     lines_of_code = best_snapshot.code
+    #     if len( lines_of_code ) > 0:
+    #         du.print_banner( f"Code for [{best_snapshot.question}]:" )
+    #     else:
+    #         du.print_banner( "Code: NONE found?" )
+    #     for line in lines_of_code:
+    #         print( line )
+    #     if len( lines_of_code ) > 0:
+    #         print()
+    #
+    #     job = best_snapshot.get_copy()
+    #     print( "Python object ID for copied job: " + str( id( job ) ) )
+    #     job.add_synonymous_question( question, best_score )
+    #
+    #     # Update date & count so that we can create id_hash
+    #     job.run_date     = du.get_current_datetime()
+    #     job.push_counter = push_count
+    #     job.id_hash      = SolutionSnapshot.generate_id_hash( push_count, job.run_date )
+    #
+    #     print()
+    #     print( job.to_jsons( verbose=False ), end="\n\n" )
+    #
+    #     # Only notify the poster if there are jobs ahead of them in the todo Q
+    #     if jobs_todo_queue.size() != 0:
+    #         # Generate plurality suffix
+    #         suffix = "s" if jobs_todo_queue.size() > 1 else ""
+    #         with app.app_context():
+    #             url = url_for( 'get_audio' ) + f"?tts_text={jobs_todo_queue.size()} job{suffix} before this one"
+    #         print( f"Emitting TODO url [{url}]..." )
+    #         socketio.emit( 'audio_update', { 'audioURL': url } )
+    #     else:
+    #         print( "No jobs ahead of this one in the todo Q" )
+    #
+    #     jobs_todo_queue.push( job )
+    #     socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
+    #
+    #     return f'Job [{question}] added to queue. queue size [{jobs_todo_queue.size()}]'
+    #
+    # else:
+    #
+    #     return f'No similar snapshots found, job [{question}] NOT added to queue. queue size [{jobs_todo_queue.size()}]'
+
+def push_job_to_todo_queue( question ):
+    
     global push_count
     push_count += 1
-    
-    question = request.args.get( 'question' )
     
     du.print_banner( f"Question: [{question}]", prepend_nl=True )
     similar_snapshots = snapshot_mgr.get_snapshots_by_question( question )
@@ -185,7 +243,7 @@ def push():
         
         # Get the best match: best[ 0 ] is the score, best[ 1 ] is the snapshot
         best_snapshot = similar_snapshots[ 0 ][ 1 ]
-        best_score    = similar_snapshots[ 0 ][ 0 ]
+        best_score = similar_snapshots[ 0 ][ 0 ]
         
         lines_of_code = best_snapshot.code
         if len( lines_of_code ) > 0:
@@ -196,15 +254,15 @@ def push():
             print( line )
         if len( lines_of_code ) > 0:
             print()
-            
+        
         job = best_snapshot.get_copy()
         print( "Python object ID for copied job: " + str( id( job ) ) )
         job.add_synonymous_question( question, best_score )
         
         # Update date & count so that we can create id_hash
-        job.run_date     = du.get_current_datetime()
+        job.run_date = du.get_current_datetime()
         job.push_counter = push_count
-        job.id_hash      = SolutionSnapshot.generate_id_hash( push_count, job.run_date )
+        job.id_hash = SolutionSnapshot.generate_id_hash( push_count, job.run_date )
         
         print()
         print( job.to_jsons( verbose=False ), end="\n\n" )
@@ -223,11 +281,11 @@ def push():
         jobs_todo_queue.push( job )
         socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
         
-        return f'Job [{question}] added to queue. queue size [{jobs_todo_queue.size()}]'
-
+        return f'Job added to queue. Queue size [{jobs_todo_queue.size()}]'
+    
     else:
         
-        return f'No similar snapshots found, job [{question}] NOT added to queue. queue size [{jobs_todo_queue.size()}]'
+        return f'No similar snapshots found, job NOT added to queue. Queue size [{jobs_todo_queue.size()}]'
 
 # Rethink how/why we're killing/popping jobs in the todo queue
 # @app.route( "/pop", methods=[ "GET" ] )
@@ -334,6 +392,7 @@ def disconnect():
 
 @app.route( "/api/ask-ai-text" )
 def ask_ai_text():
+    
     question = request.args.get( "question" )
     
     print( "Calling ask_chat_gpt_text() [{}]...".format( question ) )
@@ -348,6 +407,7 @@ def ask_ai_text():
 
 @app.route( "/api/proofread" )
 def proofread():
+    
     question = request.args.get( "question" )
     
     timer = sw.Stopwatch()
@@ -381,8 +441,7 @@ def upload_and_transcribe_mp3_file():
         f.write( decoded_audio )
     print( " Done!" )
     
-    print( "Transcribing {}...".format( path ) )
-    timer = sw.Stopwatch()
+    timer = sw.Stopwatch( "Transcribing {}...".format( path ) )
     result = model.transcribe( path )
     timer.print( "Done!", use_millis=True, end="\n\n" )
     
@@ -390,7 +449,7 @@ def upload_and_transcribe_mp3_file():
     
     print( "Result: [{}]".format( result ) )
     
-    # Fetch last response processed... ¡OJO! This is absolutely NOT thread safe!
+    # Fetch last response processed... ¡OJO! This is pretty kludgy, but it works for now. TODO: Do better!
     if os.path.isfile( du.get_project_root() + "/io/last_response.json" ):
         with open( du.get_project_root() + "/io/last_response.json" ) as json_file:
             last_response = json.load( json_file )
@@ -422,9 +481,14 @@ def upload_and_transcribe_mp3_file():
         results = ddg( munger.transcription, region="wt-wt", safesearch="Off", time="y", max_results=20 )
         print( results )
         munger.results = results
+        
+    elif munger.is_agent():
+        
+        print( "Posting [{}] to the agent's todo queue...".format( munger.transcription ) )
+        munger.results = push_job_to_todo_queue( munger.transcription )
     
     # Write JSON string to file system.
-    last_response = munger.get_json()
+    last_response = munger.get_jsons()
     du.write_string_to_file( du.get_project_root() + "/io/last_response.json", last_response )
 
     return last_response
@@ -432,6 +496,7 @@ def upload_and_transcribe_mp3_file():
 
 @app.route( "/api/run-raw-prompt-text" )
 def run_raw_prompt_text():
+    
     for key in request.__dict__:
         # print( "key [{}] value [{}]".format( key, request.__dict__[ key ] ), end="\n\n" )
         print( "key [{}]".format( key ) )
