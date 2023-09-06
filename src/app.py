@@ -27,6 +27,10 @@ import genie_client       as gc
 import multimodal_munger  as mmm
 import lib.util_stopwatch as sw
 import lib.util_langchain as ul
+
+from genie_client         import GPT_3_5
+from genie_client         import GPT_4
+
 from solution_snapshot import SolutionSnapshot
 
 from solution_snapshot_mgr import SolutionSnapshotManager
@@ -106,21 +110,20 @@ def enter_running_loop():
                 print()
                 
                 msg = "Calling GPT to reformat the job.answer..."
-                # print( msg )
                 timer = sw.Stopwatch( msg )
-                preamble = get_preamble( running_job.question, running_job.answer )
-                running_job.answer_conversational = genie_client.ask_chat_gpt_text( running_job.answer, preamble=preamble ).strip()
+                preamble = get_preamble( running_job.last_question_asked, running_job.answer )
+                running_job.answer_conversational = genie_client.ask_chat_gpt_text( query=running_job.answer, preamble=preamble, model=GPT_3_5 )
                 timer.print( "Done!", use_millis=True )
                 
                 # Arrive if we've arrived at this point, then we've successfully run the job
                 run_timer.print( "Full run complete ", use_millis=True )
-                running_job.run_delta_dict = run_timer.get_delta_dict()
+                running_job.update_runtime_stats( run_timer )
                 du.print_banner( f"Job [{running_job.question}] complete!", prepend_nl=True, end="\n" )
                 print( f"Writing job [{running_job.question}] to file..." )
                 running_job.write_to_file()
                 print( f"Writing job [{running_job.question}] to file... Done!" )
-                du.print_banner( "running_job.run_delta_dict", prepend_nl=True )
-                pprint.pprint( running_job.run_delta_dict )
+                du.print_banner( "running_job.runtime_stats", prepend_nl=True )
+                pprint.pprint( running_job.runtime_stats )
                 
             jobs_run_queue.pop()
             socketio.emit( 'run_update', { 'value': jobs_run_queue.size() } )
@@ -128,12 +131,14 @@ def enter_running_loop():
             socketio.emit( 'done_update', { 'value': jobs_done_queue.size() } )
             
             with app.app_context():
-                url = url_for( 'get_audio' ) + f"?tts_text=1 job finished. {running_job.last_question_asked}? {running_job.answer_conversational}"
+                # url = url_for( 'get_audio' ) + f"?tts_text=1 job finished. {running_job.last_question_asked}? {running_job.answer_conversational}"
+                url = url_for( 'get_audio' ) + f"?tts_text={running_job.answer_conversational}"
+                
             print( f"Emitting DONE url [{url}]..." )
             socketio.emit( 'audio_update', { 'audioURL': url } )
         
         else:
-            print( "no jobs to pop from todo Q " )
+            print( "Still no jobs to pop from todo Q " )
             socketio.sleep( 5 )
         
 def get_preamble( question, answer ):
@@ -143,7 +148,7 @@ def get_preamble( question, answer ):
                     Q: <question>
                     A: <answer>
 
-                    Rephrase the terse answer in a conversational manner.
+                    Rephrase the terse answer in a conversational manner that matches the tone of the question.
                     Your rephrasing of the terse answer must only answer the question and no more:
 
                     Q: {question}
@@ -167,10 +172,14 @@ def serve_static( filename ):
 @app.route( "/push", methods=[ "GET" ] )
 def push():
     
+    question = request.args.get( 'question' )
+    
+    return push_job_to_todo_queue( question )
+
+def push_job_to_todo_queue( question ):
+    
     global push_count
     push_count += 1
-    
-    question = request.args.get( 'question' )
     
     du.print_banner( f"Question: [{question}]", prepend_nl=True )
     similar_snapshots = snapshot_mgr.get_snapshots_by_question( question )
@@ -180,7 +189,7 @@ def push():
         
         # Get the best match: best[ 0 ] is the score, best[ 1 ] is the snapshot
         best_snapshot = similar_snapshots[ 0 ][ 1 ]
-        best_score    = similar_snapshots[ 0 ][ 0 ]
+        best_score = similar_snapshots[ 0 ][ 0 ]
         
         lines_of_code = best_snapshot.code
         if len( lines_of_code ) > 0:
@@ -191,15 +200,15 @@ def push():
             print( line )
         if len( lines_of_code ) > 0:
             print()
-            
+        
         job = best_snapshot.get_copy()
         print( "Python object ID for copied job: " + str( id( job ) ) )
         job.add_synonymous_question( question, best_score )
         
         # Update date & count so that we can create id_hash
-        job.run_date     = du.get_current_datetime()
+        job.run_date = du.get_current_datetime()
         job.push_counter = push_count
-        job.id_hash      = SolutionSnapshot.generate_id_hash( push_count, job.run_date )
+        job.id_hash = SolutionSnapshot.generate_id_hash( push_count, job.run_date )
         
         print()
         print( job.to_jsons( verbose=False ), end="\n\n" )
@@ -218,11 +227,11 @@ def push():
         jobs_todo_queue.push( job )
         socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
         
-        return f'Job [{question}] added to queue. queue size [{jobs_todo_queue.size()}]'
-
+        return f'Job added to queue. Queue size [{jobs_todo_queue.size()}]'
+    
     else:
         
-        return f'No similar snapshots found, job [{question}] NOT added to queue. queue size [{jobs_todo_queue.size()}]'
+        return f'No similar snapshots found, job NOT added to queue. Queue size [{jobs_todo_queue.size()}]'
 
 # Rethink how/why we're killing/popping jobs in the todo queue
 # @app.route( "/pop", methods=[ "GET" ] )
@@ -329,6 +338,7 @@ def disconnect():
 
 @app.route( "/api/ask-ai-text" )
 def ask_ai_text():
+    
     question = request.args.get( "question" )
     
     print( "Calling ask_chat_gpt_text() [{}]...".format( question ) )
@@ -343,6 +353,7 @@ def ask_ai_text():
 
 @app.route( "/api/proofread" )
 def proofread():
+    
     question = request.args.get( "question" )
     
     timer = sw.Stopwatch()
@@ -376,8 +387,7 @@ def upload_and_transcribe_mp3_file():
         f.write( decoded_audio )
     print( " Done!" )
     
-    print( "Transcribing {}...".format( path ) )
-    timer = sw.Stopwatch()
+    timer = sw.Stopwatch( "Transcribing {}...".format( path ) )
     result = model.transcribe( path )
     timer.print( "Done!", use_millis=True, end="\n\n" )
     
@@ -385,7 +395,7 @@ def upload_and_transcribe_mp3_file():
     
     print( "Result: [{}]".format( result ) )
     
-    # Fetch last response processed... ¡OJO! This is absolutely NOT thread safe!
+    # Fetch last response processed... ¡OJO! This is pretty kludgy, but it works for now. TODO: Do better!
     if os.path.isfile( du.get_project_root() + "/io/last_response.json" ):
         with open( du.get_project_root() + "/io/last_response.json" ) as json_file:
             last_response = json.load( json_file )
@@ -417,9 +427,14 @@ def upload_and_transcribe_mp3_file():
         results = ddg( munger.transcription, region="wt-wt", safesearch="Off", time="y", max_results=20 )
         print( results )
         munger.results = results
+        
+    elif munger.is_agent():
+        
+        print( "Posting [{}] to the agent's todo queue...".format( munger.transcription ) )
+        munger.results = push_job_to_todo_queue( munger.transcription )
     
     # Write JSON string to file system.
-    last_response = munger.get_json()
+    last_response = munger.get_jsons()
     du.write_string_to_file( du.get_project_root() + "/io/last_response.json", last_response )
 
     return last_response
@@ -427,6 +442,7 @@ def upload_and_transcribe_mp3_file():
 
 @app.route( "/api/run-raw-prompt-text" )
 def run_raw_prompt_text():
+    
     for key in request.__dict__:
         # print( "key [{}] value [{}]".format( key, request.__dict__[ key ] ), end="\n\n" )
         print( "key [{}]".format( key ) )

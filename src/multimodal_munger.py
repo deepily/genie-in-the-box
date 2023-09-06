@@ -10,32 +10,34 @@ import numpy as np
 from lib import util as du
 from lib import util_stopwatch as sw
 
-# Currently, comma, all transcription mode descriptors are three words long.
-# This will become important or more important in the future.
-transcription_mode_text_raw           = "multimodal text raw"
-transcription_mode_text_email         = "multimodal text email"
-transcription_mode_text_punctuation   = "multimodal text punctuation"
-transcription_mode_text_proofread     = "multimodal text proofread"
-transcription_mode_text_contact       = "multimodal contact information"
-transcription_mode_python_punctuation = "multimodal python punctuation"
-transcription_mode_python_proofread   = "multimodal python proofread"
-transcription_mode_server_search      = "multimodal server search"
-transcription_mode_run_prompt         = "multimodal run prompt"
-transcription_mode_vox_command        = "multimodal editor"
-transcription_mode_default            = transcription_mode_text_punctuation
+# Currently, all transcription mode descriptors are three words long.
+# This will become important or more important in the future?
+trans_mode_text_raw           = "multimodal text raw"
+trans_mode_text_email         = "multimodal text email"
+trans_mode_text_punctuation   = "multimodal text punctuation"
+trans_mode_text_proofread     = "multimodal text proofread"
+trans_mode_text_contact       = "multimodal contact information"
+trans_mode_python_punctuation = "multimodal python punctuation"
+trans_mode_python_proofread   = "multimodal python proofread"
+trans_mode_server_search      = "multimodal server search"
+trans_mode_run_prompt         = "multimodal run prompt"
+trans_mode_vox_cmd_browser    = "multimodal browser"
+trans_mode_vox_cmd_agent      = "multimodal agent"
+trans_mode_default            = trans_mode_text_punctuation
 
 modes_to_methods_dict = {
     
-    transcription_mode_vox_command       : "munge_vox_command",
-    transcription_mode_text_raw          : "munge_text_raw",
-    transcription_mode_text_email        : "munge_text_email",
-    transcription_mode_text_punctuation  : "munge_text_punctuation",
-    transcription_mode_text_proofread    : "munge_text_proofread",
-    transcription_mode_text_contact      : "munge_text_contact",
-    transcription_mode_python_punctuation: "munge_python_punctuation",
-    transcription_mode_python_proofread  : "munge_python_proofread",
-    transcription_mode_server_search     : "do_ddg_search",
-    transcription_mode_run_prompt        : "do_run_prompt",
+    trans_mode_vox_cmd_agent     : "munge_vox_cmd_agent",
+    trans_mode_vox_cmd_browser   : "munge_vox_cmd_browser",
+    trans_mode_text_raw          : "munge_text_raw",
+    trans_mode_text_email        : "munge_text_email",
+    trans_mode_text_punctuation  : "munge_text_punctuation",
+    trans_mode_text_proofread    : "munge_text_proofread",
+    trans_mode_text_contact      : "munge_text_contact",
+    trans_mode_python_punctuation: "munge_python_punctuation",
+    trans_mode_python_proofread  : "munge_python_proofread",
+    # trans_mode_server_search     : "do_ddg_search",
+    # trans_mode_run_prompt        : "do_run_prompt",
 }
 class MultiModalMunger:
 
@@ -99,7 +101,7 @@ class MultiModalMunger:
                     Results: [{}]""".format( self.mode, self.prefix, self.raw_transcription, self.transcription, self.results )
         return summary
 
-    def get_json( self ):
+    def get_jsons( self ):
         
         # instantiate dictionary and convert to string
         munger_dict = { "mode": self.mode, "prefix": self.prefix, "raw_transcription": self.raw_transcription, "transcription": self.transcription, "results": self.results }
@@ -128,10 +130,10 @@ class MultiModalMunger:
         print( "  self.prefix:", self.prefix )
         print( "transcription:", transcription )
         
-        if self.prefix == transcription_mode_vox_command or transcription.startswith( transcription_mode_vox_command ):
+        if self.prefix == trans_mode_vox_cmd_browser or transcription.startswith( trans_mode_vox_cmd_browser ):
             
             # ad hoc short circuit for the 'repeat' command
-            if ( transcription == "repeat" or transcription == transcription_mode_vox_command + " repeat" ) and self.last_response is not None:
+            if (transcription == "repeat" or transcription == trans_mode_vox_cmd_browser + " repeat") and self.last_response is not None:
                 
                 print( self.last_response )
                 
@@ -141,17 +143,17 @@ class MultiModalMunger:
                 
                 return self.last_response[ "transcription" ], self.last_response[ "mode" ]
             
-            elif ( transcription == "repeat" or transcription == transcription_mode_vox_command + " repeat" ) and self.last_response is None:
+            elif (transcription == "repeat" or transcription == trans_mode_vox_cmd_browser + " repeat") and self.last_response is None:
                 print( "No previous response to repeat" )
 
             # strip out the prefix and move it into its own field before continuing
-            if transcription.startswith( transcription_mode_vox_command ):
+            if transcription.startswith( trans_mode_vox_cmd_browser ):
                 
                 # Strip out the first two words, regardless of punctuation
                 # words_sans_prefix = "multimodal? editor! search, new tab, y tu mamá, también!".split( " " )[ 2: ]
                 words_sans_prefix = raw_transcription.split( " " )[ 2: ]
                 raw_transcription = " ".join( words_sans_prefix )
-                self.prefix = transcription_mode_vox_command
+                self.prefix = trans_mode_vox_cmd_browser
 
             du.print_banner( "START MODE: [{}] for [{}]".format( self.prefix, raw_transcription ), end="\n" )
             transcription, mode = self._handle_vox_command_parsing( raw_transcription )
@@ -163,16 +165,16 @@ class MultiModalMunger:
         print( "transcription [{}]".format( transcription ) )
         words = transcription.split()
 
-        prefix_count = len( transcription_mode_default.split() )
+        prefix_count = len( trans_mode_default.split() )
         
         # If we have fewer than 'prefix_count' words, just assign default transcription mode.
         if len( words ) < prefix_count and ( self.prefix == "" or self.prefix not in self.modes_to_methods_dict ):
-            method_name = self.modes_to_methods_dict[ transcription_mode_default ]
+            method_name = self.modes_to_methods_dict[ trans_mode_default ]
         else:
             
             first_words = " ".join( words[ 0:prefix_count ] )
             print( "first_words:", first_words )
-            default_method = self.modes_to_methods_dict[ transcription_mode_default ]
+            default_method = self.modes_to_methods_dict[ trans_mode_default ]
             method_name    = self.modes_to_methods_dict.get( first_words, default_method )
             
             # Conditionally pull the first n words before we send them to be transcribed.
@@ -203,7 +205,7 @@ class MultiModalMunger:
         
     def _handle_vox_command_parsing( self, raw_transcription ):
     
-        transcription, mode = self.munge_vox_command( raw_transcription, transcription_mode_vox_command )
+        transcription, mode = self.munge_vox_cmd_browser( raw_transcription, trans_mode_vox_cmd_browser )
 
         # Try exact match first, then AI match if no exact match is found.
         if self.use_string_matching:
@@ -319,7 +321,7 @@ class MultiModalMunger:
         
         return email, mode
     
-    def munge_vox_command( self, raw_transcription, mode ):
+    def munge_vox_cmd_browser( self, raw_transcription, mode ):
         
         command = raw_transcription.lower()
 
@@ -342,10 +344,14 @@ class MultiModalMunger:
         # Remove extra spaces.
         command = self._remove_spaces_around_punctuation( command )
         
-        # Remove protocol from URLs
-        # https: // npr.org
-        
         return command, mode
+    
+    def munge_vox_cmd_agent( self, raw_transcription, mode ):
+        
+        du.print_banner( "AGENT MODE for [{}]".format( raw_transcription ), end="\n" )
+        print( "TODO: Implement munge_vox_cmd_agent()... For now this is just a simple passthrough..." )
+        
+        return raw_transcription, mode
     
     def munge_text_punctuation( self, raw_transcription, mode ):
     
@@ -454,34 +460,38 @@ class MultiModalMunger:
         
         return raw_transcription, mode
     
-    def do_ddg_search( self, raw_transcription, mode ):
-        
-        transcription, mode = self.munge_text_punctuation( raw_transcription, mode )
-        
-        if "this information" in transcription:
-            print( "KLUDGE: 'THIS information' munged into 'DISinformation'" )
-            transcription = transcription.replace( "this information", "disinformation" )
-            
-        return transcription, mode
+    # def do_ddg_search( self, raw_transcription, mode ):
+    #
+    #     transcription, mode = self.munge_text_punctuation( raw_transcription, mode )
+    #
+    #     if "this information" in transcription:
+    #         print( "KLUDGE: 'THIS information' munged into 'DISinformation'" )
+    #         transcription = transcription.replace( "this information", "disinformation" )
+    #
+    #     return transcription, mode
     
-    def do_run_prompt( self, raw_transcription, mode ):
-        
-        # Not doing much preparation work here. For the moment.
-        raw_transcription = raw_transcription.lower()
-        
-        return raw_transcription, mode
+    # def do_run_prompt( self, raw_transcription, mode ):
+    #
+    #     # Not doing much preparation work here. For the moment.
+    #     raw_transcription = raw_transcription.lower()
+    #
+    #     return raw_transcription, mode
     
     def is_text_proofread( self ):
         
-        return self.mode == transcription_mode_text_proofread
+        return self.mode == trans_mode_text_proofread
     
     def is_ddg_search( self ):
         
-        return self.mode == transcription_mode_server_search
+        return self.mode == trans_mode_server_search
     
     def is_run_prompt( self ):
         
-        return self.mode == transcription_mode_run_prompt
+        return self.mode == trans_mode_run_prompt
+    
+    def is_agent( self ):
+        
+        return self.mode == trans_mode_vox_cmd_agent
     
     def _is_match( self, transcription ):
         
@@ -720,7 +730,7 @@ if __name__ == "__main__":
     # transcription = "multimodal python punctuation console.log. open parenthesis quote foober. close quote. close parenthesis. semicolon."
     transcription = "multimodal python punctuation console dot log open parentheses one plus one equals two closed parentheses"
     
-    # prefix        = "multimodal editor"
+    # prefix        = "multimodal browser"
     prefix        = ""
     # prefix          = "multimodal python punctuation"
     # munger = MultiModalMunger( transcription, prefix=prefix, debug=False )

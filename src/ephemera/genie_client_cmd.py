@@ -43,7 +43,10 @@ class GenieCmdClient:
 
     def get_transcription( self ):
 
-        genie_client = gc.GenieClient( startup_mode=self.startup_mode, recording_timeout=self.recording_timeout, copy_transx_to_clipboard=self.copy_transx_to_clipboard, debug=self.debug )
+        genie_client = gc.GenieClient( startup_mode=self.startup_mode,
+                                       copy_transx_to_clipboard=self.copy_transx_to_clipboard, debug=self.debug,
+                                       recording_timeout=self.recording_timeout
+                                       )
         # genie_gui  = gcg.GenieGui( record_once_on_startup=self.record_once_on_startup, default_mode=self.startup_mode, recording_timeout=self.recording_timeout, copy_transx_to_clipboard=self.copy_transx_to_clipboard, debug=self.debug )
         transcription = genie_client.do_transcribe_and_clean_python()
 

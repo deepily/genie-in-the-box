@@ -58,7 +58,8 @@ export const VOX_CMD_SEARCH_CLIPBOARD_GOOGLE_SCHOLAR_CURRENT_TAB = "search googl
 export const MULTIMODAL_CONTACT_INFO  = "multimodal contact information";
 export const MULTIMODAL_TEXT_PYTHON   = "multimodal python punctuation";
 export const MULTIMODAL_TEXT_EMAIL    = "multimodal text email";
-export const STEM_MULTIMODAL_EDITOR   = "multimodal editor";
+export const STEM_MULTIMODAL_BROWSER   = "multimodal browser";
+export const STEM_MULTIMODAL_AGENT     = "multimodal agent";
 export const STEM_MULTIMODAL_SERVER_SEARCH = "multimodal server search"
 
 export const VOX_CMD_RUN_PROMPT           = "run prompt";

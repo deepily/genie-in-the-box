@@ -36,9 +36,11 @@ class GenieGui:
         self.main.title( "Genie in The Box" )
 
         # Now that we have a GUI object to point to, instantiate headless client object
-        self.genie_client = gc.GenieClient(
-            calling_gui=self.main, startup_mode=startup_mode, copy_transx_to_clipboard=copy_transx_to_clipboard, runtime_context=runtime_context, write_method=write_method, recording_timeout=recording_timeout, debug=debug
-        )
+        self.genie_client = gc.GenieClient( calling_gui=self.main, startup_mode=startup_mode,
+                                            copy_transx_to_clipboard=copy_transx_to_clipboard,
+                                            runtime_context=runtime_context, write_method=write_method, debug=debug,
+                                            recording_timeout=recording_timeout
+                                            )
         self.font_size = 18
         self.font_obj_big = tkf.Font( size=self.font_size )
         self.font_obj_mid = tkf.Font( size=int( self.font_size * .75 ) )

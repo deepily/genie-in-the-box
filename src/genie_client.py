@@ -25,10 +25,17 @@ docker_path  = "/var/io/{}"
 local_path   = "/Volumes/projects/io/{}"
 write_method = "file" # "file" or "flask"
 
+GPT_4   = "gpt-4-0613"
+GPT_3_5 = "gpt-3.5-turbo-0613"
+
 class GenieClient:
     
-    def __init__( self, model="gpt-4-0613", calling_gui=None, startup_mode="transcribe_and_clean_prose", prefix="multimodal text punctuation", copy_transx_to_clipboard=True, runtime_context="docker", write_method="flask",
-                  debug=False, recording_timeout=30, stt_address="127.0.0.1:7999", tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav" ):
+    
+    def __init__( self, calling_gui=None, startup_mode="transcribe_and_clean_prose",
+                  prefix="multimodal text punctuation", copy_transx_to_clipboard=True, runtime_context="docker",
+                  write_method="flask", debug=False, recording_timeout=30, stt_address="127.0.0.1:7999",
+                  tts_address="127.0.0.1:5002", tts_output_path="/var/io/tts.wav"
+                  ):
         
         self.debug = debug
         self.bar = "*" * 80
@@ -50,7 +57,6 @@ class GenieClient:
         self.startup_mode       = startup_mode
         self.prefix             = prefix
         self.project_root       = du.get_project_root()
-        self.model              = model
         
         print( "         self.project_root [{}]".format( self.project_root ) )
         print( "translation-dictionary.map [{}]".format( self.project_root + "/src/conf/translation-dictionary.map" ) )
@@ -228,7 +234,7 @@ class GenieClient:
             
         self.finished_serializing_audio = True
         
-    def ask_chat_gpt_using_raw_prompt_and_content( self, prompt_and_content ):
+    def ask_chat_gpt_using_raw_prompt_and_content( self, prompt_and_content, model=GPT_4 ):
         
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
         print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
@@ -242,7 +248,7 @@ class GenieClient:
             print( "content [{}]".format( content ) )
         
         response = openai.ChatCompletion.create(
-            model=self.model,
+            model=model,
             messages=[
                 { "role": "system", "content": prompt },
                 { "role": "user", "content": content }
@@ -268,15 +274,15 @@ class GenieClient:
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
         # TODO: Sketch out fine tuning parameters in notebook and add here
         
-    def ask_chat_gpt_text( self, query, preamble="What does this mean: " ):
+    def ask_chat_gpt_text( self, query, preamble="What does this mean: ", model=GPT_4 ):
 
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
         if self.debug: print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
     
         timer = sw.Stopwatch()
-        print( "Asking ChatGPT [{}]...".format( self.model ), end="" )
+        print( "Asking ChatGPT [{}]...".format( model ), end="" )
         response = openai.ChatCompletion.create(
-            model=self.model,
+            model=model,
             messages=[ { "role": "system", "content": "You are ChatGPT, a large language model trained by OpenAI. "
                                                       "Answer as concisely as possible." },
                        { "role": "system", "content": preamble },
@@ -287,17 +293,17 @@ class GenieClient:
             frequency_penalty=0.0,
             presence_penalty=0.0
         )
-        timer.print( "Done!".format( self.model ), use_millis=True )
+        timer.print( "Done!".format( model ), use_millis=True )
         if self.debug: print( response )
         
         return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
 
-    def ask_chat_gpt_code( self, query, preamble="Fix this source code" ):
+    def ask_chat_gpt_code( self, query, preamble="Fix this source code", model=GPT_4 ):
     
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
     
         response = openai.Completion.create(
-            model=self.model,
+            model=model,
             prompt="{}\n\n###{}###".format( preamble, query ),
             temperature=0,
             max_tokens=600,
@@ -583,13 +589,7 @@ if __name__ == "__main__":
     # print( "     write_method: [{}]".format( write_method ) )
     print( "recording_timeout: [{}]".format( recording_timeout ) )
     
-    gc = GenieClient(
-        startup_mode=startup_mode,
-        # runtime_context=runtime_context,
-        # write_method=write_method,
-        recording_timeout=recording_timeout,
-        debug=True
-    )
+    gc = GenieClient( startup_mode=startup_mode, debug=True, recording_timeout=recording_timeout )
     gc.do_transcribe_and_clean_python()
 
     # gc.do_gpt_by_voice()
