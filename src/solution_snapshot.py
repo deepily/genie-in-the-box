@@ -5,7 +5,6 @@ import json
 import time
 import copy
 import regex as re
-from datetime import datetime
 from collections import OrderedDict
 
 import lib.util as du
@@ -15,27 +14,27 @@ import openai
 import numpy as np
 
 
-class Stopwatch:
-    
-    def __init__( self, msg=None ):
-        
-        if msg: print( msg )
-        self.start = time.time()
-    
-    def __enter__( self, msg=None ):
-        
-        if msg: print( msg )
-        self.start = time.time()
-        
-        return self
-    
-    def __exit__( self, *args ):
-        
-        self.end = time.time()
-        self.interval = int( (self.end - self.start) * 1000 )
-        
-        print( f"Done in {self.interval:,} milliseconds" )
-
+# class Stopwatch:
+#
+#     def __init__( self, msg=None ):
+#
+#         if msg: print( msg )
+#         self.start = time.time()
+#
+#     def __enter__( self, msg=None ):
+#
+#         if msg: print( msg )
+#         self.start = time.time()
+#
+#         return self
+#
+#     def __exit__( self, *args ):
+#
+#         self.end = time.time()
+#         self.interval = int( (self.end - self.start) * 1000 )
+#
+#         print( f"Done in {self.interval:,} milliseconds" )
+#
 
 class SolutionSnapshot:
     
@@ -92,10 +91,11 @@ class SolutionSnapshot:
         self.push_counter          = push_counter
         self.question              = SolutionSnapshot.clean_question( question )
         self.answer                = answer
+        self.answer_short          = ""
         self.answer_conversational = answer_conversational
         
         # Is there is no synonymous questions to be found then just recycle the current question
-        if len ( synonymous_questions ) == 0:
+        if len( synonymous_questions ) == 0:
             self.synonymous_questions = synonymous_questions[ question ] = 100.0
         else:
             self.synonymous_questions = synonymous_questions
@@ -136,7 +136,6 @@ class SolutionSnapshot:
             data = json.load( f )
             
         return cls( **data )
-    
     
     def add_synonymous_question( self, question, score=100.0 ):
         

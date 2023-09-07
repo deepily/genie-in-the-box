@@ -9,7 +9,8 @@
     "how many records in this table": 91.67738282979533,
     "how many records in this csv file": 88.37410818495741,
     "how many records in that table": 88.511766217582,
-    "how many events do i have on my calendar": 100.0
+    "how many events do i have on my calendar": 100.0,
+    "how many rows in that data frame": 88.39272536584969
   },
   "last_question_asked": "how many events do i have on my calendar",
   "solution_summary": "I used the shape attribute of the pandas dataframe to get the number of records.",
@@ -18,14 +19,14 @@
   ],
   "updated_date": "2023-09-05 @ 19:57:08 EDT",
   "created_date": "2023-08-17 @ 17-29-56 EST",
-  "run_date": "2023-09-05 @ 20:15:06 EDT",
+  "run_date": "2023-09-06 @ 11:20:19 EDT",
   "runtime_stats": {
-    "run_count": 5,
-    "total_ms": 7507,
-    "mean_run_ms": 1501,
-    "last_run_ms": 1166
+    "run_count": 7,
+    "total_ms": 10757,
+    "mean_run_ms": 1536,
+    "last_run_ms": 1417
   },
-  "id_hash": "d9a86d3ab29a1ae71e7ca7390a41b78c746c6aeef27cf73551f5c2348e53b7ad",
+  "id_hash": "e5aa1ad4e95d5e38bf8bb092e64ee86acc29f25ed8680b24ae253cb96f53205b",
   "programming_language": "Python",
   "language_version": "3.7",
   "solution_directory": "/src/conf/long-term-memory/solutions/",
