@@ -1,4 +1,9 @@
-import lib.util as du
+try:
+    import util as du
+except ImportError:
+    # Handle the ImportError here
+    print( "Failed to import 'util', trying 'lib.util'..." )
+    import lib.util as du
 
 from subprocess import PIPE, run
 
