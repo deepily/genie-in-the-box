@@ -23,6 +23,9 @@ src/conf/memory/**
 # Skip the io/logs directory
 io/**
 
+# Skip the generated code
+src/code.py
+
 # Omit Mail Map
 .mailmap
 
