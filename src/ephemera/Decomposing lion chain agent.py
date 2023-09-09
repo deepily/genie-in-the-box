@@ -28,7 +28,7 @@ df = pd.read_csv( du.get_project_root() + "/src/conf/long-term-memory/events.csv
 df[ 'recurrence_interval' ] = df[ 'recurrence_interval' ].fillna( '' )
 df.loc[ df.recurrence_interval.str.endswith( "year" ), "recurrence_interval" ] = "1 year"
 
-# annual_df = df[ (df.recurrent == True | ~df.recurrence_interval.isna() ) ].copy()
+annual_df = df[ (df.recurrent == True | ~df.recurrence_interval.isna() ) ].copy()
 # print(        df.head( 3 ).to_string( index=False ) )
 # print( annual_df.head( 3 ).to_string( index=False ) )
 #
@@ -54,3 +54,5 @@ csv_head = """
 "2023-07-04","2023-07-04","00:00","23:59","Anniversary",True,"4 week","medium","Leroy Ruiz","father","Leroy Ruiz's anniversary celebration at the park\""""
 
 print( csv_head )
+
+print( raw)
