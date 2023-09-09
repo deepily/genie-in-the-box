@@ -58,8 +58,9 @@ class GenieClient:
         self.prefix             = prefix
         self.project_root       = du.get_project_root()
         
-        print( "         self.project_root [{}]".format( self.project_root ) )
-        print( "translation-dictionary.map [{}]".format( self.project_root + "/src/conf/translation-dictionary.map" ) )
+        if debug: print( "         self.project_root [{}]".format( self.project_root ) )
+        if debug: print( "translation-dictionary.map [{}]".format( self.project_root + "/src/conf/translation-dictionary.map" ) )
+        
         self.punctuation        = du.get_file_as_dictionary( self.project_root + "/src/conf/translation-dictionary.map", lower_case=True )
         self.prompts_dict       = du.get_file_as_dictionary( self.project_root + "/src/conf/prompts.map", lower_case=False )
         self.modes_dict         = du.get_file_as_json(       self.project_root + "/src/conf/modes.json" )
