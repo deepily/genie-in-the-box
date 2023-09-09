@@ -33,6 +33,8 @@ RUN pip3 install --upgrade --no-cache-dir openai
 
 RUN pip install --upgrade --no-cache-dir langchain[llms]
 
+RUN pip install --upgrade --no-cache-dir wandb
+
 # This isn't working
 ## Switch to run as a non-root user
 #RUN groupadd -r rruiz && useradd -r -g rruiz rruiz
