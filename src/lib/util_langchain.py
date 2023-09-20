@@ -19,7 +19,7 @@ from subprocess import PIPE, run
 
 def force_print_cmd( code, solution_code_returns, debug=False ):
     
-    # solution_code_returns is occassionally 'pandas.core.frame.DataFrame'
+    # solution_code_returns is occasionally 'pandas.core.frame.DataFrame'
     return_type = solution_code_returns.lower().split( "." )[ -1 ]
     df = "dataframe"
     if debug: print( "return_type [{}]".format( return_type ) )
@@ -33,7 +33,7 @@ def force_print_cmd( code, solution_code_returns, debug=False ):
         code.append( "print( solution )" )
     else:
         print( f"ERROR: return_type [{return_type}] and last command [{code[ -1 ]}] are incompatible!" )
-        code.append( "# What's up with that LLM's return type?!?" )
+        # code.append( "# What's up with that LLM's return type?!?" )
         
     # if "print(" not in code[ -1 ]:
     #     code[ -1 ] = "print( {} )".format( code[ -1 ] )
@@ -49,24 +49,23 @@ def force_print_cmd( code, solution_code_returns, debug=False ):
 
 def assemble_and_run_solution( solution_code, path=None, solution_code_returns="string", debug=debug ):
     
-    # if there's no dataframe to open then skip it
+    # if there's no dataframe to open or prep, then skip it
     if path is None:
         code_preamble = [ ]
     else:
-        # Otherwise, do a bit of kludgey prep and clean up
+        # Otherwise, do a bit of prep for pandas & cleanup
         code_preamble = [
             "import csv",
             "import sys",
+            "import pandas          as pd",
+            "import lib.util        as du",
+            "import lib.util_pandas as dup",
+            "",
             "debug = {}".format( debug ),
-            "if debug: print( sys.path )",
-            "import pandas as pd",
-            "df = pd.read_csv( \"{path}\" )".format( path=path ),
-            # Clean up date columns that end with "_date"
-            "try:",
-            "    import util_pandas as up",
-            "except ImportError:",
-            "    import lib.util_pandas as up",
-            "df = up.cast_to_datetime( df, debug={} )".format( debug )
+            "",
+            # "if debug: print( sys.path )",
+            "df = pd.read_csv( du.get_project_root() + '{path}' )".format( path=path ),
+            "df = dup.cast_to_datetime( df, debug=debug )"
         ]
     
     if debug: print( "last command, before [{}]:".format( solution_code[ -1 ] ) )
@@ -78,10 +77,10 @@ def assemble_and_run_solution( solution_code, path=None, solution_code_returns="
     if debug:
         for line in code: print( line )
     
-    code_path = du.get_project_root() + "/src/code.py"
+    code_path = du.get_project_root() + "/io/code.py"
     du.write_lines_to_file( code_path, code )
     
-    os.chdir( du.get_project_root() + "/src" )
+    os.chdir( du.get_project_root() + "/io" )
     # if debug: print( f"pwd [{os.getcwd()}]" )
     
     if debug: print( "Executing {}... ".format( code_path ), end="" )
@@ -104,23 +103,23 @@ def assemble_and_run_solution( solution_code, path=None, solution_code_returns="
 
 def test_assemble_and_run_solution():
 
-    # solution_code = [
-    #     "num_records = df.shape[0]",
-    #     "num_records"
-    # ]
-    
     solution_code = [
-        "import datetime",
-        "import pytz",
-        "now = datetime.datetime.now()",
-        "tz_name = 'America/New_York'",
-        "tz = pytz.timezone( tz_name )",
-        "tz_date = now.astimezone( tz )",
-        "print( tz_date.strftime( '%I:%M %p %Z' ) )"
+        "num_records = df.shape[0]",
+        "print(num_records)"
     ]
-    results = assemble_and_run_solution( solution_code, du.get_project_root() + "/src/conf/long-term-memory/events.csv", debug=debug )
-    # results = assemble_and_run_solution( solution_code )
-    
+
+    # solution_code = [
+    #     "import datetime",
+    #     "import pytz",
+    #     "now = datetime.datetime.now()",
+    #     "tz_name = 'America/New_York'",
+    #     "tz = pytz.timezone( tz_name )",
+    #     "tz_date = now.astimezone( tz )",
+    #     "print( tz_date.strftime( '%I:%M %p %Z' ) )"
+    # ]
+    results = assemble_and_run_solution( solution_code, path="/src/conf/long-term-memory/events.csv", debug=debug )
+    # results = assemble_and_run_solution( solution_code, debug=debug )
+
     if results[ "return_code" ] != 0:
         print( results[ "response" ] )
     else:
@@ -129,3 +128,4 @@ def test_assemble_and_run_solution():
         
 if __name__ == "__main__":
     test_assemble_and_run_solution()
+    # pass
