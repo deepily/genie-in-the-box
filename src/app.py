@@ -65,6 +65,7 @@ socketio = SocketIO( app, cors_allowed_origins='*' )
 app.config['SERVER_NAME'] = '127.0.0.1:7999'
 
 path_to_snapshots = os.path.join( du.get_project_root(), "src/conf/long-term-memory/solutions/" )
+print( "path_to_snapshots [{}]".format( path_to_snapshots ) )
 snapshot_mgr = SolutionSnapshotManager( path_to_snapshots, debug=True, verbose=True )
 
 """
@@ -98,7 +99,10 @@ def enter_running_loop():
             # Point to the head of the queue without popping it
             running_job = jobs_run_queue.head()
             timer = sw.Stopwatch( f"Executing [{running_job.question}]..." )
-            results = ul.assemble_and_run_solution( running_job.code, du.get_project_root() + "/src/conf/long-term-memory/events.csv", debug=True )
+            
+            du.print_banner( f"Executing [{running_job.question}]...", prepend_nl=True )
+            
+            results = ul.assemble_and_run_solution( running_job.code, "/src/conf/long-term-memory/events.csv", debug=False )
             timer.print( "Done!", use_millis=True )
             du.print_banner( f"Results for [{running_job.question}]", prepend_nl=True, end="\n" )
             
@@ -406,7 +410,7 @@ def upload_and_transcribe_mp3_file():
     
     print( "Result: [{}]".format( result ) )
     
-    # Fetch last response processed... ¡OJO! This is pretty kludgy, but it works for now. TODO: Do better!
+    # Fetch last response processed... ¡OJO! This is pretty kludgey, but it works for now. TODO: Do better!
     if os.path.isfile( du.get_project_root() + "/io/last_response.json" ):
         with open( du.get_project_root() + "/io/last_response.json" ) as json_file:
             last_response = json.load( json_file )
