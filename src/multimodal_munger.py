@@ -58,12 +58,12 @@ class MultiModalMunger:
         self.domain_name_model      = "ada:ft-deepily:domain-names-2023-07-12-17-15-41"
         self.search_terms_model     = "ada:ft-deepily:search-terms-2023-07-12-19-27-22"
         
-        self.punctuation            = du.get_file_as_dictionary( "conf/translation-dictionary.map", lower_case=True, debug=self.debug )
-        self.domain_names           = du.get_file_as_dictionary( "conf/domain-names.map",           lower_case=True )
-        self.numbers                = du.get_file_as_dictionary( "conf/numbers.map",                lower_case=True )
-        self.contact_info           = du.get_file_as_dictionary( "conf/contact-information.map",    lower_case=True )
-        self.prompt_dictionary      = du.get_file_as_dictionary( "conf/prompt-dictionary.map",      lower_case=True )
-        self.prompt                 = du.get_file_as_string( self.prompt_dictionary.get( prompt_key, "generic" ) )
+        self.punctuation            = du.get_file_as_dictionary( du.get_project_root() + "/src/conf/translation-dictionary.map", lower_case=True, debug=self.debug )
+        self.domain_names           = du.get_file_as_dictionary( du.get_project_root() + "/src/conf/domain-names.map",           lower_case=True )
+        self.numbers                = du.get_file_as_dictionary( du.get_project_root() + "/src/conf/numbers.map",                lower_case=True )
+        self.contact_info           = du.get_file_as_dictionary( du.get_project_root() + "/src/conf/contact-information.map",    lower_case=True )
+        self.prompt_dictionary      = du.get_file_as_dictionary( du.get_project_root() + "/src/conf/prompt-dictionary.map",      lower_case=True )
+        self.prompt                 = du.get_file_as_string( du.get_project_root() + self.prompt_dictionary.get( prompt_key, "generic" ) )
         self.command_strings        = self._get_command_strings()
         self.class_dictionary       = self._get_class_dictionary()
         
@@ -644,7 +644,7 @@ class MultiModalMunger:
         
     def _get_command_strings( self ):
     
-        command_strings = du.get_file_as_list( "conf/constants.js", lower_case=True, clean=True )
+        command_strings = du.get_file_as_list( du.get_project_root() + "/src/conf/constants.js", lower_case=True, clean=True )
         vox_commands = [ ]
         
         for command in command_strings :
