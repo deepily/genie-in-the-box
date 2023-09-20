@@ -23,6 +23,7 @@ class SolutionSnapshotManager:
     def load_snapshots_by_question( self ):
         
         snapshots_by_question = { }
+        if self.debug: print( f"Loading snapshots from [{self.path}]..." )
         
         for file in os.listdir( self.path ):
             
