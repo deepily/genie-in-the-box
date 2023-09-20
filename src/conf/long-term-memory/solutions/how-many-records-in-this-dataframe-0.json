@@ -2,6 +2,7 @@
   "push_counter": 6,
   "question": "how many records in this dataframe",
   "answer": "200",
+  "answer_short": "",
   "answer_conversational": "You have a total of 200 events on your calendar.",
   "synonymous_questions": {
     "how many records in this dataframe": 100.0,
