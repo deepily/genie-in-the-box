@@ -79,19 +79,19 @@ class SolutionSnapshot:
             "last_run_ms" : 0
         }
 
-    def __init__( self, push_counter=-1, question="", synonymous_questions=OrderedDict(), last_question_asked="", answer="", answer_conversational="",
+    def __init__( self, push_counter=-1, question="", synonymous_questions=OrderedDict(), last_question_asked="", answer="", answer_short="", answer_conversational="",
                   created_date=get_timestamp(), updated_date=get_timestamp(), run_date=get_timestamp(),
                   runtime_stats=get_default_stats_dict(),
                   id_hash="", solution_summary="", code=[],
                   programming_language="Python", language_version="3.10",
                   question_embedding=[ ], solution_embedding=[ ], code_embedding=[ ],
                   solution_directory="/src/conf/long-term-memory/solutions/", solution_file=None
-                  ):
+        ):
         
         self.push_counter          = push_counter
         self.question              = SolutionSnapshot.clean_question( question )
         self.answer                = answer
-        self.answer_short          = ""
+        self.answer_short          = answer_short
         self.answer_conversational = answer_conversational
         
         # Is there is no synonymous questions to be found then just recycle the current question
