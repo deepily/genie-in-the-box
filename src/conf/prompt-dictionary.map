@@ -1,1 +1,1 @@
-generic = conf/prompts/prompt-proofreader-generic.txt
+generic = /src/conf/prompts/prompt-proofreader-generic.txt
