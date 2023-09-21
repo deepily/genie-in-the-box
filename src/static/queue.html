@@ -197,6 +197,19 @@
             }
         });
     }
+    // create a method that closes this window after escape has been hit 2 times in a row
+    var escapeCounter = 0;
+
+    window.addEventListener( "keydown", function( event ) {
+        if ( event.key === "Escape" ) {
+            escapeCounter++;
+            if ( escapeCounter === 2 ) {
+                window.close();
+            }
+        } else {
+            escapeCounter = 0;
+        }
+    } );
 </script>
 
 <h4 id="clock" style="text-align: center">00-00-0000 @ 00:00:00</h4>
