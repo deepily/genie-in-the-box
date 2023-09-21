@@ -145,7 +145,7 @@ def enter_running_loop():
             socketio.emit( 'audio_update', { 'audioURL': url } )
         
         else:
-            print( "No jobs to pop from todo Q " )
+            # print( "No jobs to pop from todo Q " )
             socketio.sleep( 1 )
         
 def get_preamble( question, answer ):
