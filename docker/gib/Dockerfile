@@ -1,7 +1,5 @@
-# FOR gib:0.2.0
+# FOR gib:0.3.0
 FROM python:3.10.12
-
-RUN pip3 install openai-whisper
 
 RUN apt-get update && apt-get install -y \
     && apt-get install git wget nano rsync python3-enchant pip -y \
@@ -27,13 +25,20 @@ RUN pip3 install pyperclip
 
 RUN pip3 install flask_cors
 
-RUN pip3 install pip install duckduckgo-search
+RUN pip3 install duckduckgo-search
+
+RUN pip3 install openai-whisper
 
 RUN pip3 install --upgrade --no-cache-dir openai
 
 RUN pip install --upgrade --no-cache-dir langchain[llms]
 
 RUN pip install --upgrade --no-cache-dir wandb
+
+WORKDIR /var/genie-in-the-box
+# Superfluous?
+# RUN mkdir -p WORKDIR
+RUN mkdir -p /var/io
 
 # This isn't working
 ## Switch to run as a non-root user
