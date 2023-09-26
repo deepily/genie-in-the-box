@@ -54,9 +54,8 @@ push_count  = 1
 # Track the number of client connections
 connection_count   = 0
 
-# ¡OJO! This is a hack to get around the fact that the docker container can't see the host machine's IPv6 address
-# TODO: find a way to get the ip6 address dynamically
-tts_url_template = "http://172.17.0.4:5002/api/tts?text={tts_text}"
+# TODO: find a way to get this address dynamically
+tts_url_template = "http://192.168.0.188:5002/api/tts?text={tts_text}"
 
 app = Flask( __name__ )
 # Props to StackOverflow for this workaround:https://stackoverflow.com/questions/25594893/how-to-enable-cors-in-flask
