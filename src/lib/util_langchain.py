@@ -25,7 +25,8 @@ def force_print_cmd( code, solution_code_returns, debug=False ):
     if debug: print( "return_type [{}]".format( return_type ) )
     
     if return_type == df and "solution" in code[ -1 ]:
-        code.append( "print( solution.to_csv( index=False, sep=',', lineterminator='\\n', quoting=csv.QUOTE_NONNUMERIC ) )" )
+        # code.append( "print( solution.to_csv( index=False, sep=',', lineterminator='\\n', quoting=csv.QUOTE_NONNUMERIC ) )" )
+        code.append( "print( solution.to_json( orient='records', lines=True ) )" )
     elif return_type == df and "solution" not in code[ -1 ]:
         print( f"ERROR: last command DOES NOT contain 'solution', found this instead [{code[ -1 ]}]:" )
         code.append( "# Where's the solution?!?" )
