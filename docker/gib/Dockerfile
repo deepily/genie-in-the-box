@@ -29,6 +29,10 @@ RUN pip3 install duckduckgo-search
 
 RUN pip3 install openai-whisper
 
+RUN pip3 install jupyterlab
+#RUN pip3 install notebook
+RUN pip3 install ipywidgets
+
 RUN pip3 install --upgrade --no-cache-dir openai
 
 RUN pip install --upgrade --no-cache-dir langchain[llms]
