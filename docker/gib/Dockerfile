@@ -35,6 +35,8 @@ RUN pip3 install ipywidgets
 
 RUN pip3 install tabulate
 
+RUN pip install tiktoken
+
 RUN pip3 install --upgrade --no-cache-dir openai
 
 RUN pip install --upgrade --no-cache-dir langchain[llms]
