@@ -9,11 +9,11 @@ if debug:
     sys.path.sort()
     for path in sys.path: print( path )
 
-try:
-    import util as du
-except ImportError:
-    print( "Failed to import 'util', trying 'lib.util'..." )
-    import lib.util as du
+# try:
+#     import util as du
+# except ImportError:
+#     print( "Failed to import 'util', trying 'lib.util'..." )
+import lib.util as du
 
 from subprocess import PIPE, run
 
@@ -48,16 +48,16 @@ def force_print_cmd( code, solution_code_returns, debug=False ):
     
     return code
 
-# TODO: This should generalize to include white space, like the kind I inject into my import statements so that they align vertically
-# def remove_last_occurrence( the_list, the_string ):
-#
-#     if the_list.count( the_string ) > 1:
-#
-#         the_list.reverse()
-#         the_list.remove( the_string )
-#         the_list.reverse()
-#
-#     return the_list
+# TODO: This should generalize to include more than two instances of a string?
+def remove_last_occurrence( the_list, the_string ):
+
+    if the_list.count( the_string ) > 1:
+
+        the_list.reverse()
+        the_list.remove( the_string )
+        the_list.reverse()
+
+    return the_list
 
 def assemble_and_run_solution( solution_code, path=None, solution_code_returns="string", debug=debug ):
     
@@ -69,8 +69,8 @@ def assemble_and_run_solution( solution_code, path=None, solution_code_returns="
         code_preamble = [
             "import csv",
             "import sys",
-            "import pandas          as pd",
-            "import lib.util        as du",
+            "import pandas as pd",
+            "import lib.util as du",
             "import lib.util_pandas as dup",
             "",
             "debug = {}".format( debug ),
@@ -79,7 +79,8 @@ def assemble_and_run_solution( solution_code, path=None, solution_code_returns="
             "df = pd.read_csv( du.get_project_root() + '{path}' )".format( path=path ),
             "df = dup.cast_to_datetime( df, debug=debug )"
         ]
-        # code_preamble = remove_last_occurrence( code_preamble, "import pandas as pd" )
+        # Remove duplicate imports if present
+        code_preamble = remove_last_occurrence( code_preamble, "import pandas as pd" )
     
     if debug: print( "last command, before [{}]:".format( solution_code[ -1 ] ) )
     solution_code = force_print_cmd( solution_code, solution_code_returns, debug=debug )
@@ -102,7 +103,7 @@ def assemble_and_run_solution( solution_code, path=None, solution_code_returns="
     
     if results.returncode != 0:
         if debug: print()
-        output = "ERROR:\n{}".format( results.stderr.strip() )
+        output = "ERROR executing code: \n\n{}".format( results.stderr.strip() )
         if debug: print( output )
     else:
         if debug: print( "Done!" )
@@ -133,11 +134,11 @@ def test_assemble_and_run_solution():
     results = assemble_and_run_solution( solution_code, path="/src/conf/long-term-memory/events.csv", debug=debug )
     # results = assemble_and_run_solution( solution_code, debug=debug )
 
-    if results[ "return_code" ] != 0:
-        print( results[ "response" ] )
-    else:
-        response = results[ "response" ]
-        for line in response.split( "\n" ): print( line )
+    # if results[ "return_code" ] != 0:
+    #     print( results[ "response" ] )
+    # else:
+    #     response = results[ "response" ]
+    for line in results[ "output" ].split( "\n" ): print( line )
         
 if __name__ == "__main__":
     test_assemble_and_run_solution()
