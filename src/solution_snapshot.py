@@ -13,29 +13,6 @@ import lib.util_stopwatch as sw
 import openai
 import numpy as np
 
-
-# class Stopwatch:
-#
-#     def __init__( self, msg=None ):
-#
-#         if msg: print( msg )
-#         self.start = time.time()
-#
-#     def __enter__( self, msg=None ):
-#
-#         if msg: print( msg )
-#         self.start = time.time()
-#
-#         return self
-#
-#     def __exit__( self, *args ):
-#
-#         self.end = time.time()
-#         self.interval = int( (self.end - self.start) * 1000 )
-#
-#         print( f"Done in {self.interval:,} milliseconds" )
-#
-
 class SolutionSnapshot:
     
     @staticmethod
