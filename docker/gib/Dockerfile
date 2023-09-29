@@ -30,7 +30,7 @@ RUN pip3 install duckduckgo-search
 RUN pip3 install openai-whisper
 
 RUN pip3 install jupyterlab
-#RUN pip3 install notebook
+
 RUN pip3 install ipywidgets
 
 RUN pip3 install tabulate
