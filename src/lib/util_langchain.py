@@ -67,8 +67,8 @@ def assemble_and_run_solution( solution_code, path=None, solution_code_returns="
     else:
         # Otherwise, do a bit of prep for pandas & cleanup
         code_preamble = [
-            "import csv",
-            "import sys",
+            # "import csv",
+            # "import sys",
             "import pandas as pd",
             "import lib.util as du",
             "import lib.util_pandas as dup",
