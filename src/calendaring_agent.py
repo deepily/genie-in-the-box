@@ -64,10 +64,10 @@ class CalendaringAgent:
 
         Format: return your response as a JSON object in the following fields:
         {{
-            "question": "The question, verbatim and without modification, that your code attempts to answer",
+            "question": "The question, verbatim and without modification, delimited by ###",
             "thoughts": "Your thoughts",
             "code": [],
-            "return": "Object type of the variable `solution`",
+            "returns": "Object type of the variable `solution`",
             "explanation": "A brief explanation of your code",
         }}
 
@@ -119,7 +119,10 @@ class CalendaringAgent:
                 print( "Token count for pandas_system_prompt: [{}]".format( count ) )
             
         self.question      = question
-        self.response      = self._query_gpt( self.pandas_system_prompt, self.question, model=prompt_model, debug=self.debug )
+        self.response      = self._query_gpt( self.pandas_system_prompt, f"###{question}###", model=prompt_model, debug=self.debug )
+        
+        if self.debug: print( self.response )
+        
         self.response_dict = json.loads( self.response )
         
         if self.debug and self.verbose: print( json.dumps( self.response_dict, indent=4 ) )
@@ -130,7 +133,7 @@ class CalendaringAgent:
         
         self.code_response = ulc.assemble_and_run_solution(
             self.response_dict[ "code" ], path="/src/conf/long-term-memory/events.csv",
-            solution_code_returns=self.response_dict[ "return" ], debug=False
+            solution_code_returns=self.response_dict[ "returns" ], debug=False
         )
         if self.debug and self.verbose:
             du.print_banner( "Code output", prepend_nl=True )
