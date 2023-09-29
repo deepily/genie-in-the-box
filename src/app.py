@@ -22,11 +22,14 @@ from flask_socketio import SocketIO
 # print( "GENIE_IN_THE_BOX_ROOT [{}]".format( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) ) )
 # print( "Flask version [{}]".format( flask.__version__ ) )
 
-import lib.util           as du
 import genie_client       as gc
 import multimodal_munger  as mmm
+import calendaring_agent  as ca
+
+import lib.util           as du
 import lib.util_stopwatch as sw
 import lib.util_langchain as ul
+
 
 from genie_client         import GPT_3_5
 from genie_client         import GPT_4
@@ -67,6 +70,8 @@ path_to_snapshots = os.path.join( du.get_project_root(), "src/conf/long-term-mem
 print( "path_to_snapshots [{}]".format( path_to_snapshots ) )
 snapshot_mgr = SolutionSnapshotManager( path_to_snapshots, debug=True, verbose=True )
 
+EVENTS_DF_PATH = "/src/conf/long-term-memory/events.csv"
+
 """
 Track the todo Q
 """
@@ -97,11 +102,27 @@ def enter_running_loop():
             
             # Point to the head of the queue without popping it
             running_job = jobs_run_queue.head()
-            timer = sw.Stopwatch( f"Executing [{running_job.question}]..." )
             
-            du.print_banner( f"Executing [{running_job.question}]...", prepend_nl=True )
+            if len( running_job.code ) == 0:
+                
+                msg = f"Running new agent for [{running_job.question}]..."
+                du.print_banner( msg=msg, prepend_nl=True )
+                
+                timer = sw.Stopwatch( msg=msg )
+                agent = ca.CalendaringAgent( path_to_df=EVENTS_DF_PATH, debug=True, verbose=True )
+                response_dict = agent.run_prompt( running_job.question )
+                timer.print( "Done!", use_millis=True )
+                
+                running_job.code = response_dict[ "code"]
+                returns = response_dict[ "returns" ]
+                
+            else:
+                returns = "unknown"
             
-            results = ul.assemble_and_run_solution( running_job.code, "/src/conf/long-term-memory/events.csv", debug=False )
+            msg = f"Executing [{running_job.question}] code..."
+            du.print_banner( msg=msg, prepend_nl=True )
+            timer = sw.Stopwatch( msg=msg )
+            results = ul.assemble_and_run_solution( running_job.code, solution_code_returns=returns, path=EVENTS_DF_PATH, debug=False )
             timer.print( "Done!", use_millis=True )
             du.print_banner( f"Results for [{running_job.question}]", prepend_nl=True, end="\n" )
             
