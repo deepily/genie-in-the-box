@@ -106,10 +106,10 @@ def enter_running_loop():
             du.print_banner( f"Results for [{running_job.question}]", prepend_nl=True, end="\n" )
             
             if results[ "return_code" ] != 0:
-                print( results[ "response" ] )
-                running_job.answer = results[ "response" ]
+                print( results[ "output" ] )
+                running_job.answer = results[ "output" ]
             else:
-                response = results[ "response" ]
+                response = results[ "output" ]
                 running_job.answer = response
                 
                 for line in response.split( "\n" ): print( "* " + line )
@@ -149,7 +149,7 @@ def enter_running_loop():
         
 def get_preamble( question, answer ):
 
-    preamble = """
+    preamble = f"""
     I'm going to provide you with a question and answer pair like this:
 
     Q: <question>
@@ -160,7 +160,8 @@ def get_preamble( question, answer ):
     Do not include the question in your answer.
     
     Q: {question}
-    A: {answer}""".format( question=question, answer=answer )    
+    A: {answer}"""
+    
     return preamble
     
 @app.route( "/" )
@@ -196,7 +197,7 @@ def push_job_to_todo_queue( question ):
         
         # Get the best match: best[ 0 ] is the score, best[ 1 ] is the snapshot
         best_snapshot = similar_snapshots[ 0 ][ 1 ]
-        best_score = similar_snapshots[ 0 ][ 0 ]
+        best_score    = similar_snapshots[ 0 ][ 0 ]
         
         lines_of_code = best_snapshot.code
         if len( lines_of_code ) > 0:
@@ -213,12 +214,11 @@ def push_job_to_todo_queue( question ):
         job.add_synonymous_question( question, best_score )
         
         # Update date & count so that we can create id_hash
-        job.run_date = du.get_current_datetime()
+        job.run_date     = du.get_current_datetime()
         job.push_counter = push_count
-        job.id_hash = SolutionSnapshot.generate_id_hash( push_count, job.run_date )
+        job.id_hash      = SolutionSnapshot.generate_id_hash( job.push_counter, job.run_date )
         
         print()
-        # print( job.to_jsons( verbose=False ), end="\n\n" )
         
         # Only notify the poster if there are jobs ahead of them in the todo Q
         if jobs_todo_queue.size() != 0:
@@ -238,8 +238,12 @@ def push_job_to_todo_queue( question ):
     
     else:
         
-        socketio.emit( 'audio_update', { 'audioURL': url_for( 'get_tts_audio' ) + "?tts_text=I can't help you with that, my apologies" } )
-        return f'No similar snapshots found, job NOT added to queue. Queue size [{jobs_todo_queue.size()}]'
+        socketio.emit( 'audio_update', { 'audioURL': url_for( 'get_tts_audio' ) + "?tts_text=Working on a new question..." } )
+        empty_snapshot = SolutionSnapshot( question )
+        jobs_todo_queue.push( empty_snapshot )
+        socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
+        
+        return f'No similar snapshots found, adding NEW empty snapshot to queue. Queue size [{jobs_todo_queue.size()}]'
 
 # Rethink how/why we're killing/popping jobs in the todo queue
 # @app.route( "/pop", methods=[ "GET" ] )
