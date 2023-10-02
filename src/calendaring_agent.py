@@ -5,6 +5,7 @@ import lib.util           as du
 import lib.util_pandas    as dup
 import lib.util_langchain as ulc
 import lib.util_stopwatch as sw
+import solution_snapshot  as ss
 
 import pandas as pd
 import openai
@@ -15,7 +16,7 @@ GPT_3_5 = "gpt-3.5-turbo-0613"
 
 class CalendaringAgent:
     
-    def __init__( self, path_to_df, debug=False, verbose=False ):
+    def __init__( self, path_to_df, question="", push_counter=-1, debug=False, verbose=False ):
         
         self.debug      = debug
         self.verbose    = verbose
@@ -26,10 +27,17 @@ class CalendaringAgent:
         
         self.pandas_system_prompt = self._get_pandas_system_prompt()
         
-        self.question         = None
-        self.response_dict    = None
-        self.formatted_output = None
+        # Added to allow behavioral compatibility with solution snapshot object
+        self.run_date              = ss.SolutionSnapshot.get_timestamp()
+        self.id_hash               = ss.SolutionSnapshot.generate_id_hash( push_counter, self.run_date )
+        
+        self.question              = question
+        self.response_dict         = None
+        self.answer_conversational = None
     
+    def get_html( self ):
+        
+        return f"<li id='{self.id_hash}'>{self.run_date} Q: {self.question}</li>"
     
     def get_token_count( self, to_be_tokenized, model=GPT_4 ):
         
@@ -64,7 +72,7 @@ class CalendaringAgent:
 
         Format: return your response as a JSON object in the following fields:
         {{
-            "question": "The question, verbatim and without modification, delimited by ###",
+            "question": "The question, verbatim and without modification",
             "thoughts": "Your thoughts",
             "code": [],
             "returns": "Object type of the variable `solution`",
@@ -106,7 +114,7 @@ class CalendaringAgent:
         
         return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
     
-    def run_prompt( self, question ):
+    def run_prompt( self, question="" ):
         
         prompt_model = GPT_4
         if self.debug:
@@ -117,11 +125,18 @@ class CalendaringAgent:
                 print( self.pandas_system_prompt )
             else:
                 print( "Token count for pandas_system_prompt: [{}]".format( count ) )
-            
-        self.question      = question
-        self.response      = self._query_gpt( self.pandas_system_prompt, f"###{question}###", model=prompt_model, debug=self.debug )
         
-        if self.debug: print( self.response )
+        # Odd little two-step sanity check: allows us to set the question when instantiated or when run_prompt is called
+        if question != "":
+            self.question  = question
+        if self.question == "":
+            raise ValueError( "No question was provided!" )
+        
+        self.response      = self._query_gpt( self.pandas_system_prompt, self.question, model=prompt_model, debug=self.debug )
+        
+        # if self.debug and self.verbose:
+        #     du.print_banner( "GPT Response", prepend_nl=True )
+        #     print( f"[{self.response}]" )
         
         self.response_dict = json.loads( self.response )
         
@@ -166,9 +181,9 @@ class CalendaringAgent:
             else:
                 print( "Token count for instructions: [{}]".format( count ) )
             
-        self.formatted_output = self._query_gpt( preamble, instructions, model=format_model, debug=self.debug )
+        self.answer_conversational = self._query_gpt( preamble, instructions, model=format_model, debug=self.debug )
         
-        return self.formatted_output
+        return self.answer_conversational
     
     def get_formatting_preamble( self ):
         
