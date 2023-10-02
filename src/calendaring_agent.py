@@ -1,11 +1,11 @@
 import os
 import json
 
-import lib.util           as du
-import lib.util_pandas    as dup
-import lib.util_langchain as ulc
-import lib.util_stopwatch as sw
-import solution_snapshot  as ss
+import lib.util             as du
+import lib.util_pandas      as dup
+import lib.util_code_runner as ucr
+import lib.util_stopwatch   as sw
+import solution_snapshot    as ss
 
 import pandas as pd
 import openai
@@ -146,7 +146,7 @@ class CalendaringAgent:
     
     def run_code( self ):
         
-        self.code_response = ulc.assemble_and_run_solution(
+        self.code_response = ucr.assemble_and_run_solution(
             self.response_dict[ "code" ], path="/src/conf/long-term-memory/events.csv",
             solution_code_returns=self.response_dict[ "returns" ], debug=False
         )

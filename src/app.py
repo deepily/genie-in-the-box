@@ -26,9 +26,9 @@ import genie_client       as gc
 import multimodal_munger  as mmm
 import calendaring_agent  as ca
 
-import lib.util           as du
-import lib.util_stopwatch as sw
-import lib.util_langchain as ul
+import lib.util             as du
+import lib.util_stopwatch   as sw
+import lib.util_code_runner as ulc
 
 
 from genie_client         import GPT_3_5
@@ -125,7 +125,7 @@ def enter_running_loop():
                 msg = f"Executing SolutionSnapshot code for [{running_job.question[ :64 ]}]..."
                 du.print_banner( msg=msg, prepend_nl=True )
                 timer = sw.Stopwatch( msg=msg )
-                results = ul.assemble_and_run_solution( running_job.code, path=EVENTS_DF_PATH, debug=False )
+                results = ulc.assemble_and_run_solution( running_job.code, path=EVENTS_DF_PATH, debug=False )
                 timer.print( "Done!", use_millis=True )
                 du.print_banner( f"Results for [{running_job.question}]", prepend_nl=True, end="\n" )
                 
