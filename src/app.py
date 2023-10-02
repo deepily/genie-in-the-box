@@ -110,17 +110,25 @@ def enter_running_loop():
                 msg = f"Running CalendaringAgent for [{running_job.question[ :64 ]}]..."
                 du.print_banner( msg=msg, prepend_nl=True )
                 
-                timer = sw.Stopwatch( msg=msg )
+                agent_timer = sw.Stopwatch( msg=msg )
                 response_dict    = running_job.run_prompt()
                 code_response    = running_job.run_code()
                 formatted_output = running_job.format_output()
-                timer.print( "Done!", use_millis=True )
+                agent_timer.print( "Done!", use_millis=True )
                 
-                # running_job.code = response_dict[ "code"]
-                # returns = response_dict[ "returns" ]
-            #
-            # else:
-            #     returns = "unknown"
+                # If we've arrived at this point, then we've successfully run the agentic part of this job,
+                # But we still need to recast the agent object as a solution snapshot
+                running_job = SolutionSnapshot.create_solution_snapshot( running_job )
+                
+                running_job.update_runtime_stats( agent_timer )
+                du.print_banner( f"Job [{running_job.question}] complete!", prepend_nl=True, end="\n" )
+                print( f"Writing job [{running_job.question}] to file..." )
+                running_job.write_to_file()
+                print( f"Writing job [{running_job.question}] to file... Done!" )
+                
+                du.print_banner( "running_job.runtime_stats", prepend_nl=True )
+                pprint.pprint( running_job.runtime_stats )
+                
             else:
                 msg = f"Executing SolutionSnapshot code for [{running_job.question[ :64 ]}]..."
                 du.print_banner( msg=msg, prepend_nl=True )
@@ -262,9 +270,9 @@ def push_job_to_todo_queue( question ):
     
     else:
         
-        calendaring_agent = CalendaringAgent( EVENTS_DF_PATH, question=question, debug=True, verbose=True )
+        calendaring_agent = CalendaringAgent( EVENTS_DF_PATH, question=question, push_counter=push_count, debug=True, verbose=True )
         jobs_todo_queue.push( calendaring_agent )
-        socketio.emit( 'audio_update', { 'audioURL': url_for( 'get_tts_audio' ) + "?tts_text=Working on it" } )
+        socketio.emit( 'audio_update', { 'audioURL': url_for( 'get_tts_audio' ) + "?tts_text=Working on it!" } )
         socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
         
         return f'No similar snapshots found, adding NEW CalendaringAgent to TODO queue. Queue size [{jobs_todo_queue.size()}]'
