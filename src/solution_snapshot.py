@@ -44,7 +44,7 @@ class SolutionSnapshot:
     @staticmethod
     def generate_id_hash( push_counter, run_date ):
         
-        return hashlib.sha256( (str( push_counter ) + run_date ).encode() ).hexdigest()
+        return hashlib.sha256( ( str( push_counter ) + run_date ).encode() ).hexdigest()
         
     @staticmethod
     def get_default_stats_dict():
