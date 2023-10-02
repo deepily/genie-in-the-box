@@ -126,6 +126,7 @@ class SolutionSnapshot:
               last_question_asked=calendaring_agent.question,
                  solution_summary=calendaring_agent.response_dict[ "explanation" ],
                              code=calendaring_agent.response_dict[ "code" ],
+                         thoughts=calendaring_agent.response_dict[ "thoughts" ],
                            answer=calendaring_agent.code_response[ "output" ],
             answer_conversational=calendaring_agent.answer_conversational
                
