@@ -35,6 +35,7 @@ from genie_client         import GPT_3_5
 from genie_client         import GPT_4
 
 from solution_snapshot import SolutionSnapshot
+from calendaring_agent import CalendaringAgent
 
 from solution_snapshot_mgr import SolutionSnapshotManager
 from fifo_queue            import FifoQueue
@@ -103,54 +104,56 @@ def enter_running_loop():
             # Point to the head of the queue without popping it
             running_job = jobs_run_queue.head()
             
-            if len( running_job.code ) == 0:
+            if type( running_job ) == CalendaringAgent:
                 
-                msg = f"Running new agent for [{running_job.question}]..."
+                # Limit the length to 64 characters
+                msg = f"Running CalendaringAgent for [{running_job.question[ :64 ]}]..."
                 du.print_banner( msg=msg, prepend_nl=True )
                 
                 timer = sw.Stopwatch( msg=msg )
-                agent = ca.CalendaringAgent( path_to_df=EVENTS_DF_PATH, debug=True, verbose=True )
-                response_dict = agent.run_prompt( running_job.question )
+                response_dict    = running_job.run_prompt()
+                code_response    = running_job.run_code()
+                formatted_output = running_job.format_output()
                 timer.print( "Done!", use_millis=True )
                 
-                running_job.code = response_dict[ "code"]
-                returns = response_dict[ "returns" ]
-                
+                # running_job.code = response_dict[ "code"]
+                # returns = response_dict[ "returns" ]
+            #
+            # else:
+            #     returns = "unknown"
             else:
-                returns = "unknown"
-            
-            msg = f"Executing [{running_job.question}] code..."
-            du.print_banner( msg=msg, prepend_nl=True )
-            timer = sw.Stopwatch( msg=msg )
-            results = ul.assemble_and_run_solution( running_job.code, solution_code_returns=returns, path=EVENTS_DF_PATH, debug=False )
-            timer.print( "Done!", use_millis=True )
-            du.print_banner( f"Results for [{running_job.question}]", prepend_nl=True, end="\n" )
-            
-            if results[ "return_code" ] != 0:
-                print( results[ "output" ] )
-                running_job.answer = results[ "output" ]
-            else:
-                response = results[ "output" ]
-                running_job.answer = response
-                
-                for line in response.split( "\n" ): print( "* " + line )
-                print()
-                
-                msg = "Calling GPT to reformat the job.answer..."
-                timer = sw.Stopwatch( msg )
-                preamble = get_preamble( running_job.last_question_asked, running_job.answer )
-                running_job.answer_conversational = genie_client.ask_chat_gpt_text( query=running_job.answer, preamble=preamble, model=GPT_3_5 )
+                msg = f"Executing SolutionSnapshot code for [{running_job.question[ :64 ]}]..."
+                du.print_banner( msg=msg, prepend_nl=True )
+                timer = sw.Stopwatch( msg=msg )
+                results = ul.assemble_and_run_solution( running_job.code, path=EVENTS_DF_PATH, debug=False )
                 timer.print( "Done!", use_millis=True )
+                du.print_banner( f"Results for [{running_job.question}]", prepend_nl=True, end="\n" )
                 
-                # Arrive if we've arrived at this point, then we've successfully run the job
-                run_timer.print( "Full run complete ", use_millis=True )
-                running_job.update_runtime_stats( run_timer )
-                du.print_banner( f"Job [{running_job.question}] complete!", prepend_nl=True, end="\n" )
-                print( f"Writing job [{running_job.question}] to file..." )
-                running_job.write_to_file()
-                print( f"Writing job [{running_job.question}] to file... Done!" )
-                du.print_banner( "running_job.runtime_stats", prepend_nl=True )
-                pprint.pprint( running_job.runtime_stats )
+                if results[ "return_code" ] != 0:
+                    print( results[ "output" ] )
+                    running_job.answer = results[ "output" ]
+                else:
+                    response = results[ "output" ]
+                    running_job.answer = response
+                    
+                    for line in response.split( "\n" ): print( "* " + line )
+                    print()
+                    
+                    msg = "Calling GPT to reformat the job.answer..."
+                    timer = sw.Stopwatch( msg )
+                    preamble = get_preamble( running_job.last_question_asked, running_job.answer )
+                    running_job.answer_conversational = genie_client.ask_chat_gpt_text( query=running_job.answer, preamble=preamble, model=GPT_3_5 )
+                    timer.print( "Done!", use_millis=True )
+                    
+                    # Arrive if we've arrived at this point, then we've successfully run the job
+                    run_timer.print( "Full run complete ", use_millis=True )
+                    running_job.update_runtime_stats( run_timer )
+                    du.print_banner( f"Job [{running_job.question}] complete!", prepend_nl=True, end="\n" )
+                    print( f"Writing job [{running_job.question}] to file..." )
+                    running_job.write_to_file()
+                    print( f"Writing job [{running_job.question}] to file... Done!" )
+                    du.print_banner( "running_job.runtime_stats", prepend_nl=True )
+                    pprint.pprint( running_job.runtime_stats )
                 
             jobs_run_queue.pop()
             socketio.emit( 'run_update', { 'value': jobs_run_queue.size() } )
@@ -259,12 +262,12 @@ def push_job_to_todo_queue( question ):
     
     else:
         
-        socketio.emit( 'audio_update', { 'audioURL': url_for( 'get_tts_audio' ) + "?tts_text=Working on a new question..." } )
-        empty_snapshot = SolutionSnapshot( question )
-        jobs_todo_queue.push( empty_snapshot )
+        calendaring_agent = CalendaringAgent( EVENTS_DF_PATH, question=question, debug=True, verbose=True )
+        jobs_todo_queue.push( calendaring_agent )
+        socketio.emit( 'audio_update', { 'audioURL': url_for( 'get_tts_audio' ) + "?tts_text=Working on it" } )
         socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
         
-        return f'No similar snapshots found, adding NEW empty snapshot to queue. Queue size [{jobs_todo_queue.size()}]'
+        return f'No similar snapshots found, adding NEW CalendaringAgent to TODO queue. Queue size [{jobs_todo_queue.size()}]'
 
 # Rethink how/why we're killing/popping jobs in the todo queue
 # @app.route( "/pop", methods=[ "GET" ] )
