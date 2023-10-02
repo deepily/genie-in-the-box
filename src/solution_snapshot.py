@@ -59,7 +59,7 @@ class SolutionSnapshot:
     def __init__( self, push_counter=-1, question="", synonymous_questions=OrderedDict(), last_question_asked="", answer="", answer_short="", answer_conversational="",
                   created_date=get_timestamp(), updated_date=get_timestamp(), run_date=get_timestamp(),
                   runtime_stats=get_default_stats_dict(),
-                  id_hash="", solution_summary="", code=[],
+                  id_hash="", solution_summary="", code=[], thoughts="",
                   programming_language="Python", language_version="3.10",
                   question_embedding=[ ], solution_embedding=[ ], code_embedding=[ ],
                   solution_directory="/src/conf/long-term-memory/solutions/", solution_file=None
@@ -67,6 +67,7 @@ class SolutionSnapshot:
         
         self.push_counter          = push_counter
         self.question              = SolutionSnapshot.clean_question( question )
+        self.thoughts              = thoughts
         self.answer                = answer
         self.answer_short          = answer_short
         self.answer_conversational = answer_conversational
@@ -113,6 +114,25 @@ class SolutionSnapshot:
             data = json.load( f )
             
         return cls( **data )
+    
+    @classmethod
+    def create_solution_snapshot( cls, calendaring_agent ):
+        
+        print( "(create_solution_snapshot) TODO: Reconcile how we're going to get a dynamic path to the solution file's directory" )
+        
+        # Instantiate a new SolutionSnapshot object using the contents of the calendaring agent
+        return SolutionSnapshot(
+                         question=calendaring_agent.question,
+              last_question_asked=calendaring_agent.question,
+                 solution_summary=calendaring_agent.response_dict[ "explanation" ],
+                             code=calendaring_agent.response_dict[ "code" ],
+                           answer=calendaring_agent.code_response[ "output" ],
+            answer_conversational=calendaring_agent.answer_conversational
+               
+               # TODO: Reconcile how we're going to get a dynamic path to the solution file's directory
+               # solution_directory=calendaring_agent.solution_directory
+        )
+    
     
     def add_synonymous_question( self, question, score=100.0 ):
         
