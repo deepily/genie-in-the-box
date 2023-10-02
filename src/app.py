@@ -116,18 +116,25 @@ def enter_running_loop():
                 formatted_output = running_job.format_output()
                 agent_timer.print( "Done!", use_millis=True )
                 
-                # If we've arrived at this point, then we've successfully run the agentic part of this job,
-                # But we still need to recast the agent object as a solution snapshot
-                running_job = SolutionSnapshot.create_solution_snapshot( running_job )
+                du.print_banner( f"Job [{running_job.question}] complete...", prepend_nl=True, end="\n" )
                 
-                running_job.update_runtime_stats( agent_timer )
-                du.print_banner( f"Job [{running_job.question}] complete!", prepend_nl=True, end="\n" )
-                print( f"Writing job [{running_job.question}] to file..." )
-                running_job.write_to_file()
-                print( f"Writing job [{running_job.question}] to file... Done!" )
-                
-                du.print_banner( "running_job.runtime_stats", prepend_nl=True )
-                pprint.pprint( running_job.runtime_stats )
+                if code_response[ "response_code" ] == "0":
+                    
+                    # If we've arrived at this point, then we've successfully run the agentic part of this job,
+                    # But we still need to recast the agent object as a solution snapshot
+                    running_job = SolutionSnapshot.create_solution_snapshot( running_job )
+                    
+                    running_job.update_runtime_stats( agent_timer )
+                    print( f"Writing job [{running_job.question}] to file..." )
+                    running_job.write_to_file()
+                    print( f"Writing job [{running_job.question}] to file... Done!" )
+                    
+                    du.print_banner( "running_job.runtime_stats", prepend_nl=True )
+                    pprint.pprint( running_job.runtime_stats )
+                else:
+                    du.print_banner( f"Error running [{running_job.question[ :64 ]}]", prepend_nl=True )
+                    print( code_response[ "output" ] )
+                    
                 
             else:
                 msg = f"Executing SolutionSnapshot code for [{running_job.question[ :64 ]}]..."
