@@ -29,7 +29,8 @@ class CalendaringAgent:
         
         # Added to allow behavioral compatibility with solution snapshot object
         self.run_date              = ss.SolutionSnapshot.get_timestamp()
-        self.id_hash               = ss.SolutionSnapshot.generate_id_hash( push_counter, self.run_date )
+        self.push_counter          = push_counter
+        self.id_hash               = ss.SolutionSnapshot.generate_id_hash( self.push_counter, self.run_date )
         
         self.question              = question
         self.response_dict         = None
