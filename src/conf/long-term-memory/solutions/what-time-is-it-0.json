@@ -2,6 +2,7 @@
   "push_counter": 4,
   "question": "what time is it",
   "thoughts": "To get the current time, I need to use Python's datetime library... (blah, blah, blah)",
+  "error": "",
   "answer": "03:34 PM EDT",
   "answer_short": "",
   "answer_conversational": "It's currently 03:34 PM EDT.",

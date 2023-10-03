@@ -2,6 +2,7 @@
   "push_counter": 2,
   "question": "what day is today",
   "thoughts": "To get the current time, I need to use Python's datetime library... (blah, blah, blah)",
+  "error": "",
   "answer": "2023-09-26",
   "answer_short": "",
   "answer_conversational": "Today is September 26, 2023.",

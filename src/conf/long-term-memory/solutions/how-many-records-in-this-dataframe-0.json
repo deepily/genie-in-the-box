@@ -2,6 +2,7 @@
   "push_counter": 6,
   "question": "how many records in this dataframe",
   "thoughts": "To get the row count of a dataframe I'll need to use the shape attribute... (blah, blah, blah)",
+  "error": "",
   "answer": "200",
   "answer_short": "",
   "answer_conversational": "You have 200 events on your calendar.",
@@ -11,7 +12,6 @@
     "how many records in this table": 91.67738282979533,
     "how many records in this csv file": 88.37410818495741,
     "how many records in that table": 88.511766217582,
-    "how many events do i have on my calendar": 100.0,
     "how many rows in that data frame": 88.39272536584969,
     "how many records in that database": 88.3084326805536,
     "how many records do i have in that table": 86.49268460061167
