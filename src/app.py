@@ -122,7 +122,7 @@ def enter_running_loop():
                     du.print_banner( f"Error running [{running_job.question[ :64 ]}]", prepend_nl=True )
                     stack_trace = traceback.format_tb( e.__traceback__ )
                     for line in stack_trace: print( line )
-                    print()  
+                    print()
                     
                     # TODO: figure out how to handle this error case... for now, just pop the job from the run Q
                     jobs_run_queue.pop()
