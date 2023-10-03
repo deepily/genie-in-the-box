@@ -105,10 +105,11 @@ def enter_running_loop():
             # Point to the head of the queue without popping it
             running_job = jobs_run_queue.head()
             
+            # Limit the length of the question string
+            truncated_question = du.truncate_string( running_job.question, max_len=64 )
+            
             if type( running_job ) == CalendaringAgent:
                 
-                # Limit the length of the question string
-                truncated_question = du.truncate_string( running_job.question, length=64 )
                 msg = f"Running CalendaringAgent for [{truncated_question}]..."
                 du.print_banner( msg=msg, prepend_nl=True )
                 
