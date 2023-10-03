@@ -6,6 +6,7 @@ import random
 import sys
 import datetime as dt
 import pytz
+import json
 
 debug = False
 
@@ -276,6 +277,20 @@ def get_search_terms( requested_length ):
     
     return search_terms
 
+def is_jsonl( string ):
+    
+    try:
+        # Split the string into lines
+        lines = string.splitlines()
+
+        # Iterate over each line and validate as JSON
+        for line in lines:
+            json.loads(line)
+
+        return True
+    
+    except json.JSONDecodeError:
+        return False
 
 if __name__ == "__main__":
     
