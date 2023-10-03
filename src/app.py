@@ -118,16 +118,22 @@ def enter_running_loop():
                 
                 du.print_banner( f"Job [{running_job.question}] complete...", prepend_nl=True, end="\n" )
                 
-                if code_response[ "response_code" ] == "0":
+                if code_response[ "return_code" ] == 0:
                     
-                    # If we've arrived at this point, then we've successfully run the agentic part of this job,
-                    # But we still need to recast the agent object as a solution snapshot
-                    running_job = SolutionSnapshot.create_solution_snapshot( running_job )
+                    # If we've arrived at this point, then we've successfully run the agentic part of this job
+                    # recast the agent object as a solution snapshot
+                    running_job = SolutionSnapshot.create( running_job )
                     
                     running_job.update_runtime_stats( agent_timer )
                     print( f"Writing job [{running_job.question}] to file..." )
                     running_job.write_to_file()
                     print( f"Writing job [{running_job.question}] to file... Done!" )
+                    
+                    
+                    ##############################################################################################################
+                    # TODO: Add freshly minted snapshot to the snapshot manager both by question and by synonymous question
+                    ##############################################################################################################
+                    
                     
                     du.print_banner( "running_job.runtime_stats", prepend_nl=True )
                     pprint.pprint( running_job.runtime_stats )
