@@ -140,7 +140,7 @@ class CalendaringAgent:
         
         if self.debug and self.verbose: print( json.dumps( self.response_dict, indent=4 ) )
         
-        # Tst for no code returned and throw error
+        # Test for no code returned and throw error
         if self.response_dict[ "code" ] == [ ]:
             self.error = response_dict[ "error" ]
             raise ValueError( "No code was returned, please check the logs" )
