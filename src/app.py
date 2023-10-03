@@ -107,11 +107,12 @@ def enter_running_loop():
             
             if type( running_job ) == CalendaringAgent:
                 
-                # Limit the length to 64 characters
-                msg = f"Running CalendaringAgent for [{running_job.question[ :64 ]}]..."
+                # Limit the length of the question string
+                truncated_question = du.truncate_string( running_job.question, length=64 )
+                msg = f"Running CalendaringAgent for [{truncated_question}]..."
                 du.print_banner( msg=msg, prepend_nl=True )
                 
-                agent_timer      = sw.Stopwatch( msg=msg )
+                agent_timer          = sw.Stopwatch( msg=msg )
                 try:
                     response_dict    = running_job.run_prompt()
                     code_response    = running_job.run_code()
@@ -119,7 +120,7 @@ def enter_running_loop():
                     
                 except Exception as e:
                     
-                    du.print_banner( f"Error running [{running_job.question[ :64 ]}]", prepend_nl=True )
+                    du.print_banner( f"Error running [{truncated_question}]", prepend_nl=True )
                     stack_trace = traceback.format_tb( e.__traceback__ )
                     for line in stack_trace: print( line )
                     print()
@@ -146,22 +147,22 @@ def enter_running_loop():
                     running_job.update_runtime_stats( agent_timer )
                     
                     # Adding this snapshot to the snapshot manager serializes it to the local filesystem
-                    print( f"Adding job [{running_job.question[ :64 ]}] to snapshot manager...")
+                    print( f"Adding job [{truncated_question}] to snapshot manager...")
                     snapshot_mgr.add_snapshot( running_job )
-                    print( f"Adding job [{running_job.question[ :64 ]}] to snapshot manager... Done!" )
+                    print( f"Adding job [{truncated_question}] to snapshot manager... Done!" )
                     
                     du.print_banner( "running_job.runtime_stats", prepend_nl=True )
                     pprint.pprint( running_job.runtime_stats )
                     
                 else:
                     
-                    du.print_banner( f"Error running [{running_job.question[ :64 ]}]", prepend_nl=True )
+                    du.print_banner( f"Error running [{truncated_question}]", prepend_nl=True )
                     print( code_response[ "output" ] )
                     # TODO: figure out how to handle this error case... for now, just pop the job from the run Q
                     jobs_run_queue.pop()
                 
             else:
-                msg = f"Executing SolutionSnapshot code for [{running_job.question[ :64 ]}]..."
+                msg = f"Executing SolutionSnapshot code for [{truncated_question}]..."
                 du.print_banner( msg=msg, prepend_nl=True )
                 timer = sw.Stopwatch( msg=msg )
                 results = ulc.assemble_and_run_solution( running_job.code, path=EVENTS_DF_PATH, debug=False )
