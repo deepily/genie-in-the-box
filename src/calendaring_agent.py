@@ -35,6 +35,7 @@ class CalendaringAgent:
         self.question              = question
         self.response_dict         = None
         self.answer_conversational = None
+        self.error                 = None
     
     def get_html( self ):
         
@@ -78,12 +79,13 @@ class CalendaringAgent:
             "code": [],
             "returns": "Object type of the variable `solution`",
             "explanation": "A brief explanation of your code",
+            "error": "Your description of any issues or errors that you encountered while attempting to answer the question"
         }}
 
         Hint: An event that I have today may have started before today and may end tomorrow or next week, so be careful how you filter on dates.
         Hint: When filtering by dates, use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
         Hint: If your solution variable is a dataframe, it should include all columns in the dataframe.
-        Hint: Allow for the possibility that your query may return zero rows.
+        Hint: If you cannot answer the question, say so and explain why in the `error` field
         """
         # Wait until you're presented with the question to begin.
         
@@ -134,14 +136,14 @@ class CalendaringAgent:
             raise ValueError( "No question was provided!" )
         
         self.response      = self._query_gpt( self.pandas_system_prompt, self.question, model=prompt_model, debug=self.debug )
-        
-        # if self.debug and self.verbose:
-        #     du.print_banner( "GPT Response", prepend_nl=True )
-        #     print( f"[{self.response}]" )
-        
         self.response_dict = json.loads( self.response )
         
         if self.debug and self.verbose: print( json.dumps( self.response_dict, indent=4 ) )
+        
+        # Tst for no code returned and throw error
+        if self.response_dict[ "code" ] == [ ]:
+            self.error = response_dict[ "error" ]
+            raise ValueError( "No code was returned, please check the logs" )
         
         return self.response_dict
     
