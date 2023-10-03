@@ -83,9 +83,9 @@ class CalendaringAgent:
         Hint: An event that I have today may have started before today and may end tomorrow or next week, so be careful how you filter on dates.
         Hint: When filtering by dates, use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
         Hint: If your solution variable is a dataframe, it should include all columns in the dataframe.
-
-        Wait until you're presented with the question to begin.
+        Hint: Allow for the possibility that your query may return zero rows.
         """
+        # Wait until you're presented with the question to begin.
         
         return pandas_system_prompt
     
@@ -149,7 +149,7 @@ class CalendaringAgent:
         
         self.code_response = ucr.assemble_and_run_solution(
             self.response_dict[ "code" ], path="/src/conf/long-term-memory/events.csv",
-            solution_code_returns=self.response_dict[ "returns" ], debug=False
+            solution_code_returns=self.response_dict[ "returns" ], debug=self.debug
         )
         if self.debug and self.verbose:
             du.print_banner( "Code output", prepend_nl=True )
@@ -187,6 +187,26 @@ class CalendaringAgent:
         return self.answer_conversational
     
     def get_formatting_preamble( self ):
+        
+        if du.is_jsonl( self.code_response[ "output" ] ):
+            
+            return self.get_jsonl_formatting_preamble()
+        
+        else:
+            
+            preamble = f"""
+            You are an expert in converting raw data into conversational English.
+
+            The output is the result of a query on a pandas dataframe about events on my calendar.
+
+            The query is: `{self.question}`
+
+            The output is: `{self.code_response[ "output" ]}`
+            """
+            return preamble
+        
+        
+    def get_jsonl_formatting_preamble( self ):
         
         rows = self.code_response[ "output" ].split( "\n" )
         row_count = len( rows )
