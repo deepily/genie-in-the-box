@@ -31,7 +31,8 @@ class SolutionSnapshot:
     @staticmethod
     def generate_embedding( text ):
 
-        timer = sw.Stopwatch( f"Generating embedding for [{text}]..." )
+        msg = f"Generating embedding for [{du.truncate_string( text )}]..."
+        timer = sw.Stopwatch( msg=msg )
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
 
         response = openai.Embedding.create(
@@ -39,6 +40,7 @@ class SolutionSnapshot:
             model="text-embedding-ada-002"
         )
         timer.print( "Done!", use_millis=True )
+        
         return response[ "data" ][ 0 ][ "embedding" ]
     
     @staticmethod
@@ -66,6 +68,7 @@ class SolutionSnapshot:
                   solution_directory="/src/conf/long-term-memory/solutions/", solution_file=None
         ):
         
+        dirty                      = False
         self.push_counter          = push_counter
         self.question              = SolutionSnapshot.clean_question( question )
         self.thoughts              = thoughts
@@ -81,7 +84,7 @@ class SolutionSnapshot:
             self.synonymous_questions = synonymous_questions
             
         self.last_question_asked   = last_question_asked
-            
+        
         self.solution_summary      = solution_summary
         self.code                  = code
         
@@ -103,12 +106,27 @@ class SolutionSnapshot:
         # If the question embedding is empty, generate it
         if not question_embedding:
             self.question_embedding = self.generate_embedding( question )
+            dirty = True
         else:
             self.question_embedding = question_embedding
         
-        self.solution_embedding    = solution_embedding
-        self.code_embedding        = code_embedding
+        # If the code embedding is empty, generate it
+        if code and not code_embedding:
+            self.code_embedding     = self.generate_embedding( " ".join( code ) )
+            dirty = True
+        else:
+            self.code_embedding     = code_embedding
     
+        # If the solution embedding is empty, generate it
+        if code and not solution_embedding:
+            self.solution_embedding = self.generate_embedding( solution_summary )
+            dirty = True
+        else:
+            self.solution_embedding = solution_summary
+        
+        # Save changes if we've made any change as while loading
+        if dirty: self.write_to_file()
+        
     @classmethod
     def from_json_file( cls, filename ):
         
@@ -126,6 +144,7 @@ class SolutionSnapshot:
         return SolutionSnapshot(
                          question=calendaring_agent.question,
               last_question_asked=calendaring_agent.question,
+             synonymous_questions=OrderedDict( { calendaring_agent.question: 100.0 } ),
                             error=calendaring_agent.response_dict[ "error" ],
                  solution_summary=calendaring_agent.response_dict[ "explanation" ],
                              code=calendaring_agent.response_dict[ "code" ],
@@ -215,7 +234,7 @@ class SolutionSnapshot:
         else:
             if self.answer != "":
                 if len( self.answer ) > 32:
-                    self.answer_short = self.answer[ :16 ] + "..."
+                    self.answer_short = du.truncate_string( self.answer, max_len=16 ) + "..."
                 else:
                     self.answer_short = self.answer
         
@@ -232,7 +251,7 @@ class SolutionSnapshot:
             
             print( "NO solution_file value provided (Must be a new object). Generating a unique file name..." )
             # Generate filename based on first 64 characters of the question
-            filename_base = self.question[ :64 ].replace( " ", "-" )
+            filename_base = du.truncate_string( self.question, max_len=64 ).replace( " ", "-" )
             # Get a list of all files that start with the filename base
             existing_files = glob.glob( f"{directory}{filename_base}-*.json" )
             # The count of existing files will be used to make the filename unique
