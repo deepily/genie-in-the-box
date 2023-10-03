@@ -110,7 +110,7 @@ def enter_running_loop():
                 msg = f"Running CalendaringAgent for [{running_job.question[ :64 ]}]..."
                 du.print_banner( msg=msg, prepend_nl=True )
                 
-                agent_timer = sw.Stopwatch( msg=msg )
+                agent_timer      = sw.Stopwatch( msg=msg )
                 response_dict    = running_job.run_prompt()
                 code_response    = running_job.run_code()
                 formatted_output = running_job.format_output()
@@ -121,26 +121,25 @@ def enter_running_loop():
                 if code_response[ "return_code" ] == 0:
                     
                     # If we've arrived at this point, then we've successfully run the agentic part of this job
-                    # recast the agent object as a solution snapshot
+                    # recast the agent object as a solution snapshot object and add it to the snapshot manager
                     running_job = SolutionSnapshot.create( running_job )
                     
                     running_job.update_runtime_stats( agent_timer )
-                    print( f"Writing job [{running_job.question}] to file..." )
-                    running_job.write_to_file()
-                    print( f"Writing job [{running_job.question}] to file... Done!" )
                     
-                    
-                    ##############################################################################################################
-                    # TODO: Add freshly minted snapshot to the snapshot manager both by question and by synonymous question
-                    ##############################################################################################################
-                    
+                    # Adding this snapshot to the snapshot manager serializes it to the local filesystem
+                    print( f"Adding job [{running_job.question[ :64 ]}] to snapshot manager...")
+                    snapshot_mgr.add_snapshot( running_job )
+                    print( f"Adding job [{running_job.question[ :64 ]}] to snapshot manager... Done!" )
                     
                     du.print_banner( "running_job.runtime_stats", prepend_nl=True )
                     pprint.pprint( running_job.runtime_stats )
+                    
                 else:
+                    
                     du.print_banner( f"Error running [{running_job.question[ :64 ]}]", prepend_nl=True )
                     print( code_response[ "output" ] )
-                    
+                    # TODO: figure out how to handle this error case... for now, just pop the job from the run Q
+                    jobs_run_queue.pop()
                 
             else:
                 msg = f"Executing SolutionSnapshot code for [{running_job.question[ :64 ]}]..."
