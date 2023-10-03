@@ -292,6 +292,14 @@ def is_jsonl( string ):
     except json.JSONDecodeError:
         return False
 
+# A function that truncates a string if it exceeds a maximum length parameter. If it does add an ellipsis to the end.
+def truncate_string( string, max_len=64 ):
+    
+    if len( string ) > max_len:
+        string = string[ :max_len ] + "..."
+        
+    return string
+
 if __name__ == "__main__":
     
     print( get_current_datetime() )
