@@ -64,7 +64,7 @@ class SolutionSnapshot:
                   runtime_stats=get_default_stats_dict(),
                   id_hash="", solution_summary="", code=[], thoughts="",
                   programming_language="Python", language_version="3.10",
-                  question_embedding=[ ], solution_embedding=[ ], code_embedding=[ ],
+                  question_embedding=[ ], solution_embedding=[ ], code_embedding=[ ], thoughts_embedding=[ ],
                   solution_directory="/src/conf/long-term-memory/solutions/", solution_file=None
         ):
         
@@ -104,7 +104,7 @@ class SolutionSnapshot:
         self.solution_file         = solution_file
         
         # If the question embedding is empty, generate it
-        if not question_embedding:
+        if question != "" and not question_embedding:
             self.question_embedding = self.generate_embedding( question )
             dirty = True
         else:
@@ -123,7 +123,15 @@ class SolutionSnapshot:
             dirty = True
         else:
             self.solution_embedding = solution_summary
+
+        # If the thoughts embedding is empty, generate it
         
+        if code and not thoughts_embedding:
+            self.thoughts_embedding = self.generate_embedding( thoughts )
+            dirty = True
+        else:
+            self.thoughts_embedding = thoughts_embedding
+            
         # Save changes if we've made any change as while loading
         if dirty: self.write_to_file()
         
