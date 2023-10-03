@@ -56,7 +56,8 @@ class SolutionSnapshot:
             "last_run_ms" : 0
         }
 
-    def __init__( self, push_counter=-1, question="", synonymous_questions=OrderedDict(), last_question_asked="", answer="", answer_short="", answer_conversational="",
+    def __init__( self, push_counter=-1, question="", synonymous_questions=OrderedDict(),
+                  last_question_asked="", answer="", answer_short="", answer_conversational="", error="",
                   created_date=get_timestamp(), updated_date=get_timestamp(), run_date=get_timestamp(),
                   runtime_stats=get_default_stats_dict(),
                   id_hash="", solution_summary="", code=[], thoughts="",
@@ -71,6 +72,7 @@ class SolutionSnapshot:
         self.answer                = answer
         self.answer_short          = answer_short
         self.answer_conversational = answer_conversational
+        self.error                 = error
         
         # Is there is no synonymous questions to be found then just recycle the current question
         if len( synonymous_questions ) == 0:
@@ -124,6 +126,7 @@ class SolutionSnapshot:
         return SolutionSnapshot(
                          question=calendaring_agent.question,
               last_question_asked=calendaring_agent.question,
+                            error=calendaring_agent.response_dict[ "error" ],
                  solution_summary=calendaring_agent.response_dict[ "explanation" ],
                              code=calendaring_agent.response_dict[ "code" ],
                          thoughts=calendaring_agent.response_dict[ "thoughts" ],
