@@ -2,6 +2,7 @@ import json
 import os
 import pprint
 import time
+import traceback
 
 from threading         import Lock
 
@@ -111,9 +112,23 @@ def enter_running_loop():
                 du.print_banner( msg=msg, prepend_nl=True )
                 
                 agent_timer      = sw.Stopwatch( msg=msg )
-                response_dict    = running_job.run_prompt()
-                code_response    = running_job.run_code()
-                formatted_output = running_job.format_output()
+                try:
+                    response_dict    = running_job.run_prompt()
+                    code_response    = running_job.run_code()
+                    formatted_output = running_job.format_output()
+                    
+                except Exception as e:
+                    
+                    du.print_banner( f"Error running [{running_job.question[ :64 ]}]", prepend_nl=True )
+                    stack_trace = traceback.format_tb( e.__traceback__ )
+                    for line in stack_trace: print( line )
+                    print()
+                    
+                    with app.app_context():
+                        url = url_for( 'get_tts_audio' ) + f"?tts_text={running_job.error}"
+                    print( f"Emitting error url [{url}]..." )
+                    socketio.emit( 'audio_update', { 'audioURL': url } )
+                    
                 agent_timer.print( "Done!", use_millis=True )
                 
                 du.print_banner( f"Job [{running_job.question}] complete...", prepend_nl=True, end="\n" )
