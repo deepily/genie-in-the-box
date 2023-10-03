@@ -116,7 +116,7 @@ class SolutionSnapshot:
         return cls( **data )
     
     @classmethod
-    def create_solution_snapshot( cls, calendaring_agent ):
+    def create( cls, calendaring_agent ):
         
         print( "(create_solution_snapshot) TODO: Reconcile how we're going to get a dynamic path to the solution file's directory" )
         
@@ -249,6 +249,10 @@ class SolutionSnapshot:
         # Write the JSON string to the file
         with open( file_path, "w" ) as f:
             f.write( self.to_jsons() )
+        
+        # Set the file permissions to world-readable and writable
+        os.chmod( file_path, 0o666 )
+        
 
     def update_runtime_stats( self, timer ) -> None:
         """
