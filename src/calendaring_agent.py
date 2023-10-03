@@ -85,7 +85,7 @@ class CalendaringAgent:
         Hint: An event that I have today may have started before today and may end tomorrow or next week, so be careful how you filter on dates.
         Hint: When filtering by dates, use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
         Hint: If your solution variable is a dataframe, it should include all columns in the dataframe.
-        Hint: If you cannot answer the question, say so and explain why in the `error` field
+        Hint: If you cannot answer the question, explain why in the `error` field
         """
         # Wait until you're presented with the question to begin.
         
