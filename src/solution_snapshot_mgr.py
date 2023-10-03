@@ -160,7 +160,7 @@ class SolutionSnapshotManager:
 
 if __name__ == "__main__":
     
-    path_to_snapshots = os.path.join( du.get_project_root(), "src/conf/long-term-memory/solutions/" )
+    path_to_snapshots = du.get_project_root() + "/src/conf/long-term-memory/solutions/"
     snapshot_mgr = SolutionSnapshotManager( path_to_snapshots )
     print( snapshot_mgr )
     
