@@ -255,7 +255,7 @@ def push_job_to_todo_queue( question ):
     push_count += 1
     
     du.print_banner( f"Question: [{question}]", prepend_nl=True )
-    similar_snapshots = snapshot_mgr.get_snapshots_by_question( question )
+    similar_snapshots = snapshot_mgr.get_snapshots_by_question( question, threshold=90.0 )
     print()
     
     if len( similar_snapshots ) > 0:
