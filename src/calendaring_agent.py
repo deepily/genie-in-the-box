@@ -235,8 +235,10 @@ class CalendaringAgent:
     
     def get_formatting_instructions( self ):
         
+        data_format = "JSONL " if du.is_jsonl( self.code_response[ "output" ] ) else ""
+        
         instructions = f"""
-        Reformat and rephrase the JSONL data that I just showed you in conversational English so that it answers this question: `{self.question}`
+        Reformat and rephrase the {data_format}data that I just showed you in conversational English so that it answers this question: `{self.question}`
 
         Use this format: "You have a two hour lunch date with your friend Bob at noon today at Burgerland.
 
