@@ -11,8 +11,8 @@ def cast_to_datetime( df, debug=False ):
             if pd.api.types.is_string_dtype( df[ column ] ):
                 df[ column ] = pd.to_datetime( df[ column ] )
     
-    if debug:
-        du.print_banner( "df.dtypes:", prepend_nl=True, end="\n" )
-        print( df.dtypes )
+    # if debug:
+    #     du.print_banner( "df.dtypes:", prepend_nl=True, end="\n" )
+    #     print( df.dtypes )
         
     return df
