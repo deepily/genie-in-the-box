@@ -110,12 +110,55 @@ class SolutionSnapshotManager:
         similar_snapshots.sort( key=lambda x: x[ 0 ], reverse=True )
         
         return similar_snapshots[ :limit ]
+    
+    import numpy as np
+    
+    def get_snapshots_by_code_similarity( self, question, code, code_embedding, threshold=85.0, limit=-1 ):
         
+        code_snapshot      = ss.SolutionSnapshot( code_embedding=code_embedding )
+        similar_snapshots  = [ ]
+        question_truncated = du.truncate_string( question, max_len=32 )
+        
+        # Iterate the code in the code list and print it to the console
+        # if self.debug:
+        du.print_banner( f"Source code for [{question_truncated}]:", prepend_nl=True)
+        for line in code: print( line )
+        print()
+        
+        for snapshot in self.snapshots_by_question.values():
+            
+            similarity_score   = snapshot.get_code_similarity( code_snapshot )
+            question_truncated = du.truncate_string( snapshot.question, max_len=32 )
+            
+            if similarity_score >= threshold:
+                similar_snapshots.append( ( similarity_score, snapshot ) )
+                # if self.debug:
+                du.print_banner( f"Score [{similarity_score}] for snapshot [{question_truncated}] IS similar to the provided code", end="\n" )
+                for line in snapshot.code:
+                    print( line )
+                print()
+            else:
+                if self.debug:
+                    du.print_banner( f"Score [{similarity_score}] for snapshot [{question_truncated}] is NOT similar to the provided code", end="\n" )
+                
+            # if self.debug:
+        
+        # Sort by similarity score, descending
+        similar_snapshots.sort( key=lambda x: x[ 0 ], reverse=True )
+        
+        for snapshot in similar_snapshots:
+            print( f"Code similarity score [{snapshot[ 0 ]}] for [{du.truncate_string( question, max_len=32 )}] == [{du.truncate_string( snapshot[ 1 ].question, max_len=32 )}]" )
+        
+        if limit == -1:
+            return similar_snapshots
+        else:
+            return similar_snapshots[ :limit ]
+    
     def get_snapshots_by_question( self, question, threshold=85.0, limit=7, debug=False ):
         
         question = ss.SolutionSnapshot.clean_question( question )
         
-        print( f"get_snapshots_by_question( '{question}' )..." )
+        if self.debug: print( f"get_snapshots_by_question( '{question}' )..." )
         # print( "question in self.snapshots_by_synomymous_questions:", question in self.snapshots_by_synomymous_questions)
         
         if self.question_exists( question ):
@@ -161,24 +204,28 @@ class SolutionSnapshotManager:
 if __name__ == "__main__":
     
     path_to_snapshots = du.get_project_root() + "/src/conf/long-term-memory/solutions/"
-    snapshot_mgr = SolutionSnapshotManager( path_to_snapshots )
-    print( snapshot_mgr )
+    snapshot_mgr = SolutionSnapshotManager( path_to_snapshots, debug=False )
+    # print( snapshot_mgr )
     
-    questions = [
-        "what day comes after tomorrow?",
-        "what day is today?",
-        "Why is the sky blue?",
-        "What's today's date?",
-        "What is today's date?"
-    ]
-    for question in questions:
-        
-        du.print_banner( f"Question: [{question}]", prepend_nl=True )
-        similar_snapshots = snapshot_mgr.get_snapshots_by_question( question )
-        
-        if len( similar_snapshots ) > 0:
-                lines_of_code = similar_snapshots[ 0 ][ 1 ].code
-                for line in lines_of_code:
-                    print( line )
+    snapshot = snapshot_mgr.get_snapshots_by_question( "when is juans birthday?" )[ 0 ][ 1 ]
+    
+    similar_snapshots = snapshot_mgr.get_snapshots_by_code_similarity( snapshot.question, snapshot.code, snapshot.code_embedding, threshold=90.0, limit=-1 )
+    
+    # questions = [
+    #     "what day comes after tomorrow?",
+    #     "what day is today?",
+    #     "Why is the sky blue?",
+    #     "What's today's date?",
+    #     "What is today's date?"
+    # ]
+    # for question in questions:
+    #
+    #     du.print_banner( f"Question: [{question}]", prepend_nl=True )
+    #     similar_snapshots = snapshot_mgr.get_snapshots_by_question( question )
+    #
+    #     if len( similar_snapshots ) > 0:
+    #             lines_of_code = similar_snapshots[ 0 ][ 1 ].code
+    #             for line in lines_of_code:
+    #                 print( line )
         
         
