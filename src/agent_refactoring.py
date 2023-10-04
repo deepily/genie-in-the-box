@@ -52,19 +52,20 @@ class RefactoringAgent( CommonAgent ):
     def _get_system_message( self ):
         
         self._process_similar_snapshots()
+        snippet_count = int( len( self.snippets ) / 2 )
         
         system_message = f"""
-        I'm going to show you {len( self.snippets )} Python code snippets that are similar, along with the questions they were created to answer.
-        How would you coalesce or refactor them so that you only need to call one function in all {len( self.snippets )} scenarios?
+        I'm going to show you {snippet_count} Python code snippets that are similar, along with the questions they were created to answer.
+        How would you coalesce or refactor them so that you only need to call one function in all {snippet_count} scenarios?
         How would you name the function in a way that clearly explains exactly what the function does?
-        Descriptive function names look like: `get_birthday_by_name`, or `get_birthdays_by_day`, `get_events_by_week`,`get_events_by_day`, etc.,
+        Descriptive function names look like: `get_birthday_by_name`, or `get_birthdays_by_day`, `get_events_by_week_and_type`,`get_events_by_day_and_type`, etc.,
 
         As you generate the Python 3.10 code needed to answer this question, I want you to:
 
         1) Think: Before you do anything, think out loud about what I'm asking you to do, including the steps that you will need to take to solve this problem.
-        Be critical of your thought process!
+        Be critical of your thought process! How will you handle the edge cases? For example, what will you do if your query does not return a result?
         2) Code: Generate a verbatim list of code that you used to arrive at your answer, one line of code per item on the list. The code must be complete,
-        syntactically correct, and capable of running to completion.
+        syntactically correct, and capable of running to completion. You must allow for the possibility that your query may not return a result.
         3) Return: Report on the object type returned by your last line of code. Use one word to represent the object type.
         4) Example: Generate a verbatim list of code examples needed to call the function you created, one line of code per question provided. The example function calls
         must be complete, syntactically correct, and capable of running to completion.
