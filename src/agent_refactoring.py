@@ -39,10 +39,14 @@ class RefactoringAgent( CommonAgent ):
         
         for snapshot in self.similar_snapshots:
             
+            snippet = f"Question {i}: {snapshot[ 1 ].question}"
+            self.snippets.append( snippet )
+            
             snippet = "\n".join( snapshot[ 1 ].code )
             snippet = f"Snippet {i}: \n\n{snippet}"
-            print( snippet, end="\n\n" )
             self.snippets.append( snippet )
+            
+            if self.debug: print( snippet, end="\n\n" )
             i += 1
     
     def _get_system_message( self ):
@@ -50,7 +54,7 @@ class RefactoringAgent( CommonAgent ):
         self._process_similar_snapshots()
         
         system_message = f"""
-        I'm going to show you {len( self.snippets )} Python code snippets that are similar.
+        I'm going to show you {len( self.snippets )} Python code snippets that are similar, along with the questions they were created to answer.
         How would you coalesce or refactor them so that you only need to call one function in all {len( self.snippets )} scenarios?
         How would you name the function in a way that clearly explains exactly what the function does?
         Descriptive function names look like: `get_birthday_by_name`, or `get_birthdays_by_day`, `get_events_by_week`,`get_events_by_day`, etc.,
@@ -62,7 +66,8 @@ class RefactoringAgent( CommonAgent ):
         2) Code: Generate a verbatim list of code that you used to arrive at your answer, one line of code per item on the list. The code must be complete,
         syntactically correct, and capable of running to completion.
         3) Return: Report on the object type returned by your last line of code. Use one word to represent the object type.
-        4) Test: Generate a verbatim list of code needed to test your code solution
+        4) Example: Generate a verbatim list of code examples needed to call the function you created, one line of code per question provided. The example function calls
+        must be complete, syntactically correct, and capable of running to completion.
         5) Explain: Briefly and succinctly explain your code in plain English.
 
         Format: return your response as a JSON object in the following fields:
@@ -70,7 +75,7 @@ class RefactoringAgent( CommonAgent ):
             "thoughts": "Your thoughts",
             "code": [],
             "returns": "Object type of the variable `solution`",
-            "tests": []
+            "examples": []
             "python_version": "3.10",
             "explanation": "A brief explanation of your code",
             "error": "Verbatim stack trace or description of issues encountered while attempting to carry out this task."
@@ -113,14 +118,14 @@ class RefactoringAgent( CommonAgent ):
                 
         self.response      = self._query_gpt( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
         self.response_dict = json.loads( self.response )
-        
+
         if self.debug and self.verbose: print( json.dumps( self.response_dict, indent=4 ) )
-        
+
         # Test for no code returned and throw error
         if self.response_dict[ "code" ] == [ ]:
             self.error = self.response_dict[ "error" ]
             raise ValueError( "No code was returned, please check the logs" )
-        
+
         return self.response_dict
     
     # def run_code( self ):
