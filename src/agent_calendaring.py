@@ -23,7 +23,7 @@ class CalendaringAgent( CommonAgent ):
         self.df         = pd.read_csv( self.path_to_df )
         self.df         = dup.cast_to_datetime( self.df )
         
-        self.system_prompt         = self._get_system_message()
+        self.system_message        = self._get_system_message()
         
         # Added to allow behavioral compatibility with solution snapshot object
         self.run_date              = ss.SolutionSnapshot.get_timestamp()
@@ -31,9 +31,11 @@ class CalendaringAgent( CommonAgent ):
         self.id_hash               = ss.SolutionSnapshot.generate_id_hash( self.push_counter, self.run_date )
 
         self.question              = question
+        self.user_message          = None
         
         # We'll set these later
         self.answer_conversational = None
+        self.response              = None
         self.response_dict         = None
         self.error                 = None
     
@@ -85,31 +87,43 @@ class CalendaringAgent( CommonAgent ):
         
         return pandas_system_prompt
     
-    
-    def run_prompt( self, question="" ):
-        
-        prompt_model = CommonAgent.GPT_4
-        if self.debug:
-            
-            count = self._get_token_count( self.system_prompt, model=prompt_model )
-            if self.verbose:
-                du.print_banner( f"Token count for pandas_system_prompt: [{count}]", prepend_nl=True )
-                print( self.system_prompt )
-            else:
-                print( "Token count for pandas_system_prompt: [{}]".format( count ) )
+    def _get_user_message( self, question="" ):
         
         # Odd little two-step sanity check: allows us to set the question when instantiated or when run_prompt is called
         if question != "":
-            self.question  = question
+            self.question = question
         if self.question == "":
             raise ValueError( "No question was provided!" )
         
-        self.response      = self._query_gpt( self.system_prompt, self.question, model=prompt_model, debug=self.debug )
+        return self.question
+        
+    def run_prompt( self, question="" ):
+        
+        prompt_model      = CommonAgent.GPT_4
+        self.user_message = self._get_user_message( question )
+        
+        if self.debug:
+            
+            count = self._get_token_count( self.system_message, model=prompt_model )
+            if self.verbose:
+                du.print_banner( f"Token count for system_message: [{count}]", prepend_nl=True )
+                print( self.system_message )
+            else:
+                print( "Token count for system_message: [{}]".format( count ) )
+            
+            count = self._get_token_count( self.user_message, model=prompt_model )
+            if self.verbose:
+                du.print_banner( f"Token count for user_message: [{count}]", prepend_nl=True )
+                print( self.system_message )
+            else:
+                print( "Token count for user_message: [{}]".format( count ) )
+                
+        self.response      = self._query_gpt( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
         self.response_dict = json.loads( self.response )
         
         if self.debug and self.verbose: print( json.dumps( self.response_dict, indent=4 ) )
         
-        # Test for no code returned and throw error
+        # Test for no code returned
         if self.response_dict[ "code" ] == [ ]:
             self.error = self.response_dict[ "error" ]
             raise ValueError( "No code was returned, please check the logs" )
