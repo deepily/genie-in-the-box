@@ -1,4 +1,3 @@
-import os
 import json
 
 import lib.util             as du
@@ -7,25 +6,24 @@ import lib.util_code_runner as ucr
 import lib.util_stopwatch   as sw
 import solution_snapshot    as ss
 
+from agent import CommonAgent
+
 import pandas as pd
-import openai
-import tiktoken
 
-GPT_4   = "gpt-4-0613"
-GPT_3_5 = "gpt-3.5-turbo-0613"
-
-class CalendaringAgent:
+class CalendaringAgent( CommonAgent ):
     
     def __init__( self, path_to_df, question="", push_counter=-1, debug=False, verbose=False ):
         
-        self.debug      = debug
-        self.verbose    = verbose
+        super().__init__( debug=debug, verbose=verbose )
+        
+        # self.debug      = debug
+        # self.verbose    = verbose
         
         self.path_to_df = du.get_project_root() + path_to_df
         self.df         = pd.read_csv( self.path_to_df )
         self.df         = dup.cast_to_datetime( self.df )
         
-        self.system_prompt         = self._get_system_prompt()
+        self.system_prompt         = self._get_system_message()
         
         # Added to allow behavioral compatibility with solution snapshot object
         self.run_date              = ss.SolutionSnapshot.get_timestamp()
@@ -43,14 +41,8 @@ class CalendaringAgent:
         
         return f"<li id='{self.id_hash}'>{self.run_date} Q: {self.question}</li>"
     
-    def get_token_count( self, to_be_tokenized, model=GPT_4 ):
-        
-        encoding   = tiktoken.encoding_for_model( model )
-        num_tokens = len( encoding.encode( to_be_tokenized ) )
-        
-        return num_tokens
     
-    def _get_system_prompt( self ):
+    def _get_system_message( self ):
         
         csv = self.df.head( 3 ).to_csv( header=True, index=False )
         csv = csv + self.df.tail( 3 ).to_csv( header=False, index=False )
@@ -88,43 +80,18 @@ class CalendaringAgent:
         Hint: When filtering by dates, use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
         Hint: If your solution variable is a dataframe, it should include all columns in the dataframe.
         Hint: If you cannot answer the question, explain why in the `error` field
+        Hint: Allow for the possibility that your query may return no results.
         """
-        # Wait until you're presented with the question to begin.
         
         return pandas_system_prompt
     
-    def _query_gpt( self, preamble, query, model=GPT_4, debug=False ):
-        
-        openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
-        
-        if debug:
-            timer = sw.Stopwatch( msg=f"Asking ChatGPT [{model}]...".format( model ) )
-        
-        response = openai.ChatCompletion.create(
-            model=model,
-            messages=[
-                { "role": "system", "content": preamble },
-                { "role": "user", "content": query }
-            ],
-            temperature=0,
-            max_tokens=2000,
-            top_p=1.0,
-            frequency_penalty=0.0,
-            presence_penalty=0.0
-        )
-        if debug:
-            timer.print( use_millis=True )
-            if self.verbose:
-                print( json.dumps( response, indent=4 ) )
-        
-        return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
     
     def run_prompt( self, question="" ):
         
-        prompt_model = GPT_4
+        prompt_model = CommonAgent.GPT_4
         if self.debug:
             
-            count = self.get_token_count( self.system_prompt, model=prompt_model )
+            count = self._get_token_count( self.system_prompt, model=prompt_model )
             if self.verbose:
                 du.print_banner( f"Token count for pandas_system_prompt: [{count}]", prepend_nl=True )
                 print( self.system_prompt )
@@ -144,7 +111,7 @@ class CalendaringAgent:
         
         # Test for no code returned and throw error
         if self.response_dict[ "code" ] == [ ]:
-            self.error = response_dict[ "error" ]
+            self.error = self.response_dict[ "error" ]
             raise ValueError( "No code was returned, please check the logs" )
         
         return self.response_dict
@@ -164,14 +131,14 @@ class CalendaringAgent:
     
     def format_output( self ):
         
-        format_model = GPT_3_5
+        format_model = CommonAgent.GPT_3_5
         preamble     = self.get_formatting_preamble()
         instructions = self.get_formatting_instructions()
         
         if self.debug:
             
             # preamble
-            count = self.get_token_count( preamble, model=format_model )
+            count = self._get_token_count( preamble, model=format_model )
             if self.verbose:
                 du.print_banner( f"Token count for preamble: [{count}]", prepend_nl=True )
                 print( preamble )
@@ -179,7 +146,7 @@ class CalendaringAgent:
                 print( "Token count for preamble: [{}]".format( count ) )
             
             # instructions
-            count = self.get_token_count( instructions, model=format_model )
+            count = self._get_token_count( instructions, model=format_model )
             if self.verbose:
                 du.print_banner( f"Token count for instructions: [{count}]", prepend_nl=True )
                 print( instructions )
@@ -257,7 +224,8 @@ if __name__ == "__main__":
     # question         = "What todo items do I have on my calendar for this week?"
     # question         = "What todo items do I have on my calendar for today?"
     # question         = "Do I have any birthdays on my calendar this week?"
-    question         = "When is Juan's birthday?"
+    # question         = "When is Juan's birthday?"
+    question         = "When is Jimmy's birthday?"
     timer            = sw.Stopwatch( msg=f"Processing [{question}]..." )
     response_dict    = agent.run_prompt( question )
     code_response    = agent.run_code()
