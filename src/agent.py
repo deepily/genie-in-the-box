@@ -21,9 +21,12 @@ class CommonAgent( abc.ABC ):
         self.debug  = debug
         self.verbose = verbose
     
-    def _get_token_count( self, to_be_tokenized, model=GPT_4 ):
-        encoding = tiktoken.encoding_for_model( model )
+    @staticmethod
+    def _get_token_count( to_be_tokenized, model=GPT_4 ):
+        
+        encoding   = tiktoken.encoding_for_model( model )
         num_tokens = len( encoding.encode( to_be_tokenized ) )
+        
         return num_tokens
     
     def _query_gpt( self, preamble, query, model=GPT_4, debug=False ):
@@ -54,6 +57,10 @@ class CommonAgent( abc.ABC ):
     
     @abc.abstractmethod
     def _get_system_message( self ):
+        pass
+    
+    @abc.abstractmethod
+    def _get_user_message( self ):
         pass
     
     @abc.abstractmethod
