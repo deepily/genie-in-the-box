@@ -20,21 +20,23 @@ class CalendaringAgent:
         
         self.debug      = debug
         self.verbose    = verbose
+        
         self.path_to_df = du.get_project_root() + path_to_df
+        self.df         = pd.read_csv( self.path_to_df )
+        self.df         = dup.cast_to_datetime( self.df )
         
-        self.df = pd.read_csv( self.path_to_df )
-        self.df = dup.cast_to_datetime( self.df )
-        
-        self.pandas_system_prompt = self._get_pandas_system_prompt()
+        self.system_prompt         = self._get_system_prompt()
         
         # Added to allow behavioral compatibility with solution snapshot object
         self.run_date              = ss.SolutionSnapshot.get_timestamp()
         self.push_counter          = push_counter
         self.id_hash               = ss.SolutionSnapshot.generate_id_hash( self.push_counter, self.run_date )
-        
+
         self.question              = question
-        self.response_dict         = None
+        
+        # We'll set these later
         self.answer_conversational = None
+        self.response_dict         = None
         self.error                 = None
     
     def get_html( self ):
@@ -48,7 +50,7 @@ class CalendaringAgent:
         
         return num_tokens
     
-    def _get_pandas_system_prompt( self ):
+    def _get_system_prompt( self ):
         
         csv = self.df.head( 3 ).to_csv( header=True, index=False )
         csv = csv + self.df.tail( 3 ).to_csv( header=False, index=False )
@@ -122,10 +124,10 @@ class CalendaringAgent:
         prompt_model = GPT_4
         if self.debug:
             
-            count = self.get_token_count( self.pandas_system_prompt, model=prompt_model )
+            count = self.get_token_count( self.system_prompt, model=prompt_model )
             if self.verbose:
                 du.print_banner( f"Token count for pandas_system_prompt: [{count}]", prepend_nl=True )
-                print( self.pandas_system_prompt )
+                print( self.system_prompt )
             else:
                 print( "Token count for pandas_system_prompt: [{}]".format( count ) )
         
@@ -135,7 +137,7 @@ class CalendaringAgent:
         if self.question == "":
             raise ValueError( "No question was provided!" )
         
-        self.response      = self._query_gpt( self.pandas_system_prompt, self.question, model=prompt_model, debug=self.debug )
+        self.response      = self._query_gpt( self.system_prompt, self.question, model=prompt_model, debug=self.debug )
         self.response_dict = json.loads( self.response )
         
         if self.debug and self.verbose: print( json.dumps( self.response_dict, indent=4 ) )

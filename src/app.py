@@ -25,7 +25,7 @@ from flask_socketio import SocketIO
 
 import genie_client       as gc
 import multimodal_munger  as mmm
-import calendaring_agent  as ca
+import agent_calendaring  as ca
 
 import lib.util             as du
 import lib.util_stopwatch   as sw
@@ -36,7 +36,7 @@ from genie_client         import GPT_3_5
 from genie_client         import GPT_4
 
 from solution_snapshot import SolutionSnapshot
-from calendaring_agent import CalendaringAgent
+from agent_calendaring import CalendaringAgent
 
 from solution_snapshot_mgr import SolutionSnapshotManager
 from fifo_queue            import FifoQueue
