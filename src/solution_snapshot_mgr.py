@@ -113,21 +113,21 @@ class SolutionSnapshotManager:
     
     import numpy as np
     
-    def get_snapshots_by_code_similarity( self, question, code, code_embedding, threshold=85.0, limit=-1 ):
+    def get_snapshots_by_code_similarity( self, exemplar_snapshot, threshold=85.0, limit=-1 ):
         
-        code_snapshot      = ss.SolutionSnapshot( code_embedding=code_embedding )
+        # code_snapshot      = ss.SolutionSnapshot( code_embedding=source_snapshot.code_embedding )
+        question_truncated = du.truncate_string( exemplar_snapshot.question, max_len=32 )
         similar_snapshots  = [ ]
-        question_truncated = du.truncate_string( question, max_len=32 )
         
         # Iterate the code in the code list and print it to the console
         if self.debug:
             du.print_banner( f"Source code for [{question_truncated}]:", prepend_nl=True)
-            for line in code: print( line )
+            for line in exemplar_snapshot.code: print( line )
             print()
         
         for snapshot in self.snapshots_by_question.values():
             
-            similarity_score   = snapshot.get_code_similarity( code_snapshot )
+            similarity_score   = snapshot.get_code_similarity( exemplar_snapshot )
             question_truncated = du.truncate_string( snapshot.question, max_len=32 )
             
             if similarity_score >= threshold:
@@ -146,7 +146,7 @@ class SolutionSnapshotManager:
         
         print()
         for snapshot in similar_snapshots:
-            print( f"Code similarity score [{snapshot[ 0 ]}] for [{du.truncate_string( question, max_len=32 )}] == [{du.truncate_string( snapshot[ 1 ].question, max_len=32 )}]" )
+            print( f"Code similarity score [{snapshot[ 0 ]}] for [{question_truncated}] == [{du.truncate_string( snapshot[ 1 ].question, max_len=32 )}]" )
         
         if limit == -1:
             return similar_snapshots
@@ -206,9 +206,9 @@ if __name__ == "__main__":
     snapshot_mgr = SolutionSnapshotManager( path_to_snapshots, debug=False )
     # print( snapshot_mgr )
     
-    snapshot = snapshot_mgr.get_snapshots_by_question( "What concerts do I have this week?" )[ 0 ][ 1 ]
+    exemplar_snapshot = snapshot_mgr.get_snapshots_by_question( "What concerts do I have this week?" )[ 0 ][ 1 ]
     
-    similar_snapshots = snapshot_mgr.get_snapshots_by_code_similarity( snapshot.question, snapshot.code, snapshot.code_embedding, threshold=90.0, limit=-1 )
+    similar_snapshots = snapshot_mgr.get_snapshots_by_code_similarity( exemplar_snapshot, threshold=90.0 )
     
     # questions = [
     #     "what day comes after tomorrow?",
