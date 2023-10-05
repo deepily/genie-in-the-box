@@ -128,7 +128,7 @@ class RefactoringAgent( CommonAgent ):
 
         return self.response_dict
     
-    def update_code( self, debug=False ):
+    def refactor_code( self, debug=False ):
         
         agent_src_root = du.get_project_root() + "/src/"
         agent_lib_chunk = "lib/autogen/"
