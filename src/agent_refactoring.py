@@ -39,11 +39,11 @@ class RefactoringAgent( CommonAgent ):
         
         for snapshot in self.similar_snapshots:
             
-            snippet = f"Question {i}: {snapshot[ 1 ].question}"
-            self.snippets.append( snippet )
+            # snippet = f"Question {i}: {snapshot[ 1 ].question}"
+            # self.snippets.append( snippet )
             
             snippet = "\n".join( snapshot[ 1 ].code )
-            snippet = f"Snippet {i}: \n\n{snippet}"
+            snippet = f"Snippet {i} for question `{snapshot[ 1 ].question}`: \n\n{snippet}"
             self.snippets.append( snippet )
             
             if self.debug: print( snippet, end="\n\n" )
@@ -52,7 +52,8 @@ class RefactoringAgent( CommonAgent ):
     def _get_system_message( self ):
         
         self._process_similar_snapshots()
-        snippet_count = int( len( self.snippets ) / 2 )
+        # snippet_count = int( len( self.snippets ) / 2 )
+        snippet_count = len( self.snippets )
         
         system_message = f"""
         I'm going to show you {snippet_count} Python code snippets that are similar, along with the questions they were created to answer.
@@ -67,16 +68,17 @@ class RefactoringAgent( CommonAgent ):
         2) Code: Generate a verbatim list of code that you used to arrive at your answer, one line of code per item on the list. The code must be complete,
         syntactically correct, and capable of running to completion. You must allow for the possibility that your query may not return a result.
         3) Return: Report on the object type returned by your last line of code. Use one word to represent the object type.
-        4) Example: Generate a verbatim list of code examples needed to call the function you created, one line of code per question provided. The example function calls
-        must be complete, syntactically correct, and capable of running to completion.
+        4) Generate examples: Generate a dictionary containing the code examples needed to call the function you created, one line of code per question provided.
+        The example function calls must be complete, syntactically correct, and capable of running to completion. Each example must be wrapped in a print statement.
         5) Explain: Briefly and succinctly explain your code in plain English.
 
         Format: return your response as a JSON object in the following fields:
         {{
             "thoughts": "Your thoughts",
             "code": [],
+            "function_name": "The name of your function",
             "returns": "Object type of the variable `solution`",
-            "examples": []
+            "examples": {{}}, a dictionary containing the questions and example code, one line of code per question provided.
             "python_version": "3.10",
             "explanation": "A brief explanation of your code",
             "error": "Verbatim stack trace or description of issues encountered while attempting to carry out this task."
@@ -124,8 +126,14 @@ class RefactoringAgent( CommonAgent ):
 
         # Test for no code returned and throw error
         if self.response_dict[ "code" ] == [ ]:
+            stem = "No code was returned."
+            # Save for debugging by LLM later
+            self.error = f"{stem} LLM error: {self.response_dict[ 'error' ]}"
+            raise ValueError( stem )
+        
+        if self.response_dict[ "examples" ] == [ ]:
             self.error = self.response_dict[ "error" ]
-            raise ValueError( "No code was returned, please check the logs" )
+            raise ValueError( "No examples were returned, please check the logs" )
 
         return self.response_dict
     
