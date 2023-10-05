@@ -2,19 +2,10 @@ import os
 import json
 
 import lib.util             as du
-import lib.util_pandas      as dup
-import lib.util_code_runner as ucr
-import lib.util_stopwatch   as sw
 
+import solution_snapshot as ss
 from agent import CommonAgent
 from solution_snapshot_mgr import SolutionSnapshotManager
-
-# import openai
-# import tiktoken
-#
-# GPT_4   = "gpt-4-0613"
-# GPT_3_5 = "gpt-3.5-turbo-0613"
-
 class RefactoringAgent( CommonAgent ):
     
     def __init__( self, similar_snapshots=[], path_to_solutions="/src/conf/long-term-memory/solutions", debug=False, verbose=False ):
@@ -32,7 +23,7 @@ class RefactoringAgent( CommonAgent ):
         self.response_dict     = None
         self.error             = None
     
-    def _process_similar_snapshots( self ):
+    def _preprocess_similar_snapshots( self ):
         
         i = 1
         self.snippets = []
@@ -51,8 +42,8 @@ class RefactoringAgent( CommonAgent ):
     
     def _get_system_message( self ):
         
-        self._process_similar_snapshots()
-        # snippet_count = int( len( self.snippets ) / 2 )
+        self._preprocess_similar_snapshots()
+        
         snippet_count = len( self.snippets )
         
         system_message = f"""
@@ -137,19 +128,111 @@ class RefactoringAgent( CommonAgent ):
 
         return self.response_dict
     
-    # def run_code( self ):
-    #
-    #     self.code_response = ucr.assemble_and_run_solution(
-    #         self.response_dict[ "code" ], path="/src/conf/long-term-memory/events.csv",
-    #         solution_code_returns=self.response_dict[ "returns" ], debug=self.debug
-    #     )
-    #     if self.debug and self.verbose:
-    #         du.print_banner( "Code output", prepend_nl=True )
-    #         for line in self.code_response[ "output" ].split( "\n" ):
-    #             print( line )
-    #
-    #     return self.code_response
+    def update_code( self, debug=False ):
+        
+        agent_src_root = du.get_project_root() + "/src/"
+        agent_lib_chunk = "lib/autogen/"
+        
+        code_write_metadata = self._write_code_to_unique_files(
+            self.response_dict[ "code" ], agent_src_root, agent_lib_chunk, "util_calendaring_", suffix=".py"
+        )
+        if debug:
+            print( f"File     count: [{code_write_metadata[ 'count' ]}]" )
+            print( f"File file_name: [{code_write_metadata[ 'file_name' ]}]" )
+            print( f"File repo_path: [{code_write_metadata[ 'repo_path' ]}]" )
+            print( f"File   io_path: [{code_write_metadata[ 'io_path' ]}]" )
+            print( f"File    abbrev: [{code_write_metadata[ 'abbrev' ]}]" )
+            print( f"File    import: [{code_write_metadata[ 'import' ]}]" , end="\n\n" )
+        
+        response_dict = self._update_example_code( self.response_dict.copy(), code_write_metadata, code_write_metadata )
+        
+        self._update_snapshot_code( self.similar_snapshots, response_dict, debug=debug )
     
+    def _write_code_to_unique_files( self, lines, agent_src_root, agent_lib_chunk, file_name_prefix, suffix=".py" ):
+        
+        # Get the list of files in the agent_lib_path directory
+        files = os.listdir( agent_src_root + agent_lib_chunk )
+        
+        # Count the number of files with the name {file_name_prefix}{}{suffix}"
+        count = sum( 1 for file in files if file.startswith( file_name_prefix ) and file.endswith( suffix ) )
+        
+        # Format the file name with the count
+        file_name = f"{file_name_prefix}{count}{suffix}"
+        util_name = f"{file_name_prefix}{count}"
+        
+        # Write the file to the repo path
+        repo_path = os.path.join( agent_src_root, agent_lib_chunk, file_name )
+        print( f"Writing file [{repo_path}]... ", end="" )
+        du.write_lines_to_file( repo_path, lines )
+        # Set the permissions of the file to be world-readable and writable
+        os.chmod( repo_path, 0o666 )
+        print( "Done!" )
+        
+        # Write the file to the io/execution path
+        io_path = f"{du.get_project_root()}/io/{agent_lib_chunk}{file_name}"
+        print( f"Writing file [{io_path}]... ", end="" )
+        du.write_lines_to_file( io_path, lines )
+        # Set the permissions of the file to be world-readable and writable
+        os.chmod( io_path, 0o666 )
+        print( "Done!", end="\n\n" )
+        
+        # Build import 'as' string:
+        non_digits = "util_calendaring_2".split( "_" )[ :-1 ]
+        first_digits = "".join( [ item[ 0 ] for item in non_digits ] )
+        abbrev = f"{first_digits}{count}"
+        as_chunk = f"as {abbrev}"
+        import_str = f"import {agent_lib_chunk.replace( '/', '.' )}{util_name} {as_chunk}"
+        
+        results = {
+            "file_name": file_name,
+            "repo_path": repo_path,
+            "io_path"  : io_path,
+            "count"    : count,
+            "abbrev"   : abbrev,
+            "import"   : import_str
+        }
+        
+        return results
+    
+    def _update_example_code( self, refactoring_response_dict, code_metadata, debug=False ):
+        
+        function_name = refactoring_response_dict[ "function_name" ]
+        
+        # Update the examples dictionary so that it contains a list of source code needed to execute the freshly minted function
+        for key, value in refactoring_response_dict[ "examples" ].items():
+            
+            # if debug: print( f"Before: {key}: {value}" )
+            if type( value ) is not list:
+                value = value.replace( function_name, f"{code_metadata[ 'abbrev' ]}.{function_name}" )
+                value = [ code_metadata[ 'import' ], value ]
+            # else:
+            #     if debug: print( f"No need to update [{value}]" )
+            # if debug: print( f" After: {key}: {value}" )
+            
+            refactoring_response_dict[ "examples" ][ key ] = value
+        
+        return refactoring_response_dict
+    
+    def _update_snapshot_code( self, snapshots, refactoring_response_dict, debug=False ):
+        
+        for snapshot in snapshots:
+            
+            if debug:
+                du.print_banner( f"BEFORE updating `{snapshot[ 1 ].question}`...", prepend_nl=False )
+                for line in snapshot[ 1 ].code: print( line )
+                print( "\n" )
+            
+            # Update the code, using the question as the key
+            new_code = refactoring_response_dict[ "examples" ][ snapshot[ 1 ].question ]
+            snapshot[ 1 ].code = new_code
+            snapshot[ 1 ].code_embedding = ss.SolutionSnapshot.generate_embedding( " ".join( new_code ) )
+            snapshot[ 1 ].write_to_file()
+            
+            if debug:
+                du.print_banner( f" AFTER updating `{snapshot[ 1 ].question}`...", prepend_nl=False )
+                for line in snapshot[ 1 ].code: print( line )
+                print( "\n" )
+
 if __name__ == "__main__":
     
     path_to_snapshots = du.get_project_root() + "/src/conf/long-term-memory/solutions/"
