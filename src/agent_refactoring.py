@@ -65,12 +65,28 @@ class RefactoringAgent( CommonAgent ):
         The example function calls must be complete, syntactically correct, and capable of running to completion. Each example must be wrapped in a print statement.
         5) Explain: Briefly and succinctly explain your code in plain English.
 
-        Format: return your response as a JSON object in the following fields:
+        Format: return your response as a JSON object with the following fields and formatting:
         {{
             "thoughts": "Your thoughts",
             "code": [],
             "function_name": "The name of your function",
-            "arguments": "The arguments to your function, the fewer the better."
+            "parameters": "The parameters to your function, the fewer the better.  Spell them exactly as they are used in the examples dictionary below.",
+            "gpt_function_signature":
+            "{{
+                "name": "get_current_weather",
+                "description": "Gets the current weather in a given location",
+                "parameters": {{
+                    "type": "object",
+                    "properties": {{
+                        "location": {{
+                            "type": "string",
+                            "description": "The city and state, e.g. San Francisco, CA",
+                        }},
+                        "unit": {{"type": "string", "enum": ["celsius", "fahrenheit"]}},
+                    }},
+                    "required": ["location"],
+                }},
+            }}",
             "returns": "Object type of the variable `solution`",
             "examples": {{}}, a dictionary containing the questions and example code, one line of code per question provided.
             "python_version": "3.10",
@@ -136,8 +152,8 @@ class RefactoringAgent( CommonAgent ):
         agent_src_root = du.get_project_root() + "/src/"
         agent_lib_chunk = "lib/autogen/"
         
-        code_write_metadata = self._write_code_to_unique_files(
-            self.response_dict[ "code" ], agent_src_root, agent_lib_chunk, "util_calendaring_", suffix=".py"
+        code_write_metadata = self._write_code_and_metadata_to_unique_files(
+            self.response_dict, agent_src_root, agent_lib_chunk, "util_calendaring_", code_suffix=".py"
         )
         if debug:
             print( f"File     count: [{code_write_metadata[ 'count' ]}]" )
@@ -145,7 +161,8 @@ class RefactoringAgent( CommonAgent ):
             print( f"File repo_path: [{code_write_metadata[ 'repo_path' ]}]" )
             print( f"File   io_path: [{code_write_metadata[ 'io_path' ]}]" )
             print( f"File    abbrev: [{code_write_metadata[ 'abbrev' ]}]" )
-            print( f"File    import: [{code_write_metadata[ 'import' ]}]" , end="\n\n" )
+            print( f"File    import: [{code_write_metadata[ 'import' ]}]" )
+            print( f"File signature: [{code_write_metadata[ 'gpt_function_signature' ]}]", end="\n\n" )
         
         response_dict = self._update_example_code( self.response_dict.copy(), code_write_metadata, code_write_metadata )
         
@@ -169,22 +186,35 @@ class RefactoringAgent( CommonAgent ):
         
         return self.code_responses
     
-    def _write_code_to_unique_files( self, lines, agent_src_root, agent_lib_chunk, file_name_prefix, suffix=".py" ):
+    def _write_code_and_metadata_to_unique_files(
+            self, response_dict, agent_src_root, agent_lib_chunk, file_name_prefix, code_suffix=".py", metadata_suffix=".json"
+    ):
+        
+        code                   = response_dict[ "code" ]
+        gpt_function_signature = response_dict[ "gpt_function_signature" ]
         
         # Get the list of files in the agent_lib_path directory
         files = os.listdir( agent_src_root + agent_lib_chunk )
         
         # Count the number of files with the name {file_name_prefix}{}{suffix}"
-        count = sum( 1 for file in files if file.startswith( file_name_prefix ) and file.endswith( suffix ) )
+        count = sum( 1 for file in files if file.startswith( file_name_prefix ) and file.endswith( code_suffix ) )
         
         # Format the file name with the count
-        file_name = f"{file_name_prefix}{count}{suffix}"
+        file_name = f"{file_name_prefix}{count}{code_suffix}"
         util_name = f"{file_name_prefix}{count}"
         
-        # Write the file to the repo path
+        # Write the code to the repo path
         repo_path = os.path.join( agent_src_root, agent_lib_chunk, file_name )
         print( f"Writing file [{repo_path}]... ", end="" )
-        du.write_lines_to_file( repo_path, lines )
+        du.write_lines_to_file( repo_path, code )
+        # Set the permissions of the file to be world-readable and writable
+        os.chmod( repo_path, 0o666 )
+        print( "Done!" )
+        
+        # Write the function signature to the repo path
+        repo_path = os.path.join( agent_src_root, agent_lib_chunk, file_name.replace( code_suffix, metadata_suffix ) )
+        print( f"Writing file [{repo_path}]... ", end="" )
+        du.write_string_to_file( repo_path, gpt_function_signature )
         # Set the permissions of the file to be world-readable and writable
         os.chmod( repo_path, 0o666 )
         print( "Done!" )
@@ -192,7 +222,7 @@ class RefactoringAgent( CommonAgent ):
         # Write the file to the io/execution path
         io_path = f"{du.get_project_root()}/io/{agent_lib_chunk}{file_name}"
         print( f"Writing file [{io_path}]... ", end="" )
-        du.write_lines_to_file( io_path, lines )
+        du.write_lines_to_file( io_path, code )
         # Set the permissions of the file to be world-readable and writable
         os.chmod( io_path, 0o666 )
         print( "Done!", end="\n\n" )
