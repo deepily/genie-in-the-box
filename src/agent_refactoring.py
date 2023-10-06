@@ -2,9 +2,9 @@ import os
 import json
 
 import lib.util             as du
+import solution_snapshot    as ss
 
-import solution_snapshot as ss
-from agent import CommonAgent
+from agent                 import CommonAgent
 from solution_snapshot_mgr import SolutionSnapshotManager
 class RefactoringAgent( CommonAgent ):
     
