@@ -2,6 +2,7 @@ import os
 import json
 
 import lib.util             as du
+import lib.util_code_runner as ucr
 import solution_snapshot    as ss
 
 from agent                 import CommonAgent
@@ -22,6 +23,7 @@ class RefactoringAgent( CommonAgent ):
         self.response          = None
         self.response_dict     = None
         self.error             = None
+        self.code_responses    = None
     
     def _preprocess_similar_snapshots( self ):
         
@@ -68,6 +70,7 @@ class RefactoringAgent( CommonAgent ):
             "thoughts": "Your thoughts",
             "code": [],
             "function_name": "The name of your function",
+            "arguments": "The arguments to your function, the fewer the better."
             "returns": "Object type of the variable `solution`",
             "examples": {{}}, a dictionary containing the questions and example code, one line of code per question provided.
             "python_version": "3.10",
@@ -147,6 +150,24 @@ class RefactoringAgent( CommonAgent ):
         response_dict = self._update_example_code( self.response_dict.copy(), code_write_metadata, code_write_metadata )
         
         self._update_snapshot_code( self.similar_snapshots, response_dict, debug=debug )
+    
+    def run_code( self ):
+        
+        self.code_responses = []
+        
+        for similar_snapshot in self.similar_snapshots:
+            
+            code_response = ucr.assemble_and_run_solution(
+                similar_snapshot[ 1 ].code, path="/src/conf/long-term-memory/events.csv", debug=self.debug
+            )
+            if self.debug and self.verbose:
+                du.print_banner( "Code output", prepend_nl=True )
+                for line in code_response[ "output" ].split( "\n" ):
+                    print( line )
+                    
+            self.code_responses.append( code_response )
+        
+        return self.code_responses
     
     def _write_code_to_unique_files( self, lines, agent_src_root, agent_lib_chunk, file_name_prefix, suffix=".py" ):
         
