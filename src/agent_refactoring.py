@@ -51,8 +51,8 @@ class RefactoringAgent( CommonAgent ):
         system_message = f"""
         I'm going to show you {snippet_count} Python code snippets that are similar, along with the questions they were created to answer.
         How would you coalesce or refactor them so that you only need to call one function in all {snippet_count} scenarios?
-        How would you name the function in a way that clearly explains exactly what the function does?
-        Descriptive function names look like: `get_birthday_by_name`, or `get_birthdays_by_day`, `get_events_by_week_and_type`,`get_events_by_day_and_type`, etc.,
+        How would you name the function in a way that clearly explains exactly what the date range is, e.g., 'get_this_months_events_by_type', as well as what the function does?
+        Descriptive function names MUST look like: `get_birthday_by_name`, or `get_todays_events`, `get_todays_events_by_type`, `get_tomorrows_events`, `get_this_weeks_events`, `get_this_weeks_events_by_type`,`get_this_months_events_by_type`, etc.,
 
         As you generate the Python 3.10 code needed to answer this question, I want you to:
 
@@ -60,19 +60,19 @@ class RefactoringAgent( CommonAgent ):
         Be critical of your thought process! How will you handle the edge cases? For example, what will you do if your query does not return a result?
         2) Code: Generate a verbatim list of code that you used to arrive at your answer, one line of code per item on the list. The code must be complete,
         syntactically correct, and capable of running to completion. You must allow for the possibility that your query may not return a result.
-        3) Return: Report on the object type returned by your last line of code. Use one word to represent the object type.
+        3) Document: Create a GPT function signature (gpt_function_signatures) that can be used by GPT to call the function you create. The function signature must be syntactically correct.
         4) Generate examples: Generate a dictionary containing the code examples needed to call the function you created, one line of code per question provided.
         The example function calls must be complete, syntactically correct, and capable of running to completion. Each example must be wrapped in a print statement.
         5) Explain: Briefly and succinctly explain your code in plain English.
 
-        Format: return your response as a JSON object with the following fields and formatting:
+        Format: return your response as a syntactically correct JSON object with the following fields and formatting:
         {{
             "thoughts": "Your thoughts",
             "code": [],
-            "function_name": "The name of your function",
-            "parameters": "The parameters to your function, the fewer the better.  Spell them exactly as they are used in the examples dictionary below.",
-            "gpt_function_signature":
-            "{{
+            "function_name": "The name of your function. It must describe the time being filtered, e.g., `get_tomorrows_events`",
+            "parameters": "The parameters to your function, only two are allowed: the 1st will always be `df` and the 2nd is of your choosing.",
+            "gpt_function_signatures":"[
+            {{
                 "name": "get_current_weather",
                 "description": "Gets the current weather in a given location",
                 "parameters": {{
@@ -86,7 +86,7 @@ class RefactoringAgent( CommonAgent ):
                     }},
                     "required": ["location"],
                 }},
-            }}",
+            }}]",
             "returns": "Object type of the variable `solution`",
             "examples": {{}}, a dictionary containing the questions and example code, one line of code per question provided.
             "python_version": "3.10",
