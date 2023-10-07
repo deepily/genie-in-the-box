@@ -190,8 +190,11 @@ class RefactoringAgent( CommonAgent ):
             self, response_dict, agent_src_root, agent_lib_chunk, file_name_prefix, code_suffix=".py", metadata_suffix=".json"
     ):
         
+        # Get the code and function signature from the response dictionary,
+        # ¡OJO! The function signature requires a bit of munging before serializing it as Json
         code                   = response_dict[ "code" ]
-        gpt_function_signature = response_dict[ "gpt_function_signature" ]
+        gpt_function_signature = response_dict[ "gpt_function_signatures" ]
+        gpt_function_signature = json.dumps( gpt_function_signature, indent=4 ).replace( "'", '"' ).strip( '"' )
         
         # Get the list of files in the agent_lib_path directory
         files = os.listdir( agent_src_root + agent_lib_chunk )
@@ -240,7 +243,8 @@ class RefactoringAgent( CommonAgent ):
             "io_path"  : io_path,
             "count"    : count,
             "abbrev"   : abbrev,
-            "import"   : import_str
+            "import"   : import_str,
+            "gpt_function_signature": gpt_function_signature
         }
         
         return results
