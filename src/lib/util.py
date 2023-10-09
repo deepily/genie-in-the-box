@@ -305,10 +305,27 @@ def find_files_with_prefix_and_suffix( directory, prefix, suffix ):
     matching_files = [ ]
     for file_name in os.listdir( directory ):
         if file_name.startswith( prefix ) and file_name.endswith( suffix ):
-            matching_files.append( file_name )
+            file_path = os.path.join( directory, file_name )
+            matching_files.append( file_path )
             
     return matching_files
 
+def get_files_as_strings( file_paths ):
+    
+    contents = [ ]
+    
+    for file_path in file_paths:
+        
+        contents.append( get_file_as_string( file_path ) )
+        
+    return contents
+
+# Add a function that takes a list and print it to the consul one line of time
+def print_list( list_to_print ):
+    
+    for item in list_to_print:
+        print( item )
+    
 if __name__ == "__main__":
     
     print( get_current_datetime() )
