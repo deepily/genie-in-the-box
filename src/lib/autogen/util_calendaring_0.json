@@ -1,0 +1,21 @@
+{
+    "name": "get_this_weeks_events_by_type",
+    "description": "Gets the events of a specific type for the current week",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "df": {
+                "type": "object",
+                "description": "The DataFrame containing the events data"
+            },
+            "event_type": {
+                "type": "string",
+                "description": "The type of event to filter by, Title case"
+            }
+        },
+        "required": [
+            "df",
+            "event_type"
+        ]
+    }
+}
