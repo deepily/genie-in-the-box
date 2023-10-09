@@ -108,6 +108,8 @@ def assemble_and_run_solution( solution_code, path=None, solution_code_returns="
     else:
         if debug: print( "Done!" )
         output = results.stdout.strip()
+        if output == "":
+            output = "No results returned"
     
     results_dict = {
         "return_code": results.returncode,
