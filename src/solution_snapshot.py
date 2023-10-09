@@ -136,8 +136,9 @@ class SolutionSnapshot:
         if dirty: self.write_to_file()
         
     @classmethod
-    def from_json_file( cls, filename ):
+    def from_json_file( cls, filename, debug=False ):
         
+        if debug: print( f"Reading {filename}..." )
         with open( filename, "r" ) as f:
             data = json.load( f )
             

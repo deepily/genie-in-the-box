@@ -25,13 +25,14 @@ class SolutionSnapshotManager:
         snapshots_by_question = { }
         if self.debug: print( f"Loading snapshots from [{self.path}]..." )
         
-        for file in os.listdir( self.path ):
-            
-            if file.endswith( ".json" ):
-                json_file = os.path.join( self.path, file )
-                snapshot = ss.SolutionSnapshot.from_json_file( json_file )
-                snapshots_by_question[ snapshot.question ] = snapshot
+        filtered_files = [ file for file in os.listdir( self.path ) if not file.startswith( "._" ) and file.endswith( ".json" ) ]
+        if self.debug: du.print_list( filtered_files )
         
+        for file in filtered_files:
+            json_file = os.path.join( self.path, file )
+            snapshot = ss.SolutionSnapshot.from_json_file( json_file, debug=self.debug )
+            snapshots_by_question[ snapshot.question ] = snapshot
+    
         return snapshots_by_question
     
     def get_snapshots_by_synomymous_questions( self, snapshots_by_question ):
