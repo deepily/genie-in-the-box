@@ -93,7 +93,7 @@ start_date,end_date,start_time,end_time,event_type,recurrent,recurrence_interval
 2023-09-29,2023-09-29,07:44,15:37,Appointment,False,,high,Alice,aunt,Appointment with Alice at the clinic
 2023-09-29,2023-09-29,18:02,12:06,Appointment,False,,highest,Leroy Ruiz,father,Appointment with Leroy Ruiz at the clinic
 2023-09-30,2023-09-30,00:00,23:59,Concert,False,,medium,Sue,sister,Concert of Sue at the city center
-2023-09-30,2023-10-06,02:56,06:16,TODO,False,,none,Gregorio,friend,Fix the leaky faucet for Gregorio
+2023-09-30,2023-10-06,02:56,06:16,Todo,False,,none,Gregorio,friend,Fix the leaky faucet for Gregorio
 2023-09-30,2023-10-06,09:34,19:01,Appointment,False,,medium,Tom Ruiz,brother,Appointment with Tom Ruiz at the clinic
 2023-09-30,2023-10-03,00:00,23:59,Concert,False,,none,Inash,girlfriend,Concert of Inash at the city center
 2023-09-30,2023-10-01,00:00,23:59,Conference,False,,none,Pablo,friend,Conference with Pablo on AI advancements
@@ -132,7 +132,7 @@ start_date,end_date,start_time,end_time,event_type,recurrent,recurrence_interval
 2023-10-12,2023-10-12,00:00,23:59,Conference,False,,highest,Tom Ruiz,brother,Conference with Tom Ruiz on AI advancements
 2023-10-12,2023-10-12,00:00,23:59,Subscription,True,3 week,medium,Sue,sister,Renewal of Sue's subscription
 2023-10-12,2023-10-19,00:00,23:59,Anniversary,True,3 week,highest,Leroy Ruiz,father,Leroy Ruiz's anniversary celebration at the park
-2023-10-12,2023-10-12,06:37,21:16,TODO,False,,medium,Pablo,friend,Buy birthday gift for Pablo
+2023-10-12,2023-10-12,06:37,21:16,Todo,False,,medium,Pablo,friend,Buy birthday gift for Pablo
 2023-10-13,2023-10-16,00:00,23:59,Birthday,True,1 year,highest,Juan,neighbor,Juan's birthday party at their favorite bar
 2023-10-13,2023-10-13,00:00,23:59,Concert,False,,highest,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
 2023-10-13,2023-10-13,04:08,01:25,Workout,False,,high,Tom Ruiz,brother,Workout session with Tom Ruiz at the gym
@@ -155,7 +155,7 @@ start_date,end_date,start_time,end_time,event_type,recurrent,recurrence_interval
 2023-10-17,2023-10-17,00:00,23:59,Performance,False,,low,John,coworker,Theatre performance with John
 2023-10-17,2023-10-17,05:56,12:05,Workshop,False,,highest,Inash,girlfriend,Exciting workshop with Inash on AGI
 2023-10-17,2023-10-24,09:57,12:43,Workshop,False,,highest,Tom Ruiz,brother,Exciting workshop with Tom Ruiz on AGI
-2023-10-17,2023-10-20,11:52,18:18,TODO,False,,highest,John,coworker,Order new shoes online for John (coworker)
+2023-10-17,2023-10-20,11:52,18:18,Todo,False,,highest,John,coworker,Order new shoes online for John (coworker)
 2023-10-17,2023-10-17,23:47,23:49,Workout,False,,highest,Sue,sister,Workout session with Sue at the gym
 2023-10-18,2023-10-23,00:00,23:59,Subscription,True,5 month,none,Tom Ruiz,brother,Renewal of Tom Ruiz's subscription
 2023-10-18,2023-10-19,00:00,23:59,Conference,False,,medium,Pablo,friend,Conference with Pablo on AI advancements
@@ -165,7 +165,7 @@ start_date,end_date,start_time,end_time,event_type,recurrent,recurrence_interval
 2023-10-19,2023-10-26,00:00,23:59,Conference,False,,medium,Sue,sister,Conference with Sue on AI advancements
 2023-10-19,2023-10-19,00:01,00:53,Workshop,False,,high,Juan,neighbor,Exciting workshop with Juan on AGI
 2023-10-19,2023-10-20,04:20,23:49,Meeting,False,,high,Inash,girlfriend,Another boring meeting with Inash
-2023-10-19,2023-10-19,17:30,13:39,TODO,False,,highest,Inash,girlfriend,Pick up groceries for Inash (girlfriend)
+2023-10-19,2023-10-19,17:30,13:39,Todo,False,,highest,Inash,girlfriend,Pick up groceries for Inash (girlfriend)
 2023-10-20,2023-10-27,00:00,23:59,Birthday,True,2 week,medium,Gregorio,friend,Gregorio's birthday party at their favorite bar
 2023-10-20,2023-10-23,00:00,23:59,Concert,False,,medium,Bob,brother,Concert of Bob at the city center
 2023-10-20,2023-10-21,02:27,05:06,Meeting,False,,none,Pablo,friend,Another boring meeting with Pablo
@@ -176,7 +176,7 @@ start_date,end_date,start_time,end_time,event_type,recurrent,recurrence_interval
 2023-10-22,2023-10-29,00:00,23:59,Conference,False,,none,Barbara Jane Ruiz,mother,Conference with Barbara Jane Ruiz on AI advancements
 2023-10-22,2023-10-22,00:00,23:59,Subscription,True,1 year,medium,Jenny,coworker,Renewal of Jenny's subscription
 2023-10-22,2023-10-23,00:00,23:59,Anniversary,True,1 year,medium,Bob,brother,Bob's anniversary celebration at the park
-2023-10-24,2023-10-30,12:01,04:55,TODO,False,,medium,Juan,neighbor,Prepare presentation for next week's meeting for Juan (neighbor)
+2023-10-24,2023-10-30,12:01,04:55,Todo,False,,medium,Juan,neighbor,Prepare presentation for next week's meeting for Juan (neighbor)
 2023-10-25,2023-10-25,00:00,23:59,Conference,False,,none,Leroy Ruiz,father,Conference with Leroy Ruiz on AI advancements
 2023-10-25,2023-10-25,20:45,10:03,Appointment,False,,medium,Leroy Ruiz,father,Appointment with Leroy Ruiz at the clinic
 2023-10-25,2023-10-26,21:49,12:57,Appointment,False,,medium,Sally,sister,Appointment with Sally at the clinic
@@ -185,13 +185,13 @@ start_date,end_date,start_time,end_time,event_type,recurrent,recurrence_interval
 2023-10-27,2023-11-01,00:00,23:59,Conference,False,,highest,Leroy Ruiz,father,Conference with Leroy Ruiz on AI advancements
 2023-10-27,2023-10-28,00:00,23:59,Birthday,True,2 month,none,Juan,neighbor,Juan's birthday party at their favorite bar
 2023-10-27,2023-11-03,00:00,23:59,Birthday,True,1 year,none,Gregorio,friend,Gregorio's birthday party at their favorite bar
-2023-10-27,2023-10-27,18:55,05:58,TODO,False,,low,Pablo,friend,Prepare presentation for next week's meeting for Pablo
+2023-10-27,2023-10-27,18:55,05:58,Todo,False,,low,Pablo,friend,Prepare presentation for next week's meeting for Pablo
 2023-10-28,2023-11-04,00:00,23:59,Concert,False,,low,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
 2023-10-28,2023-10-28,00:00,23:59,Concert,False,,low,Sally,sister,Concert of Sally at the city center
 2023-10-28,2023-10-28,20:06,08:32,Appointment,False,,high,Juan,neighbor,Appointment with Juan at the clinic
 2023-10-29,2023-11-03,00:00,23:59,Conference,False,,none,Pablo,friend,Conference with Pablo on AI advancements
 2023-10-29,2023-10-30,00:00,23:59,Anniversary,True,5 month,medium,Pablo,friend,Pablo's anniversary celebration at the park
-2023-10-29,2023-11-05,16:58,13:49,TODO,False,,medium,Juan,neighbor,Renew gym membership for Juan (neighbor)
+2023-10-29,2023-11-05,16:58,13:49,Todo,False,,medium,Juan,neighbor,Renew gym membership for Juan (neighbor)
 2023-10-30,2023-10-30,00:00,23:59,Concert,False,,highest,Sue,sister,Concert of Sue at the city center
 2023-10-30,2023-11-05,00:00,23:59,Anniversary,True,1 year,highest,Pablo,friend,Pablo's anniversary celebration at the park
 2023-10-30,2023-11-07,04:11,16:53,Workshop,False,,none,John,coworker,Exciting workshop with John on AGI
