@@ -1,6 +1,5 @@
 import json
 import os
-import time
 import regex as re
 import random
 import sys
@@ -299,6 +298,16 @@ def truncate_string( string, max_len=64 ):
         string = string[ :max_len ] + "..."
         
     return string
+
+
+def find_files_with_prefix_and_suffix( directory, prefix, suffix ):
+    
+    matching_files = [ ]
+    for file_name in os.listdir( directory ):
+        if file_name.startswith( prefix ) and file_name.endswith( suffix ):
+            matching_files.append( file_name )
+            
+    return matching_files
 
 if __name__ == "__main__":
     
