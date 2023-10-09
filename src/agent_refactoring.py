@@ -198,8 +198,8 @@ class RefactoringAgent( CommonAgent ):
         # ¡OJO! The function signature requires a bit of munging before serializing it as Json
         # TODO: If getting the GPT function signature is going to be this flaky, do it as a separate chat completion with GPT
         code                   = response_dict[ "code" ]
-        gpt_function_signature = response_dict[ "gpt_function_signatures" ]
-        gpt_function_signature = json.dumps( gpt_function_signature, indent=4 ).replace( "'", '"' ).strip( '"' )
+        gpt_function_signature = json.loads( self.response_dict[ "gpt_function_signatures" ].replace( "'", '"' ).strip( '"' ) )[ 0 ]
+        # gpt_function_signature = json.dumps( gpt_function_signature, indent=4 ).replace( "'", '"' ).strip( '"' )
         
         # Get the list of files in the agent_lib_path directory
         files = os.listdir( agent_src_root + agent_lib_dir )
@@ -222,7 +222,7 @@ class RefactoringAgent( CommonAgent ):
         # Write the function signature to the repo path
         repo_path = os.path.join( agent_src_root, agent_lib_dir, file_name.replace( code_suffix, metadata_suffix ) )
         print( f"Writing file [{repo_path}]... ", end="" )
-        du.write_string_to_file( repo_path, gpt_function_signature )
+        du.write_string_to_file( repo_path, json.dumps( gpt_function_signature, indent=4 ) )
         # Set the permissions of the file to be world-readable and writable
         os.chmod( repo_path, 0o666 )
         print( "Done!" )
