@@ -30,7 +30,7 @@ class CalendaringAgent( CommonAgent ):
         self.push_counter          = push_counter
         self.id_hash               = ss.SolutionSnapshot.generate_id_hash( self.push_counter, self.run_date )
 
-        self.question              = question
+        self.question              = ss.SolutionSnapshot.clean_question( question)
         self.user_message          = None
         
         # We'll set these later
@@ -224,8 +224,6 @@ class CalendaringAgent( CommonAgent ):
         
         instructions = f"""
         Reformat and rephrase the {data_format}data that I just showed you in conversational English so that it answers this question: `{self.question}`
-
-        Use this format: "You have a two hour lunch date with your friend Bob at noon today at Burgerland.
 
         Each line of the output that you create should contain one event."
         """
