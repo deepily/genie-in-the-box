@@ -175,8 +175,11 @@ def enter_running_loop():
                     running_job.answer = results[ "output" ]
                 else:
                     response = results[ "output" ]
-                    running_job.answer = response
+                    running_job.answer = response.strip()
                     
+                    if running_job.answer == "":
+                        running_job.answer = "No results found"
+                        
                     for line in response.split( "\n" ): print( "* " + line )
                     print()
                     
