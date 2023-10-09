@@ -130,6 +130,8 @@ class RefactoringAgent( CommonAgent ):
                 print( msg )
                 
         self.response      = self._query_gpt( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
+        # This is another example of GPT injecting a little bit of formatting randomicity into the response
+        self.response      = self.response.replace( "\n", "" ).strip( '"' )
         self.response_dict = json.loads( self.response )
 
         if self.debug and self.verbose: print( json.dumps( self.response_dict, indent=4 ) )
@@ -182,22 +184,25 @@ class RefactoringAgent( CommonAgent ):
                 for line in code_response[ "output" ].split( "\n" ):
                     print( line )
                     
+                print()
+                    
             self.code_responses.append( code_response )
         
         return self.code_responses
     
     def _write_code_and_metadata_to_unique_files(
-            self, response_dict, agent_src_root, agent_lib_chunk, file_name_prefix, code_suffix=".py", metadata_suffix=".json"
+            self, response_dict, agent_src_root, agent_lib_dir, file_name_prefix, code_suffix=".py", metadata_suffix=".json"
     ):
         
         # Get the code and function signature from the response dictionary,
         # ¡OJO! The function signature requires a bit of munging before serializing it as Json
+        # TODO: If getting the GPT function signature is going to be this flaky, do it as a separate chat completion with GPT
         code                   = response_dict[ "code" ]
         gpt_function_signature = response_dict[ "gpt_function_signatures" ]
         gpt_function_signature = json.dumps( gpt_function_signature, indent=4 ).replace( "'", '"' ).strip( '"' )
         
         # Get the list of files in the agent_lib_path directory
-        files = os.listdir( agent_src_root + agent_lib_chunk )
+        files = os.listdir( agent_src_root + agent_lib_dir )
         
         # Count the number of files with the name {file_name_prefix}{}{suffix}"
         count = sum( 1 for file in files if file.startswith( file_name_prefix ) and file.endswith( code_suffix ) )
@@ -207,7 +212,7 @@ class RefactoringAgent( CommonAgent ):
         util_name = f"{file_name_prefix}{count}"
         
         # Write the code to the repo path
-        repo_path = os.path.join( agent_src_root, agent_lib_chunk, file_name )
+        repo_path = os.path.join( agent_src_root, agent_lib_dir, file_name )
         print( f"Writing file [{repo_path}]... ", end="" )
         du.write_lines_to_file( repo_path, code )
         # Set the permissions of the file to be world-readable and writable
@@ -215,7 +220,7 @@ class RefactoringAgent( CommonAgent ):
         print( "Done!" )
         
         # Write the function signature to the repo path
-        repo_path = os.path.join( agent_src_root, agent_lib_chunk, file_name.replace( code_suffix, metadata_suffix ) )
+        repo_path = os.path.join( agent_src_root, agent_lib_dir, file_name.replace( code_suffix, metadata_suffix ) )
         print( f"Writing file [{repo_path}]... ", end="" )
         du.write_string_to_file( repo_path, gpt_function_signature )
         # Set the permissions of the file to be world-readable and writable
@@ -223,7 +228,7 @@ class RefactoringAgent( CommonAgent ):
         print( "Done!" )
         
         # Write the file to the io/execution path
-        io_path = f"{du.get_project_root()}/io/{agent_lib_chunk}{file_name}"
+        io_path = f"{du.get_project_root()}/io/{agent_lib_dir}{file_name}"
         print( f"Writing file [{io_path}]... ", end="" )
         du.write_lines_to_file( io_path, code )
         # Set the permissions of the file to be world-readable and writable
@@ -231,11 +236,15 @@ class RefactoringAgent( CommonAgent ):
         print( "Done!", end="\n\n" )
         
         # Build import 'as' string:
+        # Grab everything up to the first appearance of a digit
         non_digits = "util_calendaring_2".split( "_" )[ :-1 ]
+        # Grab the first digit of every non-digit chunk
         first_digits = "".join( [ item[ 0 ] for item in non_digits ] )
+        # Create something like this: uc3
         abbrev = f"{first_digits}{count}"
         as_chunk = f"as {abbrev}"
-        import_str = f"import {agent_lib_chunk.replace( '/', '.' )}{util_name} {as_chunk}"
+        # Create something like this: import lib.util_calendaring_2 as uc2
+        import_str = f"import {agent_lib_dir.replace( '/', '.' )}{util_name} {as_chunk}"
         
         results = {
             "file_name": file_name,
