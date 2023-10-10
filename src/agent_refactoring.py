@@ -16,6 +16,7 @@ class RefactoringAgent( CommonAgent ):
         
         self.path_to_solutions = path_to_solutions
         self.similar_snapshots = similar_snapshots
+        
         self.snippets          = None
         self.snippets_string   = None
         self.system_message    = self._get_system_message()
@@ -29,6 +30,7 @@ class RefactoringAgent( CommonAgent ):
         
         i = 1
         self.snippets = []
+        if self.debug: print()
         
         for snapshot in self.similar_snapshots:
             
@@ -108,9 +110,17 @@ class RefactoringAgent( CommonAgent ):
         
         return user_message
     
+    def is_promptable( self ):
+        
+        if len( self.snippets ) == 0:
+            return False
+        else:
+            return True
+
     def run_prompt( self ):
         
         prompt_model = CommonAgent.GPT_4
+        
         if self.debug:
             
             count = self._get_token_count( self.system_message, model=prompt_model )
@@ -164,7 +174,8 @@ class RefactoringAgent( CommonAgent ):
             print( f"File   io_path: [{code_write_metadata[ 'io_path' ]}]" )
             print( f"File    abbrev: [{code_write_metadata[ 'abbrev' ]}]" )
             print( f"File    import: [{code_write_metadata[ 'import' ]}]" )
-            print( f"File signature: [{code_write_metadata[ 'gpt_function_signature' ]}]", end="\n\n" )
+            print( f"File call_template: [{code_write_metadata[ 'call_template' ]}]" )
+            print( f"File     signature: [{code_write_metadata[ 'gpt_function_signature' ]}]", end="\n\n" )
         
         response_dict = self._update_example_code( self.response_dict.copy(), code_write_metadata, code_write_metadata )
         
@@ -199,7 +210,6 @@ class RefactoringAgent( CommonAgent ):
         # TODO: If getting the GPT function signature is going to be this flaky, do it as a separate chat completion with GPT
         code                   = response_dict[ "code" ]
         gpt_function_signature = json.loads( self.response_dict[ "gpt_function_signatures" ].replace( "'", '"' ).strip( '"' ) )[ 0 ]
-        # gpt_function_signature = json.dumps( gpt_function_signature, indent=4 ).replace( "'", '"' ).strip( '"' )
         
         # Get the list of files in the agent_lib_path directory
         files = os.listdir( agent_src_root + agent_lib_dir )
@@ -210,6 +220,23 @@ class RefactoringAgent( CommonAgent ):
         # Format the file name with the count
         file_name = f"{file_name_prefix}{count}{code_suffix}"
         util_name = f"{file_name_prefix}{count}"
+        
+        # Build import 'as' string:
+        # Grab everything up to the first appearance of a digit
+        non_digits = "util_calendaring_2".split( "_" )[ :-1 ]
+        # Grab the first digit of every non-digit chunk
+        first_digits = "".join( [ item[ 0 ] for item in non_digits ] )
+        # Create something like this: uc3
+        abbrev = f"{first_digits}{count}"
+        as_chunk = f"as {abbrev}"
+        # Create something like this: import lib.util_calendaring_2 as uc2
+        import_str = f"import {agent_lib_dir.replace( '/', '.' )}{util_name} {as_chunk}"
+        
+        # Build the function all template: uc2.get_todays_events( df, 'event_type' ).
+        # ¡OJO! Since we know that the first parameter is always 'df', the only thing that varies is the second parameter, there is no third fourth etc.
+        call_template = f"{abbrev}.{gpt_function_signature[ 'name' ]}( df, '{gpt_function_signature[ 'parameters' ][ 'required' ][ 1 ]}' )"
+        gpt_function_signature[ "call_template" ] = call_template
+        gpt_function_signature[ "import_as"     ] = import_str
         
         # Write the code to the repo path
         repo_path = os.path.join( agent_src_root, agent_lib_dir, file_name )
@@ -235,24 +262,25 @@ class RefactoringAgent( CommonAgent ):
         os.chmod( io_path, 0o666 )
         print( "Done!", end="\n\n" )
         
-        # Build import 'as' string:
-        # Grab everything up to the first appearance of a digit
-        non_digits = "util_calendaring_2".split( "_" )[ :-1 ]
-        # Grab the first digit of every non-digit chunk
-        first_digits = "".join( [ item[ 0 ] for item in non_digits ] )
-        # Create something like this: uc3
-        abbrev = f"{first_digits}{count}"
-        as_chunk = f"as {abbrev}"
-        # Create something like this: import lib.util_calendaring_2 as uc2
-        import_str = f"import {agent_lib_dir.replace( '/', '.' )}{util_name} {as_chunk}"
+        # # Build import 'as' string:
+        # # Grab everything up to the first appearance of a digit
+        # non_digits = "util_calendaring_2".split( "_" )[ :-1 ]
+        # # Grab the first digit of every non-digit chunk
+        # first_digits = "".join( [ item[ 0 ] for item in non_digits ] )
+        # # Create something like this: uc3
+        # abbrev = f"{first_digits}{count}"
+        # as_chunk = f"as {abbrev}"
+        # # Create something like this: import lib.util_calendaring_2 as uc2
+        # import_str = f"import {agent_lib_dir.replace( '/', '.' )}{util_name} {as_chunk}"
         
         results = {
-            "file_name": file_name,
-            "repo_path": repo_path,
-            "io_path"  : io_path,
-            "count"    : count,
-            "abbrev"   : abbrev,
-            "import"   : import_str,
+            "file_name"    : file_name,
+            "repo_path"    : repo_path,
+            "io_path"      : io_path,
+            "count"        : count,
+            "abbrev"       : abbrev,
+            "import"       : import_str,
+            "call_template": call_template,
             "gpt_function_signature": gpt_function_signature
         }
         
@@ -299,10 +327,14 @@ class RefactoringAgent( CommonAgent ):
 
 if __name__ == "__main__":
     
+    question          = "What concerts do I have this week?"
     path_to_snapshots = du.get_project_root() + "/src/conf/long-term-memory/solutions/"
     snapshot_mgr      = SolutionSnapshotManager( path_to_snapshots, debug=False )
-    exemplar_snapshot = snapshot_mgr.get_snapshots_by_question( "What concerts do I have this week?" )[ 0 ][ 1 ]
+    exemplar_snapshot = snapshot_mgr.get_snapshots_by_question( question )[ 0 ][ 1 ]
     similar_snapshots = snapshot_mgr.get_snapshots_by_code_similarity( exemplar_snapshot, threshold=90.0 )
     
     agent         = RefactoringAgent( similar_snapshots=similar_snapshots, path_to_solutions="/src/conf/long-term-memory/solutions", debug=True, verbose=True )
-    response_dict = agent.run_prompt()
+    if agent.is_promptable():
+        response_dict = agent.run_prompt()
+    else:
+        print( f"No prompts available to refactor for this Q: [{question}]" )
