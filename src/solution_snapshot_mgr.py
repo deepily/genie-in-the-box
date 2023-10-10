@@ -117,12 +117,12 @@ class SolutionSnapshotManager:
     def get_snapshots_by_code_similarity( self, exemplar_snapshot, threshold=85.0, limit=-1 ):
         
         # code_snapshot      = ss.SolutionSnapshot( code_embedding=source_snapshot.code_embedding )
-        question_truncated = du.truncate_string( exemplar_snapshot.question, max_len=32 )
+        original_question = du.truncate_string( exemplar_snapshot.question, max_len=32 )
         similar_snapshots  = [ ]
         
         # Iterate the code in the code list and print it to the console
         if self.debug:
-            du.print_banner( f"Source code for [{question_truncated}]:", prepend_nl=True)
+            du.print_banner( f"Source code for [{original_question}]:", prepend_nl=True)
             for line in exemplar_snapshot.code: print( line )
             print()
         
@@ -132,6 +132,7 @@ class SolutionSnapshotManager:
             question_truncated = du.truncate_string( snapshot.question, max_len=32 )
             
             if similarity_score >= threshold:
+                
                 similar_snapshots.append( ( similarity_score, snapshot ) )
                 if self.debug:
                     du.print_banner( f"Code score [{similarity_score}] for snapshot [{question_truncated}] IS similar to the provided code", end="\n" )
@@ -147,7 +148,7 @@ class SolutionSnapshotManager:
         
         print()
         for snapshot in similar_snapshots:
-            print( f"Code similarity score [{snapshot[ 0 ]}] for [{question_truncated}] == [{du.truncate_string( snapshot[ 1 ].question, max_len=32 )}]" )
+            print( f"Code similarity score [{snapshot[ 0 ]}] for [{original_question}] == [{du.truncate_string( snapshot[ 1 ].question, max_len=32 )}]" )
         
         if limit == -1:
             return similar_snapshots
