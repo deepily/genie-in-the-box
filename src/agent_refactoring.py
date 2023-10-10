@@ -1,5 +1,6 @@
 import os
 import json
+import regex                as re
 
 import lib.util             as du
 import lib.util_code_runner as ucr
@@ -161,13 +162,13 @@ class RefactoringAgent( CommonAgent ):
 
         return self.response_dict
     
-    def refactor_code( self, debug=False ):
+    def refactor_code( self, update_example_code=True, debug=False ):
         
         agent_src_root = du.get_project_root() + "/src/"
         agent_lib_chunk = "lib/autogen/"
         
         code_write_metadata = self._write_code_and_metadata_to_unique_files(
-            self.response_dict, agent_src_root, agent_lib_chunk, "util_calendaring_", code_suffix=".py"
+            agent_src_root, agent_lib_chunk, "util_calendaring_", code_suffix=".py", debug=debug
         )
         if debug:
             print( f"File     count: [{code_write_metadata[ 'count' ]}]" )
@@ -175,13 +176,14 @@ class RefactoringAgent( CommonAgent ):
             print( f"File repo_path: [{code_write_metadata[ 'repo_path' ]}]" )
             print( f"File   io_path: [{code_write_metadata[ 'io_path' ]}]" )
             print( f"File    abbrev: [{code_write_metadata[ 'abbrev' ]}]" )
-            print( f"File    import: [{code_write_metadata[ 'import' ]}]" )
+            print( f"File    import: [{code_write_metadata[ 'import' ]}]", end="\n\n" )
+            
             print( f"File call_template: [{code_write_metadata[ 'call_template' ]}]" )
             print( f"File     signature: [{code_write_metadata[ 'gpt_function_signature' ]}]", end="\n\n" )
         
         response_dict = self._update_example_code( self.response_dict.copy(), code_write_metadata, code_write_metadata )
         
-        self._update_snapshot_code( self.similar_snapshots, response_dict, debug=debug )
+        if update_example_code: self._update_snapshot_code( self.similar_snapshots, response_dict, debug=debug )
     
     def run_code( self ):
         
@@ -203,15 +205,76 @@ class RefactoringAgent( CommonAgent ):
         
         return self.code_responses
     
+    def get_parameter_names( self, signature_dict, debug=False ):
+        
+        if debug:
+            print( f"signature_dict: {signature_dict}" )
+            print( f"type( signature_dict ): {type(signature_dict)}" )
+        
+        params = [ ]
+        for k, v in signature_dict[ "parameters" ][ "properties" ].items():
+            if k != "df":
+                params.append( k )
+                if debug: print( k, v )
+            else:
+                if debug: print( "skipping df" )
+        
+        return params
+    
+    def get_function_signature( self, raw_signature ):
+        
+        # Try to get the GPT function signature from the response dictionary...
+        try:
+            gpt_function_signature = json.loads( raw_signature )[ 0 ]
+            
+        # ...but if it fails, try to fix it here
+        except json.decoder.JSONDecodeError as e:
+            
+            du.print_banner( "Fixing json.decoder.JSONDecodeError in GPT function signature...", prepend_nl=True )
+            
+            # Replace matched patterns with double quotes
+            # simplistic match: beginning or end of words
+            # pattern = r"'(?=\w)|(?<=\w)'"
+            # more complex match: beginning or end of words with parens
+            pattern = r"'(?=\w)|(?<=\w|[\)])'"
+            fixed_signature = re.sub( pattern, '"', raw_signature )
+            print( fixed_signature, end="\n\n" )
+            
+            # Encode the string as a JSON object
+            gpt_function_signature = json.loads( fixed_signature )[ 0 ]
+            
+        return gpt_function_signature
+    
     def _write_code_and_metadata_to_unique_files(
-            self, response_dict, agent_src_root, agent_lib_dir, file_name_prefix, code_suffix=".py", metadata_suffix=".json"
+            self, agent_src_root, agent_lib_dir, file_name_prefix, code_suffix=".py", metadata_suffix=".json", debug=False
     ):
         
         # Get the code and function signature from the response dictionary,
         # ¡OJO! The function signature requires a bit of munging before serializing it as Json
         # TODO: If getting the GPT function signature is going to be this flaky, do it as a separate chat completion with GPT
-        code                   = response_dict[ "code" ]
-        gpt_function_signature = json.loads( self.response_dict[ "gpt_function_signatures" ].replace( "'", '"' ).strip( '"' ) )[ 0 ]
+        code                   = self.response_dict[ "code" ]
+        raw_signature          = self.response_dict[ "gpt_function_signatures" ]
+        gpt_function_signature = self.get_function_signature( raw_signature )
+        # munged_signature       = raw_signature.replace( "'", '"' ).strip( '"' )
+        if debug:
+            print( f"Raw signature: ###{raw_signature}###" )
+            # print( f"Munged signature: ###{munged_signature}###" )
+        # try:
+        #     gpt_function_signature = json.loads( raw_signature )[ 0 ]
+        # except json.decoder.JSONDecodeError as e:
+        #
+        #     # print( f"Error: {e}" )
+        #     # print( f"Error: {raw_signature}" )
+        #     du.print_banner( "Fixing json.decoder.JSONDecodeError in GPT function signature...", prepend_nl=True )
+        #
+        #     # Replace matched patterns with double quotes
+        #     # pattern = r"'(?=\w)|(?<=\w)'"
+        #     pattern = r"'(?=\w)|(?<=\w|[\)])'"
+        #     fixed_signature = re.sub( pattern, '"', raw_signature )
+        #     print( fixed_signature )
+        #
+        #     # Encode the string as a JSON object
+        #     gpt_function_signature = json.loads( fixed_signature )
         
         # Get the list of files in the agent_lib_path directory
         files = os.listdir( agent_src_root + agent_lib_dir )
@@ -225,18 +288,19 @@ class RefactoringAgent( CommonAgent ):
         
         # Build import 'as' string:
         # Grab everything up to the first appearance of a digit
-        non_digits = "util_calendaring_2".split( "_" )[ :-1 ]
-        # Grab the first digit of every non-digit chunk
-        first_digits = "".join( [ item[ 0 ] for item in non_digits ] )
-        # Create something like this: uc3
-        abbrev = f"{first_digits}{count}"
+        non_digits = util_name.split( "_" )[ :-1 ]
+        # Grab the first letter of every non-digit chunk
+        first_letters = "".join( [ item[ 0 ] for item in non_digits ] )
+        # Create something like this: uc3, from this: util_calendaring_3
+        abbrev = f"{first_letters}{count}"
         as_chunk = f"as {abbrev}"
         # Create something like this: import lib.util_calendaring_2 as uc2
         import_str = f"import {agent_lib_dir.replace( '/', '.' )}{util_name} {as_chunk}"
         
         # Build the function all template: uc2.get_todays_events( df, 'event_type' ).
         # ¡OJO! Since we know that the first parameter is always 'df', the only thing that varies is the second parameter, there is no third fourth etc.
-        call_template = f"{abbrev}.{gpt_function_signature[ 'name' ]}( df, '{gpt_function_signature[ 'parameters' ][ 'required' ][ 1 ]}' )"
+        kw_arg_1      = self.get_parameter_names( gpt_function_signature, debug=debug )
+        call_template = f"{abbrev}.{gpt_function_signature[ 'name' ]}( df, {kw_arg_1[ 0 ]}='{kw_arg_1[ 0 ]}' )"
         gpt_function_signature[ "call_template" ] = call_template
         gpt_function_signature[ "import_as"     ] = import_str
         
@@ -263,17 +327,6 @@ class RefactoringAgent( CommonAgent ):
         # Set the permissions of the file to be world-readable and writable
         os.chmod( io_path, 0o666 )
         print( "Done!", end="\n\n" )
-        
-        # # Build import 'as' string:
-        # # Grab everything up to the first appearance of a digit
-        # non_digits = "util_calendaring_2".split( "_" )[ :-1 ]
-        # # Grab the first digit of every non-digit chunk
-        # first_digits = "".join( [ item[ 0 ] for item in non_digits ] )
-        # # Create something like this: uc3
-        # abbrev = f"{first_digits}{count}"
-        # as_chunk = f"as {abbrev}"
-        # # Create something like this: import lib.util_calendaring_2 as uc2
-        # import_str = f"import {agent_lib_dir.replace( '/', '.' )}{util_name} {as_chunk}"
         
         results = {
             "file_name"    : file_name,
