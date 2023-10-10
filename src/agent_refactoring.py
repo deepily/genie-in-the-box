@@ -330,14 +330,16 @@ class RefactoringAgent( CommonAgent ):
 if __name__ == "__main__":
     
     # question          = "What concerts do I have this week?"
+    # threshold         = 90.0
     question = "What performances do I have today?"
+    threshold         = 94.0
     path_to_snapshots = du.get_project_root() + "/src/conf/long-term-memory/solutions/"
     snapshot_mgr      = SolutionSnapshotManager( path_to_snapshots, debug=False )
     exemplar_snapshot = snapshot_mgr.get_snapshots_by_question( question )[ 0 ][ 1 ]
-    similar_snapshots = snapshot_mgr.get_snapshots_by_code_similarity( exemplar_snapshot, threshold=90.0 )
+    similar_snapshots = snapshot_mgr.get_snapshots_by_code_similarity( exemplar_snapshot, threshold=threshold )
     
-    # agent         = RefactoringAgent( similar_snapshots=similar_snapshots, path_to_solutions="/src/conf/long-term-memory/solutions", debug=True, verbose=True )
-    # if agent.is_promptable():
-    #     response_dict = agent.run_prompt()
-    # else:
-    #     print( f"No prompts available to refactor for this Q: [{question}]" )
+    agent         = RefactoringAgent( similar_snapshots=similar_snapshots, path_to_solutions="/src/conf/long-term-memory/solutions", debug=True, verbose=True )
+    if agent.is_promptable():
+        response_dict = agent.run_prompt()
+    else:
+        print( f"No prompts available to refactor for this Q: [{question}]" )
