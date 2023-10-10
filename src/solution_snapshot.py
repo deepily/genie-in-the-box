@@ -118,15 +118,15 @@ class SolutionSnapshot:
             self.code_embedding     = code_embedding
     
         # If the solution embedding is empty, generate it
-        if code and not solution_embedding:
+        if solution_summary and not solution_embedding:
             self.solution_embedding = self.generate_embedding( solution_summary )
             dirty = True
         else:
-            self.solution_embedding = solution_summary
+            self.solution_embedding = solution_embedding
 
         # If the thoughts embedding is empty, generate it
         
-        if code and not thoughts_embedding:
+        if thoughts and not thoughts_embedding:
             self.thoughts_embedding = self.generate_embedding( thoughts )
             dirty = True
         else:
