@@ -62,7 +62,8 @@ class RefactoringAgent( CommonAgent ):
         Be critical of your thought process! How will you handle the edge cases? For example, what will you do if your query does not return a result?
         2) Code: Generate a verbatim list of code that you used to arrive at your answer, one line of code per item on the list. The code must be complete,
         syntactically correct, and capable of running to completion. You must allow for the possibility that your query may not return a result.
-        3) Document: Create a GPT function signature (gpt_function_signatures) that can be used by GPT to call the function you create. The function signature must be syntactically correct.
+        3) Document: Create a GPT function signature (gpt_function_signatures) that can be used by GPT to call the function you create. The function signature MUST be
+        syntactically correct.
         4) Generate examples: Generate a dictionary containing the code examples needed to call the function you created, one line of code per question provided.
         The example function calls must be complete, syntactically correct, and capable of running to completion. Each example must be wrapped in a print statement.
         5) Explain: Briefly and succinctly explain your code in plain English.
@@ -71,8 +72,9 @@ class RefactoringAgent( CommonAgent ):
         {{
             "thoughts": "Your thoughts",
             "code": [],
-            "function_name": "The name of your function. It must describe the time being filtered, e.g., `get_tomorrows_events`",
-            "parameters": "The parameters to your function, only two are allowed: the 1st will always be `df` and the 2nd is of your choosing.",
+            "function_name": "The name of your function. It must describe the time period being filtered, e.g., `get_tomorrows_events`, get_todays_events`, etc.",
+            "parameters": "The parameters to your function, only two are allowed: the 1st will always be `df` and the 2nd will always be **kwargs. All keys in the
+            **kwargs dictionary MUST be the names of the pandas field they correspond to in the dataframe.",
             "gpt_function_signatures":"[
             {{
                 "name": "get_current_weather",
@@ -155,7 +157,7 @@ class RefactoringAgent( CommonAgent ):
         
         if self.response_dict[ "examples" ] == [ ]:
             self.error = self.response_dict[ "error" ]
-            raise ValueError( "No examples were returned, please check the logs" )
+            raise ValueError( "No examples were returned." )
 
         return self.response_dict
     
