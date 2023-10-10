@@ -276,7 +276,7 @@ class SolutionSnapshot:
         # Generate the full file path
         file_path = f"{directory}{self.solution_file}"
         # Print the file path for debugging purposes
-        print( f"File path: {file_path}" )
+        print( f"File path: {file_path}", end="\n\n" )
         # Write the JSON string to the file
         with open( file_path, "w" ) as f:
             f.write( self.to_jsons() )
