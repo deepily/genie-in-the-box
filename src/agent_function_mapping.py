@@ -141,6 +141,20 @@ class FunctionMappingAgent( CommonAgent ):
 
         return self.code_response
     
+    def format_output( self ):
+        
+        format_model = CommonAgent.GPT_3_5
+        preamble     = self._get_formatting_preamble()
+        instructions = self._get_formatting_instructions()
+        
+        self._print_token_count( preamble, message_name="formatting preamble", model=format_model )
+        self._print_token_count( instructions, message_name="formatting instructions", model=format_model )
+        
+        self.answer_conversational = self._query_gpt( preamble, instructions, model=format_model, debug=self.debug )
+        
+        return self.answer_conversational
+        
+        
 if __name__ == "__main__":
     
     agent = FunctionMappingAgent( "/src/conf/long-term-memory/events.csv", debug=True, verbose=True )
