@@ -120,27 +120,12 @@ class RefactoringAgent( CommonAgent ):
         else:
             return True
 
-    def run_prompt( self ):
+    def run_prompt( self, prompt_model=CommonAgent.GPT_4 ):
         
         prompt_model = CommonAgent.GPT_4
         
-        if self.debug:
-            
-            count = self._get_token_count( self.system_message, model=prompt_model )
-            msg = f"Token count for self.system_message: [{count}]"
-            if self.verbose:
-                du.print_banner( msg=msg, prepend_nl=True )
-                print( self.system_message )
-            else:
-                print( msg )
-            
-            count = self._get_token_count( self.user_message, model=prompt_model )
-            msg = f"Token count for self.user_message: [{count}]"
-            if self.verbose:
-                du.print_banner( msg=msg, prepend_nl=True )
-                print( self.user_message )
-            else:
-                print( msg )
+        self._print_token_count( self.system_message, message_name="system_message", model=prompt_model )
+        self._print_token_count( self.user_message, message_name="user_message", model=prompt_model )
                 
         self.response      = self._query_gpt( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
         # This is another example of GPT injecting a little bit of formatting randomicity into the response
