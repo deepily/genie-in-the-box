@@ -1,0 +1,23 @@
+{
+    "name": "get_birthday_by_name",
+    "description": "Gets the birthday of a given person from a dataframe",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "df": {
+                "type": "object",
+                "description": "The dataframe containing the data"
+            },
+            "name": {
+                "type": "string",
+                "description": "The name of the person whose birthday is being queried"
+            }
+        },
+        "required": [
+            "df",
+            "name"
+        ]
+    },
+    "call_template": "uc2.get_birthday_by_name( df, name='name' )",
+    "import_as": "import lib.autogen.util_calendaring_2 as uc2"
+}
