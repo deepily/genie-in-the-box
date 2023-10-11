@@ -62,7 +62,7 @@ class SolutionSnapshot:
                   last_question_asked="", answer="", answer_short="", answer_conversational="", error="",
                   created_date=get_timestamp(), updated_date=get_timestamp(), run_date=get_timestamp(),
                   runtime_stats=get_default_stats_dict(),
-                  id_hash="", solution_summary="", code=[], thoughts="",
+                  id_hash="", solution_summary="", code=[], code_type="raw", thoughts="",
                   programming_language="Python", language_version="3.10",
                   question_embedding=[ ], solution_embedding=[ ], code_embedding=[ ], thoughts_embedding=[ ],
                   solution_directory="/src/conf/long-term-memory/solutions/", solution_file=None
@@ -87,6 +87,7 @@ class SolutionSnapshot:
         
         self.solution_summary      = solution_summary
         self.code                  = code
+        self.code_type             = code_type
         
         # metadata surrounding the question and the solution
         self.updated_date          = updated_date
