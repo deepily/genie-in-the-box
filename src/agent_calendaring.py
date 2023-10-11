@@ -114,7 +114,7 @@ class CalendaringAgent( CommonAgent ):
         
         self._print_token_count( self.system_message, message_name="system_message", model=prompt_model )
         self._print_token_count( self.user_message, message_name="user_message", model=prompt_model )
-                
+        
         self.response      = self._query_gpt( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
         self.response_dict = json.loads( self.response )
         
@@ -143,80 +143,62 @@ class CalendaringAgent( CommonAgent ):
     def format_output( self ):
         
         format_model = CommonAgent.GPT_3_5
-        preamble     = self.get_formatting_preamble()
-        instructions = self.get_formatting_instructions()
+        preamble     = self._get_formatting_preamble()
+        instructions = self._get_formatting_instructions()
         
         self._print_token_count( preamble, message_name="formatting preamble", model=format_model )
         self._print_token_count( instructions, message_name="formatting instructions", model=format_model )
         
-        # if self.debug:
-        #
-        #     # preamble
-        #     count = self._get_token_count( preamble, model=format_model )
-        #     if self.verbose:
-        #         du.print_banner( f"Token count for preamble: [{count}]", prepend_nl=True )
-        #         print( preamble )
-        #     else:
-        #         print( "Token count for preamble: [{}]".format( count ) )
-        #
-        #     # instructions
-        #     count = self._get_token_count( instructions, model=format_model )
-        #     if self.verbose:
-        #         du.print_banner( f"Token count for instructions: [{count}]", prepend_nl=True )
-        #         print( instructions )
-        #     else:
-        #         print( "Token count for instructions: [{}]".format( count ) )
-            
         self.answer_conversational = self._query_gpt( preamble, instructions, model=format_model, debug=self.debug )
         
         return self.answer_conversational
     
-    def get_formatting_preamble( self ):
+    # def get_formatting_preamble( self ):
+    #
+    #     if du.is_jsonl( self.code_response[ "output" ] ):
+    #
+    #         return self.get_jsonl_formatting_preamble()
+    #
+    #     else:
+    #
+    #         preamble = f"""
+    #         You are an expert in converting raw data into conversational English.
+    #
+    #         The output is the result of a query on a pandas dataframe about events on my calendar.
+    #
+    #         The query is: `{self.question}`
+    #
+    #         The output is: `{self.code_response[ "output" ]}`
+    #         """
+    #         return preamble
         
-        if du.is_jsonl( self.code_response[ "output" ] ):
-            
-            return self.get_jsonl_formatting_preamble()
         
-        else:
-            
-            preamble = f"""
-            You are an expert in converting raw data into conversational English.
-
-            The output is the result of a query on a pandas dataframe about events on my calendar.
-
-            The query is: `{self.question}`
-
-            The output is: `{self.code_response[ "output" ]}`
-            """
-            return preamble
-        
-        
-    def get_jsonl_formatting_preamble( self ):
-        
-        rows = self.code_response[ "output" ].split( "\n" )
-        row_count = len( rows )
-        
-        lines = [ ]
-        line_number = 1
-        
-        for row in rows:
-            lines.append( f"{line_number}) {row}" )
-            line_number += 1
-        
-        lines = "\n".join( lines )
-        
-        preamble = f"""
-        You are an expert in converting raw data into conversational English.
-
-        The following {row_count} rows of JSONL formatted data are the output from a query on a pandas dataframe about events on my calendar.
-        
-        The query was: `{self.question}`
-
-        JSONL output:
-
-        {lines}
-        """
-        return preamble
+    # def get_jsonl_formatting_preamble( self ):
+    #
+    #     rows = self.code_response[ "output" ].split( "\n" )
+    #     row_count = len( rows )
+    #
+    #     lines = [ ]
+    #     line_number = 1
+    #
+    #     for row in rows:
+    #         lines.append( f"{line_number}) {row}" )
+    #         line_number += 1
+    #
+    #     lines = "\n".join( lines )
+    #
+    #     preamble = f"""
+    #     You are an expert in converting raw data into conversational English.
+    #
+    #     The following {row_count} rows of JSONL formatted data are the output from a query on a pandas dataframe about events on my calendar.
+    #
+    #     The query was: `{self.question}`
+    #
+    #     JSONL output:
+    #
+    #     {lines}
+    #     """
+    #     return preamble
     
     # def get_formatting_instructions( self ):
     #
