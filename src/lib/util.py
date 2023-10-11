@@ -321,10 +321,10 @@ def get_files_as_strings( file_paths ):
     return contents
 
 # Add a function that takes a list and print it to the consul one line of time
-def print_list( list_to_print ):
+def print_list( list_to_print, end="\n" ):
     
     for item in list_to_print:
-        print( item )
+        print( item, end=end )
     
 if __name__ == "__main__":
     
