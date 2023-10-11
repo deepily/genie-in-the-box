@@ -91,16 +91,14 @@ class CommonAgent( abc.ABC ):
                 print( message )
             else:
                 print( f"Token count for `{message_name}`: [{count}]" )
-                
-# def run_code( self ):
-#
-#     self.code_response = ucr.assemble_and_run_solution(
-#         self.response_dict[ "code" ], path="/src/conf/long-term-memory/events.csv",
-#         solution_code_returns=self.response_dict[ "returns" ], debug=self.debug
-#     )
-#     if self.debug and self.verbose:
-#         du.print_banner( "Code output", prepend_nl=True )
-#         for line in self.code_response[ "output" ].split( "\n" ):
-#             print( line )
-#
-#     return self.code_response
+    
+    def get_formatting_instructions( self ):
+        
+        data_format = "JSONL " if du.is_jsonl( self.code_response[ "output" ] ) else ""
+        
+        instructions = f"""
+        Reformat and rephrase the {data_format}data that I just showed you in conversational English so that it answers this question: `{self.question}`
+
+        Each line of the output that you create should contain one event."
+        """
+        return instructions
