@@ -94,8 +94,9 @@ def assemble_and_run_solution( solution_code, path=None, solution_code_returns="
     code_path = du.get_project_root() + "/io/code.py"
     du.write_lines_to_file( code_path, code )
     
+    # Stash current working directory, so we can return to it after code has finished executing
+    original_wd = os.getcwd()
     os.chdir( du.get_project_root() + "/io" )
-    # if debug: print( f"pwd [{os.getcwd()}]" )
     
     if debug: print( "Executing {}... ".format( code_path ), end="" )
     
@@ -115,6 +116,10 @@ def assemble_and_run_solution( solution_code, path=None, solution_code_returns="
         "return_code": results.returncode,
              "output": output
     }
+    
+    # Return to original working directory
+    os.chdir( original_wd )
+    
     return results_dict
 
 def test_assemble_and_run_solution():
