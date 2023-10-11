@@ -97,6 +97,16 @@ class CalendaringAgent( CommonAgent ):
         
         return self.question
         
+    def is_promptable( self ):
+        
+        du.print_banner( "TODO: Implement is_promptable()", expletive=True )
+        return True
+    
+    def is_runnable( self ):
+        
+        du.print_banner( "TODO: Implement is_runnable()", expletive=True )
+        return True
+    
     def run_prompt( self, question="" ):
         
         prompt_model      = CommonAgent.GPT_4
