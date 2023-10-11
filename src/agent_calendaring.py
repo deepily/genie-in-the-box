@@ -153,64 +153,6 @@ class CalendaringAgent( CommonAgent ):
         
         return self.answer_conversational
     
-    # def get_formatting_preamble( self ):
-    #
-    #     if du.is_jsonl( self.code_response[ "output" ] ):
-    #
-    #         return self.get_jsonl_formatting_preamble()
-    #
-    #     else:
-    #
-    #         preamble = f"""
-    #         You are an expert in converting raw data into conversational English.
-    #
-    #         The output is the result of a query on a pandas dataframe about events on my calendar.
-    #
-    #         The query is: `{self.question}`
-    #
-    #         The output is: `{self.code_response[ "output" ]}`
-    #         """
-    #         return preamble
-        
-        
-    # def get_jsonl_formatting_preamble( self ):
-    #
-    #     rows = self.code_response[ "output" ].split( "\n" )
-    #     row_count = len( rows )
-    #
-    #     lines = [ ]
-    #     line_number = 1
-    #
-    #     for row in rows:
-    #         lines.append( f"{line_number}) {row}" )
-    #         line_number += 1
-    #
-    #     lines = "\n".join( lines )
-    #
-    #     preamble = f"""
-    #     You are an expert in converting raw data into conversational English.
-    #
-    #     The following {row_count} rows of JSONL formatted data are the output from a query on a pandas dataframe about events on my calendar.
-    #
-    #     The query was: `{self.question}`
-    #
-    #     JSONL output:
-    #
-    #     {lines}
-    #     """
-    #     return preamble
-    
-    # def get_formatting_instructions( self ):
-    #
-    #     data_format = "JSONL " if du.is_jsonl( self.code_response[ "output" ] ) else ""
-    #
-    #     instructions = f"""
-    #     Reformat and rephrase the {data_format}data that I just showed you in conversational English so that it answers this question: `{self.question}`
-    #
-    #     Each line of the output that you create should contain one event."
-    #     """
-    #     return instructions
-    
 if __name__ == "__main__":
     
     agent = CalendaringAgent( path_to_df="/src/conf/long-term-memory/events.csv", debug=True, verbose=True )
