@@ -199,6 +199,11 @@ class RefactoringAgent( CommonAgent ):
         
         return self.code_responses
     
+    def format_output( self ):
+
+        du.print_banner( "TODO: Implement format_output()", expletive=True )
+        return None
+    
     def get_parameter_names( self, signature_dict, debug=False ):
         
         if debug:
@@ -253,22 +258,6 @@ class RefactoringAgent( CommonAgent ):
         if debug:
             print( f"Raw signature: ###{raw_signature}###" )
             # print( f"Munged signature: ###{munged_signature}###" )
-        # try:
-        #     gpt_function_signature = json.loads( raw_signature )[ 0 ]
-        # except json.decoder.JSONDecodeError as e:
-        #
-        #     # print( f"Error: {e}" )
-        #     # print( f"Error: {raw_signature}" )
-        #     du.print_banner( "Fixing json.decoder.JSONDecodeError in GPT function signature...", prepend_nl=True )
-        #
-        #     # Replace matched patterns with double quotes
-        #     # pattern = r"'(?=\w)|(?<=\w)'"
-        #     pattern = r"'(?=\w)|(?<=\w|[\)])'"
-        #     fixed_signature = re.sub( pattern, '"', raw_signature )
-        #     print( fixed_signature )
-        #
-        #     # Encode the string as a JSON object
-        #     gpt_function_signature = json.loads( fixed_signature )
         
         # Get the list of files in the agent_lib_path directory
         files = os.listdir( agent_src_root + agent_lib_dir )
