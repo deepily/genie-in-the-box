@@ -10,6 +10,7 @@ class SolutionSnapshotManager:
     def __init__( self, path, debug=False, verbose=False ):
         
         self.debug                             = debug
+        self.verbose                           = verbose
         self.path                              = path
         self.snapshots_by_question             = self.load_snapshots_by_question()
         self.snapshots_by_synomymous_questions = self.get_snapshots_by_synomymous_questions( self.snapshots_by_question )
@@ -103,12 +104,20 @@ class SolutionSnapshotManager:
             
             if similarity_score >= threshold:
                 similar_snapshots.append( ( similarity_score, snapshot ) )
-                if self.debug: print( f"Score [{similarity_score}] for question [{snapshot.question}] IS similar enough to [{question}]" )
+                if self.debug and self.verbose: print( f"Score [{similarity_score:.1f}]% for question [{snapshot.question}] IS similar enough to [{question}]" )
             else:
-                if self.debug: print( f"Score [{similarity_score}] for question [{snapshot.question}] is NOT similar enough to [{question}]" )
+                if self.debug and self.verbose: print( f"Score [{similarity_score:.1f}]% for question [{snapshot.question}] is NOT similar enough to [{question}]" )
         
         # Sort by similarity score, descending
         similar_snapshots.sort( key=lambda x: x[ 0 ], reverse=True )
+        
+        print()
+        if len( similar_snapshots ) > 0:
+            du.print_banner( f"Found [{len( similar_snapshots )}] similar snapshots for question [{question}]", prepend_nl=True )
+            for snapshot in similar_snapshots:
+                print( f"Score [{snapshot[ 0 ]:.1f}]% for [{question}] == [{snapshot[ 1 ].question}]" )
+        else:
+            print( f"Could not find any snapshots similar to [{question}]" )
         
         return similar_snapshots[ :limit ]
     
