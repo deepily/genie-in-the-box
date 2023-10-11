@@ -170,6 +170,15 @@ class RefactoringAgent( CommonAgent ):
         
         if update_example_code: self._update_snapshot_code( self.similar_snapshots, response_dict, debug=debug )
     
+    def is_runnable( self ):
+        
+        for similar_snapshot in self.similar_snapshots:
+            if similar_snapshot[ 1 ].code == [ ]:
+                print( "No code to run: similar_snapshot[ 1 ].code = [ ]" )
+                return False
+        else:
+            return True
+    
     def run_code( self ):
         
         self.code_responses = []
