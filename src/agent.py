@@ -69,6 +69,17 @@ class CommonAgent( abc.ABC ):
     def run_prompt( self, question="" ):
         pass
     
+    def _print_token_count( self, message, message_name="system_message", model=GPT_4 ):
+        
+        if self.debug:
+            
+            count = self._get_token_count( message, model=model )
+            if self.verbose:
+                du.print_banner( f"Token count for `{message_name}`: [{count}]", prepend_nl=True )
+                print( message )
+            else:
+                print( f"Token count for `{message_name}`: [{count}]" )
+                
     # def run_code( self ):
     #
     #     self.code_response = ucr.assemble_and_run_solution(
