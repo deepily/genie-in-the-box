@@ -26,6 +26,7 @@
     "tz_date = now.astimezone( tz )",
     "print( tz_date.strftime( '%I:%M %p %Z' ) )"
   ],
+  "code_type": "raw",
   "updated_date": "2023-09-05 @ 15:34:59 EDT",
   "created_date": "2023-08-17 @ 17-29-56 EST",
   "run_date": "2023-09-26 @ 15:34:33 EDT",
