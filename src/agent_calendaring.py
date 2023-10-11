@@ -112,21 +112,8 @@ class CalendaringAgent( CommonAgent ):
         prompt_model      = CommonAgent.GPT_4
         self.user_message = self._get_user_message( question )
         
-        if self.debug:
-            
-            count = self._get_token_count( self.system_message, model=prompt_model )
-            if self.verbose:
-                du.print_banner( f"Token count for system_message: [{count}]", prepend_nl=True )
-                print( self.system_message )
-            else:
-                print( "Token count for system_message: [{}]".format( count ) )
-            
-            count = self._get_token_count( self.user_message, model=prompt_model )
-            if self.verbose:
-                du.print_banner( f"Token count for user_message: [{count}]", prepend_nl=True )
-                print( self.system_message )
-            else:
-                print( "Token count for user_message: [{}]".format( count ) )
+        self._print_token_count( self.system_message, message_name="system_message", model=prompt_model )
+        self._print_token_count( self.user_message, message_name="user_message", model=prompt_model )
                 
         self.response      = self._query_gpt( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
         self.response_dict = json.loads( self.response )
@@ -159,23 +146,26 @@ class CalendaringAgent( CommonAgent ):
         preamble     = self.get_formatting_preamble()
         instructions = self.get_formatting_instructions()
         
-        if self.debug:
-            
-            # preamble
-            count = self._get_token_count( preamble, model=format_model )
-            if self.verbose:
-                du.print_banner( f"Token count for preamble: [{count}]", prepend_nl=True )
-                print( preamble )
-            else:
-                print( "Token count for preamble: [{}]".format( count ) )
-            
-            # instructions
-            count = self._get_token_count( instructions, model=format_model )
-            if self.verbose:
-                du.print_banner( f"Token count for instructions: [{count}]", prepend_nl=True )
-                print( instructions )
-            else:
-                print( "Token count for instructions: [{}]".format( count ) )
+        self._print_token_count( preamble, message_name="formatting preamble", model=format_model )
+        self._print_token_count( instructions, message_name="formatting instructions", model=format_model )
+        
+        # if self.debug:
+        #
+        #     # preamble
+        #     count = self._get_token_count( preamble, model=format_model )
+        #     if self.verbose:
+        #         du.print_banner( f"Token count for preamble: [{count}]", prepend_nl=True )
+        #         print( preamble )
+        #     else:
+        #         print( "Token count for preamble: [{}]".format( count ) )
+        #
+        #     # instructions
+        #     count = self._get_token_count( instructions, model=format_model )
+        #     if self.verbose:
+        #         du.print_banner( f"Token count for instructions: [{count}]", prepend_nl=True )
+        #         print( instructions )
+        #     else:
+        #         print( "Token count for instructions: [{}]".format( count ) )
             
         self.answer_conversational = self._query_gpt( preamble, instructions, model=format_model, debug=self.debug )
         
@@ -228,16 +218,16 @@ class CalendaringAgent( CommonAgent ):
         """
         return preamble
     
-    def get_formatting_instructions( self ):
-        
-        data_format = "JSONL " if du.is_jsonl( self.code_response[ "output" ] ) else ""
-        
-        instructions = f"""
-        Reformat and rephrase the {data_format}data that I just showed you in conversational English so that it answers this question: `{self.question}`
-
-        Each line of the output that you create should contain one event."
-        """
-        return instructions
+    # def get_formatting_instructions( self ):
+    #
+    #     data_format = "JSONL " if du.is_jsonl( self.code_response[ "output" ] ) else ""
+    #
+    #     instructions = f"""
+    #     Reformat and rephrase the {data_format}data that I just showed you in conversational English so that it answers this question: `{self.question}`
+    #
+    #     Each line of the output that you create should contain one event."
+    #     """
+    #     return instructions
     
 if __name__ == "__main__":
     
