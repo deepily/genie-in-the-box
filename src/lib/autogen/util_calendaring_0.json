@@ -1,0 +1,23 @@
+{
+    "name": "get_todays_events_by_type",
+    "description": "Gets today's events of a specific type from a dataframe",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "df": {
+                "type": "object",
+                "description": "The dataframe containing the events"
+            },
+            "event_type": {
+                "type": "string",
+                "description": "The type of event to filter for"
+            }
+        },
+        "required": [
+            "df",
+            "event_type"
+        ]
+    },
+    "call_template": "uc0.get_todays_events_by_type( df, event_type='event_type' )",
+    "import_as": "import lib.autogen.util_calendaring_0 as uc0"
+}
