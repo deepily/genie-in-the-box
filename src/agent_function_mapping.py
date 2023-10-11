@@ -51,9 +51,9 @@ class FunctionMappingAgent( CommonAgent ):
         
         system_message = f"""
         You are an expert at managing events in a calendaring database.
-        I'm going to ask you a question that may be about an event, and I want you to map it to a list of `functions` described below.
-        I want you to think aloud about how you are going to answer this question within the `thoughts` field below in the JSON response.
+        I'm going to ask you a question that may be about an event. if it is, I want you to map it to a list of `functions` described below.
         If you do not think that the question maps to any of the functions included, please say so in `is_event_function_call`.
+        I want you to think aloud about how you are going to answer this question within the `thoughts` field below in the JSON response.
         These are the only `event_type` that we are interested in: {events_list},
         These are the only database fields and kwargs `keys` that we are interested in: {keys_list}.
         
@@ -65,10 +65,10 @@ class FunctionMappingAgent( CommonAgent ):
             "is_event_function_call": "True or False (Python values)",
                           "question": "The question that you are responding to",
                      "function_name": "The name of the function that you think this question maps to",
-                        "kwargs_key": "The kwargs key value that you think this question maps to",
-                       "kwargs_value: "The kwargs value that you think this question contains",
+                        "kwargs_key": "The kwargs key value that you think this question maps to.  This MUST be inserted into the call template below",
+                       "kwargs_value: "The kwargs value that you think this question contains.  This MUST be inserted into the call template below",
                          "import_as": "The import statement that you think is required to use this function",
-                     "call_template": "The function call template that you think is required to use this function"
+                     "call_template": "The function call template required to use this function. This MUST include a syntactically correct function name, along with kwargs key and value."
         }}
         
         Hint: Pay careful attention to the semantic mapping you make between any references to time, both in the question and the functions.
@@ -80,7 +80,7 @@ class FunctionMappingAgent( CommonAgent ):
     def _get_user_message( self, question="" ):
         
         if question != "":
-            self.question = question
+            self.question = ss.SolutionSnapshot.clean_question( question )
         
         if self.question == "":
             raise ValueError( "No question was provided" )
@@ -91,6 +91,10 @@ class FunctionMappingAgent( CommonAgent ):
         Begin!
         """
         return self.user_message
+    
+    def is_promptable( self ):
+        
+        return self.question != "" and self.signatures_dict != { }
         
     def run_prompt( self, question="", prompt_model=CommonAgent.GPT_4 ):
         
@@ -104,25 +108,38 @@ class FunctionMappingAgent( CommonAgent ):
         
         if self.debug and self.verbose: print( json.dumps( self.response_dict, indent=4 ) )
         
-        # # Test for no code returned
-        # if self.response_dict[ "code" ] == [ ]:
-        #     self.error = self.response_dict[ "error" ]
-        #     raise ValueError( "No code was returned, please check the logs" )
+        # Set up code for future execution
+        if self.response_dict[ "is_event_function_call" ]:
+            self.response_dict[ "code" ] = [
+                self.response_dict[ "import_as" ],
+                self.response_dict[ "call_template" ]
+            ]
+        else:
+            print( "No code to run: is_event_function_call = False" )
+            self.response_dict[ "code" ] = [ ]
         
         return self.response_dict
     
-    # def run_code( self ):
-    #
-    #     self.code_response = ucr.assemble_and_run_solution(
-    #         self.response_dict[ "code" ], path="/src/conf/long-term-memory/events.csv",
-    #         solution_code_returns=self.response_dict[ "returns" ], debug=self.debug
-    #     )
-    #     if self.debug and self.verbose:
-    #         du.print_banner( "Code output", prepend_nl=True )
-    #         for line in self.code_response[ "output" ].split( "\n" ):
-    #             print( line )
-    #
-    #     return self.code_response
+    def is_runnable( self ):
+        
+        if self.response_dict[ "code" ] != [ ]:
+            return True
+        else:
+            print( "No code to run: self.response_dict[ 'code' ] = [ ]" )
+            return False
+        
+    def run_code( self ):
+
+        self.code_response = ucr.assemble_and_run_solution(
+            self.response_dict[ "code" ], path="/src/conf/long-term-memory/events.csv",
+            solution_code_returns=self.response_dict.get( "returns", "string" ), debug=self.debug
+        )
+        if self.debug and self.verbose:
+            du.print_banner( "Code output", prepend_nl=True )
+            for line in self.code_response[ "output" ].split( "\n" ):
+                print( line )
+
+        return self.code_response
     
 if __name__ == "__main__":
     
