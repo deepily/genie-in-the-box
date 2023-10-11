@@ -118,9 +118,10 @@
     // https://stackoverflow.com/questions/10588688/i-want-to-programmatically-prepend-text-to-each-item-in-an-ordered-item-list
 
     // Create a global queue for audio clips
-    var audioQueue = [];
-    var playing = false;
-    var quiet   = false
+    var audioQueue   = [];
+    var playing      = false;
+    var quiet        = false;
+    var lastAudioURL = null;
 
     // Handle server notifications to play audio
     socket.on( "audio_update", async function( data ) {
@@ -139,12 +140,24 @@
             }
             url = data.audioURL
         }
-        console.log( `Adding audio url to queue: ${url}` );
-        let audio = new Audio( url );
-        audioQueue.push( audio );
-        console.log( "Audio queue size:", audioQueue.length );
+        if ( lastAudioURL === url ) {
+            console.log( "Same audio URL, not adding to queue" );
+            return
+        } else {
 
-        playAll()
+            // Print both last audio URL and URL to the console
+            console.log( "Last audio URL:", lastAudioURL );
+            console.log( " New audio URL:", url );
+
+            lastAudioURL = url;
+
+            console.log( `Adding audio url to queue: ${ url }` );
+            let audio = new Audio( url );
+            audioQueue.push( audio );
+            console.log( "Audio queue size:", audioQueue.length );
+
+            playAll()
+        }
     } );
     async function playOne( audio ) {
 
