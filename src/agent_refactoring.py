@@ -367,6 +367,7 @@ class RefactoringAgent( CommonAgent ):
             new_code = refactoring_response_dict[ "examples" ][ snapshot[ 1 ].question ]
             snapshot[ 1 ].code = new_code
             snapshot[ 1 ].code_embedding = ss.SolutionSnapshot.generate_embedding( " ".join( new_code ) )
+            snapshot[ 1 ].self.code_type = "refactored"
             snapshot[ 1 ].write_to_file()
             
             if debug:
