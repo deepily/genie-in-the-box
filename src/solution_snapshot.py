@@ -155,11 +155,11 @@ class SolutionSnapshot:
                          question=calendaring_agent.question,
               last_question_asked=calendaring_agent.question,
              synonymous_questions=OrderedDict( { calendaring_agent.question: 100.0 } ),
-                            error=calendaring_agent.response_dict[ "error" ],
-                 solution_summary=calendaring_agent.response_dict[ "explanation" ],
-                             code=calendaring_agent.response_dict[ "code" ],
-                         thoughts=calendaring_agent.response_dict[ "thoughts" ],
-                           answer=calendaring_agent.code_response[ "output" ],
+                            error=calendaring_agent.prompt_response_dict[ "error" ],
+                 solution_summary=calendaring_agent.prompt_response_dict[ "explanation" ],
+                             code=calendaring_agent.prompt_response_dict[ "code" ],
+                         thoughts=calendaring_agent.prompt_response_dict[ "thoughts" ],
+                           answer=calendaring_agent.code_response_dict[ "output" ],
             answer_conversational=calendaring_agent.answer_conversational
                
                # TODO: Reconcile how we're going to get a dynamic path to the solution file's directory
