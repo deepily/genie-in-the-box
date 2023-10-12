@@ -6,9 +6,9 @@ import lib.util             as du
 import lib.util_code_runner as ucr
 import solution_snapshot    as ss
 
-from agent                 import CommonAgent
+from lib.agent import Agent
 from solution_snapshot_mgr import SolutionSnapshotManager
-class RefactoringAgent( CommonAgent ):
+class RefactoringAgent( Agent ):
     
     def __init__( self, similar_snapshots=[], path_to_solutions="/src/conf/long-term-memory/solutions", debug=False, verbose=False ):
         
@@ -22,8 +22,9 @@ class RefactoringAgent( CommonAgent ):
         self.snippets_string   = None
         self.system_message    = self._get_system_message()
         self.user_message      = self._get_user_message()
-        self.response          = None
-        self.response_dict     = None
+        # self.prompt_response   = None
+        # self.prompt_response_dict = None
+        
         self.error             = None
         self.code_responses    = None
     
@@ -120,32 +121,32 @@ class RefactoringAgent( CommonAgent ):
         else:
             return True
 
-    def run_prompt( self, prompt_model=CommonAgent.GPT_4 ):
+    def run_prompt( self, prompt_model=Agent.GPT_4 ):
         
-        prompt_model = CommonAgent.GPT_4
+        prompt_model = Agent.GPT_4
         
         self._print_token_count( self.system_message, message_name="system_message", model=prompt_model )
         self._print_token_count( self.user_message, message_name="user_message", model=prompt_model )
                 
-        self.response      = self._query_gpt( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
+        self.prompt_response      = self._query_gpt( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
         # This is another example of GPT injecting a little bit of formatting randomicity into the response
-        self.response      = self.response.replace( "\n", "" ).strip( '"' )
-        self.response_dict = json.loads( self.response )
+        self.prompt_response      = self.prompt_response.replace( "\n", "" ).strip( '"' )
+        self.prompt_response_dict = json.loads( self.prompt_response )
 
-        if self.debug and self.verbose: print( json.dumps( self.response_dict, indent=4 ) )
+        if self.debug and self.verbose: print( json.dumps( self.prompt_response_dict, indent=4 ) )
 
         # Test for no code returned and throw error
-        if self.response_dict[ "code" ] == [ ]:
+        if self.prompt_response_dict[ "code" ] == [ ]:
             stem = "No code was returned."
             # Save for debugging by LLM later
-            self.error = f"{stem} LLM error: {self.response_dict[ 'error' ]}"
+            self.error = f"{stem} LLM error: {self.prompt_response_dict[ 'error' ]}"
             raise ValueError( stem )
         
-        if self.response_dict[ "examples" ] == [ ]:
-            self.error = self.response_dict[ "error" ]
+        if self.prompt_response_dict[ "examples" ] == [ ]:
+            self.error = self.prompt_response_dict[ "error" ]
             raise ValueError( "No examples were returned." )
 
-        return self.response_dict
+        return self.prompt_response_dict
     
     def refactor_code( self, update_example_code=True, debug=False ):
         
@@ -166,7 +167,7 @@ class RefactoringAgent( CommonAgent ):
             print( f"File call_template: [{code_write_metadata[ 'call_template' ]}]" )
             print( f"File     signature: [{code_write_metadata[ 'gpt_function_signature' ]}]", end="\n\n" )
         
-        response_dict = self._update_example_code( self.response_dict.copy(), code_write_metadata, code_write_metadata )
+        response_dict = self._update_example_code( self.prompt_response_dict.copy(), code_write_metadata, code_write_metadata )
         
         if update_example_code: self._update_snapshot_code( self.similar_snapshots, response_dict, debug=debug )
     
@@ -251,8 +252,8 @@ class RefactoringAgent( CommonAgent ):
         # Get the code and function signature from the response dictionary,
         # ¡OJO! The function signature requires a bit of munging before serializing it as Json
         # TODO: If getting the GPT function signature is going to be this flaky, do it as a separate chat completion with GPT
-        code                   = self.response_dict[ "code" ]
-        raw_signature          = self.response_dict[ "gpt_function_signatures" ]
+        code                   = self.prompt_response_dict[ "code" ]
+        raw_signature          = self.prompt_response_dict[ "gpt_function_signatures" ]
         gpt_function_signature = self.get_function_signature( raw_signature )
         # munged_signature       = raw_signature.replace( "'", '"' ).strip( '"' )
         if debug:
