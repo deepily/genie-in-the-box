@@ -27,7 +27,7 @@ io/**
 .mailmap
 
 # Skip the question embeddings dictionary, this can always be regenerated
-src/conf/long-term-memory/solutions/question-embeddings-dictionary.pickle
+src/conf/long-term-memory/question-embeddings-dictionary.pickle
 
 # Re-don't want to track venv!
 venv/**
