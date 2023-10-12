@@ -8,10 +8,12 @@ import lib.util_code_runner as ucr
 import lib.util_stopwatch as sw
 import solution_snapshot as ss
 
+from lib.runnable import Runnable
+
 import openai
 import tiktoken
 
-class CommonAgent( abc.ABC ):
+class Agent( Runnable, abc.ABC ):
     
     GPT_4   = "gpt-4-0613"
     GPT_3_5 = "gpt-3.5-turbo-0613"
@@ -21,8 +23,11 @@ class CommonAgent( abc.ABC ):
         self.debug         = debug
         self.verbose       = verbose
         
-        self.code_response         = None
+        # self.code_response_dict    = None
         self.answer_conversational = None
+        
+        # self.prompt_response = None
+        # self.prompt_response_dict = None
     
     @staticmethod
     def _get_token_count( to_be_tokenized, model=GPT_4 ):
@@ -79,8 +84,8 @@ class CommonAgent( abc.ABC ):
         pass
     
     @abc.abstractmethod
-    def run_code( self ):
-        pass
+    # def run_code( self ):
+    #     pass
     
     @abc.abstractmethod
     def format_output( self ):
@@ -99,7 +104,7 @@ class CommonAgent( abc.ABC ):
     
     def _get_formatting_instructions( self ):
         
-        data_format = "JSONL " if du.is_jsonl( self.code_response[ "output" ] ) else ""
+        data_format = "JSONL " if du.is_jsonl( self.code_response_dict[ "output" ] ) else ""
         
         instructions = f"""
         Reformat and rephrase the {data_format}data that I just showed you in conversational English so that it answers this question: `{self.question}`
@@ -110,7 +115,7 @@ class CommonAgent( abc.ABC ):
     
     def _get_formatting_preamble( self ):
         
-        if du.is_jsonl( self.code_response[ "output" ] ):
+        if du.is_jsonl( self.code_response_dict[ "output" ] ):
             
             return self._get_jsonl_formatting_preamble()
         
@@ -123,13 +128,13 @@ class CommonAgent( abc.ABC ):
 
             The query is: `{self.question}`
 
-            The output is: `{self.code_response[ "output" ]}`
+            The output is: `{self.code_response_dict[ "output" ]}`
             """
             return preamble
     
     def _get_jsonl_formatting_preamble( self ):
         
-        rows = self.code_response[ "output" ].split( "\n" )
+        rows = self.code_response_dict[ "output" ].split( "\n" )
         row_count = len( rows )
         
         lines = [ ]
