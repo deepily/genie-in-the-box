@@ -5,7 +5,7 @@ import lib.util_pandas      as dup
 import lib.util_stopwatch   as sw
 import solution_snapshot    as ss
 
-from lib.agent import Agent
+from lib.agents.agent import Agent
 
 import pandas as pd
 
@@ -148,7 +148,9 @@ if __name__ == "__main__":
     # question         = "What todo items do I have on my calendar for today?"
     # question         = "Do I have any birthdays on my calendar this week?"
     # question         = "When is Juan's birthday?"
-    question         = "When is Jimmy's birthday?"
+    # question         = "When is Jimmy's birthday?"
+    question         = "When is my birthday?"
+    
     timer            = sw.Stopwatch( msg=f"Processing [{question}]..." )
     response_dict    = agent.run_prompt( question )
     code_response    = agent.run_code()

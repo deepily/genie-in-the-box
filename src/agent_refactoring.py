@@ -6,7 +6,7 @@ import lib.util             as du
 import lib.util_code_runner as ucr
 import solution_snapshot    as ss
 
-from lib.agent import Agent
+from lib.agents.agent import Agent
 from solution_snapshot_mgr import SolutionSnapshotManager
 class RefactoringAgent( Agent ):
     

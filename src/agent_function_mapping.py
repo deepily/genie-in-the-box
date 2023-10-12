@@ -5,7 +5,7 @@ import lib.util_pandas      as dup
 import lib.util_stopwatch   as sw
 import solution_snapshot    as ss
 
-from lib.agent import Agent
+from lib.agents.agent import Agent
 
 import pandas as pd
 
