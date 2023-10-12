@@ -2,15 +2,14 @@ import json
 
 import lib.util             as du
 import lib.util_pandas      as dup
-import lib.util_code_runner as ucr
 import lib.util_stopwatch   as sw
 import solution_snapshot    as ss
 
-from agent import CommonAgent
+from lib.agent import Agent
 
 import pandas as pd
 
-class CalendaringAgent( CommonAgent ):
+class CalendaringAgent( Agent ):
     
     def __init__( self, path_to_df, question="", push_counter=-1, debug=False, verbose=False ):
         
@@ -35,9 +34,9 @@ class CalendaringAgent( CommonAgent ):
         
         # We'll set these later
         self.answer_conversational = None
-        self.response              = None
-        self.response_dict         = None
-        self.error                 = None
+        # self.prompt_response              = None
+        # self.prompt_response_dict         = None
+        # self.error                 = None
     
     def get_html( self ):
         
@@ -109,40 +108,28 @@ class CalendaringAgent( CommonAgent ):
     
     def run_prompt( self, question="" ):
         
-        prompt_model      = CommonAgent.GPT_4
+        prompt_model      = Agent.GPT_4
         self.user_message = self._get_user_message( question )
         
         self._print_token_count( self.system_message, message_name="system_message", model=prompt_model )
         self._print_token_count( self.user_message, message_name="user_message", model=prompt_model )
         
-        self.response      = self._query_gpt( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
-        self.response_dict = json.loads( self.response )
+        self.prompt_response      = self._query_gpt( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
+        self.prompt_response_dict = json.loads( self.prompt_response )
         
-        if self.debug and self.verbose: print( json.dumps( self.response_dict, indent=4 ) )
+        if self.debug and self.verbose: print( json.dumps( self.prompt_response_dict, indent=4 ) )
         
         # Test for no code returned
-        if self.response_dict[ "code" ] == [ ]:
-            self.error = self.response_dict[ "error" ]
+        if self.prompt_response_dict[ "code" ] == [ ]:
+            self.error = self.prompt_response_dict[ "error" ]
             raise ValueError( "No code was returned, please check the logs" )
         
-        return self.response_dict
+        return self.prompt_response_dict
     
-    def run_code( self ):
-        
-        self.code_response = ucr.assemble_and_run_solution(
-            self.response_dict[ "code" ], path="/src/conf/long-term-memory/events.csv",
-            solution_code_returns=self.response_dict[ "returns" ], debug=self.debug
-        )
-        if self.debug and self.verbose:
-            du.print_banner( "Code output", prepend_nl=True )
-            for line in self.code_response[ "output" ].split( "\n" ):
-                print( line )
-        
-        return self.code_response
     
     def format_output( self ):
         
-        format_model = CommonAgent.GPT_3_5
+        format_model = Agent.GPT_3_5
         preamble     = self._get_formatting_preamble()
         instructions = self._get_formatting_instructions()
         
