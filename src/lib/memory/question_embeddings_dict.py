@@ -1,11 +1,11 @@
 import os
 import pickle
 
-import lib.util as du
+import lib.utils.util as du
 
 class QuestionEmbeddingsDict( dict ):
     
-    PATH_TO_DICT = os.path.join( du.get_project_root(), "src/conf/long-term-memory/solutions/question-embeddings-dictionary.pickle" )
+    PATH_TO_DICT = os.path.join( du.get_project_root(), "src/conf/long-term-memory/question-embeddings-dictionary.pickle" )
     loading = False
     def __init__( self, *args, **kwargs ):
         

@@ -1,4 +1,4 @@
-import src.lib.util as du
+import lib.utils.util as du
 
 def remove_line_numbers( path, write_back=True ):
     

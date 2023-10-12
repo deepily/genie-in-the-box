@@ -1,9 +1,9 @@
 import json
 
-import lib.util             as du
-import lib.util_pandas      as dup
-import lib.util_stopwatch   as sw
-import solution_snapshot    as ss
+import lib.utils.util as du
+import lib.utils.util_pandas as dup
+import lib.utils.util_stopwatch as sw
+from lib.memory import solution_snapshot as ss
 
 from lib.agents.agent import Agent
 

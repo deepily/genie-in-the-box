@@ -2,9 +2,8 @@
 import random
 from datetime import datetime
 import json
-from pprint import pprint
 import csv
-import src.lib.util as du
+import lib.utils.util as du
 
 
 def generate_events( num_events, start_date_str, end_date_str ):

@@ -1,8 +1,5 @@
-import os
-
-from src     import genie_client as gc
-from src.lib import util as du
-from src.lib import util_stopwatch as sw
+from lib.clients import genie_client as gc
+from lib.utils import util_stopwatch as sw, util as du
 
 import json
 import pandas as pd

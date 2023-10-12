@@ -1,9 +1,9 @@
 import json
 
-import lib.util             as du
-import lib.util_pandas      as dup
-import lib.util_stopwatch   as sw
-import solution_snapshot    as ss
+import lib.utils.util as du
+import lib.utils.util_pandas as dup
+import lib.utils.util_stopwatch as sw
+from lib.memory import solution_snapshot as ss
 
 from lib.agents.agent import Agent
 
@@ -149,8 +149,8 @@ if __name__ == "__main__":
     # question         = "What todo items do I have on my calendar for today?"
     # question         = "Do I have any birthdays on my calendar this week?"
     # question         = "When is Juan's birthday?"
-    question         = "When is Jaime's birthday?"
-    
+    # question         = "When is Jaime's birthday?"
+    question         = "When's my birthday?"
     timer            = sw.Stopwatch( msg=f"Processing [{question}]..." )
     response_dict    = agent.run_prompt( question=question )
     code_response    = agent.run_code()

@@ -4,8 +4,8 @@ import subprocess
 
 import util
 
-import genie_client as gc
-import genie_client_gui as gcg
+from lib.clients import genie_client as gc
+
 
 class GenieCmdClient:
 

@@ -7,8 +7,7 @@ from collections import defaultdict
 import openai
 import numpy as np
 
-from lib import util as du
-from lib import util_stopwatch as sw
+from lib.utils import util_stopwatch as sw, util as du
 
 # Currently, all transcription mode descriptors are three words long.
 # This will become important or more important in the future?

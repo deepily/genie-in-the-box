@@ -15,10 +15,10 @@ import requests
 import openai
 import pyperclip
 
-import lib.util_stopwatch as sw
+import lib.utils.util_stopwatch as sw
 
 # from src.lib import util as du
-import lib.util as du
+import lib.utils.util as du
 
 wav_file     = "vox-to-be-transcribed.wav"
 docker_path  = "/var/io/{}"

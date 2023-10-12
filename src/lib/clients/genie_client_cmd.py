@@ -6,7 +6,7 @@ from threading import Thread
 from tkinter import ttk, ACTIVE, DISABLED
 
 import genie_client as gc
-from src.lib import util
+from lib.utils import util
 
 
 class CmdUi:

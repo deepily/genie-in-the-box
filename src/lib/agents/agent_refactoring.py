@@ -2,12 +2,12 @@ import os
 import json
 import regex                as re
 
-import lib.util             as du
-import lib.util_code_runner as ucr
-import solution_snapshot    as ss
+import lib.utils.util as du
+import lib.utils.util_code_runner as ucr
+from lib.memory import solution_snapshot as ss
 
 from lib.agents.agent import Agent
-from solution_snapshot_mgr import SolutionSnapshotManager
+from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
 class RefactoringAgent( Agent ):
     
     def __init__( self, similar_snapshots=[], path_to_solutions="/src/conf/long-term-memory/solutions", debug=False, verbose=False ):

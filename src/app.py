@@ -23,23 +23,21 @@ from flask_socketio import SocketIO
 # print( "GENIE_IN_THE_BOX_ROOT [{}]".format( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) ) )
 # print( "Flask version [{}]".format( flask.__version__ ) )
 
-import genie_client       as gc
-import multimodal_munger  as mmm
-import agent_calendaring  as ca
+from lib.clients import genie_client as gc
+from lib.app import multimodal_munger as mmm
 
-import lib.util             as du
-import lib.util_stopwatch   as sw
-import lib.util_code_runner as ulc
+import lib.utils.util as du
+import lib.utils.util_stopwatch as sw
+import lib.utils.util_code_runner as ulc
 
 
-from genie_client         import GPT_3_5
-from genie_client         import GPT_4
+from lib.clients.genie_client import GPT_3_5
 
-from solution_snapshot import SolutionSnapshot
-from agent_calendaring import CalendaringAgent
+from lib.memory.solution_snapshot import SolutionSnapshot
+from lib.agents.agent_calendaring import CalendaringAgent
 
-from solution_snapshot_mgr import SolutionSnapshotManager
-from fifo_queue            import FifoQueue
+from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
+from lib.app.fifo_queue import FifoQueue
 
 """
 Globally visible queue object

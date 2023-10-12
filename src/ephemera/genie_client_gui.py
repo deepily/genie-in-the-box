@@ -6,8 +6,8 @@ import tkinter.font as tkf
 from threading import Thread
 from tkinter import ttk, ACTIVE, DISABLED
 
-import genie_client as gc
-import lib.util as du
+from lib.clients import genie_client as gc
+import lib.utils.util as du
 
 class GenieGui:
     

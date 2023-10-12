@@ -1,10 +1,8 @@
 import os
-import regex as re
-import pprint
 
-import lib.util as du
-import solution_snapshot as ss
-from question_embeddings_dict import QuestionEmbeddingsDict
+import lib.utils.util as du
+from lib.memory import solution_snapshot as ss
+from lib.memory.question_embeddings_dict import QuestionEmbeddingsDict
 
 class SolutionSnapshotManager:
     def __init__( self, path, debug=False, verbose=False ):
@@ -120,8 +118,6 @@ class SolutionSnapshotManager:
             print( f"Could not find any snapshots similar to [{question}]" )
         
         return similar_snapshots[ :limit ]
-    
-    import numpy as np
     
     def get_snapshots_by_code_similarity( self, exemplar_snapshot, threshold=85.0, limit=-1 ):
         

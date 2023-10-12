@@ -1,4 +1,3 @@
-import re
 import os
 debug = os.getenv( "GIB_CODE_EXEC_DEBUG", "True" ) == "True"
 
@@ -13,7 +12,7 @@ if debug:
 #     import util as du
 # except ImportError:
 #     print( "Failed to import 'util', trying 'lib.util'..." )
-import lib.util as du
+import lib.utils.util as du
 
 from subprocess import PIPE, run
 
@@ -60,8 +59,8 @@ def assemble_and_run_solution( solution_code, path=None, solution_code_returns="
             # "import csv",
             # "import sys",
             "import pandas as pd",
-            "import lib.util as du",
-            "import lib.util_pandas as dup",
+            "import lib.utils.util as du",
+            "import lib.utils.util_pandas as dup",
             "",
             "debug = {}".format( debug ),
             "",

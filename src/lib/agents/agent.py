@@ -2,8 +2,8 @@ import os
 import json
 import abc
 
-import lib.util as du
-import lib.util_stopwatch as sw
+import lib.utils.util as du
+import lib.utils.util_stopwatch as sw
 
 from lib.agents.runnable import Runnable
 

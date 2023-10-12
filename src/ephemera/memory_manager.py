@@ -1,7 +1,7 @@
 import time as time
 import random, string
 
-from lib import util as du
+from lib.utils import util as du
 
 
 class MemoryManager:

@@ -2,13 +2,12 @@ import hashlib
 import os
 import glob
 import json
-import time
 import copy
 import regex as re
 from collections import OrderedDict
 
-import lib.util as du
-import lib.util_stopwatch as sw
+import lib.utils.util as du
+import lib.utils.util_stopwatch as sw
 
 import openai
 import numpy as np
