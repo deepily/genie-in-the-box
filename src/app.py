@@ -208,7 +208,7 @@ def enter_running_loop():
                 # url = url_for( 'get_tts_audio' ) + f"?tts_text=1 job finished. {running_job.last_question_asked}? {running_job.answer_conversational}"
                 url = url_for( 'get_tts_audio' ) + f"?tts_text={running_job.answer_conversational}"
                 
-            print( f"Emitting DONE url [{url}]..." )
+            print( f"Emitting DONE url [{url}]...", end="\n\n" )
             socketio.emit( 'audio_update', { 'audioURL': url } )
         
         else:
