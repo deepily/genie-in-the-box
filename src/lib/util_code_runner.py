@@ -2,7 +2,7 @@ import re
 import os
 debug = os.getenv( "GIB_CODE_EXEC_DEBUG", "True" ) == "True"
 
-if debug: print( f"pwd [{os.getcwd()}]" )
+# if debug: print( f"pwd [{os.getcwd()}]" )
 
 import sys
 if debug:
@@ -36,16 +36,6 @@ def force_print_cmd( code, solution_code_returns, debug=False ):
         print( f"ERROR: return_type [{return_type}] and last command [{code[ -1 ]}] are incompatible!" )
         # code.append( "# What's up with that LLM's return type?!?" )
         
-    # if "print(" not in code[ -1 ]:
-    #     code[ -1 ] = "print( {} )".format( code[ -1 ] )
-    #
-    # # Now add CSV output to the df(?!?) on the last line
-    # match = re.search( r'print\(([^)]+)\)', code[ -1 ] )
-    # if match:
-    #     content = match.group( 1 )
-    #     code[ -1 ] = f"print({content}.to_csv( index=False, sep=',', lineterminator='\\n', quoting=csv.QUOTE_NONNUMERIC ) )"
-    # print( "last command, after adding CSV [{}]:".format( code[ -1 ] ) )
-    
     return code
 
 # TODO: This should generalize to include more than two instances of a string?
