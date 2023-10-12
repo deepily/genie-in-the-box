@@ -126,19 +126,6 @@ class FunctionMappingAgent( Agent ):
         else:
             print( "No code to run: self.response_dict[ 'code' ] = [ ]" )
             return False
-        
-    # def run_code( self ):
-    #
-    #     self.code_response = ucr.assemble_and_run_solution(
-    #         self.prompt_response_dict[ "code" ], path="/src/conf/long-term-memory/events.csv",
-    #         solution_code_returns=self.prompt_response_dict.get( "returns", "string" ), debug=self.debug
-    #     )
-    #     if self.debug and self.verbose:
-    #         du.print_banner( "Code output", prepend_nl=True )
-    #         for line in self.code_response[ "output" ].split( "\n" ):
-    #             print( line )
-    #
-    #     return self.code_response
     
     def format_output( self ):
         
@@ -166,7 +153,7 @@ if __name__ == "__main__":
     
     timer            = sw.Stopwatch( msg=f"Processing [{question}]..." )
     response_dict    = agent.run_prompt( question=question )
-    # code_response    = agent.run_code()
+    code_response    = agent.run_code()
     timer.print( use_millis=True )
     
     print( json.dumps( response_dict, indent=4 ) )
