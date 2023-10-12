@@ -126,7 +126,6 @@ class SolutionSnapshot:
             self.solution_embedding = solution_embedding
 
         # If the thoughts embedding is empty, generate it
-        
         if thoughts and not thoughts_embedding:
             self.thoughts_embedding = self.generate_embedding( thoughts )
             dirty = True
