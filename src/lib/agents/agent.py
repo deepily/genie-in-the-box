@@ -17,6 +17,8 @@ class Agent( Runnable, abc.ABC ):
     
     def __init__( self, debug=False, verbose=False ):
         
+        super().__init__( debug=debug, verbose=verbose )
+        
         self.debug         = debug
         self.verbose       = verbose
         
@@ -35,6 +37,7 @@ class Agent( Runnable, abc.ABC ):
         return num_tokens
     
     def _query_gpt( self, preamble, query, model=GPT_4, debug=False ):
+        
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
         
         if debug:
@@ -79,11 +82,7 @@ class Agent( Runnable, abc.ABC ):
     @abc.abstractmethod
     def is_runnable( self ):
         pass
-    
-    @abc.abstractmethod
-    # def run_code( self ):
-    #     pass
-    
+        
     @abc.abstractmethod
     def format_output( self ):
         pass
