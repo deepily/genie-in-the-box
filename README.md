@@ -14,7 +14,7 @@ They're forgetful. And they work too hard reinventing the wheel.
 
 #### WHAT MOST PEOPLE PROBABLY DON'T REALIZE
 
-Even the simplest of vox in & vox out UX -- when coupled with agentic behaviors -- is **_hard_**. It's asynchronous, and usually frustratingly 
+Even the simplest of vox in & vox out UX -- especially when coupled with agentic behaviors -- is **_hard_**. It's asynchronous, and usually frustratingly 
 slow. It's a new way of interacting with computers, which requires a global re-thinking of how different the UI control and display modalities interact. 
 
 #### DEEPILY ~~HAS~~ IS WORKING ON ~~A~~ SOLUTIONs
@@ -56,10 +56,9 @@ and
 
 #### THE (FAR) FUTURE DREAM: 2024
 
-1. Interact with my computer using my voice, and have it do what I want it to do, when & how I want it done. 
+1. Interact with my agents, servers & computers using my voice, and have it do what I want it to do, when & how I want it done.  I'm not asking for much, am I? 
 2. _Safely and securely, of course_
-3. And, of course, I want to be able to do this with my phone, car, house, etc.
-4. World peace, non X, and all that too
+3. World peace, non X, and all that too
 
 #### DISCLAIMER
 
