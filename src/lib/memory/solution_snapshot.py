@@ -8,11 +8,14 @@ from collections import OrderedDict
 
 import lib.utils.util as du
 import lib.utils.util_stopwatch as sw
+import lib.utils.util_code_runner as ucr
+
+from lib.agents.agent    import Agent
 
 import openai
 import numpy as np
 
-class SolutionSnapshot:
+class SolutionSnapshot( Agent ):
     
     @staticmethod
     def get_timestamp():
@@ -29,11 +32,11 @@ class SolutionSnapshot:
     
     @staticmethod
     def generate_embedding( text ):
-
+        
         msg = f"Generating embedding for [{du.truncate_string( text )}]..."
         timer = sw.Stopwatch( msg=msg )
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
-
+        
         response = openai.Embedding.create(
             input=text,
             model="text-embedding-ada-002"
@@ -45,18 +48,58 @@ class SolutionSnapshot:
     @staticmethod
     def generate_id_hash( push_counter, run_date ):
         
-        return hashlib.sha256( ( str( push_counter ) + run_date ).encode() ).hexdigest()
-        
+        return hashlib.sha256( (str( push_counter ) + run_date).encode() ).hexdigest()
+    
     @staticmethod
     def get_default_stats_dict():
-    
+        
         return {
-            "run_count"   : 0,
-            "total_ms"    : 0,
-            "mean_run_ms" : 0,
-            "last_run_ms" : 0
+            "run_count"  : 0,
+            "total_ms"   : 0,
+            "mean_run_ms": 0,
+            "last_run_ms": 0
         }
-
+    # def format_output( self, format_model=Agent.GPT_3_5 ):
+    #
+    #     preamble     = self._get_formatting_preamble()
+    #     instructions = self._get_formatting_instructions()
+    #
+    #     self._print_token_count( preamble, message_name="formatting preamble", model=format_model )
+    #     self._print_token_count( instructions, message_name="formatting instructions", model=format_model )
+    #
+    #     self.answer_conversational = self._query_gpt( preamble, instructions, model=format_model, debug=self.debug )
+    #
+    #     return self.answer_conversational
+    #
+    # def _get_user_message( self ):
+    #
+    #     msg = "SolutionSnapshot._get_user_message() NOT IMPLEMENTED"
+    #     du.print_banner( msg, expletive=True )
+    #     raise NotImplementedError( msg )
+    #
+    # def _get_system_message( self ):
+    #
+    #     msg = "SolutionSnapshot._get_system_message() NOT IMPLEMENTED"
+    #     du.print_banner( msg, expletive=True )
+    #     raise NotImplementedError( msg )
+    #
+    # def is_runnable( self ):
+    #
+    #     if hasattr( self, 'code') and self.code != []:
+    #         return True
+    #     else:
+    #         return False
+    #
+    # def run_prompt( self, question="" ):
+    #
+    #     msg = "SolutionSnapshot.run_prompt() NOT IMPLEMENTED"
+    #     du.print_banner( msg, expletive=True )
+    #     raise NotImplementedError( msg )
+    #
+    # def is_promptable( self ):
+    #
+    #     return False
+    
     def __init__( self, push_counter=-1, question="", synonymous_questions=OrderedDict(),
                   last_question_asked="", answer="", answer_short="", answer_conversational="", error="",
                   created_date=get_timestamp(), updated_date=get_timestamp(), run_date=get_timestamp(),
@@ -64,14 +107,18 @@ class SolutionSnapshot:
                   id_hash="", solution_summary="", code=[], code_type="raw", thoughts="",
                   programming_language="Python", language_version="3.10",
                   question_embedding=[ ], solution_embedding=[ ], code_embedding=[ ], thoughts_embedding=[ ],
-                  solution_directory="/src/conf/long-term-memory/solutions/", solution_file=None
+                  solution_directory="/src/conf/long-term-memory/solutions/", solution_file=None, debug=False, verbose=False
         ):
         
+        super().__init__( debug=debug, verbose=verbose )
+        
         dirty                      = False
+        
         self.push_counter          = push_counter
         self.question              = SolutionSnapshot.clean_question( question )
         self.thoughts              = thoughts
-        self.answer                = answer
+        
+        self.answer               = answer
         self.answer_short          = answer_short
         self.answer_conversational = answer_conversational
         self.error                 = error
@@ -85,6 +132,7 @@ class SolutionSnapshot:
         self.last_question_asked   = last_question_asked
         
         self.solution_summary      = solution_summary
+        
         self.code                  = code
         self.code_type             = code_type
         
@@ -132,7 +180,7 @@ class SolutionSnapshot:
             self.thoughts_embedding = thoughts_embedding
             
         # Save changes if we've made any change as while loading
-        if dirty: self.write_to_file()
+        if dirty: self.write_current_state_to_file()
         
     @classmethod
     def from_json_file( cls, filename, debug=False ):
@@ -140,7 +188,7 @@ class SolutionSnapshot:
         if debug: print( f"Reading {filename}..." )
         with open( filename, "r" ) as f:
             data = json.load( f )
-            
+        
         return cls( **data )
     
     @classmethod
@@ -223,32 +271,34 @@ class SolutionSnapshot:
     
     def to_jsons( self, verbose=True ):
         
-        if verbose:
-            return json.dumps( self.__dict__ )
-        else:
-            fields_to_exclude = [ field for field in self.__dict__ if field.endswith( '_embedding' ) ]
-            data = { field: value for field, value in self.__dict__.items() if field not in fields_to_exclude }
-            return json.dumps( data )
+        # TODO: decide what we're going to exclude from serialization, and why or why not!
+        # Right now I'm just doing this for the sake of expediency as I'm playing with class inheritance for agents
+        fields_to_exclude = [ "prompt_response", "prompt_response_dict", "code_response_dict" ]
+        data = { field: value for field, value in self.__dict__.items() if field not in fields_to_exclude }
+        return json.dumps( data )
         
     def get_copy( self ):
         return copy.copy( self )
     
     def get_html( self, omit_answer=True ):
         
-        if omit_answer:
-            return f"<li id='{self.id_hash}'>{self.run_date} Q: {self.last_question_asked}</li>"
-        
-        # ¡OJO! We may end up not using answer inclusion
-        else:
-            if self.answer != "":
-                if len( self.answer ) > 32:
-                    self.answer_short = du.truncate_string( self.answer, max_len=16 ) + "..."
-                else:
-                    self.answer_short = self.answer
-        
-            return f"<li id='{self.id_hash}'>{self.run_date} Q: {self.last_question_asked} A: {self.answer_short}</li>"
+        html = f"<li id='{self.id_hash}'>{self.run_date} Q: {self.last_question_asked}</li>"
+        if not omit_answer:
+            du.print_banner( "`omit_answer` Flag is deprecated.", prepend_nl=True, expletive=True )
+            
+        return html
     
-    def write_to_file( self ):
+        # # ¡OJO! We may end up not using answer inclusion
+        # else:
+        #     if self.answer != "":
+        #         if len( self.answer ) > 32:
+        #             self.answer_short = du.truncate_string( self.answer, max_len=16 ) + "..."
+        #         else:
+        #             self.answer_short = self.answer
+        #
+        #     return f"<li id='{self.id_hash}'>{self.run_date} Q: {self.last_question_asked} A: {self.answer_short}</li>"
+    
+    def write_current_state_to_file( self ):
         
         # Get the project root directory
         project_root = du.get_project_root()
@@ -298,7 +348,104 @@ class SolutionSnapshot:
         self.runtime_stats[ "total_ms"    ] += delta_ms
         self.runtime_stats[ "mean_run_ms" ]  = int( self.runtime_stats[ "total_ms" ] / self.runtime_stats[ "run_count" ] )
         self.runtime_stats[ "last_run_ms" ]  = delta_ms
+    
+    def run_code( self, debug=False, verbose=False ):
         
+        self.code_response_dict = ucr.assemble_and_run_solution( self.code, path="/src/conf/long-term-memory/events.csv", debug=debug )
+        self.answer             = self.code_response_dict[ "output" ]
+        
+        if debug and verbose:
+            du.print_banner( "Code output", prepend_nl=True )
+            for line in self.code_response_dict[ "output" ].split( "\n" ):
+                print( line )
+        
+        return self.code_response_dict
+    
+    def format_output( self, format_model=Agent.GPT_3_5 ):
+        
+        preamble = self._get_formatting_preamble()
+        instructions = self._get_formatting_instructions()
+        
+        self._print_token_count( preamble, message_name="formatting preamble", model=format_model )
+        self._print_token_count( instructions, message_name="formatting instructions", model=format_model )
+        
+        self.answer_conversational = self._query_gpt( preamble, instructions, model=format_model, debug=self.debug )
+        
+        return self.answer_conversational
+    
+    def _get_user_message( self ):
+        
+        msg = "SolutionSnapshot._get_user_message() NOT IMPLEMENTED"
+        du.print_banner( msg, expletive=True )
+        raise NotImplementedError( msg )
+    
+    def _get_system_message( self ):
+        
+        msg = "SolutionSnapshot._get_system_message() NOT IMPLEMENTED"
+        du.print_banner( msg, expletive=True )
+        raise NotImplementedError( msg )
+    
+    def is_runnable( self ):
+        
+        if hasattr( self, 'code' ) and self.code != [ ]:
+            return True
+        else:
+            return False
+    
+    def run_prompt( self, question="" ):
+        
+        msg = "SolutionSnapshot.run_prompt() NOT IMPLEMENTED"
+        du.print_banner( msg, expletive=True )
+        raise NotImplementedError( msg )
+    
+    def is_promptable( self ):
+        
+        return False
+    
+    # @staticmethod
+    # def get_timestamp():
+    #
+    #     return du.get_current_datetime()
+    #
+    # @staticmethod
+    # def clean_question( question ):
+    #
+    #     regex = re.compile( "[^a-zA-Z ]" )
+    #     cleaned_question = regex.sub( '', question ).lower()
+    #
+    #     return cleaned_question
+    #
+    # @staticmethod
+    # def generate_embedding( text ):
+    #
+    #     msg = f"Generating embedding for [{du.truncate_string( text )}]..."
+    #     timer = sw.Stopwatch( msg=msg )
+    #     openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
+    #
+    #     response = openai.Embedding.create(
+    #         input=text,
+    #         model="text-embedding-ada-002"
+    #     )
+    #     timer.print( "Done!", use_millis=True )
+    #
+    #     return response[ "data" ][ 0 ][ "embedding" ]
+    #
+    # @staticmethod
+    # def generate_id_hash( push_counter, run_date ):
+    #
+    #     return hashlib.sha256( (str( push_counter ) + run_date).encode() ).hexdigest()
+    #
+    # @staticmethod
+    # def get_default_stats_dict():
+    #
+    #     return {
+    #         "run_count"  : 0,
+    #         "total_ms"   : 0,
+    #         "mean_run_ms": 0,
+    #         "last_run_ms": 0
+    #     }
+
+
 # Add main method
 if __name__ == "__main__":
     
