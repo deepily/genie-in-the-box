@@ -355,10 +355,9 @@ class RefactoringAgent( Agent ):
             
             # Update the code, using the question as the key
             new_code = refactoring_response_dict[ "examples" ][ snapshot[ 1 ].question ]
-            snapshot[ 1 ].code = new_code
-            snapshot[ 1 ].code_embedding = ss.SolutionSnapshot.generate_embedding( " ".join( new_code ) )
+            snapshot[ 1 ].set_code( new_code )
             snapshot[ 1 ].self.code_type = "refactored"
-            snapshot[ 1 ].write_to_file()
+            snapshot[ 1 ].write_current_state_to_file()
             
             if debug:
                 du.print_banner( f" AFTER updating `{snapshot[ 1 ].question}`...", prepend_nl=False )
