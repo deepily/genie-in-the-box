@@ -388,12 +388,7 @@ class GenieClient:
         
         self.play_file( self.sound_resources_dir + "working.wav" )
 
-    def play_recording( self ):
-
-        # This causes latency issues.
-        pass
-        # self.play_file( self.sound_resources_dir + "recording.wav" )
-
+    
     def do_gpt_from_clipboard( self ):
     
         self.play_working()
