@@ -106,10 +106,19 @@ def enter_running_loop():
             # Limit the length of the question string
             truncated_question = du.truncate_string( running_job.question, max_len=64 )
             
+            ############################################################################################
+            # ¡OJO!: calendaring agent and solution snapshot should behave in a similar manner now that they
+            # have the same public facing methods, like run_prompt(), run_code(), and format_output()...
+            # TODO: Reflector so that they get handled within the same block
+            ############################################################################################
             if type( running_job ) == CalendaringAgent:
                 
                 msg = f"Running CalendaringAgent for [{truncated_question}]..."
                 du.print_banner( msg=msg, prepend_nl=True )
+                code_response = {
+                    "return_code": -1,
+                    "output": "ERROR: Output not yet generated!?!"
+                }
                 
                 agent_timer          = sw.Stopwatch( msg=msg )
                 try:
@@ -124,7 +133,10 @@ def enter_running_loop():
                     for line in stack_trace: print( line )
                     print()
                     
+                    ############################################################################################
                     # TODO: figure out how to handle this error case... for now, just pop the job from the run Q
+                    # TODO: Add a fourth Q 4 dead or stalled jobs?!?
+                    ############################################################################################
                     jobs_run_queue.pop()
                     socketio.emit( 'run_update', { 'value': jobs_run_queue.size() } )
                     
@@ -159,43 +171,29 @@ def enter_running_loop():
                     print( code_response[ "output" ] )
                     # TODO: figure out how to handle this error case... for now, just pop the job from the run Q
                     jobs_run_queue.pop()
+                    du.print_banner( f"Running job failed for [{truncated_question}]", prepend_nl=True )
                 
             else:
                 msg = f"Executing SolutionSnapshot code for [{truncated_question}]..."
                 du.print_banner( msg=msg, prepend_nl=True )
                 timer = sw.Stopwatch( msg=msg )
-                results = ulc.assemble_and_run_solution( running_job.code, path=EVENTS_DF_PATH, debug=False )
+                _ = running_job.run_code()
                 timer.print( "Done!", use_millis=True )
-                du.print_banner( f"Results for [{running_job.question}]", prepend_nl=True, end="\n" )
-                
-                if results[ "return_code" ] != 0:
-                    print( results[ "output" ] )
-                    running_job.answer = results[ "output" ]
-                else:
-                    response = results[ "output" ]
-                    running_job.answer = response.strip()
                     
-                    if running_job.answer == "":
-                        running_job.answer = "No results found"
-                        
-                    for line in response.split( "\n" ): print( "* " + line )
-                    print()
+                msg = "Calling GPT to reformat the job.answer..."
+                timer = sw.Stopwatch( msg )
+                _ = running_job.format_output()
+                timer.print( "Done!", use_millis=True )
                     
-                    msg = "Calling GPT to reformat the job.answer..."
-                    timer = sw.Stopwatch( msg )
-                    preamble = get_preamble( running_job.last_question_asked, running_job.answer )
-                    running_job.answer_conversational = genie_client.ask_chat_gpt_text( query=running_job.answer, preamble=preamble, model=GPT_3_5 )
-                    timer.print( "Done!", use_millis=True )
-                    
-                    # Arrive if we've arrived at this point, then we've successfully run the job
-                    run_timer.print( "Full run complete ", use_millis=True )
-                    running_job.update_runtime_stats( run_timer )
-                    du.print_banner( f"Job [{running_job.question}] complete!", prepend_nl=True, end="\n" )
-                    print( f"Writing job [{running_job.question}] to file..." )
-                    running_job.write_to_file()
-                    print( f"Writing job [{running_job.question}] to file... Done!" )
-                    du.print_banner( "running_job.runtime_stats", prepend_nl=True )
-                    pprint.pprint( running_job.runtime_stats )
+                # If we've arrived at this point, then we've successfully run the job
+                run_timer.print( "Full run complete ", use_millis=True )
+                running_job.update_runtime_stats( run_timer )
+                du.print_banner( f"Job [{running_job.question}] complete!", prepend_nl=True, end="\n" )
+                print( f"Writing job [{running_job.question}] to file..." )
+                running_job.write_current_state_to_file()
+                print( f"Writing job [{running_job.question}] to file... Done!" )
+                du.print_banner( "running_job.runtime_stats", prepend_nl=True )
+                pprint.pprint( running_job.runtime_stats )
                 
             jobs_run_queue.pop()
             socketio.emit( 'run_update', { 'value': jobs_run_queue.size() } )
@@ -213,23 +211,6 @@ def enter_running_loop():
             # print( "No jobs to pop from todo Q " )
             socketio.sleep( 1 )
         
-def get_preamble( question, answer ):
-
-    preamble = f"""
-    I'm going to provide you with a question and answer pair like this:
-
-    Q: <question>
-    A: <answer>
-    
-    Rephrase the terse answer in a conversational manner that matches the tone of the question.
-    Your rephrasing of the terse answer must only answer the question and no more.
-    Do not include the question in your answer.
-    
-    Q: {question}
-    A: {answer}"""
-    
-    return preamble
-    
 @app.route( "/" )
 def root():
     return "Genie in the box flask server root"
