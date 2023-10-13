@@ -64,7 +64,7 @@ and
 #### DISCLAIMER
 
 This [Genie-in-the-box project](https://www.linkedin.com/pulse/ai-virtual-prosthesis-how-i-created-genie-box-myself-r-p-ruiz) 
-is currently an **_extremely_** large set of working sketches which I am currently organizing & tidying up so that I can collaborate with others.
+is currently an **_extremely_** large set of working sketches which I am actively organizing & tidying up so that I can collaborate with others.
 
 So, I'm not there yet, _obviously_. But I'm working on it and getting closer every day.
 
