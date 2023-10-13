@@ -52,7 +52,7 @@ class SolutionSnapshotManager:
     def add_snapshot( self, snapshot ):
         
         self.snapshots_by_question[ snapshot.question ] = snapshot
-        snapshot.write_to_file()
+        snapshot.write_current_state_to_file()
     
     # get the questions embedding if it exists otherwise generate it and add it to the dictionary
     def get_question_embedding( self, question ):
