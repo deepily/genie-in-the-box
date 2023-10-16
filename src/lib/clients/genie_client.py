@@ -184,7 +184,9 @@ class GenieClient:
     def start_recording( self ):
 
         if self.debug: print( "Recording...", end="" )
-        self.play_recording()
+        
+        # This was removed
+        # self.play_recording()
 
         self.recording = True
         self.finished_serializing_audio = False

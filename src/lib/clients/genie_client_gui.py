@@ -6,7 +6,17 @@ import tkinter.font as tkf
 from threading import Thread
 from tkinter import ttk, ACTIVE, DISABLED
 
-import genie_client as gc
+# TODO: Why do I have to do this manually? There's some thing about python paths that I am missing...
+# Add src to path
+# print( f"cwd: [{os.getcwd()}]" )
+sys.path.append( os.getcwd() )
+#
+# for path in sys.path:
+#     print( f"Path: {path}" )
+
+
+
+import lib.clients.genie_client as gc
 import lib.utils.util as du
 
 class GenieGui:
@@ -283,8 +293,8 @@ if __name__ == "__main__":
     print( "Starting GenieClient in [{}]...".format( os.getcwd() ) )
     cli_args = du.get_name_value_pairs( sys.argv )
 
-    # startup_mode           = cli_args.get( "startup_mode", "transcribe_and_clean_prose" )
-    startup_mode           = cli_args.get( "startup_mode", "transcribe_and_clean_python" )
+    startup_mode           = cli_args.get( "startup_mode", "transcribe_and_clean_prose" )
+    # startup_mode           = cli_args.get( "startup_mode", "transcribe_and_clean_python" )
     recording_timeout      = int( cli_args.get( "recording_timeout", 30 ) )
     record_once_on_startup = cli_args.get( "record_once_on_startup", "False" ) == "True"
 
