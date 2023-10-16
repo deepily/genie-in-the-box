@@ -19,16 +19,13 @@ import requests
 from flask          import Flask, request, make_response, send_file, url_for
 from flask_socketio import SocketIO
 
-# print( "os.getcwd() [{}]".format( os.getcwd() ) )
-# print( "GENIE_IN_THE_BOX_ROOT [{}]".format( os.getenv( "GENIE_IN_THE_BOX_ROOT" ) ) )
-# print( "Flask version [{}]".format( flask.__version__ ) )
-
 from lib.clients import genie_client as gc
 from lib.app import multimodal_munger as mmm
 
 import lib.utils.util as du
 import lib.utils.util_stopwatch as sw
 import lib.utils.util_code_runner as ulc
+import lib.app.todo_fifo_queue as tdq
 
 
 from lib.clients.genie_client import GPT_3_5
@@ -38,13 +35,7 @@ from lib.agents.agent_calendaring import CalendaringAgent
 
 from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
 from lib.app.fifo_queue import FifoQueue
-
-"""
-Globally visible queue object
-"""
-jobs_todo_queue = FifoQueue()
-jobs_done_queue = FifoQueue()
-jobs_run_queue  = FifoQueue()
+from lib.app.running_fifo_queue import RunningFifoQueue
 
 """
 Background Threads
@@ -73,6 +64,16 @@ snapshot_mgr = SolutionSnapshotManager( path_to_snapshots, debug=True, verbose=T
 EVENTS_DF_PATH = "/src/conf/long-term-memory/events.csv"
 
 """
+Globally visible queue object
+"""
+jobs_todo_queue = tdq.TodoFifoQueue( socketio, snapshot_mgr, app )
+jobs_done_queue = FifoQueue()
+jobs_dead_queue = FifoQueue()
+jobs_run_queue  = RunningFifoQueue( app, socketio, snapshot_mgr, jobs_todo_queue, jobs_done_queue, jobs_dead_queue )
+
+
+
+"""
 Track the todo Q
 """
 def enter_clock_loop():
@@ -83,134 +84,7 @@ def enter_clock_loop():
         socketio.emit( 'time_update', { "date": du.get_current_datetime() } )
         socketio.sleep( 1 )
 
-def enter_running_loop():
-    
-    print( "Starting job run loop..." )
-    while True:
-        
-        if not jobs_todo_queue.is_empty():
-            
-            print( "Jobs running @ " + du.get_current_datetime() )
-            run_timer = sw.Stopwatch( "Starting run timer..." )
-            
-            print( "popping one job from todo Q" )
-            job = jobs_todo_queue.pop()
-            socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
-            
-            jobs_run_queue.push( job )
-            socketio.emit( 'run_update', { 'value': jobs_run_queue.size() } )
-            
-            # Point to the head of the queue without popping it
-            running_job = jobs_run_queue.head()
-            
-            # Limit the length of the question string
-            truncated_question = du.truncate_string( running_job.question, max_len=64 )
-            
-            ############################################################################################
-            # ¡OJO!: calendaring agent and solution snapshot should behave in a similar manner now that they
-            # have the same public facing methods, like run_prompt(), run_code(), and format_output()...
-            # TODO: Reflector so that they get handled within the same block
-            ############################################################################################
-            if type( running_job ) == CalendaringAgent:
-                
-                msg = f"Running CalendaringAgent for [{truncated_question}]..."
-                du.print_banner( msg=msg, prepend_nl=True )
-                code_response = {
-                    "return_code": -1,
-                    "output": "ERROR: Output not yet generated!?!"
-                }
-                
-                agent_timer          = sw.Stopwatch( msg=msg )
-                try:
-                    response_dict    = running_job.run_prompt()
-                    code_response    = running_job.run_code()
-                    formatted_output = running_job.format_output()
-                    
-                except Exception as e:
-                    
-                    du.print_banner( f"Error running [{truncated_question}]", prepend_nl=True )
-                    stack_trace = traceback.format_tb( e.__traceback__ )
-                    for line in stack_trace: print( line )
-                    print()
-                    
-                    ############################################################################################
-                    # TODO: figure out how to handle this error case... for now, just pop the job from the run Q
-                    # TODO: Add a fourth Q 4 dead or stalled jobs?!?
-                    ############################################################################################
-                    jobs_run_queue.pop()
-                    socketio.emit( 'run_update', { 'value': jobs_run_queue.size() } )
-                    
-                    with app.app_context():
-                        url = url_for( 'get_tts_audio' ) + f"?tts_text=I'm sorry Dave, I'm afraid I can't do that."
-                    print( f"Emitting ERROR url [{url}]..." )
-                    socketio.emit( 'audio_update', { 'audioURL': url } )
-                    
-                agent_timer.print( "Done!", use_millis=True )
-                
-                du.print_banner( f"Job [{running_job.question}] complete...", prepend_nl=True, end="\n" )
-                
-                if code_response[ "return_code" ] == 0:
-                    
-                    # If we've arrived at this point, then we've successfully run the agentic part of this job
-                    # recast the agent object as a solution snapshot object and add it to the snapshot manager
-                    running_job = SolutionSnapshot.create( running_job )
-                    
-                    running_job.update_runtime_stats( agent_timer )
-                    
-                    # Adding this snapshot to the snapshot manager serializes it to the local filesystem
-                    print( f"Adding job [{truncated_question}] to snapshot manager...")
-                    snapshot_mgr.add_snapshot( running_job )
-                    print( f"Adding job [{truncated_question}] to snapshot manager... Done!" )
-                    
-                    du.print_banner( "running_job.runtime_stats", prepend_nl=True )
-                    pprint.pprint( running_job.runtime_stats )
-                    
-                else:
-                    
-                    du.print_banner( f"Error running [{truncated_question}]", prepend_nl=True )
-                    print( code_response[ "output" ] )
-                    # TODO: figure out how to handle this error case... for now, just pop the job from the run Q
-                    jobs_run_queue.pop()
-                    du.print_banner( f"Running job failed for [{truncated_question}]", prepend_nl=True )
-                
-            else:
-                msg = f"Executing SolutionSnapshot code for [{truncated_question}]..."
-                du.print_banner( msg=msg, prepend_nl=True )
-                timer = sw.Stopwatch( msg=msg )
-                _ = running_job.run_code()
-                timer.print( "Done!", use_millis=True )
-                    
-                msg = "Calling GPT to reformat the job.answer..."
-                timer = sw.Stopwatch( msg )
-                _ = running_job.format_output()
-                timer.print( "Done!", use_millis=True )
-                    
-                # If we've arrived at this point, then we've successfully run the job
-                run_timer.print( "Full run complete ", use_millis=True )
-                running_job.update_runtime_stats( run_timer )
-                du.print_banner( f"Job [{running_job.question}] complete!", prepend_nl=True, end="\n" )
-                print( f"Writing job [{running_job.question}] to file..." )
-                running_job.write_current_state_to_file()
-                print( f"Writing job [{running_job.question}] to file... Done!" )
-                du.print_banner( "running_job.runtime_stats", prepend_nl=True )
-                pprint.pprint( running_job.runtime_stats )
-                
-            jobs_run_queue.pop()
-            socketio.emit( 'run_update', { 'value': jobs_run_queue.size() } )
-            jobs_done_queue.push( running_job )
-            socketio.emit( 'done_update', { 'value': jobs_done_queue.size() } )
-            
-            with app.app_context():
-                # url = url_for( 'get_tts_audio' ) + f"?tts_text=1 job finished. {running_job.last_question_asked}? {running_job.answer_conversational}"
-                url = url_for( 'get_tts_audio' ) + f"?tts_text={running_job.answer_conversational}"
-                
-            print( f"Emitting DONE url [{url}]...", end="\n\n" )
-            socketio.emit( 'audio_update', { 'audioURL': url } )
-        
-        else:
-            # print( "No jobs to pop from todo Q " )
-            socketio.sleep( 1 )
-        
+
 @app.route( "/" )
 def root():
     return "Genie in the box flask server root"
@@ -229,69 +103,8 @@ def push():
     
     question = request.args.get( 'question' )
     
-    return push_job_to_todo_queue( question )
-
-def push_job_to_todo_queue( question ):
+    return jobs_todo_queue.push_job( question )
     
-    global push_count
-    push_count += 1
-    
-    du.print_banner( f"Question: [{question}]", prepend_nl=True )
-    similar_snapshots = snapshot_mgr.get_snapshots_by_question( question, threshold=90.0 )
-    print()
-    
-    if len( similar_snapshots ) > 0:
-        
-        # Get the best match: best[ 0 ] is the score, best[ 1 ] is the snapshot
-        best_snapshot = similar_snapshots[ 0 ][ 1 ]
-        best_score    = similar_snapshots[ 0 ][ 0 ]
-        
-        lines_of_code = best_snapshot.code
-        if len( lines_of_code ) > 0:
-            du.print_banner( f"Code for [{best_snapshot.question}]:" )
-        else:
-            du.print_banner( "Code: NONE found?" )
-        for line in lines_of_code:
-            print( line )
-        if len( lines_of_code ) > 0:
-            print()
-        
-        job = best_snapshot.get_copy()
-        print( "Python object ID for copied job: " + str( id( job ) ) )
-        job.add_synonymous_question( question, best_score )
-        
-        # Update date & count so that we can create id_hash
-        job.run_date     = du.get_current_datetime()
-        job.push_counter = push_count
-        job.id_hash      = SolutionSnapshot.generate_id_hash( job.push_counter, job.run_date )
-        
-        print()
-        
-        # Only notify the poster if there are jobs ahead of them in the todo Q
-        if jobs_todo_queue.size() != 0:
-            # Generate plurality suffix
-            suffix = "s" if jobs_todo_queue.size() > 1 else ""
-            with app.app_context():
-                url = url_for( 'get_tts_audio' ) + f"?tts_text={jobs_todo_queue.size()} job{suffix} before this one"
-            print( f"Emitting TODO url [{url}]..." )
-            socketio.emit( 'audio_update', { 'audioURL': url } )
-        else:
-            print( "No jobs ahead of this one in the todo Q" )
-        
-        jobs_todo_queue.push( job )
-        socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
-        
-        return f'Job added to queue. Queue size [{jobs_todo_queue.size()}]'
-    
-    else:
-        
-        calendaring_agent = CalendaringAgent( EVENTS_DF_PATH, question=question, push_counter=push_count, debug=True, verbose=True )
-        jobs_todo_queue.push( calendaring_agent )
-        socketio.emit( 'audio_update', { 'audioURL': url_for( 'get_tts_audio' ) + "?tts_text=Working on it!" } )
-        socketio.emit( 'todo_update', { 'value': jobs_todo_queue.size() } )
-        
-        return f'No similar snapshots found, adding NEW CalendaringAgent to TODO queue. Queue size [{jobs_todo_queue.size()}]'
-
 # Rethink how/why we're killing/popping jobs in the todo queue
 # @app.route( "/pop", methods=[ "GET" ] )
 # def pop():
@@ -384,7 +197,7 @@ def connect():
     with thread_lock:
         if clock_thread is None:
             clock_thread = socketio.start_background_task( enter_clock_loop )
-            run_thread   = socketio.start_background_task( enter_running_loop )
+            run_thread   = socketio.start_background_task( jobs_run_queue.enter_running_loop )
 
 """
 Decorator for disconnect
@@ -496,8 +309,8 @@ def upload_and_transcribe_mp3_file():
     elif munger.is_agent():
         
         print( "Posting [{}] to the agent's todo queue...".format( munger.transcription ) )
-        munger.results = push_job_to_todo_queue( munger.transcription )
-    
+        munger.results = jobs_todo_queue.push_job( munger.transcription )
+        
     # Write JSON string to file system.
     last_response = munger.get_jsons()
     du.write_string_to_file( du.get_project_root() + "/io/last_response.json", last_response )
