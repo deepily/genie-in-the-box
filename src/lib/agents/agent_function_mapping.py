@@ -11,17 +11,22 @@ import pandas as pd
 
 class FunctionMappingAgent( Agent ):
     
-    def __init__( self, path_to_df, question="", debug=False, verbose=False ):
+    def __init__( self, path_to_df, question="", push_counter=-1, run_date=du.get_current_datetime(), debug=False, verbose=False ):
         
         super().__init__( debug=debug, verbose=verbose )
         
-        self.path_to_df = du.get_project_root() + path_to_df
-        self.df         = pd.read_csv( self.path_to_df )
-        self.df         = dup.cast_to_datetime( self.df )
+        self.push_counter = push_counter
+        self.run_date     = run_date
+        self.id_hash      = ss.SolutionSnapshot.generate_id_hash( self.push_counter, self.run_date )
+        
+        self.path_to_df   = du.get_project_root() + path_to_df
+        self.df           = pd.read_csv( self.path_to_df )
+        self.df           = dup.cast_to_datetime( self.df )
         
         self.signatures_dict       = self._get_signatures_dict()
         self.system_message        = self._get_system_message()
         
+        self.last_question_asked   = question
         self.question              = ss.SolutionSnapshot.clean_question( question )
         
         # self.prompt_response              = None
@@ -79,7 +84,8 @@ class FunctionMappingAgent( Agent ):
     def _get_user_message( self, question="" ):
         
         if question != "":
-            self.question = ss.SolutionSnapshot.clean_question( question )
+            self.last_question_asked = question
+            self.question            = ss.SolutionSnapshot.clean_question( question )
         
         if self.question == "":
             raise ValueError( "No question was provided" )
@@ -108,13 +114,13 @@ class FunctionMappingAgent( Agent ):
         if self.debug and self.verbose: print( json.dumps( self.prompt_response_dict, indent=4 ) )
         
         # Set up code for future execution
+        print( f"FunctionMappingAgent: is_event_function_call = [{self.prompt_response_dict[ 'is_event_function_call' ]}]" )
         if self.prompt_response_dict[ "is_event_function_call" ]:
             self.prompt_response_dict[ "code" ] = [
                 self.prompt_response_dict[ "import_as" ],
                 self.prompt_response_dict[ "call_template" ]
             ]
         else:
-            print( "No code to run: is_event_function_call = False" )
             self.prompt_response_dict[ "code" ] = [ ]
         
         return self.prompt_response_dict
@@ -139,7 +145,10 @@ class FunctionMappingAgent( Agent ):
         self.answer_conversational = self._query_gpt( preamble, instructions, model=format_model, debug=self.debug )
         
         return self.answer_conversational
+    
+    def get_html( self, omit_answer=True ):
         
+        html = f"<li id='{self.id_hash}'>{self.run_date} Q: {self.last_question_asked}</li>"
         
 if __name__ == "__main__":
     
