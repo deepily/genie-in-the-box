@@ -1,6 +1,7 @@
 
 from lib.app.fifo_queue import FifoQueue
 from lib.agents.agent_calendaring import CalendaringAgent
+from lib.agents.agent_function_mapping import FunctionMappingAgent
 from lib.memory.solution_snapshot import SolutionSnapshot
 # from lib.utils.util import print_banner, get_current_datetime, truncate_string
 # from lib.utils.util_stopwatch import Stopwatch
@@ -46,15 +47,56 @@ class RunningFifoQueue( FifoQueue ):
                 # Limit the length of the question string
                 truncated_question = du.truncate_string( running_job.question, max_len=64 )
                 
-                ############################################################################################
-                # ¡OJO!: calendaring agent and solution snapshot should behave in a similar manner now that they
-                # have the same public facing methods, like run_prompt(), run_code(), and format_output()...
-                # TODO: Reflector so that they get handled within the same block
-                ############################################################################################
+                if type( running_job ) == FunctionMappingAgent:
+                    
+                    msg = f"Running FunctionMappingAgent for [{truncated_question}]..."
+                    agent_timer = sw.Stopwatch( msg=msg )
+                    
+                    response_dict = running_job.run_prompt()
+                    if running_job.is_runnable():
+                        
+                        code_response = running_job.run_code()
+                        
+                        if code_response[ "return_code" ] != 0:
+                            
+                            du.print_banner( f"Error running code for [{truncated_question}]", prepend_nl=True )
+                            print( code_response[ "output" ] )
+                            self.pop()
+                            self.socketio.emit( 'run_update', { 'value': self.size() } )
+                            with self.app.app_context():
+                                url = url_for( 'get_tts_audio' ) + f"?tts_text=I'm sorry Dave, I'm afraid I can't do that."
+                            print( f"Emitting ERROR url [{url}]..." )
+                            self.socketio.emit( 'audio_update', { 'audioURL': url } )
+                            
+                        else:
+                            
+                            du.print_banner( f"Job [{running_job.question}] complete...", prepend_nl=True, end="\n" )
+                            
+                            # If we've arrived at this point, then we've successfully run the agentic part of this job
+                            # recast the agent object as a solution snapshot object and add it to the snapshot manager
+                            running_job = SolutionSnapshot.create( running_job )
+                            
+                            running_job.update_runtime_stats( agent_timer )
+                            
+                            # Adding this snapshot to the snapshot manager serializes it to the local filesystem
+                            print( f"Adding job [{truncated_question}] to snapshot manager..." )
+                            self.snapshot_mgr.add_snapshot( running_job )
+                            print( f"Adding job [{truncated_question}] to snapshot manager... Done!" )
+                            
+                            du.print_banner( "running_job.runtime_stats", prepend_nl=True )
+                            pprint.pprint( running_job.runtime_stats )
+                    else:
+                        
+                        # du.print_banner( f"job [{truncated_question}] is not runnable, NO mapping found", prepend_nl=True )
+                        print( f"Executing [{truncated_question}] as a open ended calendaring agent job instead..." )
+                        # CalendaringAgent( self.app.EVENTS_DF_PATH, question=running_job.question, push_counter=self.push_counter, debug=True, verbose=True )
+                        running_job = CalendaringAgent( "/src/conf/long-term-memory/events.csv", question=running_job.question, push_counter=running_job.push_counter, debug=True, verbose=True )
+                        
+                        
                 if type( running_job ) == CalendaringAgent:
                     
                     msg = f"Running CalendaringAgent for [{truncated_question}]..."
-                    du.print_banner( msg=msg, prepend_nl=True )
+                    # du.print_banner( msg=msg, prepend_nl=True )
                     code_response = {
                         "return_code": -1,
                         "output"     : "ERROR: Output not yet generated!?!"
