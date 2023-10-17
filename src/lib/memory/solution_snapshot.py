@@ -242,7 +242,7 @@ class SolutionSnapshot( Agent ):
     
     def get_html( self, omit_answer=True ):
         
-        html = f"<li id='{self.id_hash}'>{self.run_date} Q: {self.last_question_asked}</li>"
+        html = f"<li id='{self.id_hash}'>{self.run_date} Q: {self.last_question_asked} <span>🗑️</span></li>"
         if not omit_answer:
             du.print_banner( "`omit_answer` Flag is deprecated.", prepend_nl=True, expletive=True )
             
@@ -293,6 +293,17 @@ class SolutionSnapshot( Agent ):
         # Set the file permissions to world-readable and writable
         os.chmod( file_path, 0o666 )
         
+    # Add a method to delete this snapshot file from the local file system if it exists
+    def delete_file( self ):
+        
+        file_path = f"{du.get_project_root()}{self.solution_directory}{self.solution_file}"
+        
+        if os.path.isfile( file_path ):
+            os.remove( file_path )
+            print( f"Deleted file [{file_path}]" )
+        else:
+            print( f"File [{file_path}] does not exist" )
+            
 
     def update_runtime_stats( self, timer ) -> None:
         """
