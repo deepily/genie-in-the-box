@@ -374,9 +374,20 @@ def upload_and_transcribe_wav_file():
     
     return munger.transcription
 
+@app.route("/api/load-model")
+def load_model():
+    
+    size = request.args.get( "size", default="base" )
+    if size not in [ "base", "small", "medium", "large" ]:
+        size = "base.en"
+    
+    global model
+    model = whisper.load_model( size )
+    
+    return f"Model [{size}] loaded"
 
 print( "Loading whisper engine... ", end="" )
-model = whisper.load_model( "medium.en" )
+model = whisper.load_model( "base" )
 print( "Done!" )
 
 print( os.getenv( "FALSE_POSITIVE_API_KEY" ) )

@@ -48,6 +48,7 @@
         updateQueueLists( "done" );
         updateQueueLists( "dead" );
         addClickEventToDoneList();
+        setModelSizeListener();
     } );
 
     function addClickEventToDoneList() {
@@ -232,6 +233,33 @@
             escapeCounter = 0;
         }
     } );
+
+    function setModelSizeListener() {
+
+        const selectElement = document.getElementById( "model-size" );
+        const modelSizeLabel = document.getElementById( "model-size-label" );
+
+        selectElement.addEventListener("change", function() {
+
+            const selectedValue = selectElement.value;
+            const url = `http://127.0.0.1:7999/api/load-model?size=${selectedValue}`;
+            fetch( url ).then( response => {
+                    if ( response.ok ) {
+                        return response.text();
+                    } else {
+                        throw new Error( `HTTP error, status = ${ response.status }` );
+                    }
+                } ) .then( data => {
+                    // Handle the response data
+                    modelSizeLabel.textContent = data;
+                } )
+                .catch( error => {
+                    console.error( "Error:", error );
+                    modelSizeLabel.textContent = "Model NOT loaded";
+                } );
+        });
+    }
+
 </script>
 
 <h4 id="clock" style="text-align: center">00-00-0000 @ 00:00:00</h4>
@@ -265,7 +293,15 @@
     <h4>Ask a question: <span id="response-status"></span></h4>
     <!-- <p id="response-text"></p>-->
     <input type="text" id="question-input" placeholder="Your question here!">
-    <!-- <button id="submit-button" onclick="pushQuestion(); return false;">Submit</button>-->
+</div>
+<div>
+    <h4 id="model-size-label">Model size</h4>
+    <select id="model-size">
+        <option value="base">Base</option>
+        <option value="small">Small</option>
+        <option value="medium">Medium</option>
+        <option value="large">Large</option>
+    </select>
 </div>
 
 </body>
