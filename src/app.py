@@ -125,7 +125,7 @@ def get_audio_file( tts_text ):
     
     tts_url = get_tts_url( tts_text )
     
-    du.print_banner( f"Fetching [{tts_url}]" )
+    print( f"Fetching audio file...", end="" )
     response = requests.get( tts_url )
     path = du.get_project_root() + "/io/tts.wav"
     
@@ -135,6 +135,7 @@ def get_audio_file( tts_text ):
         # Write the content of the response to a file
         with open( path, "wb" ) as audio_file:
             audio_file.write( response.content )
+        print( f"Fetching audio file... Done!" )
     else:
         print( f"Failed to get UPDATED audio file: {response.status_code}" )
         path = du.get_project_root() + "/io/failed-to-fetch-tts-file.wav"
