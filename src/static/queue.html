@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <title>Queue toaster</title>
     <style>
-        #done-list li:hover {
+        #done-list li span:hover {
             text-decoration: underline;
             cursor: pointer;
             color: blue;
         }
+        /*#foo-list li span:hover {*/
+        /*    text-decoration: underline;*/
+        /*    cursor: pointer;*/
+        /*    color: blue;*/
+        /*}*/
         /* Set all text to Helvetica Neue */
         * {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -53,22 +58,37 @@
 
     function addClickEventToDoneList() {
 
-        console.log( "Adding click event to done list..." );
-        const doneList = document.getElementById( "done-list" );
-        const listItems = doneList.getElementsByTagName( "li" );
+        console.log( "Adding click event to '#done-list'..." );
 
-        for ( let i = 0; i < listItems.length; i++ ) {
-            console.log( "Adding click event to item:", listItems[ i ] );
-            listItems[ i ].onclick = function() {
-                playAnswer( listItems[ i ].id );
-            };
-            spans = listItems[ i ].getElementsByTagName( "span" );
-            for ( let j = 0; j < spans.length; j++ ) {
-                spans[ j ].onclick = function() {
-                    deleteSnapshot( listItems[ i ].id );
+        const listItems = document.querySelectorAll("#done-list li");
+
+        listItems.forEach( item => {
+
+            console.log( "Adding click event to item:", item );
+
+            const playAudioSpan      = item.querySelector( ".play" );
+            const deleteSnapshotSpan = item.querySelector( ".delete" );
+
+            if ( playAudioSpan ) {
+                playAudioSpan.onclick = function() {
+                    console.log( "Playing audio:", item.id );
+                    playAnswer( item.id );
                 };
             }
-        }
+
+            if ( deleteSnapshotSpan ) {
+                deleteSnapshotSpan.textContent = "🗑";
+                deleteSnapshotSpan.onclick = function() {
+                    const confirmDelete = confirm( "Are you sure you want to delete?" );
+                    if ( confirmDelete ) {
+                        console.log( "Deleting snapshot:", item.id );
+                        deleteSnapshot( item.id );
+                    } else {
+                        console.log( "Not deleting snapshot:", item.id );
+                    }
+                };
+            }
+        } );
     }
 
     function deleteSnapshot( id ) {
@@ -332,6 +352,14 @@
         <option value="large">Large</option>
     </select>
 </div>
+
+<!--<div>-->
+<!--    <ol id="foo-list" reversed>-->
+<!--        <li id="we123412097823877"><span class="play">asdfasdf</span> <span class="delete"></span></li>-->
+<!--        <li id="we123412097823878"><span class="play">sdfgsdfg</span> <span class="delete"></span></li>-->
+<!--        <li id="we123412097823879"><span class="play">sdfgsdfg</span> <span class="delete"></span></li>-->
+<!--    </ol>-->
+<!--</div>-->
 
 </body>
 </html>
