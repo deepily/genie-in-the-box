@@ -1,8 +1,11 @@
+from collections import OrderedDict
+
+
 class FifoQueue:
     def __init__( self ):
         
         self.queue_list      = [ ]
-        self.queue_dict      = { }
+        self.queue_dict      = OrderedDict()
         self.push_counter    = 0
         self.last_queue_size = 0
     
@@ -31,6 +34,18 @@ class FifoQueue:
         
         return self.queue_dict[ id_hash ]
     
+    def delete_by_id_hash( self, id_hash ):
+        
+        del self.queue_dict[ id_hash ]
+        size_before = self.size()
+        self.queue_list = list( self.queue_dict.values() )
+        size_after = self.size()
+        
+        if size_after < size_before:
+            print( f"Deleted {size_before - size_after} items from queue" )
+        else:
+            print( "ERROR: Could not delete by id_hash" )
+        
     def is_empty( self ):
         return len( self.queue_list ) == 0
     
