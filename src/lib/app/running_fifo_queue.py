@@ -49,22 +49,22 @@ class RunningFifoQueue( FifoQueue ):
                 
                 if type( running_job ) == FunctionMappingAgent:
                     
-                    running_job = self.handle_function_mapping_agent( running_job, truncated_question )
+                    running_job = self._handle_function_mapping_agent( running_job, truncated_question )
                     
                 if type( running_job ) == CalendaringAgent:
                     
-                    running_job = self.handle_calendaring_agent( running_job, truncated_question )
+                    running_job = self._handle_calendaring_agent( running_job, truncated_question )
                     
                 else:
                     
-                    running_job = self.handle_solution_snapshot( running_job, truncated_question, run_timer )
+                    running_job = self._handle_solution_snapshot( running_job, truncated_question, run_timer )
                     
                 self.pop()
                 self.socketio.emit( 'run_update', { 'value': self.size() } )
                 self.jobs_done_queue.push( running_job )
                 self.socketio.emit( 'done_update', { 'value': self.jobs_done_queue.size() } )
                 
-                with self.app.app_context(): url = url_for( 'get_tts_audio' ) + f"?tts_text={running_job.answer_conversational}"
+                url = self._get_audio_url( running_job.answer_conversational )
                 
                 print( f"Emitting DONE url [{url}]...", end="\n\n" )
                 self.socketio.emit( 'audio_update', { 'audioURL': url } )
@@ -73,7 +73,7 @@ class RunningFifoQueue( FifoQueue ):
                 # print( "No jobs to pop from todo Q " )
                 self.socketio.sleep( 1 )
 
-    def handle_function_mapping_agent( self, running_job, truncated_question ):
+    def _handle_function_mapping_agent( self, running_job, truncated_question ):
         
         msg = f"Running FunctionMappingAgent for [{truncated_question}]..."
         agent_timer = sw.Stopwatch( msg=msg )
@@ -86,14 +86,7 @@ class RunningFifoQueue( FifoQueue ):
             
             if code_response[ "return_code" ] != 0:
                 
-                du.print_banner( f"Error running code for [{truncated_question}]", prepend_nl=True )
-                print( code_response[ "output" ] )
-                self.pop()
-                self.socketio.emit( 'run_update', { 'value': self.size() } )
-                with self.app.app_context():
-                    url = url_for( 'get_tts_audio' ) + f"?tts_text=I'm sorry Dave, I'm afraid I can't do that."
-                print( f"Emitting ERROR url [{url}]..." )
-                self.socketio.emit( 'audio_update', { 'audioURL': url } )
+                running_job = self._handle_error_case( code_response, running_job, truncated_question )
             
             else:
                 
@@ -118,11 +111,28 @@ class RunningFifoQueue( FifoQueue ):
             running_job = CalendaringAgent( "/src/conf/long-term-memory/events.csv", question=running_job.question, push_counter=running_job.push_counter, debug=True, verbose=True )
             
         return running_job
-            
-    def handle_calendaring_agent( self, running_job, truncated_question ):
+        
+    def _handle_error_case( self, response, running_job, truncated_question ):
+        
+        du.print_banner( f"Error running code for [{truncated_question}]", prepend_nl=True )
+        
+        for line in response[ "output" ].split( "\n" ): print( line )
+        
+        self.pop()
+        self.socketio.emit( 'run_update', { 'value': self.size() } )
+        
+        url = self._get_audio_url( "I'm sorry Dave, I'm afraid I can't do that." )
+        print( f"Emitting ERROR url..." )
+        self.socketio.emit( 'audio_update', { 'audioURL': url } )
+        self.jobs_dead_queue.push( running_job )
+        self.socketio.emit( 'dead_update', { 'value': self.jobs_dead_queue.size() } )
+        
+        return running_job
+        
+    def _handle_calendaring_agent( self, running_job, truncated_question ):
         
         msg = f"Running CalendaringAgent for [{truncated_question}]..."
-        # du.print_banner( msg=msg, prepend_nl=True )
+        
         code_response = {
             "return_code": -1,
             "output"     : "ERROR: Output not yet generated!?!"
@@ -130,29 +140,15 @@ class RunningFifoQueue( FifoQueue ):
         
         agent_timer = sw.Stopwatch( msg=msg )
         try:
-            response_dict = running_job.run_prompt()
-            code_response = running_job.run_code()
+            response_dict    = running_job.run_prompt()
+            code_response    = running_job.run_code()
             formatted_output = running_job.format_output()
         
         except Exception as e:
             
-            du.print_banner( f"Error running [{truncated_question}]", prepend_nl=True )
             stack_trace = traceback.format_tb( e.__traceback__ )
-            for line in stack_trace: print( line )
-            print()
+            running_job = self._handle_error_case( stack_trace, running_job, truncated_question )
             
-            ############################################################################################
-            # TODO: figure out how to handle this error case... for now, just pop the job from the run Q
-            # TODO: Add a fourth Q 4 dead or stalled jobs?!?
-            ############################################################################################
-            self.pop()
-            self.socketio.emit( 'run_update', { 'value': self.size() } )
-            
-            with self.app.app_context():
-                url = url_for( 'get_tts_audio' ) + f"?tts_text=I'm sorry Dave, I'm afraid I can't do that."
-            print( f"Emitting ERROR url [{url}]..." )
-            self.socketio.emit( 'audio_update', { 'audioURL': url } )
-        
         agent_timer.print( "Done!", use_millis=True )
         
         du.print_banner( f"Job [{running_job.question}] complete...", prepend_nl=True, end="\n" )
@@ -175,15 +171,11 @@ class RunningFifoQueue( FifoQueue ):
         
         else:
             
-            du.print_banner( f"Error running [{truncated_question}]", prepend_nl=True )
-            print( code_response[ "output" ] )
-            # TODO: figure out how to handle this error case... for now, just pop the job from the run Q
-            self.pop()
-            du.print_banner( f"Running job failed for [{truncated_question}]", prepend_nl=True )
+            running_job = self._handle_error_case( code_response, running_job, truncated_question )
             
         return running_job
             
-    def handle_solution_snapshot( self, running_job, truncated_question, run_timer ):
+    def _handle_solution_snapshot( self, running_job, truncated_question, run_timer ):
         
         msg = f"Executing SolutionSnapshot code for [{truncated_question}]..."
         du.print_banner( msg=msg, prepend_nl=True )
@@ -207,3 +199,10 @@ class RunningFifoQueue( FifoQueue ):
         pprint.pprint( running_job.runtime_stats )
         
         return running_job
+    
+    def _get_audio_url( self, text ):
+        
+        with self.app.app_context():
+            url = url_for( 'get_tts_audio' ) + f"?tts_text={text}"
+            
+        return url
