@@ -55,19 +55,38 @@
 
         console.log( "Adding click event to done list..." );
         const doneList = document.getElementById( "done-list" );
-        const items = doneList.getElementsByTagName( "li" );
+        const listItems = doneList.getElementsByTagName( "li" );
 
-        for ( let i = 0; i < items.length; i++ ) {
-            console.log( "Adding click event to item:", items[ i ] );
-            items[ i ].onclick = function() {
-                playAnswer( items[ i ].id );
+        for ( let i = 0; i < listItems.length; i++ ) {
+            console.log( "Adding click event to item:", listItems[ i ] );
+            listItems[ i ].onclick = function() {
+                playAnswer( listItems[ i ].id );
             };
+            spans = listItems[ i ].getElementsByTagName( "span" );
+            for ( let j = 0; j < spans.length; j++ ) {
+                spans[ j ].onclick = function() {
+                    deleteSnapshot( listItems[ i ].id );
+                };
+            }
         }
     }
 
+    function deleteSnapshot( id ) {
+        fetch( "/delete-snapshot/" + id )
+            .then( response => {
+                if ( response.status !== 200 ) {
+                    // document.getElementById( "response-status" ).textContent = "Error :-(";
+                    throw new Error( `HTTP error, status = ${ response.status }` );
+                }
+                return response.text();
+            } ) .then( ( text ) => {
+                console.log( "Response text:", text );
+            } )
+            .catch( error => console.error( "Error:", error ) );
+    }
     function playAnswer( id ) {
 
-        url = "/get_answer/" + id;
+        url = "/get-answer/" + id;
         console.log( url );
         let audio = new Audio( url );
         audio.play();
@@ -133,6 +152,16 @@
     var quiet        = false;
     var lastAudioURL = null;
 
+    socket.on( "notification_sound_update", function( data ) {
+
+        console.log( "Received notification_sound_update:", data );
+        let url = data.soundFile;
+        console.log( `Adding audio url to queue: ${ url }` );
+        let audio = new Audio( url );
+        audioQueue.push( audio );
+        console.log( "Audio queue size:", audioQueue.length );
+        playAll()
+    } );
     // Handle server notifications to play audio
     socket.on( "audio_update", async function( data ) {
 
