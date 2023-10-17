@@ -1,7 +1,9 @@
 from flask import url_for
 from lib.app.fifo_queue import FifoQueue
-from lib.agents.agent_calendaring import CalendaringAgent
+# from lib.agents.agent_calendaring import CalendaringAgent
+from lib.agents.agent_function_mapping import FunctionMappingAgent
 from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
+
 from lib.utils.util import print_banner, get_current_datetime
 from lib.memory.solution_snapshot import SolutionSnapshot
 
@@ -14,17 +16,19 @@ class TodoFifoQueue( FifoQueue ):
         self.socketio = socketio
         self.snapshot_mgr = snapshot_mgr
         self.app = app
-        self.push_count = 0
+        self.push_counter = 0
     
     def push_job( self, question ):
         
-        self.push_count += 1
+        self.push_counter += 1
         
         print_banner( f"Question: [{question}]", prepend_nl=True )
-        similar_snapshots = self.snapshot_mgr.get_snapshots_by_question( question, threshold=90.0 )
+        similar_snapshots = self.snapshot_mgr.get_snapshots_by_question( question, threshold=95.0 )
         print()
         
+        # if we've got a similar snapshot then go ahead and push it onto the queue
         if len( similar_snapshots ) > 0:
+            
             best_snapshot = similar_snapshots[ 0 ][ 1 ]
             best_score = similar_snapshots[ 0 ][ 0 ]
             
@@ -43,7 +47,7 @@ class TodoFifoQueue( FifoQueue ):
             job.add_synonymous_question( question, best_score )
             
             job.run_date = get_current_datetime()
-            job.push_counter = self.push_count
+            job.push_counter = self.push_counter
             job.id_hash = SolutionSnapshot.generate_id_hash( job.push_counter, job.run_date )
             
             print()
@@ -63,11 +67,13 @@ class TodoFifoQueue( FifoQueue ):
             return f'Job added to queue. Queue size [{self.size()}]'
         
         else:
-            calendaring_agent = CalendaringAgent( self.app.EVENTS_DF_PATH, question=question,
-                                                  push_counter=self.push_count, debug=True, verbose=True
-                                                  )
-            self.push( calendaring_agent )
-            self.socketio.emit( 'audio_update', { 'audioURL': url_for( 'get_tts_audio' ) + "?tts_text=Working on it!" } )
-            self.socketio.emit( 'todo_update', { 'value': self.size() } )
             
-            return f'No similar snapshots found, adding NEW CalendaringAgent to TODO queue. Queue size [{self.size()}]'
+            # calendaring_agent = CalendaringAgent( self.app.EVENTS_DF_PATH, question=question, push_counter=self.push_count, debug=True, verbose=True )
+            # self.push( calendaring_agent )
+            
+            agent = FunctionMappingAgent( "/src/conf/long-term-memory/events.csv", question=question, push_counter=self.push_counter, debug=True, verbose=True )
+            self.push( agent )
+            self.socketio.emit( 'todo_update', { 'value': self.size() } )
+            self.socketio.emit( 'audio_update', { 'audioURL': url_for( 'get_tts_audio' ) + "?tts_text=Looking for mappings" } )
+            
+            return f'No similar snapshots found, adding NEW FunctionMappingAgent to TODO queue. Queue size [{self.size()}]'
