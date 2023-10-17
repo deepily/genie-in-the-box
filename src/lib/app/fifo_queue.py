@@ -3,17 +3,17 @@ class FifoQueue:
         
         self.queue_list      = [ ]
         self.queue_dict      = { }
-        self.push_count      = 0
+        self.push_counter    = 0
         self.last_queue_size = 0
     
     def push( self, item ):
         
         self.queue_list.append( item )
         self.queue_dict[ item.id_hash ] = item
-        self.push_count += 1
+        self.push_counter += 1
     
-    def get_push_count( self ):
-        return self.push_count
+    def get_push_counter( self ):
+        return self.push_counter
     
     def pop( self ):
         if not self.is_empty():
