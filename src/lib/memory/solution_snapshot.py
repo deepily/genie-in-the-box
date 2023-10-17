@@ -240,24 +240,10 @@ class SolutionSnapshot( Agent ):
     def get_copy( self ):
         return copy.copy( self )
     
-    def get_html( self, omit_answer=True ):
+    def get_html( self ):
         
-        html = f"<li id='{self.id_hash}'>{self.run_date} Q: {self.last_question_asked} <span>🗑️</span></li>"
-        if not omit_answer:
-            du.print_banner( "`omit_answer` Flag is deprecated.", prepend_nl=True, expletive=True )
-            
-        return html
-    
-        # # ¡OJO! We may end up not using answer inclusion
-        # else:
-        #     if self.answer != "":
-        #         if len( self.answer ) > 32:
-        #             self.answer_short = du.truncate_string( self.answer, max_len=16 ) + "..."
-        #         else:
-        #             self.answer_short = self.answer
-        #
-        #     return f"<li id='{self.id_hash}'>{self.run_date} Q: {self.last_question_asked} A: {self.answer_short}</li>"
-    
+        return f"<li id='{self.id_hash}'><span class='play'>{self.run_date} Q: {self.last_question_asked}</span> <span class='delete'></span></li>"
+     
     def write_current_state_to_file( self ):
         
         # Get the project root directory
