@@ -48,15 +48,12 @@ class RunningFifoQueue( FifoQueue ):
                 truncated_question = du.truncate_string( running_job.question, max_len=64 )
                 
                 if type( running_job ) == FunctionMappingAgent:
-                    
                     running_job = self._handle_function_mapping_agent( running_job, truncated_question )
                     
                 if type( running_job ) == CalendaringAgent:
-                    
                     running_job = self._handle_calendaring_agent( running_job, truncated_question )
                     
                 else:
-                    
                     running_job = self._handle_solution_snapshot( running_job, truncated_question, run_timer )
                     
                 self.pop()
