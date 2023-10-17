@@ -178,12 +178,27 @@ def get_queue( queue_name ):
     return json.dumps( { f"{queue_name}_jobs": jobs } )
 
 
-@app.route( '/get_answer/<string:id_hash>', methods=[ 'GET' ] )
+@app.route( '/get-answer/<string:id_hash>', methods=[ 'GET' ] )
 def get_answer( id_hash ):
     
     answer_conversational = jobs_done_queue.get_by_id_hash( id_hash ).answer_conversational
     
     return get_audio_file( answer_conversational)
+
+
+@app.route( '/delete-snapshot/<string:id_hash>', methods=[ 'GET' ] )
+def delete_snapshot( id_hash ):
+    
+    # Fetch the object so that we can delete it from the file system too
+    to_be_deleted = jobs_done_queue.get_by_id_hash( id_hash )
+    to_be_deleted.delete_file()
+    
+    jobs_done_queue.delete_by_id_hash( id_hash )
+    socketio.emit( 'done_update', { 'value': jobs_done_queue.size() } )
+    # url = get_audio_url( "Snapshot deleted" )
+    socketio.emit( 'notification_sound_update', { 'soundFile': '/static/gentle-gong.mp3' } )
+    
+    return f"Deleted snapshot [{id_hash}]"
 
 """
 Decorator for connect
@@ -217,6 +232,12 @@ def disconnect():
     print( f"Client [{request.sid}] disconnected" )
     print( f"[{connection_count}] Clients connected" )
     
+# def get_audio_url( text ):
+#
+#     with app.app_context():
+#         url = url_for( 'get_tts_audio' ) + f"?tts_text={text}"
+#
+#     return url
 
 @app.route( "/api/ask-ai-text" )
 def ask_ai_text():
