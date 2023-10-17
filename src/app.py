@@ -371,21 +371,21 @@ def upload_and_transcribe_wav_file():
     
     return munger.transcription
 
-@app.route( "/api/vox2text" )
-def vox_2_text():
-    path = request.args.get( "path" )
-    
-    print( "Transcribing {}...".format( path ) )
-    result = model.transcribe( path )
-    print( "Done!", end="\n\n" )
-    
-    print( "Result: [{}]".format( result[ "text" ] ) )
-    print( result[ "text" ] )
-    
-    return result[ "text" ].strip()
+# @app.route( "/api/vox2text" )
+# def vox_2_text():
+#     path = request.args.get( "path" )
+#
+#     print( "Transcribing {}...".format( path ) )
+#     result = model.transcribe( path )
+#     print( "Done!", end="\n\n" )
+#
+#     print( "Result: [{}]".format( result[ "text" ] ) )
+#     print( result[ "text" ] )
+#
+#     return result[ "text" ].strip()
 
 print( "Loading whisper engine... ", end="" )
-model = whisper.load_model( "base.en" )
+model = whisper.load_model( "large-v2" )
 print( "Done!" )
 
 print( os.getenv( "FALSE_POSITIVE_API_KEY" ) )
