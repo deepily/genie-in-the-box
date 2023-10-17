@@ -146,7 +146,7 @@ class FunctionMappingAgent( Agent ):
         
         return self.answer_conversational
     
-    def get_html( self, omit_answer=True ):
+    def get_html( self ):
         
         html = f"<li id='{self.id_hash}'>{self.run_date} Q: {self.last_question_asked}</li>"
         
