@@ -57,5 +57,5 @@ RUN mkdir -p /var/io
 #WORKDIR /var/genie-in-the-box
 #RUN chown -R rruiz:rruiz /var/genie-in-the-box
 
-CMD [ "/var/genie-in-the-box/run-flask-whisper.sh" ]
+CMD [ "/var/genie-in-the-box/src/scripts/run-flask-gib.sh" ]
 #CMD [ "/bin/bash" ]
