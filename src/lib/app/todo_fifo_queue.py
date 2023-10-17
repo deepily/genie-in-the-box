@@ -74,6 +74,6 @@ class TodoFifoQueue( FifoQueue ):
             agent = FunctionMappingAgent( "/src/conf/long-term-memory/events.csv", question=question, push_counter=self.push_counter, debug=True, verbose=True )
             self.push( agent )
             self.socketio.emit( 'todo_update', { 'value': self.size() } )
-            self.socketio.emit( 'audio_update', { 'audioURL': url_for( 'get_tts_audio' ) + "?tts_text=Looking for mappings" } )
+            self.socketio.emit( 'audio_update', { 'audioURL': url_for( 'get_tts_audio' ) + "?tts_text=Searching my memory" } )
             
             return f'No similar snapshots found, adding NEW FunctionMappingAgent to TODO queue. Queue size [{self.size()}]'
