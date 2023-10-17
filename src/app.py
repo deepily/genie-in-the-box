@@ -170,7 +170,7 @@ def get_queue( queue_name ):
     elif queue_name == "dead":
         jobs = generate_html_list( jobs_dead_queue, descending=True )
     elif queue_name == "done":
-        jobs = generate_html_list( jobs_run_queue, descending=True )
+        jobs = generate_html_list( jobs_done_queue, descending=True )
 
     else:
         return json.dumps( { "error": "Invalid queue name. Please specify either 'todo' or 'done'." } )
@@ -269,7 +269,7 @@ def upload_and_transcribe_mp3_file():
         f.write( decoded_audio )
     print( " Done!" )
     
-    timer = sw.Stopwatch( "Transcribing {}...".format( path ), end="" )
+    timer = sw.Stopwatch( f"Transcribing {path}..." )
     result = model.transcribe( path )
     timer.print( "Done!", use_millis=True, end="\n\n" )
     
@@ -376,7 +376,7 @@ def upload_and_transcribe_wav_file():
 
 
 print( "Loading whisper engine... ", end="" )
-model = whisper.load_model( "large-v2" )
+model = whisper.load_model( "medium.en" )
 print( "Done!" )
 
 print( os.getenv( "FALSE_POSITIVE_API_KEY" ) )
