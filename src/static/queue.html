@@ -46,6 +46,7 @@
         updateQueueLists( "todo" );
         updateQueueLists( "run" );
         updateQueueLists( "done" );
+        updateQueueLists( "dead" );
         addClickEventToDoneList();
     } );
 
@@ -97,6 +98,12 @@
         updateQueueLists( "done" );
     } );
 
+    // handle updates on the done queue
+    socket.on( "dead_update", function( data ) {
+        document.getElementById( "done" ).innerHTML = "Jobs DEAD: " + data.value;
+        updateQueueLists( "dead" );
+    } );
+
     function updateQueueLists( queue_name ) {
         fetch( "/get_queue/" + queue_name )
             .then( response => response.json() )
@@ -108,6 +115,8 @@
                 } else if ( queue_name === "done" ) {
                     document.getElementById( "done-list" ).innerHTML = data.done_jobs.join( "" );
                     addClickEventToDoneList();
+                } else if ( queue_name === "dead" ) {
+                    document.getElementById( "dead-list" ).innerHTML = data.dead_jobs.join( "" );
                 } else {
                     console.log( "Unknown queue name:", queue_name );
                 }
@@ -241,6 +250,13 @@
 <div>
     <h4 id="done">Jobs done: 0</h4>
     <ol id="done-list" reversed>
+
+    </ol>
+</div>
+
+<div>
+    <h4 id="dead">Jobs dead: 0</h4>
+    <ol id="dead-list" reversed>
 
     </ol>
 </div>
