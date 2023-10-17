@@ -78,7 +78,7 @@ class SolutionSnapshot( Agent ):
         self.question              = SolutionSnapshot.clean_question( question )
         self.thoughts              = thoughts
         
-        self.answer               = answer
+        self.answer                = answer
         self.answer_short          = answer_short
         self.answer_conversational = answer_conversational
         self.error                 = error
@@ -161,11 +161,11 @@ class SolutionSnapshot( Agent ):
                          question=agent.question,
               last_question_asked=agent.last_question_asked,
              synonymous_questions=OrderedDict( { agent.question: 100.0 } ),
-                            error=agent.prompt_response_dict[ "error" ],
-                 solution_summary=agent.prompt_response_dict[ "explanation" ],
-                             code=agent.prompt_response_dict[ "code" ],
-                         thoughts=agent.prompt_response_dict[ "thoughts" ],
-                           answer=agent.code_response_dict[ "output" ],
+                            error=agent.prompt_response_dict.get( "error", "" ),
+                 solution_summary=agent.prompt_response_dict.get( "explanation", "No explanation available" ),
+                             code=agent.prompt_response_dict.get( "code", "No code provided" ),
+                         thoughts=agent.prompt_response_dict.get( "thoughts", "No thoughts recorded" ),
+                           answer=agent.code_response_dict.get( "output", "No answer available" ),
             answer_conversational=agent.answer_conversational
                
                # TODO: Reconcile how we're going to get a dynamic path to the solution file's directory
