@@ -59,46 +59,6 @@ class SolutionSnapshot( Agent ):
             "mean_run_ms": 0,
             "last_run_ms": 0
         }
-    # def format_output( self, format_model=Agent.GPT_3_5 ):
-    #
-    #     preamble     = self._get_formatting_preamble()
-    #     instructions = self._get_formatting_instructions()
-    #
-    #     self._print_token_count( preamble, message_name="formatting preamble", model=format_model )
-    #     self._print_token_count( instructions, message_name="formatting instructions", model=format_model )
-    #
-    #     self.answer_conversational = self._query_gpt( preamble, instructions, model=format_model, debug=self.debug )
-    #
-    #     return self.answer_conversational
-    #
-    # def _get_user_message( self ):
-    #
-    #     msg = "SolutionSnapshot._get_user_message() NOT IMPLEMENTED"
-    #     du.print_banner( msg, expletive=True )
-    #     raise NotImplementedError( msg )
-    #
-    # def _get_system_message( self ):
-    #
-    #     msg = "SolutionSnapshot._get_system_message() NOT IMPLEMENTED"
-    #     du.print_banner( msg, expletive=True )
-    #     raise NotImplementedError( msg )
-    #
-    # def is_runnable( self ):
-    #
-    #     if hasattr( self, 'code') and self.code != []:
-    #         return True
-    #     else:
-    #         return False
-    #
-    # def run_prompt( self, question="" ):
-    #
-    #     msg = "SolutionSnapshot.run_prompt() NOT IMPLEMENTED"
-    #     du.print_banner( msg, expletive=True )
-    #     raise NotImplementedError( msg )
-    #
-    # def is_promptable( self ):
-    #
-    #     return False
     
     def __init__( self, push_counter=-1, question="", synonymous_questions=OrderedDict(),
                   last_question_asked="", answer="", answer_short="", answer_conversational="", error="",
@@ -192,21 +152,21 @@ class SolutionSnapshot( Agent ):
         return cls( **data )
     
     @classmethod
-    def create( cls, calendaring_agent ):
+    def create( cls, agent ):
         
         print( "(create_solution_snapshot) TODO: Reconcile how we're going to get a dynamic path to the solution file's directory" )
         
-        # Instantiate a new SolutionSnapshot object using the contents of the calendaring agent
+        # Instantiate a new SolutionSnapshot object using the contents of the calendaring or function mapping agent
         return SolutionSnapshot(
-                         question=calendaring_agent.question,
-              last_question_asked=calendaring_agent.question,
-             synonymous_questions=OrderedDict( { calendaring_agent.question: 100.0 } ),
-                            error=calendaring_agent.prompt_response_dict[ "error" ],
-                 solution_summary=calendaring_agent.prompt_response_dict[ "explanation" ],
-                             code=calendaring_agent.prompt_response_dict[ "code" ],
-                         thoughts=calendaring_agent.prompt_response_dict[ "thoughts" ],
-                           answer=calendaring_agent.code_response_dict[ "output" ],
-            answer_conversational=calendaring_agent.answer_conversational
+                         question=agent.question,
+              last_question_asked=agent.last_question_asked,
+             synonymous_questions=OrderedDict( { agent.question: 100.0 } ),
+                            error=agent.prompt_response_dict[ "error" ],
+                 solution_summary=agent.prompt_response_dict[ "explanation" ],
+                             code=agent.prompt_response_dict[ "code" ],
+                         thoughts=agent.prompt_response_dict[ "thoughts" ],
+                           answer=agent.code_response_dict[ "output" ],
+            answer_conversational=agent.answer_conversational
                
                # TODO: Reconcile how we're going to get a dynamic path to the solution file's directory
                # solution_directory=calendaring_agent.solution_directory
