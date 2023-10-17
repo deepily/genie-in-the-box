@@ -108,6 +108,7 @@ class RunningFifoQueue( FifoQueue ):
         else:
             
             print( f"Executing [{truncated_question}] as a open ended calendaring agent job instead..." )
+            
             running_job = CalendaringAgent( "/src/conf/long-term-memory/events.csv", question=running_job.question, push_counter=running_job.push_counter, debug=True, verbose=True )
             
         return running_job
@@ -122,7 +123,6 @@ class RunningFifoQueue( FifoQueue ):
         self.socketio.emit( 'run_update', { 'value': self.size() } )
         
         url = self._get_audio_url( "I'm sorry Dave, I'm afraid I can't do that." )
-        print( f"Emitting ERROR url..." )
         self.socketio.emit( 'audio_update', { 'audioURL': url } )
         self.jobs_dead_queue.push( running_job )
         self.socketio.emit( 'dead_update', { 'value': self.jobs_dead_queue.size() } )
@@ -201,8 +201,8 @@ class RunningFifoQueue( FifoQueue ):
         return running_job
     
     def _get_audio_url( self, text ):
-        
+
         with self.app.app_context():
             url = url_for( 'get_tts_audio' ) + f"?tts_text={text}"
-            
+
         return url
