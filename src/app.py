@@ -165,10 +165,13 @@ def get_queue( queue_name ):
     
     if queue_name == "todo":
         jobs = generate_html_list( jobs_todo_queue, descending=True )
-    elif queue_name == "done":
-        jobs = generate_html_list( jobs_done_queue, descending=True )
     elif queue_name == "run":
         jobs = generate_html_list( jobs_run_queue )
+    elif queue_name == "dead":
+        jobs = generate_html_list( jobs_dead_queue, descending=True )
+    elif queue_name == "done":
+        jobs = generate_html_list( jobs_run_queue, descending=True )
+
     else:
         return json.dumps( { "error": "Invalid queue name. Please specify either 'todo' or 'done'." } )
     
@@ -266,7 +269,7 @@ def upload_and_transcribe_mp3_file():
         f.write( decoded_audio )
     print( " Done!" )
     
-    timer = sw.Stopwatch( "Transcribing {}...".format( path ) )
+    timer = sw.Stopwatch( "Transcribing {}...".format( path ), end="" )
     result = model.transcribe( path )
     timer.print( "Done!", use_millis=True, end="\n\n" )
     
@@ -356,9 +359,9 @@ def upload_and_transcribe_wav_file():
     file.save( temp_file )
     print( " Done!" )
     
-    print( "Transcribing {}...".format( temp_file ) )
+    timer = sw.Stopwatch( msg=f"Transcribing {temp_file}..." )
     result = model.transcribe( temp_file )
-    print( "Done!", end="\n\n" )
+    timer.print( "Done!", use_millis=True, end="\n\n" )
     
     transcribed_text = result[ "text" ].strip()
     print( "transcribed_text: [{}]".format( transcribed_text ) )
@@ -371,18 +374,6 @@ def upload_and_transcribe_wav_file():
     
     return munger.transcription
 
-# @app.route( "/api/vox2text" )
-# def vox_2_text():
-#     path = request.args.get( "path" )
-#
-#     print( "Transcribing {}...".format( path ) )
-#     result = model.transcribe( path )
-#     print( "Done!", end="\n\n" )
-#
-#     print( "Result: [{}]".format( result[ "text" ] ) )
-#     print( result[ "text" ] )
-#
-#     return result[ "text" ].strip()
 
 print( "Loading whisper engine... ", end="" )
 model = whisper.load_model( "large-v2" )
