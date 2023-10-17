@@ -29,6 +29,7 @@ class CalendaringAgent( Agent ):
         self.push_counter          = push_counter
         self.id_hash               = ss.SolutionSnapshot.generate_id_hash( self.push_counter, self.run_date )
 
+        self.last_question_asked   = question
         self.question              = ss.SolutionSnapshot.clean_question( question)
         self.user_message          = None
         
