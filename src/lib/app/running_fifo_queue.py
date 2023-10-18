@@ -17,9 +17,9 @@ import pprint
 class RunningFifoQueue( FifoQueue ):
     def __init__( self, app, socketio, snapshot_mgr, jobs_todo_queue, jobs_done_queue, jobs_dead_queue ):
         super().__init__()
-        self.app = app
-        self.socketio = socketio
-        self.snapshot_mgr = snapshot_mgr
+        self.app             = app
+        self.socketio        = socketio
+        self.snapshot_mgr    = snapshot_mgr
         self.jobs_todo_queue = jobs_todo_queue
         self.jobs_done_queue = jobs_done_queue
         self.jobs_dead_queue = jobs_dead_queue
@@ -72,6 +72,8 @@ class RunningFifoQueue( FifoQueue ):
 
     def _handle_function_mapping_agent( self, running_job, truncated_question ):
         
+        self.socketio.emit( 'audio_update', { 'audioURL': self._get_audio_url( "Searching my memory" ) } )
+        print( running_job.get_html() )
         msg = f"Running FunctionMappingAgent for [{truncated_question}]..."
         agent_timer = sw.Stopwatch( msg=msg )
         
@@ -105,7 +107,7 @@ class RunningFifoQueue( FifoQueue ):
         else:
             
             print( f"Executing [{truncated_question}] as a open ended calendaring agent job instead..." )
-            
+            self.socketio.emit( 'notification_sound_update', { 'soundFile': '/static/gentle-gong.mp3' } )
             running_job = CalendaringAgent( "/src/conf/long-term-memory/events.csv", question=running_job.question, push_counter=running_job.push_counter, debug=True, verbose=True )
             
         return running_job
