@@ -191,14 +191,24 @@ def delete_snapshot( id_hash ):
     
     # Fetch the object so that we can delete it from the file system too
     to_be_deleted = jobs_done_queue.get_by_id_hash( id_hash )
-    to_be_deleted.delete_file()
+    # to_be_deleted.delete_file()
     
     jobs_done_queue.delete_by_id_hash( id_hash )
+    
+    snapshot_mgr.delete_snapshot( to_be_deleted.question, delete_file=True )
+    
     socketio.emit( 'done_update', { 'value': jobs_done_queue.size() } )
-    # url = get_audio_url( "Snapshot deleted" )
     socketio.emit( 'notification_sound_update', { 'soundFile': '/static/gentle-gong.mp3' } )
     
     return f"Deleted snapshot [{id_hash}]"
+
+# create an endpoint that refreshes the contents of the solution snapshot manager
+@app.route( '/reload-snapshots', methods=[ 'GET' ] )
+def reload_snapshots():
+    
+    snapshot_mgr.load_snapshots()
+    
+    return f"Snapshot manager refreshed"
 
 """
 Decorator for connect
