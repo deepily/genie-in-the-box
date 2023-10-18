@@ -10,14 +10,22 @@ class SolutionSnapshotManager:
         self.debug                             = debug
         self.verbose                           = verbose
         self.path                              = path
+       
+        self.snapshots_by_question             = None
+        self.snapshots_by_synomymous_questions = None
+        self.embeddings_by_question            = None
+        
+        self.load_snapshots()
+        
+    def load_snapshots( self ):
+        
         self.snapshots_by_question             = self.load_snapshots_by_question()
         self.snapshots_by_synomymous_questions = self.get_snapshots_by_synomymous_questions( self.snapshots_by_question )
         self.embeddings_by_question            = QuestionEmbeddingsDict()
         
-        if debug:
+        if self.debug:
             print( self )
-            if verbose:
-                self.print_snapshots()
+            if self.verbose: self.print_snapshots()
         
     def load_snapshots_by_question( self ):
         
@@ -69,16 +77,21 @@ class SolutionSnapshotManager:
         return question in self.snapshots_by_question
     
     # create a method to delete a snapshot by exact match with the question string
-    def delete_snapshot( self, question ):
+    def delete_snapshot( self, question, delete_file=False ):
         
         # clean up the question string before querying
         question = ss.SolutionSnapshot.clean_question( question )
         
-        print( f"Deleting snapshot with question [{question}]..." )
         if self.question_exists( question ):
-            del self.snapshots_by_question[ question ]
-            print( f"Snapshot with question [{question}] deleted!" )
+            if delete_file:
+                print( f"Deleting snapshot file [{question}]...", end="" )
+                snapshot = self.snapshots_by_question[ question ]
+                snapshot.delete_file()
+                print( "Done!" )
             return True
+            print( f"Deleting snapshot from manager [{question}]...", end="" )
+            del self.snapshots_by_question[ question ]
+            print( "Done!" )
         else:
             print( f"Snapshot with question [{question}] does not exist!" )
             return False
