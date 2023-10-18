@@ -148,7 +148,7 @@ class FunctionMappingAgent( Agent ):
     
     def get_html( self ):
         
-        html = f"<li id='{self.id_hash}'>{self.run_date} Q: {self.last_question_asked}</li>"
+        return f"<li id='{self.id_hash}'>{self.run_date} Q: {self.last_question_asked}</li>"
         
 if __name__ == "__main__":
     
