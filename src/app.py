@@ -242,13 +242,7 @@ def disconnect():
     print( f"Client [{request.sid}] disconnected" )
     print( f"[{connection_count}] Clients connected" )
     
-# def get_audio_url( text ):
-#
-#     with app.app_context():
-#         url = url_for( 'get_tts_audio' ) + f"?tts_text={text}"
-#
-#     return url
-
+    
 @app.route( "/api/ask-ai-text" )
 def ask_ai_text():
     
