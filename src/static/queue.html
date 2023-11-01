@@ -55,44 +55,7 @@
         addClickEventToDoneList();
         setModelSizeListener();
         updateModelSize();
-        // setupChatWebSocket();
     } );
-    // function setupChatWebSocket() {
-    //
-    //     // // Create WebSocket connection.
-    //     // const socket = new WebSocket( 'ws://localhost:7999/chat' );
-    //     //
-    //     // // Connection opened
-    //     // socket.addEventListener( 'open', function ( event ) {
-    //     //     socket.send( 'Hello Server!' );
-    //     // } );
-    //     //
-    //     // // Listen for messages
-    //     // socket.addEventListener( 'message', function ( event ) {
-    //     //     console.log( 'Message from server ', event.data );
-    //     // } );
-    //
-    //     var chatInput = document.getElementById('chat-input');
-    //     var sendButton = document.getElementById('send-button');
-    //     var chatContainer = document.getElementById('chat-container');
-    //
-    //     // When the send button is clicked
-    //     sendButton.onclick = function() {
-    //         var message = chatInput.value;
-    //         chatInput.value = '';
-    //         console.log('Sending message: ' + message);
-    //         socket.emit('send_message', {message: message});
-    //     };
-    //
-    //     // When a new message is received
-    //     socket.on('receive_message', function(data) {
-    //         var p = document.createElement('p');
-    //         p.className = 'chat-message';
-    //         p.innerHTML = '<span>' + data.timestamp + '</span> ' + data.message;
-    //         chatContainer.appendChild(p);
-    //         chatContainer.scrollTop = chatContainer.scrollHeight;
-    //     });
-    // }
 
     function addClickEventToDoneList() {
 
