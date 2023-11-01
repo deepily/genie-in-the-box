@@ -54,6 +54,7 @@
         updateQueueLists( "dead" );
         addClickEventToDoneList();
         setModelSizeListener();
+        updateModelSize();
         // setupChatWebSocket();
     } );
     // function setupChatWebSocket() {
@@ -322,13 +323,13 @@
 
     function setModelSizeListener() {
 
-        const selectElement = document.getElementById( "model-size" );
-        const modelSizeLabel = document.getElementById( "model-size-label" );
+        const modelSizeLabel    = document.getElementById( "model-size-label" );
+        const modelSizeSelector = document.getElementById( "model-size" );
 
-        selectElement.addEventListener("change", function() {
+        modelSizeSelector.addEventListener( "change", function() {
 
-            const selectedValue = selectElement.value;
-            const url = `http://127.0.0.1:7999/api/load-model?size=${selectedValue}`;
+            const selectedValue = modelSizeSelector.value;
+            const url = `/api/load-model?size=${selectedValue}`;
             fetch( url ).then( response => {
                     if ( response.ok ) {
                         return response.text();
@@ -344,6 +345,32 @@
                     modelSizeLabel.textContent = "Model NOT loaded";
                 } );
         });
+    }
+    function updateModelSize() {
+
+        const modelSizeLabel    = document.getElementById( "model-size-label" );
+        const modelSizeSelector = document.getElementById( "model-size" );
+
+        const url = `/api/get-model-size`;
+        fetch( url ).then( response => {
+                if ( response.ok ) {
+                    return response.text();
+                } else {
+                    throw new Error( `HTTP error, status = ${ response.status }` );
+                }
+            } ).then( data => {
+                // Handle the response data
+                console.log( "Setting model size:", data );
+                for ( let i = 0; i < modelSizeSelector.options.length; i++ ) {
+                    if ( modelSizeSelector.options[ i ].value === data ) {
+                        modelSizeSelector.selectedIndex = i;
+                        break;
+                    }
+                }
+            } ) .catch( error => {
+                console.error( "Error:", error );
+                modelSizeLabel.textContent = "Unable to fetch model size";
+            } );
     }
 
 </script>
@@ -383,9 +410,9 @@
 <div>
     <h4 id="model-size-label">Model size</h4>
     <select id="model-size">
-        <option value="base">Base</option>
-        <option value="small">Small</option>
-        <option value="medium">Medium</option>
+        <option value="base.en">Base</option>
+        <option value="small.en">Small</option>
+        <option value="medium.en">Medium</option>
         <option value="large">Large</option>
     </select>
 </div>
