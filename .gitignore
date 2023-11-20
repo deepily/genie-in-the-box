@@ -7,6 +7,8 @@
 
 **/__pycache__/**
 
+**/.ipynb_checkpoints/**
+
 # Skip OSX console script + icon based launcher experiment
 genie.app/**
 .app**
