@@ -326,7 +326,7 @@ class SolutionSnapshot( Agent ):
         self._print_token_count( preamble, message_name="formatting preamble", model=format_model )
         self._print_token_count( instructions, message_name="formatting instructions", model=format_model )
         
-        self.answer_conversational = self._query_gpt( preamble, instructions, model=format_model, debug=self.debug )
+        self.answer_conversational = self._query_llm( preamble, instructions, model=format_model, debug=self.debug )
         
         return self.answer_conversational
     
