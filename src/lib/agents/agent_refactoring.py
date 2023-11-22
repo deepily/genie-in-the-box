@@ -128,7 +128,7 @@ class RefactoringAgent( Agent ):
         self._print_token_count( self.system_message, message_name="system_message", model=prompt_model )
         self._print_token_count( self.user_message, message_name="user_message", model=prompt_model )
                 
-        self.prompt_response      = self._query_gpt( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
+        self.prompt_response      = self._query_llm( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
         # This is another example of GPT injecting a little bit of formatting randomicity into the response
         self.prompt_response      = self.prompt_response.replace( "\n", "" ).strip( '"' )
         self.prompt_response_dict = json.loads( self.prompt_response )

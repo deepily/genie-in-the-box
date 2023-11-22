@@ -108,7 +108,7 @@ class FunctionMappingAgent( Agent ):
         self._print_token_count( self.system_message, message_name="system_message", model=prompt_model )
         self._print_token_count( self.user_message, message_name="user_message", model=prompt_model )
         
-        self.prompt_response      = self._query_gpt( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
+        self.prompt_response      = self._query_llm( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
         self.prompt_response_dict = json.loads( self.prompt_response )
         
         if self.debug and self.verbose: print( json.dumps( self.prompt_response_dict, indent=4 ) )
@@ -142,7 +142,7 @@ class FunctionMappingAgent( Agent ):
         self._print_token_count( preamble, message_name="formatting preamble", model=format_model )
         self._print_token_count( instructions, message_name="formatting instructions", model=format_model )
         
-        self.answer_conversational = self._query_gpt( preamble, instructions, model=format_model, debug=self.debug )
+        self.answer_conversational = self._query_llm( preamble, instructions, model=format_model, debug=self.debug )
         
         return self.answer_conversational
     
