@@ -255,7 +255,7 @@ if __name__ == "__main__":
     # import huggingface_hub as hf
     # print( "hf.__version__", hf.__version__ )
     
-    agent = CalendaringAgent( path_to_df="/src/conf/long-term-memory/events.csv", debug=False, verbose=False )
+    agent = CalendaringAgent( path_to_df="/src/conf/long-term-memory/events.csv", debug=True, verbose=False )
 
     # question         = "What todo items do I have on my calendar for this week?"
     # question         = "What todo items do I have on my calendar for today?"
