@@ -259,23 +259,23 @@ if __name__ == "__main__":
 
     # question         = "What todo items do I have on my calendar for this week?"
     # question         = "What todo items do I have on my calendar for today?"
-    # question         = "Do I have any birthdays on my calendar this week?"
+    question         = "Do I have any birthdays on my calendar this week?"
     # question         = "When is Juan's birthday?"
-    question         = "When is Jimmy's birthday?"
+    # question         = "When is Jimmy's birthday?"
     # question         = "When is my birthday?"
 
     timer            = sw.Stopwatch( msg=f"Processing [{question}]..." )
     response_dict    = agent.run_prompt( question )
     
-    agent.print_code()
+    # agent.print_code()
     
-    # code_response    = agent.run_code()
-    # formatted_output = agent.format_output()
+    code_response    = agent.run_code()
+    formatted_output = agent.format_output()
     #
     timer.print( use_millis=True )
     #
-    # du.print_banner( question, prepend_nl=True )
-    # for line in formatted_output.split( "\n" ):
-    #     print( line )
+    du.print_banner( question, prepend_nl=True )
+    for line in formatted_output.split( "\n" ):
+        print( line )
         
     
