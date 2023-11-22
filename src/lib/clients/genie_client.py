@@ -85,6 +85,8 @@ class GenieClient:
 
         # Do we want to automatically stash the data of a transcription or processing of a transcription to the clipboard when we're done?
         self.copy_transx_to_clipboard   = copy_transx_to_clipboard
+        
+        self.finished_transcription     = None
  
     def get_titles( self ):
     
@@ -140,7 +142,9 @@ class GenieClient:
         function_name = self.methods_dict[ mode_title ]
         print()
         if self.debug: print( "Calling [{}]...".format( function_name ) )
-        getattr( self, function_name )()
+        transcription = getattr( self, function_name )()
+        
+        return transcription
             
     def is_recording( self ):
         
@@ -527,8 +531,6 @@ class GenieClient:
     
         transcribed_text = self.start_recording()
         
-        # transcribed_text = self._get_transcription( self.stt_address, self.serialized_audio_path )
-        
         if copy_to_clipboard: self.copy_to_clipboard( transcribed_text )
         
         return transcribed_text
@@ -573,7 +575,7 @@ class GenieClient:
 
 if __name__ == "__main__":
     
-    print( "Starting GenieClient in [{}]...".format( os.getcwd() ) )
+    # print( "Starting GenieClient in [{}]...".format( os.getcwd() ) )
     cli_args = du.get_name_value_pairs( sys.argv )
 
     # runtime_context   = cli_args.get( "runtime_context", "docker" )
@@ -588,7 +590,9 @@ if __name__ == "__main__":
     print( "recording_timeout: [{}]".format( recording_timeout ) )
     
     gc = GenieClient( startup_mode=startup_mode, debug=True, recording_timeout=recording_timeout )
-    gc.do_transcribe_and_clean_python()
+    # transcription = gc.do_transcribe_and_clean_python()
+    transcription = gc.do_transcription()
+    print( f"Transcription [{transcription}]" )
 
     # gc.do_gpt_by_voice()
     # code = gc.munge_code( "Deaf key underscore event open parenthesis self comma event close parenthesis colon new line new line")

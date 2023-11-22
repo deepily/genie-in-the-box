@@ -23,6 +23,8 @@ class GenieGui:
     
     def __init__( self, startup_mode="transcribe_and_clean_prose", copy_transx_to_clipboard=True, record_once_on_startup=False, runtime_context="docker", write_method="flask", recording_timeout=30, debug=False ):
         
+        self.finished_transcription = None
+        
         # TODO: Move configuration values into the same kind of format that we used in AMPE
         self.last_text_with_focus = None
         self.debug = debug
@@ -193,30 +195,7 @@ class GenieGui:
                 print( "Nothing selected to cut, copy or delete." )
         else:
             print( "Can't cut/copy/delete while recording!" )
-
-    # def _do_conditional_transcription_toggle( self ):
-    #
-    #     if not self.genie_client.is_recording():
-    #
-    #         ranges = self.last_text_with_focus.tag_ranges( tk.SEL )
-    #         if ranges:
-    #             print( 'SELECTED Text is %r' % self.last_text_with_focus.get( *ranges ) )
-    #             print( "ranges:", ranges )
-    #             self.last_text_with_focus.delete( *ranges )
-    #         else:
-    #             print( 'NO Selected Text' )
-    #
-    #         self.start_processing()
-    #
-    #         # blocks until finished processing
-    #         transcription = self.genie_client.get_from_clipboard()
-    #         self.last_text_with_focus.insert( tk.INSERT, transcription )
-    #
-    #     else:
-    #
-    #         self.stop_processing()
-    #
-    #     self.last_text_with_focus.focus_set()
+            
 
     def do_edit( self, action ):
 
@@ -265,7 +244,7 @@ class GenieGui:
         # branch on mode_title
         mode_title = self.selected_mode.get()
         
-        self.genie_client.process_by_mode_title( mode_title )
+        self.finished_transcription = self.genie_client.process_by_mode_title( mode_title )
             
         self.stop_processing()
 
@@ -290,10 +269,11 @@ class GenieGui:
 # Create main function to run the program.
 if __name__ == "__main__":
     
-    print( "Starting GenieClient in [{}]...".format( os.getcwd() ) )
+    # print( "Starting GenieClient in [{}]...".format( os.getcwd() ) )
     cli_args = du.get_name_value_pairs( sys.argv )
 
-    startup_mode           = cli_args.get( "startup_mode", "transcribe_and_clean_prose" )
+    # startup_mode           = cli_args.get( "startup_mode", "transcribe_and_clean_prose" )
+    startup_mode             = cli_args.get( "startup_mode", "transcribe" )
     # startup_mode           = cli_args.get( "startup_mode", "transcribe_and_clean_python" )
     recording_timeout      = int( cli_args.get( "recording_timeout", 30 ) )
     record_once_on_startup = cli_args.get( "record_once_on_startup", "False" ) == "True"
@@ -305,5 +285,7 @@ if __name__ == "__main__":
         record_once_on_startup=record_once_on_startup,
         debug=False
     )
-    
-    
+    # print( "gg.finished_transcription [{}]".format( gg.finished_transcription ) )
+    # exit and push transcription to the console
+    # sys.exit( gg.finished_transcription )
+    sys.exit( 0 )
