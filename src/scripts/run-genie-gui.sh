@@ -6,7 +6,7 @@ source ~/Projects/local-interpreter-python3.10/venv/bin/activate
 
 # Change to the directory containing the Genie GUI using SSHFS:
 cd ~/Projects/projects-sshfs/genie-in-the-box/src
-echo "Current directory: $(pwd)"
+# echo "Current directory: $(pwd)"
 
 GENIE_IN_THE_BOX_ROOT=~/Projects/projects-sshfs/genie-in-the-box
 export GENIE_IN_THE_BOX_ROOT
