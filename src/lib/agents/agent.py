@@ -52,35 +52,13 @@ class Agent( RunnableCode, abc.ABC ):
             
             # insert question into template
             prompt = preamble.format( question=query )
+            if self.debug: print( f"Prompt:\n[{prompt}]" )
+            
             return self._query_llm_phind( prompt, model=model )
             
         else:
             
-            return self._query_llm_openai( query, model=model, debug=debug )
-            # openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
-            #
-            # if debug:
-            #     timer = sw.Stopwatch( msg=f"Asking LLM [{model}]...".format( model ) )
-            #
-            # response = openai.ChatCompletion.create(
-            #     model=model,
-            #     messages=[
-            #         { "role": "system", "content": preamble },
-            #         { "role": "user", "content": query }
-            #     ],
-            #     temperature=0,
-            #     max_tokens=2000,
-            #     top_p=1.0,
-            #     frequency_penalty=0.0,
-            #     presence_penalty=0.0
-            # )
-            #
-            # if debug:
-            #     timer.print( use_millis=True )
-            #     if self.verbose:
-            #         print( json.dumps( response, indent=4 ) )
-            #
-            # return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
+            return self._query_llm_openai( preamble,query, model=model, debug=debug )
         
     def _query_llm_openai( self, preamble, query, model=DEFAULT_MODEL, debug=False ):
         
