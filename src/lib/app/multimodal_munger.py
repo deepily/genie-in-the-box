@@ -425,7 +425,7 @@ class MultiModalMunger:
         print( "BEFORE code:", code )
 
         # Remove "space, ", commas, and periods.
-        code = re.sub( r'space, |[,.-]', '', code.lower() )
+        code = re.sub( r'space, |[,-]', '', code.lower() )
 
         # Translate punctuation mark words into single characters.
         for key, value in self.punctuation.items():
@@ -435,6 +435,12 @@ class MultiModalMunger:
         for key, value in self.numbers.items():
             code = code.replace( key, value )
 
+        # Remove space between any two single digits
+        code = re.sub( r"(?<=\d) (?=\d)", "", code )
+        
+        # remove exactly one space between individual letters too
+        code = re.sub( r'(?<=\w) (?=\w)', '', code )
+        
         # Remove extra spaces.
         code = code.replace( " _ ", "_" )
         code = code.replace( " ,", ", " )
@@ -449,7 +455,7 @@ class MultiModalMunger:
         # code = code.replace( " ) ", " ) " )
 
         # Remove extra spaces.
-        code = ' '.join( code.split() )
+        code = " ".join( code.split() )
         
         print( "AFTER code:", code )
         
