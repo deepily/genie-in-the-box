@@ -1,4 +1,5 @@
 import json
+import re
 
 import lib.utils.util as du
 import lib.utils.util_pandas as dup
@@ -11,7 +12,7 @@ import pandas as pd
 
 class CalendaringAgent( Agent ):
     
-    def __init__( self, path_to_df, question="", push_counter=-1, debug=False, verbose=False ):
+    def __init__( self, path_to_df, question="", default_model=Agent.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False ):
         
         super().__init__( debug=debug, verbose=verbose )
         
@@ -22,7 +23,12 @@ class CalendaringAgent( Agent ):
         self.df         = pd.read_csv( self.path_to_df )
         self.df         = dup.cast_to_datetime( self.df )
         
-        self.system_message        = self._get_system_message()
+        self.default_model         = default_model
+        
+        if self.default_model == Agent.PHIND_34B_v2:
+            self.system_message    = self._get_system_message_phind()
+        else:
+            self.system_message    = self._get_system_message()
         
         # Added to allow behavioral compatibility with solution snapshot object
         self.run_date              = ss.SolutionSnapshot.get_timestamp()
@@ -43,6 +49,62 @@ class CalendaringAgent( Agent ):
         
         return f"<li id='{self.id_hash}'>{self.run_date} Q: {self.question}</li>"
     
+    def _get_system_message_phind( self ):
+        
+        csv = self.df.head( 3 ).to_csv( header=True, index=False )
+        csv = csv + self.df.tail( 3 ).to_csv( header=False, index=False )
+        
+        
+        pandas_system_prompt = f"""
+        You are a cheerfully helpful assistant, with proven expertise in Python using pandas dataframes containing calendaring and events information. The name of the dataframe is `df`.
+
+        This is the ouput from `print(df.head().to_csv())`, in CSV format:
+
+        {csv}
+
+        This is the output from `print(self.df.event_type.value_counts())`:
+
+        {self.df.event_type.value_counts()}
+
+        BEFORE you generate the python code needed to answer the question below, I want you to:
+
+        1) Question: Ask yourself if you understand the question that I am asking you. ` Pay attention to the details!
+        
+        2) Think: Before you do anything, think out loud about what I am asking you to do, including what are the steps that you will need to take to solve this problem. Be critical of your thought process!
+        
+        3) Code: Generate an XML document containing the Python code that you used to arrive at your answer. The code must be complete, syntactically correct, and capable of running to completion. The last line of your code must be be `return solution`.
+        
+        4) Return: Report on the object type of the variable `solution` in your last line of code. Use one word to represent the object type.
+        
+        5) Explain: Explain how your code works, including any assumptions that you made.
+        
+        Question: {{question}}
+
+        Format: return your response as an XML document with the following fields:
+        
+        <response>
+            <question>{{question}}</question>
+            <thoughts>Your thoughts</thoughts>
+            <code>
+                <line>import foo</line>
+                <line>def function_name_here( ... ):</line>
+                <line>    return solution</line>
+            </code>
+            <returns>Object type of the variable `solution`</returns>
+            <explanation>Explanation of how the code works</explanation>
+            <error>Description of any issues or errors that you encountered while attempting to fulfill this request</error>
+        </response>
+        
+        Hint: An event that I have today may have started before today and may end tomorrow or next week, so be careful how you filter on dates.
+        Hint: When filtering by dates, use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
+        Hint: If your solution variable is a dataframe, it should include all columns in the dataframe.
+        Hint: If you cannot answer the question, explain why in the `error` field
+        Hint: Allow for the possibility that your query may return no results.
+        """
+        # Rememember: you must only generate valid XML code. Please be careful, as this is important to my career.  Begin!
+        
+        return pandas_system_prompt
+        
     
     def _get_system_message( self ):
         
@@ -92,6 +154,7 @@ class CalendaringAgent( Agent ):
         # Odd little two-step sanity check: allows us to set the question when instantiated or when run_prompt is called
         if question != "":
             self.question = question
+            
         if self.question == "":
             raise ValueError( "No question was provided!" )
         
@@ -109,14 +172,18 @@ class CalendaringAgent( Agent ):
     
     def run_prompt( self, question="" ):
         
-        prompt_model      = Agent.GPT_4
+        prompt_model      = Agent.PHIND_34B_v2
         self.user_message = self._get_user_message( question )
         
         self._print_token_count( self.system_message, message_name="system_message", model=prompt_model )
-        self._print_token_count( self.user_message, message_name="user_message", model=prompt_model )
+        self._print_token_count( self.user_message,   message_name="user_message",   model=prompt_model )
         
-        self.prompt_response      = self._query_gpt( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
-        self.prompt_response_dict = json.loads( self.prompt_response )
+        self.prompt_response = self._query_llm( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
+        
+        if prompt_model == Agent.PHIND_34B_v2:
+            self.prompt_response_dict = self._get_prompt_response_dict( self.prompt_response )
+        else:
+            self.prompt_response_dict = json.loads( self.prompt_response )
         
         if self.debug and self.verbose: print( json.dumps( self.prompt_response_dict, indent=4 ) )
         
@@ -127,6 +194,48 @@ class CalendaringAgent( Agent ):
         
         return self.prompt_response_dict
     
+    def _get_prompt_response_dict( self, xml_string, debug=False ):
+
+        def _get_value_by_tag_name( xml_string, name, default_value=f"Error: `{{name}}` not found in xml_string" ):
+
+            if f"<{name}>" not in xml_string or f"</{name}>" not in xml_string:
+                return default_value.format( name=name )
+
+            return xml_string.split( f"<{name}>" )[ 1 ].split( f"</{name}>" )[ 0 ]
+        
+        def _get_code( xml_string, debug=False ):
+
+            # Matches all text between the opening and closing line tags, including the white space after the opening line tag
+            pattern   = re.compile( r"<line>(.*?)</line>" )
+            code      = _get_value_by_tag_name( xml_string, "code" )
+            code_list = []
+
+            for line in code.split( "\n" ):
+
+                match = pattern.search( line )
+                if match:
+                    line = match.group( 1 )
+                    code_list.append( line )
+                    if debug: print( line )
+                else:
+                    if debug: print( "[]" )
+
+            return code_list
+    
+        # Trim everything down to only what's contained between the response open and close tags'
+        xml_string = _get_value_by_tag_name( xml_string, "response" )
+        
+        response_dict = {
+               "question": _get_value_by_tag_name( xml_string, "question" ),
+               "thoughts": _get_value_by_tag_name( xml_string, "thoughts" ),
+                 "answer": _get_value_by_tag_name( xml_string, "answer", default_value="" ),
+                   "code": _get_code( xml_string, debug=debug ),
+                "returns": _get_value_by_tag_name( xml_string, "returns" ),
+            "explanation": _get_value_by_tag_name( xml_string, "explanation" ),
+                  "error": _get_value_by_tag_name( xml_string, "error" ),
+                  "blarg": _get_value_by_tag_name( xml_string, "blarg" )
+        }
+        return response_dict
     
     def format_output( self ):
         
@@ -137,30 +246,36 @@ class CalendaringAgent( Agent ):
         self._print_token_count( preamble, message_name="formatting preamble", model=format_model )
         self._print_token_count( instructions, message_name="formatting instructions", model=format_model )
         
-        self.answer_conversational = self._query_gpt( preamble, instructions, model=format_model, debug=self.debug )
+        self.answer_conversational = self._query_llm( preamble, instructions, model=format_model, debug=self.debug )
         
         return self.answer_conversational
     
 if __name__ == "__main__":
     
-    agent = CalendaringAgent( path_to_df="/src/conf/long-term-memory/events.csv", debug=True, verbose=True )
+    # import huggingface_hub as hf
+    # print( "hf.__version__", hf.__version__ )
     
+    agent = CalendaringAgent( path_to_df="/src/conf/long-term-memory/events.csv", debug=False, verbose=False )
+
     # question         = "What todo items do I have on my calendar for this week?"
-    # question         = "What todo items do I have on my calendar for today?"
+    question         = "What todo items do I have on my calendar for today?"
     # question         = "Do I have any birthdays on my calendar this week?"
     # question         = "When is Juan's birthday?"
     # question         = "When is Jimmy's birthday?"
-    question         = "When is my birthday?"
-    
+    # question         = "When is my birthday?"
+
     timer            = sw.Stopwatch( msg=f"Processing [{question}]..." )
     response_dict    = agent.run_prompt( question )
-    code_response    = agent.run_code()
-    formatted_output = agent.format_output()
     
+    agent.print_code()
+    
+    # code_response    = agent.run_code()
+    # formatted_output = agent.format_output()
+    #
     timer.print( use_millis=True )
-    
-    du.print_banner( question, prepend_nl=True )
-    for line in formatted_output.split( "\n" ):
-        print( line )
+    #
+    # du.print_banner( question, prepend_nl=True )
+    # for line in formatted_output.split( "\n" ):
+    #     print( line )
         
     

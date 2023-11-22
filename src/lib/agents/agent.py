@@ -5,17 +5,23 @@ import abc
 import lib.utils.util as du
 import lib.utils.util_stopwatch as sw
 
-from lib.agents.runnable import Runnable
+from lib.agents.runnable_code import RunnableCode
 
 import openai
 import tiktoken
+from huggingface_hub import InferenceClient
 
-class Agent( Runnable, abc.ABC ):
+class Agent( RunnableCode, abc.ABC ):
     
-    GPT_4   = "gpt-4-0613"
-    GPT_3_5 = "gpt-3.5-turbo-0613"
+    GPT_4         = "gpt-4-0613"
+    GPT_3_5       = "gpt-3.5-turbo-1106"
+    PHIND_34B_v2  = "Phind/Phind-CodeLlama-34B-v2"
     
-    def __init__( self, debug=False, verbose=False ):
+    DEFAULT_MODEL = PHIND_34B_v2
+    
+    PHIND_TGI_URL = "http://127.0.0.1:8080"
+    
+    def __init__( self, phind_tgi_url=PHIND_TGI_URL, debug=False, verbose=False ):
         
         super().__init__( debug=debug, verbose=verbose )
         
@@ -27,21 +33,61 @@ class Agent( Runnable, abc.ABC ):
         
         # self.prompt_response = None
         # self.prompt_response_dict = None
+        self.phind_tgi_url = phind_tgi_url
     
     @staticmethod
-    def _get_token_count( to_be_tokenized, model=GPT_4 ):
+    def _get_token_count( to_be_tokenized, model=DEFAULT_MODEL ):
         
-        encoding   = tiktoken.encoding_for_model( model )
-        num_tokens = len( encoding.encode( to_be_tokenized ) )
+        if model == Agent.PHIND_34B_v2:
+            num_tokens = -1
+        else:
+            encoding   = tiktoken.encoding_for_model( model )
+            num_tokens = len( encoding.encode( to_be_tokenized ) )
         
         return num_tokens
     
-    def _query_gpt( self, preamble, query, model=GPT_4, debug=False ):
+    def _query_llm( self, preamble, query, model=DEFAULT_MODEL, debug=False ):
+        
+        if model == Agent.PHIND_34B_v2:
+            
+            # insert question into template
+            prompt = preamble.format( question=query )
+            return self._query_llm_phind( prompt, model=model )
+            
+        else:
+            
+            return self._query_llm_openai( query, model=model, debug=debug )
+            # openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
+            #
+            # if debug:
+            #     timer = sw.Stopwatch( msg=f"Asking LLM [{model}]...".format( model ) )
+            #
+            # response = openai.ChatCompletion.create(
+            #     model=model,
+            #     messages=[
+            #         { "role": "system", "content": preamble },
+            #         { "role": "user", "content": query }
+            #     ],
+            #     temperature=0,
+            #     max_tokens=2000,
+            #     top_p=1.0,
+            #     frequency_penalty=0.0,
+            #     presence_penalty=0.0
+            # )
+            #
+            # if debug:
+            #     timer.print( use_millis=True )
+            #     if self.verbose:
+            #         print( json.dumps( response, indent=4 ) )
+            #
+            # return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
+        
+    def _query_llm_openai( self, preamble, query, model=DEFAULT_MODEL, debug=False ):
         
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
         
         if debug:
-            timer = sw.Stopwatch( msg=f"Asking ChatGPT [{model}]...".format( model ) )
+            timer = sw.Stopwatch( msg=f"Asking LLM [{model}]...".format( model ) )
         
         response = openai.ChatCompletion.create(
             model=model,
@@ -62,6 +108,40 @@ class Agent( Runnable, abc.ABC ):
                 print( json.dumps( response, indent=4 ) )
         
         return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
+    
+    def _query_llm_phind( self, prompt, model=DEFAULT_MODEL ):
+        
+        if self.debug:
+            timer = sw.Stopwatch( msg=f"Asking LLM [{model}]...".format( model ) )
+        
+        client         = InferenceClient( model=self.phind_tgi_url )
+        token_list     = [ ]
+        ellipsis_count = 0
+        
+        for token in client.text_generation(
+            prompt, max_new_tokens=1024, stream=True, stop_sequences=[ "</response>" ], temperature=1.0
+        ):
+            if self.debug:
+                print( token, end="" )
+            else:
+                print( ".", end="" )
+                ellipsis_count += 1
+                if ellipsis_count == 100:
+                    ellipsis_count = 0
+                    print()
+                
+            token_list.append( token )
+        
+        response = "".join( token_list ).strip()
+        
+        if self.debug:
+            timer.print( use_millis=True, prepend_nl=True )
+            print( f"Token list length [{len( token_list )}]" )
+            if self.verbose:
+                for line in response.split( "\n" ):
+                    print( line )
+        
+        return response
     
     @abc.abstractmethod
     def _get_system_message( self ):
@@ -87,9 +167,9 @@ class Agent( Runnable, abc.ABC ):
     def format_output( self ):
         pass
     
-    def _print_token_count( self, message, message_name="system_message", model=GPT_4 ):
+    def _print_token_count( self, message, message_name="system_message", model=DEFAULT_MODEL ):
         
-        if self.debug:
+        if self.debug and model != Agent.PHIND_34B_v2:
             
             count = self._get_token_count( message, model=model )
             if self.verbose:
@@ -97,13 +177,17 @@ class Agent( Runnable, abc.ABC ):
                 print( message )
             else:
                 print( f"Token count for `{message_name}`: [{count}]" )
+                
+        elif self.debug and model == Agent.PHIND_34B_v2:
+                
+                print( f"Token count for `{message_name}`: [Not yet available for {model}]" )
     
     def _get_formatting_instructions( self ):
         
         data_format = "JSONL " if du.is_jsonl( self.code_response_dict[ "output" ] ) else ""
         
         instructions = f"""
-        Reformat and rephrase the {data_format}data that I just showed you in conversational English so that it answers this question: `{self.question}`
+        Reformat and rephrase the {data_format} data that I just showed you in conversational English so that it answers this question: `{self.question}`
 
         Each line of the output that you create should contain or reference one event."
         """
