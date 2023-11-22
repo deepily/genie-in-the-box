@@ -258,10 +258,10 @@ if __name__ == "__main__":
     agent = CalendaringAgent( path_to_df="/src/conf/long-term-memory/events.csv", debug=False, verbose=False )
 
     # question         = "What todo items do I have on my calendar for this week?"
-    question         = "What todo items do I have on my calendar for today?"
+    # question         = "What todo items do I have on my calendar for today?"
     # question         = "Do I have any birthdays on my calendar this week?"
     # question         = "When is Juan's birthday?"
-    # question         = "When is Jimmy's birthday?"
+    question         = "When is Jimmy's birthday?"
     # question         = "When is my birthday?"
 
     timer            = sw.Stopwatch( msg=f"Processing [{question}]..." )
