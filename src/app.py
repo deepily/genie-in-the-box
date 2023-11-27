@@ -8,7 +8,10 @@ from threading         import Lock
 
 from duckduckgo_search import ddg
 
-import whisper
+# import whisper
+import torch
+from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
+
 import base64
 
 # from flask import
@@ -295,7 +298,8 @@ def upload_and_transcribe_mp3_file():
     print( " Done!" )
     
     timer = sw.Stopwatch( f"Transcribing {path}..." )
-    result = model.transcribe( path )
+    # result = model.transcribe( path )
+    result = whisper_pipeline( path )
     timer.print( "Done!", use_millis=True, end="\n\n" )
     
     result = result[ "text" ].strip()
@@ -385,7 +389,8 @@ def upload_and_transcribe_wav_file():
     print( " Done!" )
     
     timer = sw.Stopwatch( msg=f"Transcribing {temp_file}..." )
-    result = model.transcribe( temp_file )
+    # result = model.transcribe( temp_file )
+    result = whisper_pipeline( temp_file )
     timer.print( "Done!", use_millis=True, end="\n\n" )
     
     transcribed_text = result[ "text" ].strip()
@@ -400,29 +405,56 @@ def upload_and_transcribe_wav_file():
     return munger.transcription
 
 
-@app.route( "/api/load-model" )
+# @app.route( "/api/load-model" )
+# def load_model():
+#
+#     size = request.args.get( "size", default="base.en" )
+#     if size not in [ "base.en", "small.en", "medium.en", "large" ]:
+#         size = "base.en"
+#
+#     print( f"Model [{size}] requested. Loading..." )
+#     global model, model_size
+#     model_size = size
+#     model      = whisper.load_model( model_size )
+#     print( f"Model [{size}] requested. Loading... Done!" )
+#
+#     return f"Model [{size}] loaded"
+
+# @app.route( "/api/get-model-size" )
+# def get_model_size():
+#
+#     return model_size
+
+# print( "Loading whisper engine... ", end="" )
+# model_size  = "small.en"
+# model = whisper.load_model( model_size )
+# print( "Done!" )
+
 def load_model():
     
-    size = request.args.get( "size", default="base.en" )
-    if size not in [ "base.en", "small.en", "medium.en", "large" ]:
-        size = "base.en"
+    device      = "cuda:0"
+    torch_dtype = torch.bfloat16
+    model_id    = "distil-whisper/distil-large-v2"
     
-    print( f"Model [{size}] requested. Loading..." )
-    global model, model_size
-    model_size = size
-    model      = whisper.load_model( model_size )
-    print( f"Model [{size}] requested. Loading... Done!" )
+    model = AutoModelForSpeechSeq2Seq.from_pretrained(
+        model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True, use_flash_attention_2=True
+    )
+    model.to( device )
     
-    return f"Model [{size}] loaded"
+    processor = AutoProcessor.from_pretrained( model_id )
+    
+    return pipeline(
+        "automatic-speech-recognition",
+        model=model,
+        tokenizer=processor.tokenizer,
+        feature_extractor=processor.feature_extractor,
+        max_new_tokens=128,
+        torch_dtype=torch_dtype,
+        device=device,
+    )
 
-@app.route( "/api/get-model-size" )
-def get_model_size():
-    
-    return model_size
-
-print( "Loading whisper engine... ", end="" )
-model_size  = "small.en"
-model = whisper.load_model( model_size )
+print( "Loading distill whisper engine... ", end="" )
+whisper_pipeline = load_model()
 print( "Done!" )
 
 print( os.getenv( "FALSE_POSITIVE_API_KEY" ) )
