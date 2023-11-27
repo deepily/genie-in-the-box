@@ -40,9 +40,8 @@ from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
 from lib.app.fifo_queue import FifoQueue
 from lib.app.running_fifo_queue import RunningFifoQueue
 
-"""
-Background Threads
-"""
+whisper_pipeline = None
+
 clock_thread = None
 run_thread   = None
 thread_lock  = Lock()
@@ -282,6 +281,8 @@ def upload_and_transcribe_mp3_file():
     
     print( "upload_and_transcribe_mp3_file() called" )
     
+    load_model_once()
+    
     prefix = request.args.get( "prefix" )
     prompt_key = request.args.get( "prompt_key", default="generic" )
     prompt_feedback = request.args.get( "prompt_verbose", default="verbose" )
@@ -377,6 +378,9 @@ def run_raw_prompt_text():
 @app.route( "/api/upload-and-transcribe-wav", methods=[ "POST" ] )
 def upload_and_transcribe_wav_file():
     
+    print( "upload_and_transcribe_wav_file() called" )
+    load_model_once()
+    
     # Get prefix for multimodal munger
     prefix = request.args.get( "prefix" )
     
@@ -443,7 +447,7 @@ def load_model():
     
     processor = AutoProcessor.from_pretrained( model_id )
     
-    return pipeline(
+    pipe = pipeline(
         "automatic-speech-recognition",
         model=model,
         tokenizer=processor.tokenizer,
@@ -452,11 +456,18 @@ def load_model():
         torch_dtype=torch_dtype,
         device=device,
     )
+    return pipe
+    
+def load_model_once():
 
-print( "Loading distill whisper engine... ", end="" )
-whisper_pipeline = load_model()
-print( "Done!" )
-
+    global whisper_pipeline
+    if whisper_pipeline is None:
+        print( "Loading distill whisper engine... ", end="" )
+        whisper_pipeline = load_model()
+        print( "Done!" )
+    else:
+        print( "Distill whisper engine already loaded" )
+        
 print( os.getenv( "FALSE_POSITIVE_API_KEY" ) )
 genie_client = gc.GenieClient()
 
