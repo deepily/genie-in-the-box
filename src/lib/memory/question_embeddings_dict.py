@@ -12,6 +12,7 @@ class QuestionEmbeddingsDict( dict ):
         self.update( *args, **kwargs )
         
         if os.path.exists( QuestionEmbeddingsDict.PATH_TO_DICT ):
+            
             QuestionEmbeddingsDict.loading = True
             print( "Loading question embeddings dictionary ", end="" )
             with open( QuestionEmbeddingsDict.PATH_TO_DICT, "rb" ) as f:
@@ -40,3 +41,5 @@ class QuestionEmbeddingsDict( dict ):
         print( "Pickling question embeddings dictionary..." )
         with open( QuestionEmbeddingsDict.PATH_TO_DICT, "wb" ) as f:
             pickle.dump( self, f )
+        # Set pickled file rights to world readable/writable
+        os.chmod( QuestionEmbeddingsDict.PATH_TO_DICT, 0o666 )
