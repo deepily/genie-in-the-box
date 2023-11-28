@@ -76,7 +76,9 @@ class CalendaringAgent( Agent ):
         
         4) Return: Report on the object type of the variable `solution` in your last line of code. Use one word to represent the object type.
         
-        5) Explain: Explain how your code works, including any assumptions that you made.
+        5) Example: Create a one line example of how to call your code.
+        
+        6) Explain: Explain how your code works, including any assumptions that you made.
         
         Question: {{question}}
 
@@ -91,6 +93,7 @@ class CalendaringAgent( Agent ):
                 <line>    return solution</line>
             </code>
             <returns>Object type of the variable `solution`</returns>
+            <example>One-line example of how to call your code: solution = function_name_here( arguments )</example>
             <explanation>Explanation of how the code works</explanation>
             <error>Description of any issues or errors that you encountered while attempting to fulfill this request</error>
         </response>
@@ -128,7 +131,8 @@ class CalendaringAgent( Agent ):
         2) Think: Before you do anything, think out loud about what I'm asking you to do, including what are the steps that you will need to take to solve this problem. Be critical of your thought process!
         3) Code: Generate a verbatim list of code that you used to arrive at your answer, one line of code per item on the list. The code must be complete, syntactically correct, and capable of runnning to completion. The last line of your code must be the variable `solution`, which represents the answer. Make sure that any filtering you perform matches the question asked of you by the user!
         4) Return: Report on the object type of the variable `solution` in your last line of code. Use one word to represent the object type.
-        5) Explain: Briefly and succinctly explain your code in plain English.
+        5) Example: One-line example of how to call your code: solution = function_name_here( arguments )
+        6) Explain: Briefly and succinctly explain your code in plain English.
 
         Format: return your response as a JSON object in the following fields:
         {{
@@ -136,6 +140,7 @@ class CalendaringAgent( Agent ):
             "thoughts": "Your thoughts",
             "code": [],
             "returns": "Object type of the variable `solution`",
+            "example": "One-line example of how to call your code: solution = function_name_here( arguments )",
             "explanation": "A brief explanation of your code",
             "error": "Your description of any issues or errors that you encountered while attempting to answer the question"
         }}
@@ -231,9 +236,10 @@ class CalendaringAgent( Agent ):
                  "answer": _get_value_by_tag_name( xml_string, "answer", default_value="" ),
                    "code": _get_code( xml_string, debug=debug ),
                 "returns": _get_value_by_tag_name( xml_string, "returns" ),
+                "example": _get_value_by_tag_name( xml_string, "example" ),
             "explanation": _get_value_by_tag_name( xml_string, "explanation" ),
                   "error": _get_value_by_tag_name( xml_string, "error" ),
-                  "blarg": _get_value_by_tag_name( xml_string, "blarg" )
+                  # "blarg": _get_value_by_tag_name( xml_string, "blarg" )
         }
         return response_dict
     
@@ -255,14 +261,15 @@ if __name__ == "__main__":
     # import huggingface_hub as hf
     # print( "hf.__version__", hf.__version__ )
     
-    agent = CalendaringAgent( path_to_df="/src/conf/long-term-memory/events.csv", debug=True, verbose=False )
+    agent = CalendaringAgent( path_to_df="/src/conf/long-term-memory/events.csv", debug=True, verbose=True )
 
     # question         = "What todo items do I have on my calendar for this week?"
     # question         = "What todo items do I have on my calendar for today?"
-    question         = "Do I have any birthdays on my calendar this week?"
+    # question         = "Do I have any birthdays on my calendar this week?"
     # question         = "When is Juan's birthday?"
     # question         = "When is Jimmy's birthday?"
     # question         = "When is my birthday?"
+    question           = "What is the date today?"
 
     timer            = sw.Stopwatch( msg=f"Processing [{question}]..." )
     response_dict    = agent.run_prompt( question )
