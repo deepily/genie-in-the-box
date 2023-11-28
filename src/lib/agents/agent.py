@@ -1,4 +1,4 @@
-import os
+qimport os
 import json
 import abc
 
@@ -19,10 +19,7 @@ class Agent( RunnableCode, abc.ABC ):
     
     DEFAULT_MODEL = PHIND_34B_v2
     
-    PHIND_TGI_URL = "http://127.0.0.1:8080"
-    # PHIND_TGI_URL = "http://172.17.0.4:8080"
-    
-    def __init__( self, phind_tgi_url=PHIND_TGI_URL, debug=False, verbose=False ):
+    def __init__( self, debug=False, verbose=False ):
         
         super().__init__( debug=debug, verbose=verbose )
         
@@ -34,7 +31,7 @@ class Agent( RunnableCode, abc.ABC ):
         
         # self.prompt_response = None
         # self.prompt_response_dict = None
-        self.phind_tgi_url = phind_tgi_url
+        self.phind_tgi_url = du.get_tgi_server_url()
     
     @staticmethod
     def _get_token_count( to_be_tokenized, model=DEFAULT_MODEL ):
@@ -53,7 +50,10 @@ class Agent( RunnableCode, abc.ABC ):
             
             # insert question into template
             prompt = preamble.format( question=query )
-            if self.debug: print( f"Prompt:\n[{prompt}]" )
+            if self.debug and self.verbose:
+                print( f"Prompt:\n[{prompt}]" )
+            elif self.debug:
+                print( f"Query: [{query}]" )
             
             return self._query_llm_phind( prompt, model=model )
             
@@ -65,8 +65,7 @@ class Agent( RunnableCode, abc.ABC ):
         
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
         
-        if debug:
-            timer = sw.Stopwatch( msg=f"Asking LLM [{model}]...".format( model ) )
+        timer = sw.Stopwatch( msg=f"Asking LLM [{model}]...".format( model ) )
         
         response = openai.ChatCompletion.create(
             model=model,
@@ -81,17 +80,15 @@ class Agent( RunnableCode, abc.ABC ):
             presence_penalty=0.0
         )
         
-        if debug:
-            timer.print( use_millis=True )
-            if self.verbose:
-                print( json.dumps( response, indent=4 ) )
+        timer.print( use_millis=True )
+        if debug and self.verbose:
+            print( json.dumps( response, indent=4 ) )
         
         return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
     
     def _query_llm_phind( self, prompt, model=DEFAULT_MODEL ):
         
-        if self.debug:
-            timer = sw.Stopwatch( msg=f"Asking LLM [{model}]...".format( model ) )
+        timer = sw.Stopwatch( msg=f"Asking LLM [{model}]...".format( model ) )
         
         client         = InferenceClient( model=self.phind_tgi_url )
         token_list     = [ ]
@@ -110,11 +107,12 @@ class Agent( RunnableCode, abc.ABC ):
                     print()
                 
             token_list.append( token )
-        
+            
+        # print()
         response = "".join( token_list ).strip()
         
+        timer.print( use_millis=True, prepend_nl=True )
         if self.debug:
-            timer.print( use_millis=True, prepend_nl=True )
             print( f"Token list length [{len( token_list )}]" )
             if self.verbose:
                 for line in response.split( "\n" ):
@@ -168,7 +166,7 @@ class Agent( RunnableCode, abc.ABC ):
         instructions = f"""
         Reformat and rephrase the {data_format} data that I just showed you in conversational English so that it answers this question: `{self.question}`
 
-        Each line of the output that you create should contain or reference one event."
+        Each line of the output that you create should contain or reference one date, time, event or answer."
         """
         return instructions
     
