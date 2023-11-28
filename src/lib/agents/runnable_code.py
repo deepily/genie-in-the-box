@@ -24,8 +24,8 @@ class RunnableCode:
     def run_code(self):
         
         self.code_response_dict = ucr.assemble_and_run_solution(
-            self.prompt_response_dict[ "code" ], path="/src/conf/long-term-memory/events.csv",
-            solution_code_returns=self.prompt_response_dict.get( "returns", "string" ), debug=self.debug
+            self.prompt_response_dict[ "code" ], self.prompt_response_dict[ "example" ], path="/src/conf/long-term-memory/events.csv",
+            solution_code_returns=self.prompt_response_dict.get( "returns", "" ), debug=True
         )
         self.answer = self.code_response_dict[ "output" ]
         
