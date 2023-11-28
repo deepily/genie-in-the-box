@@ -235,6 +235,16 @@ def get_project_root():
     else:
         return "/var/genie-in-the-box"
 
+# do the same as do the same as get_project_root() but for the GENIE_IN_THE_BOX_TGI_SERVER
+def get_tgi_server_url():
+    
+    if debug: print( "GENIE_IN_THE_BOX_TGI_SERVER [{}]".format( os.getenv( "GENIE_IN_THE_BOX_TGI_SERVER" ) ) )
+    
+    if "GENIE_IN_THE_BOX_TGI_SERVER" in os.environ:
+        return os.environ[ "GENIE_IN_THE_BOX_TGI_SERVER" ]
+    else:
+        return "http://172.17.0.4:3000"
+
 def generate_domain_names( count=10, remove_dots=False, debug=False ):
     
     adjectives        = [ "amazing", "beautiful", "exciting", "fantastic", "hilarious", "incredible", "jubilant", "magnificent", "remarkable", "spectacular", "wonderful" ]
@@ -329,6 +339,7 @@ def print_list( list_to_print, end="\n" ):
 if __name__ == "__main__":
     
     print( get_current_datetime() )
+    print( get_tgi_server_url())
     # generate_domain_names( 10, debug=True )
     
     # search_terms = get_file_as_list( get_project_root() + "/src/conf/search-terms.txt", lower_case=True, clean=True, randomize=True )
