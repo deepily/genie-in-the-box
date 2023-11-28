@@ -1,29 +1,23 @@
 import os
-debug = os.getenv( "GIB_CODE_EXEC_DEBUG", "True" ) == "True"
-
-# if debug: print( f"pwd [{os.getcwd()}]" )
+debug = os.getenv( "GIB_CODE_EXEC_DEBUG", "False" ) == "True"
 
 import sys
 if debug:
     sys.path.sort()
     for path in sys.path: print( path )
 
-# try:
-#     import util as du
-# except ImportError:
-#     print( "Failed to import 'util', trying 'lib.util'..." )
 import lib.utils.util as du
 
 from subprocess import PIPE, run
 
-def append_example_and_print_code( code, code_return_type, example_code, debug=False ):
+def append_example_and_print_code( code, code_return_type, example_code, debug=False, verbose=False ):
     
     # Everybody runs the example code
     code.append( example_code )
     
     # code_return_type occasionally 'pandas.core.frame.DataFrame'
     return_type = code_return_type.lower().split( "." )[ -1 ]
-    if debug: print( "return_type [{}]".format( return_type ) )
+    if debug and verbose: print( "return_type [{}]".format( return_type ) )
     
     if return_type == "dataframe":
         code.append( "print( solution.to_json( orient='records', lines=True ) )" )
@@ -62,7 +56,7 @@ def remove_last_occurrence( the_list, the_string ):
 
     return the_list
 
-def assemble_and_run_solution( solution_code, example_code, path=None, solution_code_returns="string", debug=debug ):
+def assemble_and_run_solution( solution_code, example_code, path=None, solution_code_returns="string", debug=debug, verbose=False ):
     
     # if there's no dataframe to open or prep, then skip it
     if path is None:
@@ -89,7 +83,7 @@ def assemble_and_run_solution( solution_code, example_code, path=None, solution_
     
     code = code_preamble + solution_code + [ "" ]
     
-    if debug: du.print_list( code )
+    if debug and verbose: du.print_list( code )
     
     code_path = du.get_project_root() + "/io/code.py"
     du.write_lines_to_file( code_path, code )

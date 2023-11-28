@@ -238,8 +238,7 @@ class CalendaringAgent( Agent ):
                 "returns": _get_value_by_tag_name( xml_string, "returns" ),
                 "example": _get_value_by_tag_name( xml_string, "example" ),
             "explanation": _get_value_by_tag_name( xml_string, "explanation" ),
-                  "error": _get_value_by_tag_name( xml_string, "error" ),
-                  # "blarg": _get_value_by_tag_name( xml_string, "blarg" )
+                  "error": _get_value_by_tag_name( xml_string, "error" )
         }
         return response_dict
     
@@ -261,7 +260,7 @@ if __name__ == "__main__":
     # import huggingface_hub as hf
     # print( "hf.__version__", hf.__version__ )
     
-    agent = CalendaringAgent( path_to_df="/src/conf/long-term-memory/events.csv", debug=True, verbose=True )
+    agent = CalendaringAgent( path_to_df="/src/conf/long-term-memory/events.csv", debug=False, verbose=False )
 
     # question         = "What todo items do I have on my calendar for this week?"
     # question         = "What todo items do I have on my calendar for today?"
@@ -269,8 +268,9 @@ if __name__ == "__main__":
     # question         = "When is Juan's birthday?"
     # question         = "When is Jimmy's birthday?"
     # question         = "When is my birthday?"
-    question           = "What is the date today?"
-
+    # question           = "What is the date today?"
+    # question           = "What time is it in Washington DC? I'm not interested in superfluous precision, so you can omit seconds and milliseconds"
+    question           = "What day of the week is today?"
     timer            = sw.Stopwatch( msg=f"Processing [{question}]..." )
     response_dict    = agent.run_prompt( question )
     
@@ -281,7 +281,7 @@ if __name__ == "__main__":
     #
     timer.print( use_millis=True )
     #
-    du.print_banner( question, prepend_nl=True )
+    du.print_banner( question, prepend_nl=False )
     for line in formatted_output.split( "\n" ):
         print( line )
         
