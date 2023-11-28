@@ -20,6 +20,7 @@ class Agent( RunnableCode, abc.ABC ):
     DEFAULT_MODEL = PHIND_34B_v2
     
     PHIND_TGI_URL = "http://127.0.0.1:8080"
+    # PHIND_TGI_URL = "http://172.17.0.4:8080"
     
     def __init__( self, phind_tgi_url=PHIND_TGI_URL, debug=False, verbose=False ):
         
