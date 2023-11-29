@@ -92,5 +92,5 @@ RUN python3.11 -c "from huggingface_hub import snapshot_download; snapshot_downl
 WORKDIR /var/genie-in-the-box
 RUN mkdir -p /var/io
 
-CMD [ "/var/genie-in-the-box/src/scripts/run-flask-gib.sh" ]
-#CMD [ "/bin/bash" ]
+#CMD [ "/var/genie-in-the-box/src/scripts/run-flask-gib.sh" ]
+CMD [ "/bin/bash" ]
