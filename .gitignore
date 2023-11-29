@@ -36,3 +36,6 @@ venv/**
 
 # Python web server artifact
 nohup.out
+
+# skip anything contained within a directory called foo
+**/foo/**
