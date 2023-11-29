@@ -37,13 +37,13 @@ class SolutionSnapshot( Agent ):
         timer = sw.Stopwatch( msg=msg )
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
         
-        response = openai.Embedding.create(
+        response = openai.embeddings.create(
             input=text,
             model="text-embedding-ada-002"
         )
         timer.print( "Done!", use_millis=True )
         
-        return response[ "data" ][ 0 ][ "embedding" ]
+        return response.data[ 0 ].embedding
     
     @staticmethod
     def generate_id_hash( push_counter, run_date ):
@@ -64,7 +64,7 @@ class SolutionSnapshot( Agent ):
                   last_question_asked="", answer="", answer_short="", answer_conversational="", error="",
                   created_date=get_timestamp(), updated_date=get_timestamp(), run_date=get_timestamp(),
                   runtime_stats=get_default_stats_dict(),
-                  id_hash="", solution_summary="", code=[], code_type="raw", thoughts="",
+                  id_hash="", solution_summary="", code=[], code_returns="", code_example="", code_type="raw", thoughts="",
                   programming_language="Python", language_version="3.10",
                   question_embedding=[ ], solution_embedding=[ ], code_embedding=[ ], thoughts_embedding=[ ],
                   solution_directory="/src/conf/long-term-memory/solutions/", solution_file=None, debug=False, verbose=False
@@ -94,6 +94,8 @@ class SolutionSnapshot( Agent ):
         self.solution_summary      = solution_summary
         
         self.code                  = code
+        self.code_returns          = code_returns
+        self.code_example          = code_example
         self.code_type             = code_type
         
         # metadata surrounding the question and the solution
@@ -162,10 +164,12 @@ class SolutionSnapshot( Agent ):
               last_question_asked=agent.last_question_asked,
              synonymous_questions=OrderedDict( { agent.question: 100.0 } ),
                             error=agent.prompt_response_dict.get( "error", "" ),
-                 solution_summary=agent.prompt_response_dict.get( "explanation", "No explanation available" ),
-                             code=agent.prompt_response_dict.get( "code", "No code provided" ),
-                         thoughts=agent.prompt_response_dict.get( "thoughts", "No thoughts recorded" ),
-                           answer=agent.code_response_dict.get( "output", "No answer available" ),
+                 solution_summary=agent.prompt_response_dict.get( "explanation", "N/A" ),
+                             code=agent.prompt_response_dict.get( "code", "N/A" ),
+                     code_returns=agent.prompt_response_dict.get( "returns", "N/A" ),
+                     code_example=agent.prompt_response_dict.get( "example", "N/A" ),
+                         thoughts=agent.prompt_response_dict.get( "thoughts", "N/A" ),
+                           answer=agent.code_response_dict.get( "output", "N/A" ),
             answer_conversational=agent.answer_conversational
                
                # TODO: Reconcile how we're going to get a dynamic path to the solution file's directory
@@ -233,7 +237,7 @@ class SolutionSnapshot( Agent ):
         
         # TODO: decide what we're going to exclude from serialization, and why or why not!
         # Right now I'm just doing this for the sake of expediency as I'm playing with class inheritance for agents
-        fields_to_exclude = [ "prompt_response", "prompt_response_dict", "code_response_dict" ]
+        fields_to_exclude = [ "prompt_response", "prompt_response_dict", "code_response_dict", "phind_tgi_url" ]
         data = { field: value for field, value in self.__dict__.items() if field not in fields_to_exclude }
         return json.dumps( data )
         
@@ -308,7 +312,9 @@ class SolutionSnapshot( Agent ):
     
     def run_code( self, debug=False, verbose=False ):
         
-        self.code_response_dict = ucr.assemble_and_run_solution( self.code, path="/src/conf/long-term-memory/events.csv", debug=debug )
+        self.code_response_dict = ucr.assemble_and_run_solution(
+            self.code, self.code_example, solution_code_returns=self.code_returns, path="/src/conf/long-term-memory/events.csv", debug=debug
+        )
         self.answer             = self.code_response_dict[ "output" ]
         
         if debug and verbose:
@@ -379,13 +385,13 @@ class SolutionSnapshot( Agent ):
     #     timer = sw.Stopwatch( msg=msg )
     #     openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
     #
-    #     response = openai.Embedding.create(
+    #     response = openai.embeddings.create(
     #         input=text,
     #         model="text-embedding-ada-002"
     #     )
     #     timer.print( "Done!", use_millis=True )
     #
-    #     return response[ "data" ][ 0 ][ "embedding" ]
+    #     return response.data[ 0 ].embedding
     #
     # @staticmethod
     # def generate_id_hash( push_counter, run_date ):

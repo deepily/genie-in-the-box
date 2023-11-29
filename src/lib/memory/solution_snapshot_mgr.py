@@ -98,6 +98,7 @@ class SolutionSnapshotManager:
         
     def get_snapshots_by_question_similarity( self, question, threshold=85.0, limit=7 ):
         
+        print( f"get_snapshots_by_question_similarity( '{question}' )..." )
         # Generate the embedding for the question, if it doesn't already exist
         if question not in self.embeddings_by_question:
             question_embedding = ss.SolutionSnapshot.generate_embedding( question )
@@ -177,7 +178,7 @@ class SolutionSnapshotManager:
         
         question = ss.SolutionSnapshot.clean_question( question )
         
-        if self.debug: print( f"get_snapshots_by_question( '{question}' )..." )
+        print( f"get_snapshots_by_question( '{question}' )..." )
         # print( "question in self.snapshots_by_synomymous_questions:", question in self.snapshots_by_synomymous_questions)
         
         if self.question_exists( question ):
