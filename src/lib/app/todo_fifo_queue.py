@@ -24,7 +24,7 @@ class TodoFifoQueue( FifoQueue ):
         self.push_counter += 1
         
         print_banner( f"push_job( '{question}' )", prepend_nl=True )
-        similar_snapshots = self.snapshot_mgr.get_snapshots_by_question( question, threshold=95.0 )
+        similar_snapshots = self.snapshot_mgr.get_snapshots_by_question( question, threshold=90.0 )
         print()
         
         # if we've got a similar snapshot then go ahead and push it onto the queue
@@ -69,10 +69,10 @@ class TodoFifoQueue( FifoQueue ):
         
         else:
             
-            msg = f"No similar snapshots found, adding NEW CalendaringAgent to TODO queue. Queue size [{self.size()}]"
-            print( msg )
             calendaring_agent = CalendaringAgent( self.path_to_events_df, question=question, push_counter=self.push_counter, debug=True, verbose=False )
             self.push( calendaring_agent )
+            msg = f"No similar snapshots found, adding NEW CalendaringAgent to TODO queue. Queue size [{self.size()}]"
+            print( msg )
             return msg
             
             # agent = FunctionMappingAgent( "/src/conf/long-term-memory/events.csv", question=question, push_counter=self.push_counter, debug=True, verbose=True )

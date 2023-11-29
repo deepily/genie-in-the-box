@@ -333,13 +333,9 @@ class SolutionSnapshot( Agent ):
         self._print_token_count( instructions, message_name="formatting instructions", model=format_model )
         
         self.answer_conversational = self._query_llm( preamble, instructions, model=format_model, debug=True )
-        # Remove the .</s> token from the end of the response
-        if self.answer_conversational.endswith( ".</s>" ):
-            self.answer_conversational = self.answer_conversational[ :-5 ]
-            
-        # if we've just received an xml-esque string then pull `<rephrased_answer>` from it
-        if "<rephrased_answer>" in self.answer_conversational:
-            self.answer_conversational = du.get_value_by_xml_tag_name( self.answer_conversational, "rephrased_answer" )
+        
+        # if we've just received an xml-esque string then pull `<rephrased_answer>` from it. Otherwise, just return the string
+        self.answer_conversational = du.get_value_by_xml_tag_name( self.answer_conversational, "rephrased_answer", default_value=self.answer_conversational )
         
         return self.answer_conversational
     

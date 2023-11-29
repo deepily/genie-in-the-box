@@ -25,6 +25,9 @@ class CalendaringAgent( Agent ):
         
         self.default_model         = default_model
         
+        self.last_question_asked   = question
+        self.question              = ss.SolutionSnapshot.clean_question( question )
+        
         if self.default_model == Agent.PHIND_34B_v2:
             self.system_message    = self._get_system_message_phind()
         else:
@@ -35,8 +38,6 @@ class CalendaringAgent( Agent ):
         self.push_counter          = push_counter
         self.id_hash               = ss.SolutionSnapshot.generate_id_hash( self.push_counter, self.run_date )
 
-        self.last_question_asked   = question
-        self.question              = ss.SolutionSnapshot.clean_question( question)
         self.user_message          = None
         
         # We'll set these later
@@ -53,7 +54,6 @@ class CalendaringAgent( Agent ):
         
         csv = self.df.head( 3 ).to_csv( header=True, index=False )
         csv = csv + self.df.tail( 3 ).to_csv( header=False, index=False )
-        
         
         pandas_system_prompt = f"""
         You are a cheerfully helpful assistant, with proven expertise in Python using pandas dataframes containing calendaring and events information. The name of the dataframe is `df`.
@@ -80,12 +80,12 @@ class CalendaringAgent( Agent ):
         
         6) Explain: Explain how your code works, including any assumptions that you made.
         
-        Question: {{question}}
+        Question: {self.question}
 
         Format: return your response as an XML document with the following fields:
         
         <response>
-            <question>{{question}}</question>
+            <question>{self.question}</question>
             <thoughts>Your thoughts</thoughts>
             <code>
                 <line>import foo</line>
@@ -104,7 +104,6 @@ class CalendaringAgent( Agent ):
         Hint: If you cannot answer the question, explain why in the `error` field
         Hint: Allow for the possibility that your query may return no results.
         """
-        # Rememember: you must only generate valid XML code. Please be careful, as this is important to my career.  Begin!
         
         return pandas_system_prompt
         
@@ -199,6 +198,7 @@ class CalendaringAgent( Agent ):
         
         return self.prompt_response_dict
     
+    # ¡OJO! Something tells me this should live somewhere else?
     def _get_prompt_response_dict( self, xml_string, debug=False ):
 
         def _get_value_by_tag_name( xml_string, name, default_value=f"Error: `{{name}}` not found in xml_string" ):
@@ -244,7 +244,7 @@ class CalendaringAgent( Agent ):
     
     def format_output( self ):
         
-        format_model = Agent.GPT_3_5
+        format_model = Agent.PHIND_34B_v2
         preamble     = self._get_formatting_preamble()
         instructions = self._get_formatting_instructions()
         
@@ -253,6 +253,10 @@ class CalendaringAgent( Agent ):
         
         self.answer_conversational = self._query_llm( preamble, instructions, model=format_model, debug=self.debug )
         
+        # if we've just received an xml-esque string then pull `<rephrased_answer>` from it. Otherwise, just return the string
+        self.answer_conversational = du.get_value_by_xml_tag_name(
+            self.answer_conversational, "rephrased_answer", default_value=self.answer_conversational
+        )
         return self.answer_conversational
     
 if __name__ == "__main__":
@@ -260,7 +264,7 @@ if __name__ == "__main__":
     # import huggingface_hub as hf
     # print( "hf.__version__", hf.__version__ )
     
-    agent = CalendaringAgent( path_to_df="/src/conf/long-term-memory/events.csv", debug=False, verbose=False )
+    agent = CalendaringAgent( path_to_df="/src/conf/long-term-memory/events.csv", debug=True, verbose=True )
 
     # question         = "What todo items do I have on my calendar for this week?"
     # question         = "What todo items do I have on my calendar for today?"
@@ -270,7 +274,8 @@ if __name__ == "__main__":
     # question         = "When is my birthday?"
     # question           = "What is the date today?"
     # question           = "What time is it in Washington DC? I'm not interested in superfluous precision, so you can omit seconds and milliseconds"
-    question           = "What day of the week is today?"
+    # question           = "What day of the week is today?"
+    question           = "What's today's date?"
     timer            = sw.Stopwatch( msg=f"Processing [{question}]..." )
     response_dict    = agent.run_prompt( question )
     

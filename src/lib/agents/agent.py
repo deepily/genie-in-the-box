@@ -27,9 +27,10 @@ class Agent( RunnableCode, abc.ABC ):
         self.debug         = debug
         self.verbose       = verbose
         
-        # self.code_response_dict    = None
+        self.question              = None
         self.answer_conversational = None
         
+        # self.code_response_dict    = None
         # self.prompt_response = None
         # self.prompt_response_dict = None
         self.phind_tgi_url = du.get_tgi_server_url()
@@ -45,27 +46,28 @@ class Agent( RunnableCode, abc.ABC ):
         
         return num_tokens
     
-    def _query_llm( self, preamble, instructions, model=DEFAULT_MODEL, debug=True ):
+    def _query_llm( self, preamble, question, model=DEFAULT_MODEL, debug=True ):
         
-        # print( f"preamble [{preamble}]" )
-        # print( f"instructions [{instructions}]" )
-        #
         if model == Agent.PHIND_34B_v2:
             
+            print( f"preamble [{preamble}]" )
+            print( f"question [{question}]" )
+            
+            prompt = preamble + "\n" + question
+            # prompt = preamble.format( question=question )
             # insert question into template
-            # prompt = preamble + "\n" + query
             # if debug:
             #     print( f"Prompt:\n[{prompt}]" )
             # elif self.debug:
             #     print( f"Query: [{query}]" )
             self.debug = debug
-            return self._query_llm_phind( instructions, model=model )
+            return self._query_llm_phind( prompt, model=model )
             
         else:
             if debug:
                 print( f"Preamble: [{preamble}]" )
-                print( f"Query: [{instructions}]" )
-            return self._query_llm_openai( preamble, instructions, model=model, debug=debug )
+                print( f"Question: [{question}]" )
+            return self._query_llm_openai( preamble, question, model=model, debug=debug )
         
     def _query_llm_openai( self, preamble, query, model=DEFAULT_MODEL, debug=False ):
         
@@ -101,7 +103,7 @@ class Agent( RunnableCode, abc.ABC ):
         token_list     = [ ]
         ellipsis_count = 0
         
-        # if self.debug: print( f"Prompt:\n[{prompt}]" )
+        if self.debug: print( f"Prompt:\n[{prompt}]" )
         
         for token in client.text_generation(
             prompt, max_new_tokens=1024, stream=True, stop_sequences=[ "</response>", "</s>" ], temperature=1.0
@@ -176,17 +178,11 @@ class Agent( RunnableCode, abc.ABC ):
         
         else:
             
-            preamble = f"""
-            ### System Prompt
-            You are an expert in converting raw data into conversational English and outputting it as XML document  .
+            preamble = """
+            You are an expert in converting raw data into conversational English and outputting it as XML document.
 
             The answer below is the result of a query on a pandas dataframe about events, dates, and times on my calendar.
             """
-            #
-            # The query is: `{self.question}`
-            #
-            # The raw answer is: `{self.code_response_dict[ "output" ]}`
-            # """
             return preamble
 
     
@@ -221,13 +217,13 @@ class Agent( RunnableCode, abc.ABC ):
         #     </answer>
         # </response>
         # """
-        instructions = f"""
-        ### System Prompt
-        You are an expert in converting raw data into conversational English and outputting it as XML document.
-
-        The answer below is the result of a query on a pandas dataframe about events, dates, and times on my calendar.
         
-        ### User Message:
+        # instructions = f"""
+        # You are an expert in converting raw data into conversational English and outputting it as XML document.
+        #
+        # The answer below is the result of a query on a pandas dataframe about events, dates, and times on my calendar.
+        #
+        instructions = f"""
         Rephrase the raw answer in {data_format} format below so that it briefly answers the question below, and nothing more.
 
         Question: {self.question}
@@ -281,52 +277,3 @@ class Agent( RunnableCode, abc.ABC ):
         """
         return preamble
     
-    # def _get_value_by_tag_name( self, xml_string, name, default_value=f"Error: `{{name}}` not found in xml_string" ):
-    #
-    #     if f"<{name}>" not in xml_string or f"</{name}>" not in xml_string:
-    #         return default_value.format( name=name )
-    #
-    #     return xml_string.split( f"<{name}>" )[ 1 ].split( f"</{name}>" )[ 0 ]
-    
-    # def _get_prompt_response_dict( self, xml_string, debug=False ):
-    #
-    #     # def _get_value_by_tag_name( xml_string, name, default_value=f"Error: `{{name}}` not found in xml_string" ):
-    #     #
-    #     #     if f"<{name}>" not in xml_string or f"</{name}>" not in xml_string:
-    #     #         return default_value.format( name=name )
-    #     #
-    #     #     return xml_string.split( f"<{name}>" )[ 1 ].split( f"</{name}>" )[ 0 ]
-    #
-    #     def _get_code( xml_string, debug=False ):
-    #
-    #         # Matches all text between the opening and closing line tags, including the white space after the opening line tag
-    #         pattern = re.compile( r"<line>(.*?)</line>" )
-    #         code = self._get_value_by_tag_name( xml_string, "code" )
-    #         code_list = [ ]
-    #
-    #         for line in code.split( "\n" ):
-    #
-    #             match = pattern.search( line )
-    #             if match:
-    #                 line = match.group( 1 )
-    #                 code_list.append( line )
-    #                 if debug: print( line )
-    #             else:
-    #                 if debug: print( "[]" )
-    #
-    #         return code_list
-    #
-    #     # Trim everything down to only what's contained between the response open and close tags'
-    #     xml_string = self._get_value_by_tag_name( xml_string, "response" )
-    #
-    #     response_dict = {
-    #         # "answer": _get_value_by_tag_name( xml_string, "answer", default_value="" ),
-    #         "question"   : self._get_value_by_tag_name( xml_string, "question" ),
-    #         "thoughts"   : self._get_value_by_tag_name( xml_string, "thoughts" ),
-    #         "code"       : _get_code( xml_string, debug=debug ),
-    #         "returns"    : self._get_value_by_tag_name( xml_string, "returns" ),
-    #         "example"    : self._get_value_by_tag_name( xml_string, "example" ),
-    #         "explanation": self._get_value_by_tag_name( xml_string, "explanation" ),
-    #         "error"      : self._get_value_by_tag_name( xml_string, "error" )
-    #     }
-    #     return response_dict
