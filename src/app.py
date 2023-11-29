@@ -68,7 +68,7 @@ EVENTS_DF_PATH = "/src/conf/long-term-memory/events.csv"
 """
 Globally visible queue object
 """
-jobs_todo_queue = tdq.TodoFifoQueue( socketio, snapshot_mgr, app )
+jobs_todo_queue = tdq.TodoFifoQueue( socketio, snapshot_mgr, app, EVENTS_DF_PATH )
 jobs_done_queue = FifoQueue()
 jobs_dead_queue = FifoQueue()
 jobs_run_queue  = RunningFifoQueue( app, socketio, snapshot_mgr, jobs_todo_queue, jobs_done_queue, jobs_dead_queue )
