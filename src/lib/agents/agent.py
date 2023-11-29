@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import abc
 
@@ -44,22 +45,27 @@ class Agent( RunnableCode, abc.ABC ):
         
         return num_tokens
     
-    def _query_llm( self, preamble, query, model=DEFAULT_MODEL, debug=False ):
+    def _query_llm( self, preamble, instructions, model=DEFAULT_MODEL, debug=True ):
         
+        # print( f"preamble [{preamble}]" )
+        # print( f"instructions [{instructions}]" )
+        #
         if model == Agent.PHIND_34B_v2:
             
             # insert question into template
-            prompt = preamble.format( question=query )
-            if self.debug and self.verbose:
-                print( f"Prompt:\n[{prompt}]" )
-            elif self.debug:
-                print( f"Query: [{query}]" )
-            
-            return self._query_llm_phind( prompt, model=model )
+            # prompt = preamble + "\n" + query
+            # if debug:
+            #     print( f"Prompt:\n[{prompt}]" )
+            # elif self.debug:
+            #     print( f"Query: [{query}]" )
+            self.debug = debug
+            return self._query_llm_phind( instructions, model=model )
             
         else:
-            
-            return self._query_llm_openai( preamble,query, model=model, debug=debug )
+            if debug:
+                print( f"Preamble: [{preamble}]" )
+                print( f"Query: [{instructions}]" )
+            return self._query_llm_openai( preamble, instructions, model=model, debug=debug )
         
     def _query_llm_openai( self, preamble, query, model=DEFAULT_MODEL, debug=False ):
         
@@ -95,8 +101,10 @@ class Agent( RunnableCode, abc.ABC ):
         token_list     = [ ]
         ellipsis_count = 0
         
+        # if self.debug: print( f"Prompt:\n[{prompt}]" )
+        
         for token in client.text_generation(
-            prompt, max_new_tokens=1024, stream=True, stop_sequences=[ "</response>" ], temperature=1.0
+            prompt, max_new_tokens=1024, stream=True, stop_sequences=[ "</response>", "</s>" ], temperature=1.0
         ):
             if self.debug:
                 print( token, end="" )
@@ -160,17 +168,6 @@ class Agent( RunnableCode, abc.ABC ):
                 
                 print( f"Token count for `{message_name}`: [Not yet available for {model}]" )
     
-    def _get_formatting_instructions( self ):
-        
-        data_format = "JSONL " if du.is_jsonl( self.code_response_dict[ "output" ] ) else ""
-        
-        instructions = f"""
-        Reformat and rephrase the {data_format} data that I just showed you in conversational English so that it answers this question: `{self.question}`
-
-        Each line of the output that you create should contain or reference one date, time, event or answer."
-        """
-        return instructions
-    
     def _get_formatting_preamble( self ):
         
         if du.is_jsonl( self.code_response_dict[ "output" ] ):
@@ -180,15 +177,82 @@ class Agent( RunnableCode, abc.ABC ):
         else:
             
             preamble = f"""
-            You are an expert in converting raw data into conversational English.
+            ### System Prompt
+            You are an expert in converting raw data into conversational English and outputting it as XML document  .
 
-            The output is the result of a query on a pandas dataframe about events on my calendar.
-
-            The query is: `{self.question}`
-
-            The output is: `{self.code_response_dict[ "output" ]}`
+            The answer below is the result of a query on a pandas dataframe about events, dates, and times on my calendar.
             """
+            #
+            # The query is: `{self.question}`
+            #
+            # The raw answer is: `{self.code_response_dict[ "output" ]}`
+            # """
             return preamble
+
+    
+    def _get_formatting_instructions( self ):
+        
+        if du.is_jsonl( self.code_response_dict[ "output" ] ):
+            data_format = "JSONL"
+        elif "<xml" in self.code_response_dict[ "output" ]:
+            data_format = "XML"
+        else:
+            data_format = "plain text"
+        
+        # instructions = f"""
+        # Reformat and rephrase the {data_format} data that I just showed you in brief yet conversational English so that it answers this question: `{self.question}`
+        #
+        # 1) Question: Ask yourself if you understand the question being asked of the data. Is the question asking for a type of event, the date, the day, the time, or both date and time?
+        #
+        # 2) Think: Before you do anything, think out loud about what are the steps that you will need to take to answer this question. Be critical of your thought process!
+        #
+        # 3) Answer: Generate an XML document containing your answer composed of one or more sentences. Each sentence must contain or reference only one date, one time, one event or one answer.
+        #
+        # Question: {{question}}
+        #
+        # Format: return your response as an XML document with the following fields:
+        #
+        # <response>
+        #     <question>{self.question}</question>
+        #     <thoughts>Your thought process</thoughts>
+        #     <answer>
+        #         <sentence>...</sentence>
+        #         <sentence>...</sentence>
+        #     </answer>
+        # </response>
+        # """
+        instructions = f"""
+        ### System Prompt
+        You are an expert in converting raw data into conversational English and outputting it as XML document.
+
+        The answer below is the result of a query on a pandas dataframe about events, dates, and times on my calendar.
+        
+        ### User Message:
+        Rephrase the raw answer in {data_format} format below so that it briefly answers the question below, and nothing more.
+
+        Question: {self.question}
+        Raw Answer: {self.code_response_dict[ "output" ]}
+        
+        Return your answer as a simple xml document with the following fields:
+        <response>
+            <rephrased_answer>Your rephrased answer</rephrased_answer>
+        </response>
+        """
+        # Rephrase the raw answer in {data_format} format below and output it using brief yet conversational English to the <rephrased_answer> field so that it answers the question in the <question> field.
+        #
+        # Raw Answer: `{self.code_response_dict[ "output" ]}`
+        #
+        # Generate an XML document containing your response composed of one or more sentences. Each sentence of the output that you create should contain or reference one date, time, event or answer.
+        # <response>
+        #     <question>{self.question}</question>
+        #     <raw_answer>{self.code_response_dict[ "output" ]}</raw_answer>
+        #     <rephrased_answer>
+        #         <sentence>Your rephrased answer</sentence>
+        #     </rephrased_answer>
+        # </response>
+        # """
+        return instructions
+    
     
     def _get_jsonl_formatting_preamble( self ):
         
@@ -216,3 +280,53 @@ class Agent( RunnableCode, abc.ABC ):
         {lines}
         """
         return preamble
+    
+    # def _get_value_by_tag_name( self, xml_string, name, default_value=f"Error: `{{name}}` not found in xml_string" ):
+    #
+    #     if f"<{name}>" not in xml_string or f"</{name}>" not in xml_string:
+    #         return default_value.format( name=name )
+    #
+    #     return xml_string.split( f"<{name}>" )[ 1 ].split( f"</{name}>" )[ 0 ]
+    
+    # def _get_prompt_response_dict( self, xml_string, debug=False ):
+    #
+    #     # def _get_value_by_tag_name( xml_string, name, default_value=f"Error: `{{name}}` not found in xml_string" ):
+    #     #
+    #     #     if f"<{name}>" not in xml_string or f"</{name}>" not in xml_string:
+    #     #         return default_value.format( name=name )
+    #     #
+    #     #     return xml_string.split( f"<{name}>" )[ 1 ].split( f"</{name}>" )[ 0 ]
+    #
+    #     def _get_code( xml_string, debug=False ):
+    #
+    #         # Matches all text between the opening and closing line tags, including the white space after the opening line tag
+    #         pattern = re.compile( r"<line>(.*?)</line>" )
+    #         code = self._get_value_by_tag_name( xml_string, "code" )
+    #         code_list = [ ]
+    #
+    #         for line in code.split( "\n" ):
+    #
+    #             match = pattern.search( line )
+    #             if match:
+    #                 line = match.group( 1 )
+    #                 code_list.append( line )
+    #                 if debug: print( line )
+    #             else:
+    #                 if debug: print( "[]" )
+    #
+    #         return code_list
+    #
+    #     # Trim everything down to only what's contained between the response open and close tags'
+    #     xml_string = self._get_value_by_tag_name( xml_string, "response" )
+    #
+    #     response_dict = {
+    #         # "answer": _get_value_by_tag_name( xml_string, "answer", default_value="" ),
+    #         "question"   : self._get_value_by_tag_name( xml_string, "question" ),
+    #         "thoughts"   : self._get_value_by_tag_name( xml_string, "thoughts" ),
+    #         "code"       : _get_code( xml_string, debug=debug ),
+    #         "returns"    : self._get_value_by_tag_name( xml_string, "returns" ),
+    #         "example"    : self._get_value_by_tag_name( xml_string, "example" ),
+    #         "explanation": self._get_value_by_tag_name( xml_string, "explanation" ),
+    #         "error"      : self._get_value_by_tag_name( xml_string, "error" )
+    #     }
+    #     return response_dict

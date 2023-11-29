@@ -55,6 +55,7 @@ class RunningFifoQueue( FifoQueue ):
                     
                 else:
                     running_job = self._handle_solution_snapshot( running_job, truncated_question, run_timer )
+                    running_job.debug = True
                     
                 self.pop()
                 self.socketio.emit( 'run_update', { 'value': self.size() } )
@@ -182,7 +183,7 @@ class RunningFifoQueue( FifoQueue ):
         _ = running_job.run_code()
         timer.print( "Done!", use_millis=True )
         
-        msg = "Calling GPT to reformat the job.answer..."
+        msg = "Re-formatting job.answer..."
         timer = sw.Stopwatch( msg )
         _ = running_job.format_output()
         timer.print( "Done!", use_millis=True )

@@ -324,15 +324,22 @@ class SolutionSnapshot( Agent ):
         
         return self.code_response_dict
     
-    def format_output( self, format_model=Agent.GPT_3_5 ):
+    def format_output( self, format_model=Agent.PHIND_34B_v2 ):
         
-        preamble = self._get_formatting_preamble()
+        preamble     = self._get_formatting_preamble()
         instructions = self._get_formatting_instructions()
         
         self._print_token_count( preamble, message_name="formatting preamble", model=format_model )
         self._print_token_count( instructions, message_name="formatting instructions", model=format_model )
         
-        self.answer_conversational = self._query_llm( preamble, instructions, model=format_model, debug=self.debug )
+        self.answer_conversational = self._query_llm( preamble, instructions, model=format_model, debug=True )
+        # Remove the .</s> token from the end of the response
+        if self.answer_conversational.endswith( ".</s>" ):
+            self.answer_conversational = self.answer_conversational[ :-5 ]
+            
+        # if we've just received an xml-esque string then pull `<rephrased_answer>` from it
+        if "<rephrased_answer>" in self.answer_conversational:
+            self.answer_conversational = du.get_value_by_xml_tag_name( self.answer_conversational, "rephrased_answer" )
         
         return self.answer_conversational
     

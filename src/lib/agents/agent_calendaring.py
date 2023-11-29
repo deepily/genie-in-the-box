@@ -207,7 +207,7 @@ class CalendaringAgent( Agent ):
                 return default_value.format( name=name )
 
             return xml_string.split( f"<{name}>" )[ 1 ].split( f"</{name}>" )[ 0 ]
-        
+
         def _get_code( xml_string, debug=False ):
 
             # Matches all text between the opening and closing line tags, including the white space after the opening line tag
@@ -226,10 +226,10 @@ class CalendaringAgent( Agent ):
                     if debug: print( "[]" )
 
             return code_list
-    
+
         # Trim everything down to only what's contained between the response open and close tags'
         xml_string = _get_value_by_tag_name( xml_string, "response" )
-        
+
         response_dict = {
                # "answer": _get_value_by_tag_name( xml_string, "answer", default_value="" ),
                "question": _get_value_by_tag_name( xml_string, "question" ),
