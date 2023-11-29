@@ -254,7 +254,7 @@ class GenieClient:
             print( " prompt [{}]".format( prompt ) )
             print( "content [{}]".format( content ) )
         
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model=model,
             messages=[
                 { "role": "system", "content": prompt },
@@ -274,7 +274,7 @@ class GenieClient:
         )
         if self.debug: print( response )
         
-        return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
+        return response.choices[ 0 ].message.content.strip()
     
     def run_fine_tuning( self, prompt_and_content ):
         
@@ -288,7 +288,7 @@ class GenieClient:
     
         timer = sw.Stopwatch()
         print( "Asking ChatGPT [{}]...".format( model ), end="" )
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model=model,
             messages=[ { "role": "system", "content": "You are ChatGPT, a large language model trained by OpenAI. "
                                                       "Answer as concisely as possible." },
@@ -303,13 +303,13 @@ class GenieClient:
         timer.print( "Done!".format( model ), use_millis=True )
         if self.debug: print( response )
         
-        return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
+        return response.choices[ 0 ].message.content.strip()
 
     def ask_chat_gpt_code( self, query, preamble="Fix this source code", model=GPT_4 ):
     
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
     
-        response = openai.Completion.create(
+        response = openai.completions.create(
             model=model,
             prompt="{}\n\n###{}###".format( preamble, query ),
             temperature=0,
@@ -321,7 +321,7 @@ class GenieClient:
         )
         print( response )
     
-        return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
+        return response.choices[ 0 ].message.content.strip()
     
     def get_tts_file( self, ip_and_port, tts_input, tts_output_path ):
     
