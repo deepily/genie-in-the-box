@@ -100,7 +100,7 @@ def get_name_value_pairs( arg_list, debug=False, verbose=False ):
 # Load a plain text file as a list of lines.
 def get_file_as_list( path, lower_case=False, clean=False, randomize=False ):
     
-    with open( path, "r" ) as file:
+    with open( path, "r", encoding="utf-8" ) as file:
         lines = file.readlines()
     
     if lower_case:
