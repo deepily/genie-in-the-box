@@ -67,7 +67,7 @@ class Agent( RunnableCode, abc.ABC ):
         
         timer = sw.Stopwatch( msg=f"Asking LLM [{model}]...".format( model ) )
         
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model=model,
             messages=[
                 { "role": "system", "content": preamble },
@@ -82,9 +82,10 @@ class Agent( RunnableCode, abc.ABC ):
         
         timer.print( use_millis=True )
         if debug and self.verbose:
-            print( json.dumps( response, indent=4 ) )
+            # print( json.dumps( response.to_dict(), indent=4 ) )
+            print( response )
         
-        return response[ "choices" ][ 0 ][ "message" ][ "content" ].strip()
+        return response.choices[ 0 ].message.content.strip()
     
     def _query_llm_phind( self, prompt, model=DEFAULT_MODEL ):
         

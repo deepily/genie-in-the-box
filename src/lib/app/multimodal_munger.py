@@ -597,7 +597,7 @@ class MultiModalMunger:
         
         timer = sw.Stopwatch()
         print( "Calling [{}]...".format( self.vox_command_model ), end="" )
-        response = openai.Completion.create(
+        response = openai.completions.create(
             model=self.vox_command_model,
             prompt=command_str + "\n\n###\n\n",
             max_tokens=1,
@@ -627,7 +627,7 @@ class MultiModalMunger:
         
         timer = sw.Stopwatch()
         print( "Calling [{}]...".format( model ), end="" )
-        response = openai.Completion.create(
+        response = openai.completions.create(
             model=model,
             prompt=raw_text + "\n\n###\n\n",
             # From: https://community.openai.com/t/cheat-sheet-mastering-temperature-and-top-p-in-chatgpt-api-a-few-tips-and-tricks-on-controlling-the-creativity-deterministic-output-of-prompt-responses/172683
