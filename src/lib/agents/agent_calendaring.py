@@ -231,9 +231,9 @@ class CalendaringAgent( Agent ):
         xml_string = _get_value_by_tag_name( xml_string, "response" )
         
         response_dict = {
+               # "answer": _get_value_by_tag_name( xml_string, "answer", default_value="" ),
                "question": _get_value_by_tag_name( xml_string, "question" ),
                "thoughts": _get_value_by_tag_name( xml_string, "thoughts" ),
-                 "answer": _get_value_by_tag_name( xml_string, "answer", default_value="" ),
                    "code": _get_code( xml_string, debug=debug ),
                 "returns": _get_value_by_tag_name( xml_string, "returns" ),
                 "example": _get_value_by_tag_name( xml_string, "example" ),
