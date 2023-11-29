@@ -12,17 +12,40 @@ from subprocess import PIPE, run
 
 def append_example_and_print_code( code, code_return_type, example_code, debug=False, verbose=False ):
     
-    # Everybody runs the example code
-    code.append( example_code )
+    """
+    Appends the method's invocation example code to the given code list and the prints the returned solution value based on the code return type (dataframe or plain print).
     
-    # code_return_type occasionally 'pandas.core.frame.DataFrame'
-    return_type = code_return_type.lower().split( "." )[ -1 ]
-    if debug and verbose: print( "return_type [{}]".format( return_type ) )
+    When added, example and print code would look like this:
+    <pre><code>
+    code[ -2 ] = "solution = get_time()"
+    code[ -1 ] = "print( solution )"
+    </code></pre>
+
+    Parameters:
+        code (list): A list of code lines.
+        code_return_type (str): The return type of the code.
+        example_code (str): The example code to be appended.
+        debug (bool, optional): Whether to print debug information. Defaults to False.
+        verbose (bool, optional): Whether to print verbose information. Defaults to False.
+
+    Returns:
+        list: The updated code list with the example code appended.
+    """
+    plain_print = "print( solution )"
+    json_print  = "print( solution.to_json( orient='records', lines=True ) )"
     
-    if return_type == "dataframe":
-        code.append( "print( solution.to_json( orient='records', lines=True ) )" )
-    else:
-        code.append( "print( solution )" )
+    if code[ -2 ] != example_code and code[ -1 ] not in [ plain_print, json_print ]:
+        
+        code.append( example_code )
+    
+        # code_return_type if occasionally 'pandas.core.frame.DataFrame'
+        return_type = code_return_type.lower().split( "." )[ -1 ]
+        if debug and verbose: print( "return_type [{}]".format( return_type ) )
+        
+        if return_type == "dataframe":
+            code.append( json_print )
+        else:
+            code.append( plain_print )
         
     return code
 
@@ -92,9 +115,10 @@ def assemble_and_run_solution( solution_code, example_code, path=None, solution_
     original_wd = os.getcwd()
     os.chdir( du.get_project_root() + "/io" )
     
-    if debug: print( "Executing {}... ".format( code_path ), end="" )
+    if debug: print( "Code runner executing [{}]... ".format( code_path ), end="" )
     
-    results = run( [ "python3", code_path ], stdout=PIPE, stderr=PIPE, universal_newlines=True )
+    # ¡OJO! Hardcoded value of python run time... Make this runtime configurable
+    results = run( [ "python", code_path ], stdout=PIPE, stderr=PIPE, universal_newlines=True )
     
     if results.returncode != 0:
         if debug: print()
@@ -139,7 +163,7 @@ def test_assemble_and_run_solution():
         "    return tz_date.strftime( '%I:%M %p %Z' )"
     ]
     example_code = "solution = get_time()"
-    results = assemble_and_run_solution( solution_code, example_code, solution_code_returns="string", debug=debug )
+    results = assemble_and_run_solution( solution_code, example_code, solution_code_returns="string", debug=True, verbose=True )
 
     for line in results[ "output" ].split( "\n" ): print( line )
         
