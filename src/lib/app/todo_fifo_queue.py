@@ -1,6 +1,6 @@
 from flask import url_for
 from lib.app.fifo_queue import FifoQueue
-# from lib.agents.agent_calendaring import CalendaringAgent
+from lib.agents.agent_calendaring import CalendaringAgent
 from lib.agents.agent_function_mapping import FunctionMappingAgent
 from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
 
@@ -9,7 +9,7 @@ from lib.memory.solution_snapshot import SolutionSnapshot
 
 
 class TodoFifoQueue( FifoQueue ):
-    def __init__( self, socketio, snapshot_mgr, app ):
+    def __init__( self, socketio, snapshot_mgr, app, path_to_events_df ):
         
         super().__init__()
         
@@ -17,12 +17,13 @@ class TodoFifoQueue( FifoQueue ):
         self.snapshot_mgr = snapshot_mgr
         self.app = app
         self.push_counter = 0
+        self.path_to_events_df = path_to_events_df
     
     def push_job( self, question ):
         
         self.push_counter += 1
         
-        print_banner( f"Question: [{question}]", prepend_nl=True )
+        print_banner( f"push_job( '{question}' )", prepend_nl=True )
         similar_snapshots = self.snapshot_mgr.get_snapshots_by_question( question, threshold=95.0 )
         print()
         
@@ -68,11 +69,14 @@ class TodoFifoQueue( FifoQueue ):
         
         else:
             
-            # calendaring_agent = CalendaringAgent( self.app.EVENTS_DF_PATH, question=question, push_counter=self.push_count, debug=True, verbose=True )
-            # self.push( calendaring_agent )
+            msg = f"No similar snapshots found, adding NEW CalendaringAgent to TODO queue. Queue size [{self.size()}]"
+            print( msg )
+            calendaring_agent = CalendaringAgent( self.path_to_events_df, question=question, push_counter=self.push_counter, debug=True, verbose=False )
+            self.push( calendaring_agent )
+            return msg
             
-            agent = FunctionMappingAgent( "/src/conf/long-term-memory/events.csv", question=question, push_counter=self.push_counter, debug=True, verbose=True )
-            self.push( agent )
-            self.socketio.emit( 'todo_update', { 'value': self.size() } )
-            
-            return f'No similar snapshots found, adding NEW FunctionMappingAgent to TODO queue. Queue size [{self.size()}]'
+            # agent = FunctionMappingAgent( "/src/conf/long-term-memory/events.csv", question=question, push_counter=self.push_counter, debug=True, verbose=True )
+            # self.push( agent )
+            # self.socketio.emit( 'todo_update', { 'value': self.size() } )
+            #
+            # return f'No similar snapshots found, adding NEW FunctionMappingAgent to TODO queue. Queue size [{self.size()}]'
