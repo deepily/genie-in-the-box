@@ -50,8 +50,8 @@ class Agent( RunnableCode, abc.ABC ):
         
         if model == Agent.PHIND_34B_v2:
             
-            print( f"preamble [{preamble}]" )
-            print( f"question [{question}]" )
+            # print( f"preamble [{preamble}]" )
+            # print( f"question [{question}]" )
             
             prompt = preamble + "\n" + question
             # prompt = preamble.format( question=question )

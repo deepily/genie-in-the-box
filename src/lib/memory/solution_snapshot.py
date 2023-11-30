@@ -176,7 +176,6 @@ class SolutionSnapshot( Agent ):
                # solution_directory=calendaring_agent.solution_directory
         )
     
-    
     def add_synonymous_question( self, question, score=100.0 ):
         
         question = SolutionSnapshot.clean_question( question )

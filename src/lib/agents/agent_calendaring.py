@@ -81,6 +81,12 @@ class CalendaringAgent( Agent ):
         
         6) Explain: Explain how your code works, including any assumptions that you made.
         
+        Hint: An event that I have today may have started before today and may end tomorrow or next week, so be careful how you filter on dates.
+        Hint: When filtering by dates, use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
+        Hint: If your solution variable is a dataframe, it should include all columns in the dataframe.
+        Hint: If you cannot answer the question, explain why in the `error` field
+        Hint: Allow for the possibility that your query may return no results.
+        
         Question: {self.question}
 
         Format: return your response as an XML document with the following fields:
@@ -98,12 +104,6 @@ class CalendaringAgent( Agent ):
             <explanation>Explanation of how the code works</explanation>
             <error>Description of any issues or errors that you encountered while attempting to fulfill this request</error>
         </response>
-        
-        Hint: An event that I have today may have started before today and may end tomorrow or next week, so be careful how you filter on dates.
-        Hint: When filtering by dates, use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
-        Hint: If your solution variable is a dataframe, it should include all columns in the dataframe.
-        Hint: If you cannot answer the question, explain why in the `error` field
-        Hint: Allow for the possibility that your query may return no results.
         """
         
         return pandas_system_prompt
@@ -175,7 +175,25 @@ class CalendaringAgent( Agent ):
         du.print_banner( "TODO: Implement is_runnable()", expletive=True )
         return True
     
-    def validate_xml( xml_string ):
+    def validate_xml( self, xml_string ):
+        
+        # ¡OJO! skip for now: parsing chokes on the <= and the >=. consider escaping contents?? or not??
+        # xml_string = """
+        # <response>
+        #     <question>got the time</question>
+        #     <thoughts>The question is asking for events that are happening today. I need to filter the dataframe by the start and end dates, and return the events that are happening today.</thoughts>
+        #     <code>
+        #         <line>import pandas as pd</line>
+        #         <line>def get_events_today(df):</line>
+        #         <line>    today = pd.Timestamp(pd.Timestamp.today())</line>
+        #         <line>    solution = df[(df['start_date'] <= today) & (df['end_date'] >= today)]</line>
+        #         <line>    return solution</line>
+        #     </code>
+        #     <returns>dataframe</returns>
+        #     <example>solution = get_events_today(df)</example>
+        #     <explanation>The function first gets the current date as a pandas timestamp. Then it filters the dataframe to include only the rows where the start date is less than or equal to today and the end date is greater than or equal to today. The filtered dataframe is then returned as the solution.</explanation>
+        #     <error>None</error>
+        # </response>"""
         
         # TODO: This is a hacky way to validate XML. We should use a proper XML parser instead.
         # From: https://www.phind.com/agent?cache=clplcnojm0004l2087q5mn10z
@@ -215,7 +233,9 @@ class CalendaringAgent( Agent ):
         self.prompt_response = self._query_llm( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
         
         if prompt_model == Agent.PHIND_34B_v2:
-            self.validate_xml( self.prompt_response )
+            # skip for now: it chokes on the = contained within the code section
+            # See: https://codebeautify.org/xmlvalidator
+            # self.validate_xml( self.prompt_response )
             self.prompt_response_dict = self._get_prompt_response_dict( self.prompt_response )
         else:
             self.prompt_response_dict = json.loads( self.prompt_response )
@@ -225,25 +245,28 @@ class CalendaringAgent( Agent ):
         # Test for no code returned
         if self.prompt_response_dict[ "code" ] == [ ]:
             self.error = self.prompt_response_dict[ "error" ]
-            raise ValueError( "No code was returned, please check the logs" )
+            msg = "Error: No code was returned, please check the logs"
+            du.print_banner( msg, expletive=True)
+            raise ValueError( msg )
         
         return self.prompt_response_dict
     
     # ¡OJO! Something tells me this should live somewhere else?
     def _get_prompt_response_dict( self, xml_string, debug=False ):
 
-        def _get_value_by_tag_name( xml_string, name, default_value=f"Error: `{{name}}` not found in xml_string" ):
-
-            if f"<{name}>" not in xml_string or f"</{name}>" not in xml_string:
-                return default_value.format( name=name )
-
-            return xml_string.split( f"<{name}>" )[ 1 ].split( f"</{name}>" )[ 0 ]
+        # moved into the du utility
+        # def _get_value_by_tag_name( xml_string, name, default_value=f"Error: `{{name}}` not found in xml_string" ):
+        #
+        #     if f"<{name}>" not in xml_string or f"</{name}>" not in xml_string:
+        #         return default_value.format( name=name )
+        #
+        #     return xml_string.split( f"<{name}>" )[ 1 ].split( f"</{name}>" )[ 0 ]
 
         def _get_code( xml_string, debug=False ):
 
             # Matches all text between the opening and closing line tags, including the white space after the opening line tag
             pattern   = re.compile( r"<line>(.*?)</line>" )
-            code      = _get_value_by_tag_name( xml_string, "code" )
+            code      = du.get_value_by_xml_tag_name( xml_string, "code" )
             code_list = []
 
             for line in code.split( "\n" ):
@@ -259,17 +282,17 @@ class CalendaringAgent( Agent ):
             return code_list
 
         # Trim everything down to only what's contained between the response open and close tags'
-        xml_string = _get_value_by_tag_name( xml_string, "response" )
+        xml_string = du.get_value_by_xml_tag_name( xml_string, "response" )
 
         response_dict = {
                # "answer": _get_value_by_tag_name( xml_string, "answer", default_value="" ),
-               "question": _get_value_by_tag_name( xml_string, "question" ),
-               "thoughts": _get_value_by_tag_name( xml_string, "thoughts" ),
+               "question": du.get_value_by_xml_tag_name( xml_string, "question" ),
+               "thoughts": du.get_value_by_xml_tag_name( xml_string, "thoughts" ),
                    "code": _get_code( xml_string, debug=debug ),
-                "returns": _get_value_by_tag_name( xml_string, "returns" ),
-                "example": _get_value_by_tag_name( xml_string, "example" ),
-            "explanation": _get_value_by_tag_name( xml_string, "explanation" ),
-                  "error": _get_value_by_tag_name( xml_string, "error" )
+                "returns": du.get_value_by_xml_tag_name( xml_string, "returns" ),
+                "example": du.get_value_by_xml_tag_name( xml_string, "example" ),
+            "explanation": du.get_value_by_xml_tag_name( xml_string, "explanation" ),
+                  "error": du.get_value_by_xml_tag_name( xml_string, "error" )
         }
         return response_dict
     

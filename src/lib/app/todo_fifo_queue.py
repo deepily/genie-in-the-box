@@ -69,6 +69,8 @@ class TodoFifoQueue( FifoQueue ):
         
         else:
             
+            self.socketio.emit( 'notification_sound_update', { 'soundFile': '/static/gentle-gong.mp3' } )
+            
             calendaring_agent = CalendaringAgent( self.path_to_events_df, question=question, push_counter=self.push_counter, debug=True, verbose=False )
             self.push( calendaring_agent )
             msg = f"No similar snapshots found, adding NEW CalendaringAgent to TODO queue. Queue size [{self.size()}]"

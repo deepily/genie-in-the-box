@@ -122,7 +122,7 @@ class RunningFifoQueue( FifoQueue ):
         self.pop()
         self.socketio.emit( 'run_update', { 'value': self.size() } )
         
-        url = self._get_audio_url( "I'm sorry Dave, I'm afraid I can't do that." )
+        url = self._get_audio_url( "I'm sorry Dave, I'm afraid I can't do that. Please check your logs" )
         self.socketio.emit( 'audio_update', { 'audioURL': url } )
         self.jobs_dead_queue.push( running_job )
         self.socketio.emit( 'dead_update', { 'value': self.jobs_dead_queue.size() } )
@@ -147,7 +147,7 @@ class RunningFifoQueue( FifoQueue ):
         except Exception as e:
             
             stack_trace = traceback.format_tb( e.__traceback__ )
-            running_job = self._handle_error_case( stack_trace, running_job, truncated_question )
+            running_job = self._handle_error_case( code_response, running_job, truncated_question )
             
         agent_timer.print( "Done!", use_millis=True )
         
