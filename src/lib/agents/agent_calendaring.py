@@ -1,5 +1,6 @@
 import json
 import re
+import xml.etree.ElementTree as et
 
 import lib.utils.util as du
 import lib.utils.util_pandas as dup
@@ -174,6 +175,35 @@ class CalendaringAgent( Agent ):
         du.print_banner( "TODO: Implement is_runnable()", expletive=True )
         return True
     
+    def validate_xml( xml_string ):
+        
+        # TODO: This is a hacky way to validate XML. We should use a proper XML parser instead.
+        # From: https://www.phind.com/agent?cache=clplcnojm0004l2087q5mn10z
+        class MalformedXmlError( Exception ):
+            pass
+        
+        def validate( xml_string ):
+            try:
+                root = et.fromstring( xml_string )
+            except et.ParseError:
+                raise MalformedXmlError( "The XML is malformed." )
+            
+            expected_tags = [ "question", "thoughts", "code", "returns", "example", "explanation", "error" ]
+            for tag in expected_tags:
+                if root.find( tag ) is None:
+                    raise MalformedXmlError( f"The XML is missing the <{tag}> tag." )
+            
+            code_tag = root.find( "code" )
+            if code_tag is None or len( code_tag.findall( "line" ) ) == 0:
+                raise MalformedXmlError( "The XML is missing the <line> tag inside the <code> tag." )
+        
+        try:
+            validate( xml_string )
+        except MalformedXmlError as e:
+            du.print_banner( e, expletive=True )
+            print( xml_string )
+            raise ValueError( e )
+    
     def run_prompt( self, question="" ):
         
         prompt_model      = Agent.PHIND_34B_v2
@@ -185,6 +215,7 @@ class CalendaringAgent( Agent ):
         self.prompt_response = self._query_llm( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
         
         if prompt_model == Agent.PHIND_34B_v2:
+            self.validate_xml( self.prompt_response )
             self.prompt_response_dict = self._get_prompt_response_dict( self.prompt_response )
         else:
             self.prompt_response_dict = json.loads( self.prompt_response )
