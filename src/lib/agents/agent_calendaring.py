@@ -53,15 +53,22 @@ class CalendaringAgent( Agent ):
     
     def _get_system_message_phind( self ):
         
-        csv = self.df.head( 3 ).to_csv( header=True, index=False )
-        csv = csv + self.df.tail( 3 ).to_csv( header=False, index=False )
+        # head = self.df.head( 3 ).to_csv( header=True, index=False )
+        # head = head + self.df.tail( 3 ).to_csv( header=False, index=False )
+        
+        head = self.df.head( 3 ).to_xml( index=False )
+        head = head + self.df.tail( 3 ).to_xml( index=False )
         
         pandas_system_prompt = f"""
-        You are a cheerfully helpful assistant, with proven expertise in Python using pandas dataframes containing calendaring and events information. The name of the dataframe is `df`.
+        You are a cheerfully helpful assistant, with proven expertise in Python using pandas dataframes.
+        
+        Your job is to translate human questions about calendars, dates, and events into working Python code that can be used to answer the question and return that code in a valid XML document defined below.
+        
+        The name of the events dataframe is `df`.
 
-        This is the ouput from `print(df.head().to_csv())`, in CSV format:
+        This is the ouput from `print(df.head().to_xml())`, in XML format:
 
-        {csv}
+        {head}
 
         This is the output from `print(self.df.event_type.value_counts())`:
 
@@ -89,8 +96,9 @@ class CalendaringAgent( Agent ):
         
         Question: {self.question}
 
-        Format: return your response as an XML document with the following fields:
+        Format: You must return your response as a syntactically correct XML document containing the following fields:
         
+        <?xml version="1.0" encoding="UTF-8"?>
         <response>
             <question>{self.question}</question>
             <thoughts>Your thoughts</thoughts>
