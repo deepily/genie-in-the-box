@@ -106,7 +106,7 @@ class Agent( RunnableCode, abc.ABC ):
         if self.debug: print( f"Prompt:\n[{prompt}]" )
         
         for token in client.text_generation(
-            prompt, max_new_tokens=1024, stream=True, stop_sequences=[ "</response>", "</s>" ], temperature=1.0
+            prompt, max_new_tokens=1024, stream=True, stop_sequences=[ "</response>", "</s>" ], temperature=0.5
         ):
             if self.debug:
                 print( token, end="" )
