@@ -8,347 +8,311 @@ import lib.utils.util_stopwatch as sw
 from lib.memory import solution_snapshot as ss
 
 from lib.agents.agent import Agent
+from lib.agents.agent_calendaring import CalendaringAgent
 
 import pandas as pd
 
-class CalendaringAgentIterative( Agent ):
-    
-    def __init__( self, path_to_df, question="", default_model=Agent.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False ):
-        
-        super().__init__( debug=debug, verbose=verbose )
-        
-        # self.debug      = debug
-        # self.verbose    = verbose
-        
-        self.path_to_df = du.get_project_root() + path_to_df
-        self.df         = pd.read_csv( self.path_to_df )
-        self.df         = dup.cast_to_datetime( self.df )
-        
-        self.default_model         = default_model
-        
-        self.last_question_asked   = question
-        self.question              = ss.SolutionSnapshot.clean_question( question )
-        
-        # Added to allow behavioral compatibility with solution snapshot object
-        self.run_date              = ss.SolutionSnapshot.get_timestamp()
-        self.push_counter          = push_counter
-        self.id_hash               = ss.SolutionSnapshot.generate_id_hash( self.push_counter, self.run_date )
 
-        # We'll set these later
-        self.answer_conversational = None
-        # self.prompt_response              = None
-        # self.prompt_response_dict         = None
-        # self.error                 = None
+class CalendaringAgentIterative( CalendaringAgent ):
     
-    def get_html( self ):
-        
-        return f"<li id='{self.id_hash}'>{self.run_date} Q: {self.question}</li>"
+    PHIND_34B_v2 = "Phind/Phind-CodeLlama-34B-v2"
     
-    def _get_system_message_phind( self ):
+    def __init__( self, path_to_df, question="", default_model=Agent.PHIND_34B_v2, push_counter=-1, debug=False,
+                  verbose=False
+                  ):
         
-        # head = self.df.head( 3 ).to_csv( header=True, index=False )
-        # head = head + self.df.tail( 3 ).to_csv( header=False, index=False )
+        super().__init__( path_to_df, question=question, default_model=default_model, push_counter=push_counter,
+                          debug=debug, verbose=verbose
+                          )
         
-        head = self.df.head( 3 ).to_xml( index=False )
-        head = head + self.df.tail( 3 ).to_xml( index=False )
+        self.token_count = 0
+        self.prompt_components = None
+        self.question = question
+        self.prompt_components = self._initialize_prompt_components( self.df, self.question )
+    
+    def _initialize_prompt_components( self, df, question ):
         
-        pandas_system_prompt = f"""
-        You are a cheerfully helpful assistant, with proven expertise in Python using pandas dataframes.
+        head, event_value_counts = self._get_df_metadata( df )
         
-        Your job is to translate human questions about calendars, dates, and events into working Python code that can be used to answer the question and return that code in a valid XML document defined below.
-        
-        The name of the events dataframe is `df`.
+        step_1 = f"""
+        You are a cheerfully and helpful assistant, with proven expertise using Python to query pandas dataframes.
+
+        Your job is to translate human questions about calendars, dates, and events into a self-contained Python functions that can be used to answer the question now and reused in the future.
+
+        About the Pandas dataframe: The name of the events dataframe is `df` and is already loaded in memory ready to be queried.
+        About the Python libraries that you will use: You may only use these libraries: datetime and Pandas. The Pandas library has been imported as `pd`, and the datetime library has been imported as `datetime`.
+
+        Here are some hints to keep in mind and guide you as you craft your solution:
+        Start and end dates: An event that I have today may have started before today and may end tomorrow or next week, so be careful how you filter on dates.
+        Filtering: When filtering by dates, use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
+        Return values: You should always return a dataframe, and it must always include all columns in the dataframe, and never a subset.
 
         This is the ouput from `print(df.head().to_xml())`, in XML format:
-
         {head}
 
         This is the output from `print(self.df.event_type.value_counts())`:
 
-        {self.df.event_type.value_counts()}
+        {event_value_counts}
 
-        BEFORE you generate the python code needed to answer the question below, I want you to:
+        Given the context I have provided above, I want you to write a Python function to answer the following question:
 
-        1) Question: Ask yourself if you understand the question that I am asking you. ` Pay attention to the details!
-        
-        2) Think: Before you do anything, think out loud about what I am asking you to do, including what are the steps that you will need to take to solve this problem. Be critical of your thought process!
-        
-        3) Code: Generate an XML document containing the Python code that you used to arrive at your answer. The code must be complete, syntactically correct, and capable of running to completion. The last line of your code must be be `return solution`.
-        
-        4) Return: Report on the object type of the variable `solution` in your last line of code. Use one word to represent the object type.
-        
-        5) Example: Create a one line example of how to call your code.
-        
-        6) Explain: Explain how your code works, including any assumptions that you made.
-        
-        Hint: An event that I have today may have started before today and may end tomorrow or next week, so be careful how you filter on dates.
-        Hint: When filtering by dates, use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
-        Hint: If your solution variable is a dataframe, it should include all columns in the dataframe.
-        Hint: If you cannot answer the question, explain why in the `error` field
-        Hint: Allow for the possibility that your query may return no results.
-        
-        Question: {self.question}
+        Question: `{question}`
 
-        Format: You must return your response as a syntactically correct XML document containing the following fields:
-        
-        <?xml version="1.0" encoding="UTF-8"?>
+        In order to successfully write a function that answers the question above, you must follow my instructions step by step. As you complete each step I will recount your progress on the previous steps and provide you with the next step's instructions.
+
+        Step one) Think: think out loud about what you are being asked, including what are the steps that you will need to take in your code to solve this problem. Be critical of your thought process! And make sure to consider what you will call the entry point to your python solution, such as `def get_events_for_today( df )`, or `def get_events_for_tomorrow( df )`, or `def get_events_for_this_week( df )` or even `def get_birthday_for( df, name )`.
+        """
+        xml_formatting_instructions_step_1 = """
+        You must respond to the step one directive using the following XML format:
         <response>
-            <question>{self.question}</question>
             <thoughts>Your thoughts</thoughts>
+        </response>
+
+        Begin!
+        """
+        
+        step_2 = """
+        In response to the instructions that you received for step one you replied:
+
+        {response}
+
+        Step two) Code: Now that you have thought about how you are going to solve the problem, it's time to generate the Python code that you will use to arrive at your answer. The code must be complete, syntactically correct, and capable of running to completion. The last line of your function code must be `return solution`.  Remember: You must never return a subset of a dataframe's columns.
+        """
+        xml_formatting_instructions_step_2 = """
+        You must respond to the step 2 directive using the following XML format:
+        <response>
             <code>
-                <line>import foo</line>
-                <line>def function_name_here( ... ):</line>
+                <line>def function_name_here( df, arg1, arg2 ):</line>
+                <line>    ...</line>
+                <line>    ...</line>
                 <line>    return solution</line>
             </code>
+        </response>
+
+        Begin!
+        """
+        
+        step_3 = """
+        In response to the instructions that you received for step two, you replied:
+
+        {response}
+
+        Now that you have generated the code, you will need to perform the following three steps:
+
+        Step three) Return: Report on the object type of the variable `solution` returned in your last line of code. Use one word to represent the object type.
+
+        Step four) Example: Create a one line example of how to call your code.
+
+        Step five) Explain: Explain how your code works, including any assumptions that you have made.
+        """
+        xml_formatting_instructions_step_3 = """
+        You must respond to the directives in steps three, four and five using the following XML format:
+
+        <response>
             <returns>Object type of the variable `solution`</returns>
             <example>One-line example of how to call your code: solution = function_name_here( arguments )</example>
             <explanation>Explanation of how the code works</explanation>
-            <error>Description of any issues or errors that you encountered while attempting to fulfill this request</error>
         </response>
+
+        Begin!
         """
         
-        return pandas_system_prompt
-        
-    
-    def _get_system_message( self ):
-        
-        csv = self.df.head( 3 ).to_csv( header=True, index=False )
-        csv = csv + self.df.tail( 3 ).to_csv( header=False, index=False )
-        
-        pandas_system_prompt = f"""
-        You are an expert software engineer working with a pandas dataframe in Python containing calendaring and events information. The name of the dataframe is `df`.
+        step_4 = """
+        In response to the instructions that you received for step three, you replied:
 
-        This is the ouput from `print(df.head().to_csv())`, in CSV format:
+        {response}
 
-        {csv}
+        Congratulations! We're finished 😀
 
-        This is the output from `print(self.df.event_type.value_counts())`:
-
-        {self.df.event_type.value_counts()}
-
-        As you generate the python code needed to answer the events and calendaring question asked of you below, I want you to:
-
-        1) Question: Ask yourself if you understand the question that I am asking you.  Pay attention to the details!
-        2) Think: Before you do anything, think out loud about what I'm asking you to do, including what are the steps that you will need to take to solve this problem. Be critical of your thought process!
-        3) Code: Generate a verbatim list of code that you used to arrive at your answer, one line of code per item on the list. The code must be complete, syntactically correct, and capable of runnning to completion. The last line of your code must be the variable `solution`, which represents the answer. Make sure that any filtering you perform matches the question asked of you by the user!
-        4) Return: Report on the object type of the variable `solution` in your last line of code. Use one word to represent the object type.
-        5) Example: One-line example of how to call your code: solution = function_name_here( arguments )
-        6) Explain: Briefly and succinctly explain your code in plain English.
-
-        Format: return your response as a JSON object in the following fields:
-        {{
-            "question": "The question, verbatim and without modification",
-            "thoughts": "Your thoughts",
-            "code": [],
-            "returns": "Object type of the variable `solution`",
-            "example": "One-line example of how to call your code: solution = function_name_here( arguments )",
-            "explanation": "A brief explanation of your code",
-            "error": "Your description of any issues or errors that you encountered while attempting to answer the question"
-        }}
-
-        Hint: An event that I have today may have started before today and may end tomorrow or next week, so be careful how you filter on dates.
-        Hint: When filtering by dates, use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
-        Hint: If your solution variable is a dataframe, it should include all columns in the dataframe.
-        Hint: If you cannot answer the question, explain why in the `error` field
-        Hint: Allow for the possibility that your query may return no results.
         """
         
-        return pandas_system_prompt
-    
-    def _get_user_message( self, question="" ):
-        
-        # Odd little two-step sanity check: allows us to set the question when instantiated or when run_prompt is called
-        if question != "":
-            self.question = question
-            
-        if self.question == "":
-            raise ValueError( "No question was provided!" )
-        
-        return self.question
-        
-    def is_promptable( self ):
-        
-        du.print_banner( "TODO: Implement is_promptable()", expletive=True )
-        return True
-    
-    def is_runnable( self ):
-        
-        du.print_banner( "TODO: Implement is_runnable()", expletive=True )
-        return True
-    
-    def validate_xml( self, xml_string ):
-        
-        # ¡OJO! skip for now: parsing chokes on the <= and the >=. consider escaping contents?? or not??
-        # xml_string = """
-        # <response>
-        #     <question>got the time</question>
-        #     <thoughts>The question is asking for events that are happening today. I need to filter the dataframe by the start and end dates, and return the events that are happening today.</thoughts>
-        #     <code>
-        #         <line>import pandas as pd</line>
-        #         <line>def get_events_today(df):</line>
-        #         <line>    today = pd.Timestamp(pd.Timestamp.today())</line>
-        #         <line>    solution = df[(df['start_date'] <= today) & (df['end_date'] >= today)]</line>
-        #         <line>    return solution</line>
-        #     </code>
-        #     <returns>dataframe</returns>
-        #     <example>solution = get_events_today(df)</example>
-        #     <explanation>The function first gets the current date as a pandas timestamp. Then it filters the dataframe to include only the rows where the start date is less than or equal to today and the end date is greater than or equal to today. The filtered dataframe is then returned as the solution.</explanation>
-        #     <error>None</error>
-        # </response>"""
-        
-        # TODO: This is a hacky way to validate XML. We should use a proper XML parser instead.
-        # From: https://www.phind.com/agent?cache=clplcnojm0004l2087q5mn10z
-        class MalformedXmlError( Exception ):
-            pass
-        
-        def validate( xml_string ):
-            try:
-                root = et.fromstring( xml_string )
-            except et.ParseError:
-                raise MalformedXmlError( "The XML is malformed." )
-            
-            expected_tags = [ "question", "thoughts", "code", "returns", "example", "explanation", "error" ]
-            for tag in expected_tags:
-                if root.find( tag ) is None:
-                    raise MalformedXmlError( f"The XML is missing the <{tag}> tag." )
-            
-            code_tag = root.find( "code" )
-            if code_tag is None or len( code_tag.findall( "line" ) ) == 0:
-                raise MalformedXmlError( "The XML is missing the <line> tag inside the <code> tag." )
-        
-        try:
-            validate( xml_string )
-        except MalformedXmlError as e:
-            du.print_banner( e, expletive=True )
-            print( xml_string )
-            raise ValueError( e )
-    
-    def run_prompt( self, question="" ):
-        
-        prompt_model      = Agent.PHIND_34B_v2
-        self.user_message = self._get_user_message( question )
-        
-        self._print_token_count( self.system_message, message_name="system_message", model=prompt_model )
-        self._print_token_count( self.user_message,   message_name="user_message",   model=prompt_model )
-        
-        self.prompt_response = self._query_llm( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
-        
-        if prompt_model == Agent.PHIND_34B_v2:
-            # skip for now: it chokes on the = contained within the code section
-            # See: https://codebeautify.org/xmlvalidator
-            # self.validate_xml( self.prompt_response )
-            self.prompt_response_dict = self._get_prompt_response_dict( self.prompt_response )
-        else:
-            self.prompt_response_dict = json.loads( self.prompt_response )
-        
-        if self.debug and self.verbose: print( json.dumps( self.prompt_response_dict, indent=4 ) )
-        
-        # Test for no code returned
-        if self.prompt_response_dict[ "code" ] == [ ]:
-            self.error = self.prompt_response_dict[ "error" ]
-            msg = "Error: No code was returned, please check the logs"
-            du.print_banner( msg, expletive=True)
-            raise ValueError( msg )
-        
-        return self.prompt_response_dict
-    
-    # ¡OJO! Something tells me this should live somewhere else?
-    def _get_prompt_response_dict( self, xml_string, debug=False ):
-
-        def _get_code( xml_string, debug=False ):
-            
-            # if debug:
-            #     du.print_banner( "get_code called..." )
-            #     print( f"xml_string [{xml_string}]" )
-            
-            skip_list = [ "import pandas", "import datetime" ]
-            
-            # Matches all text between the opening and closing line tags, including the white space after the opening line tag
-            pattern = re.compile( r"<line>(.*?)</line>" )
-            code = du.get_value_by_xml_tag_name( xml_string, "code" )
-            code_list = [ ]
-            
-            for line in code.split( "\n" ):
-                
-                match = pattern.search( line )
-                
-                for skip in skip_list:
-                    if skip in line:
-                        if debug: print( f"[SKIPPING '{skip}']" )
-                        match = None
-                        break
-                
-                if match:
-                    line = match.group( 1 )
-                    code_list.append( line )
-                    if debug: print( line )
-                else:
-                    code_list.append( "" )
-                    if debug: print( "[]" )
-            
-            return code_list
-
-        # Trim everything down to only what's contained between the response open and close tags'
-        xml_string = du.get_value_by_xml_tag_name( xml_string, "response" )
-
-        response_dict = {
-               # "answer": _get_value_by_tag_name( xml_string, "answer", default_value="" ),
-               "question": du.get_value_by_xml_tag_name( xml_string, "question" ),
-               "thoughts": du.get_value_by_xml_tag_name( xml_string, "thoughts" ),
-                   "code": _get_code( xml_string, debug=debug ),
-                "returns": du.get_value_by_xml_tag_name( xml_string, "returns" ),
-                "example": du.get_value_by_xml_tag_name( xml_string, "example" ),
-            "explanation": du.get_value_by_xml_tag_name( xml_string, "explanation" ),
-                  "error": du.get_value_by_xml_tag_name( xml_string, "error" )
+        prompt_components = {
+            "steps"                      : [ step_1, step_2, step_3, step_4 ],
+            "responses"                  : [ ],
+            "response_tag_names"         : [ [ "thoughts" ], [ "code" ], [ "returns", "example", "explanation" ] ],
+            "running_history"            : "",
+            "xml_formatting_instructions": [
+                xml_formatting_instructions_step_1, xml_formatting_instructions_step_2,
+                xml_formatting_instructions_step_3
+            ]
         }
+        
+        return prompt_components
+    
+    def _get_df_metadata( self, df ):
+        
+        head = df.head( 3 ).to_xml( index=False )
+        head = head + df.tail( 3 ).to_xml( index=False )
+        head = head.replace( "data>", "events>" ).replace( "<?xml version='1.0' encoding='utf-8'?>", "" )
+        
+        event_value_counts = df.event_type.value_counts()
+        
+        return head, event_value_counts
+    
+    def run_prompt( self ):
+        
+        self.token_count = 0
+        timer = sw.Stopwatch( msg=f"Running iterative prompt with {len( self.prompt_components[ 'steps' ] )} steps..." )
+        response_dict = { }
+        
+        steps = self.prompt_components[ "steps" ]
+        xml_formatting_instructions = self.prompt_components[ "xml_formatting_instructions" ]
+        response_tag_names = self.prompt_components[ "response_tag_names" ]
+        responses = self.prompt_components[ "responses" ]
+        running_history = self.prompt_components[ "running_history" ]
+        
+        for step in range( len( steps ) ):
+            
+            if step == 0:
+                # the first step doesn't have any previous responses to incorporate into it
+                running_history = steps[ step ]
+            else:
+                # incorporate the previous response into the current step, append it to the running history
+                running_history = running_history + steps[ step ].format( response=responses[ step - 1 ] )
+            
+            # we're not going to execute the last step, it's been added just to keep the running history current
+            if step != len( steps ) - 1:
+                response = self._query_llm_phind( running_history, xml_formatting_instructions[ step ] )
+                responses.append( response )
+                
+                # Incrementally update the contents of the response dictionary according to the results of the XML-esque parsing
+                response_dict = self._update_response_dictionary( step, response, response_dict, response_tag_names,
+                                                                  debug=False
+                                                                  )
+        
+        self.prompt_components[ "running_history" ] = running_history
+        self.response_dict = response_dict
+        
+        timer.print( "Done!", use_millis=True, prepend_nl=False )
+        tokens_per_second = self.token_count / (timer.get_delta_ms() / 1000.0)
+        print( f"Tokens per second [{round( tokens_per_second, 1 )}]" )
+        
+        return self.response_dict
+    
+    def _query_llm_phind( self, preamble, instructions, model=PHIND_34B_v2, temperature=0.50, max_new_tokens=1024,
+                          debug=False
+                          ):
+        
+        timer = sw.Stopwatch( msg=f"Asking LLM [{model}]..." )
+        
+        client = InferenceClient( du.get_tgi_server_url() )
+        token_list = [ ]
+        ellipsis_count = 0
+        
+        prompt = f"{preamble}{instructions}\n"
+        print( prompt )
+        
+        for token in client.text_generation(
+                prompt, max_new_tokens=max_new_tokens, stream=True, stop_sequences=[ "</response>" ],
+                temperature=temperature
+        ):
+            print( token, end="" )
+            token_list.append( token )
+        
+        response = "".join( token_list ).strip()
+        self.token_count = self.token_count + len( token_list )
+        
+        print()
+        print( f"Response tokens [{len( token_list )}]" )
+        timer.print( "Done!", use_millis=True, prepend_nl=True )
+        
+        return response
+    
+    def _update_response_dictionary( self, step, response, response_dict, tag_names, debug=True ):
+        
+        if debug: print( f"update_response_dictionary called with step [{step}]..." )
+        
+        # Parse response and update response dictionary
+        xml_tags_for_step_n = tag_names[ step ]
+        
+        for xml_tag in xml_tags_for_step_n:
+            
+            if debug: print( f"Looking for xml_tag [{xml_tag}]" )
+            
+            if xml_tag == "code":
+                # the get_code method expects enclosing tags
+                xml_string = "<code>" + du.get_value_by_xml_tag_name( response, xml_tag ) + "</code>"
+                response_dict[ xml_tag ] = self._get_code( xml_string, debug=debug )
+            else:
+                response_dict[ xml_tag ] = du.get_value_by_xml_tag_name( response, xml_tag ).strip()
+        
         return response_dict
     
-    def format_output( self ):
+    def _get_code( self, xml_string, debug=False ):
         
-        format_model = Agent.PHIND_34B_v2
-        preamble     = self._get_formatting_preamble()
-        instructions = self._get_formatting_instructions()
+        # if debug:
+        #     du.print_banner( "get_code called..." )
+        #     print( f"xml_string [{xml_string}]" )
         
-        self._print_token_count( preamble, message_name="formatting preamble", model=format_model )
-        self._print_token_count( instructions, message_name="formatting instructions", model=format_model )
+        skip_list = [ "import pandas", "import datetime" ]
         
-        self.answer_conversational = self._query_llm( preamble, instructions, model=format_model, debug=self.debug )
+        # Matches all text between the opening and closing line tags, including the white space after the opening line tag
+        pattern = re.compile( r"<line>(.*?)</line>" )
+        code = du.get_value_by_xml_tag_name( xml_string, "code" )
+        code_list = [ ]
         
-        # if we've just received an xml-esque string then pull `<rephrased_answer>` from it. Otherwise, just return the string
-        self.answer_conversational = du.get_value_by_xml_tag_name(
-            self.answer_conversational, "rephrased_answer", default_value=self.answer_conversational
-        )
-        return self.answer_conversational
-    
+        for line in code.split( "\n" ):
+            
+            match = pattern.search( line )
+            
+            for skip in skip_list:
+                if skip in line:
+                    if debug: print( f"[SKIPPING '{skip}']" )
+                    match = None
+                    break
+            
+            if match:
+                line = match.group( 1 )
+                code_list.append( line )
+                if debug: print( line )
+            else:
+                code_list.append( "" )
+                if debug: print( "[]" )
+        
+        return code_list
+
+
 if __name__ == "__main__":
     
-    # import huggingface_hub as hf
-    # print( "hf.__version__", hf.__version__ )
+    path_to_df = "/src/conf/long-term-memory/events.csv"
+    # question = "What birthdays do I have on my calendar this week?"
+    question = "What todo items do I have on my calendar for today?"
     
-    agent = CalendaringAgentIterative( path_to_df="/src/conf/long-term-memory/events.csv", debug=True, verbose=True )
+    agent = CalendaringAgentIterative( path_to_df, question=question, debug=True, verbose=False )
+    response_dict = agent.run_prompt()
+    
+    du.print_banner( "Done! response_dict:", prepend_nl=True )
+    print( response_dict )
 
-    # question         = "What todo items do I have on my calendar for this week?"
-    # question         = "What todo items do I have on my calendar for today?"
-    # question         = "Do I have any birthdays on my calendar this week?"
-    # question         = "When is Juan's birthday?"
-    # question         = "When is Jimmy's birthday?"
-    # question         = "When is my birthday?"
-    # question           = "What is the date today?"
-    # question           = "What time is it in Washington DC? I'm not interested in superfluous precision, so you can omit seconds and milliseconds"
-    # question           = "What day of the week is today?"
-    question           = "What's today's date?"
-    timer            = sw.Stopwatch( msg=f"Processing [{question}]..." )
-    response_dict    = agent.run_prompt( question )
-    
-    # agent.print_code()
-    
-    code_response    = agent.run_code()
-    formatted_output = agent.format_output()
-    #
-    timer.print( use_millis=True )
-    #
-    du.print_banner( question, prepend_nl=False )
-    for line in formatted_output.split( "\n" ):
-        print( line )
+# if __name__ == "__main__":
+#
+#     # import huggingface_hub as hf
+#     # print( "hf.__version__", hf.__version__ )
+#
+#     agent = CalendaringAgentIterative( path_to_df="/src/conf/long-term-memory/events.csv", debug=True, verbose=True )
+#
+#     # question         = "What todo items do I have on my calendar for this week?"
+#     # question         = "What todo items do I have on my calendar for today?"
+#     # question         = "Do I have any birthdays on my calendar this week?"
+#     # question         = "When is Juan's birthday?"
+#     # question         = "When is Jimmy's birthday?"
+#     # question         = "When is my birthday?"
+#     # question           = "What is the date today?"
+#     # question           = "What time is it in Washington DC? I'm not interested in superfluous precision, so you can omit seconds and milliseconds"
+#     # question           = "What day of the week is today?"
+#     question           = "What's today's date?"
+#     timer            = sw.Stopwatch( msg=f"Processing [{question}]..." )
+#     response_dict    = agent.run_prompt( question )
+#
+#     # agent.print_code()
+#
+#     code_response    = agent.run_code()
+#     formatted_output = agent.format_output()
+#     #
+#     timer.print( use_millis=True )
+#     #
+#     du.print_banner( question, prepend_nl=False )
+#     for line in formatted_output.split( "\n" ):
+#         print( line )
         
     
