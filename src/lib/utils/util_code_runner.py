@@ -46,7 +46,11 @@ def append_example_and_print_code( code, code_return_type, example_code, debug=F
             code.append( json_print )
         else:
             code.append( plain_print )
-        
+    
+    # Remove duplicate imports if present
+    code = remove_last_occurrence( code, "import pandas as pd" )
+    code = remove_last_occurrence( code, "import datetime" )
+    
     return code
 
 
@@ -71,6 +75,8 @@ def append_example_and_print_code( code, code_return_type, example_code, debug=F
 # TODO: This should generalize to include more than two instances of a string?
 def remove_last_occurrence( the_list, the_string ):
 
+    # ¡OJO! This has issues with white space that precedes any target strings. Not worth worrying about right now
+    # Example: "    import datetime" will not be removed if the List contains "import datetime", and vice versa
     if the_list.count( the_string ) > 1:
 
         the_list.reverse()
@@ -83,10 +89,15 @@ def assemble_and_run_solution( solution_code, example_code, path=None, solution_
     
     # if there's no dataframe to open or prep, then skip it
     if path is None:
-        code_preamble = [ ]
+        code_preamble = [
+            "import datetime",
+            "import pytz",
+        ]
     else:
         # Otherwise, do a bit of prep for pandas & cleanup
         code_preamble = [
+            "import datetime",
+            "import pytz",
             "import pandas as pd",
             "import lib.utils.util as du",
             "import lib.utils.util_pandas as dup",
@@ -98,15 +109,20 @@ def assemble_and_run_solution( solution_code, example_code, path=None, solution_
             "df = dup.cast_to_datetime( df, debug=debug )"
         ]
         # Remove duplicate imports if present
-        code_preamble = remove_last_occurrence( code_preamble, "import pandas as pd" )
+        # code_preamble = remove_last_occurrence( code_preamble, "import pandas as pd" )
+        # code_preamble = remove_last_occurrence( code_preamble, "import datetime as dt" )
     
-    # if debug: print( "last command, before [{}]:".format( solution_code[ -1 ] ) )
+    if debug and verbose:
+        du.print_banner( "Solution code BEFORE:", prepend_nl=True)
+        du.print_list( solution_code)
+    
     solution_code = append_example_and_print_code( solution_code, solution_code_returns, example_code, debug=debug )
-    # if debug: print( "last command,  after [{}]:".format( solution_code[ -1 ] ), end="\n\n" )
+    
+    if debug and verbose:
+        du.print_banner( "Solution code AFTER:", prepend_nl=True)
+        du.print_list( solution_code)
     
     code = code_preamble + solution_code + [ "" ]
-    
-    if debug and verbose: du.print_list( code )
     
     code_path = du.get_project_root() + "/io/code.py"
     du.write_lines_to_file( code_path, code )
@@ -156,6 +172,7 @@ def test_assemble_and_run_solution():
         "import datetime",
         "import pytz",
         "def get_time():",
+        "    import datetime",
         "    now = datetime.datetime.now()",
         "    tz_name = 'America/New_York'",
         "    tz = pytz.timezone( tz_name )",
