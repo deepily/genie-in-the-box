@@ -50,16 +50,8 @@ class Agent( RunnableCode, abc.ABC ):
         
         if model == Agent.PHIND_34B_v2:
             
-            # print( f"preamble [{preamble}]" )
-            # print( f"question [{question}]" )
-            
             prompt = preamble + "\n" + question
-            # prompt = preamble.format( question=question )
-            # insert question into template
-            # if debug:
-            #     print( f"Prompt:\n[{prompt}]" )
-            # elif self.debug:
-            #     print( f"Query: [{query}]" )
+            
             self.debug = debug
             return self._query_llm_phind( prompt, model=model )
             
@@ -95,7 +87,7 @@ class Agent( RunnableCode, abc.ABC ):
         
         return response.choices[ 0 ].message.content.strip()
     
-    def _query_llm_phind( self, prompt, model=DEFAULT_MODEL ):
+    def _query_llm_phind( self, prompt, model=DEFAULT_MODEL, max_new_tokens=1024, temperature=0.5 ):
         
         timer = sw.Stopwatch( msg=f"Asking LLM [{model}]...".format( model ) )
         
@@ -106,7 +98,7 @@ class Agent( RunnableCode, abc.ABC ):
         if self.debug: print( f"Prompt:\n[{prompt}]" )
         
         for token in client.text_generation(
-            prompt, max_new_tokens=1024, stream=True, stop_sequences=[ "</response>", "</s>" ], temperature=0.5
+            prompt, max_new_tokens=max_new_tokens, stream=True, stop_sequences=[ "</response>", "</s>" ], temperature=temperature
         ):
             if self.debug:
                 print( token, end="" )

@@ -262,31 +262,37 @@ class CalendaringAgent( Agent ):
     # ¡OJO! Something tells me this should live somewhere else?
     def _get_prompt_response_dict( self, xml_string, debug=False ):
 
-        # moved into the du utility
-        # def _get_value_by_tag_name( xml_string, name, default_value=f"Error: `{{name}}` not found in xml_string" ):
-        #
-        #     if f"<{name}>" not in xml_string or f"</{name}>" not in xml_string:
-        #         return default_value.format( name=name )
-        #
-        #     return xml_string.split( f"<{name}>" )[ 1 ].split( f"</{name}>" )[ 0 ]
-
         def _get_code( xml_string, debug=False ):
-
+            
+            # if debug:
+            #     du.print_banner( "get_code called..." )
+            #     print( f"xml_string [{xml_string}]" )
+            
+            skip_list = [ "import pandas", "import datetime" ]
+            
             # Matches all text between the opening and closing line tags, including the white space after the opening line tag
-            pattern   = re.compile( r"<line>(.*?)</line>" )
-            code      = du.get_value_by_xml_tag_name( xml_string, "code" )
-            code_list = []
-
+            pattern = re.compile( r"<line>(.*?)</line>" )
+            code = du.get_value_by_xml_tag_name( xml_string, "code" )
+            code_list = [ ]
+            
             for line in code.split( "\n" ):
-
+                
                 match = pattern.search( line )
+                
+                for skip in skip_list:
+                    if skip in line:
+                        if debug: print( f"[SKIPPING '{skip}']" )
+                        match = None
+                        break
+                
                 if match:
                     line = match.group( 1 )
                     code_list.append( line )
                     if debug: print( line )
                 else:
+                    code_list.append( "" )
                     if debug: print( "[]" )
-
+            
             return code_list
 
         # Trim everything down to only what's contained between the response open and close tags'
