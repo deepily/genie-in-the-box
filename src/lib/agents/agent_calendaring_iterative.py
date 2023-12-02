@@ -34,13 +34,13 @@ class CalendaringAgentIterative( CalendaringAgent ):
         
         head, event_value_counts = self._get_df_metadata( df )
         
+        # The only Python libraries that you may use: You must only use the datetime and Pandas libraries, which have been imported in the following manner: `import pandas as pd` and`import datetime as dt`.
         step_1 = f"""
         You are a cheerfully and helpful assistant, with proven expertise using Python to query pandas dataframes.
 
         Your job is to translate human questions about calendars, dates, and events into a self-contained Python functions that can be used to answer the question now and reused in the future.
 
         About the Pandas dataframe: The name of the events dataframe is `df` and is already loaded in memory ready to be queried.
-        About the Python libraries that you will use: You may only use these libraries: datetime and Pandas. The Pandas library has been imported as `pd`, and the datetime library has been imported as `datetime`.
 
         Here are some hints to keep in mind and guide you as you craft your solution:
         Start and end dates: An event that I have today may have started before today and may end tomorrow or next week, so be careful how you filter on dates.
@@ -153,7 +153,7 @@ class CalendaringAgentIterative( CalendaringAgent ):
         
         self.token_count = 0
         timer = sw.Stopwatch( msg=f"Running iterative prompt with {len( self.prompt_components[ 'steps' ] )} steps..." )
-        response_dict = { }
+        prompt_response_dict = { }
         
         steps = self.prompt_components[ "steps" ]
         xml_formatting_instructions = self.prompt_components[ "xml_formatting_instructions" ]
@@ -176,18 +176,18 @@ class CalendaringAgentIterative( CalendaringAgent ):
                 responses.append( response )
                 
                 # Incrementally update the contents of the response dictionary according to the results of the XML-esque parsing
-                response_dict = self._update_response_dictionary( step, response, response_dict, response_tag_names,
-                                                                  debug=False
-                                                                  )
+                prompt_response_dict = self._update_response_dictionary( step, response, prompt_response_dict,
+                                                                         response_tag_names, debug=False
+                                                                         )
         
         self.prompt_components[ "running_history" ] = running_history
-        self.response_dict = response_dict
+        self.prompt_response_dict = prompt_response_dict
         
         timer.print( "Done!", use_millis=True, prepend_nl=False )
         tokens_per_second = self.token_count / (timer.get_delta_ms() / 1000.0)
         print( f"Tokens per second [{round( tokens_per_second, 1 )}]" )
         
-        return self.response_dict
+        return self.prompt_response_dict
     
     def _query_llm_phind( self, preamble, instructions, model=PHIND_34B_v2, temperature=0.50, max_new_tokens=1024,
                           debug=False
@@ -195,7 +195,8 @@ class CalendaringAgentIterative( CalendaringAgent ):
         
         timer = sw.Stopwatch( msg=f"Asking LLM [{model}]..." )
         
-        client = InferenceClient( du.get_tgi_server_url() )
+        client = code_response    = agent.run_code()
+#     formatted_output = agent.format_output()( du.get_tgi_server_url() )
         token_list = [ ]
         ellipsis_count = 0
         
@@ -218,7 +219,7 @@ class CalendaringAgentIterative( CalendaringAgent ):
         
         return response
     
-    def _update_response_dictionary( self, step, response, response_dict, tag_names, debug=True ):
+    def _update_response_dictionary( self, step, response, prompt_response_dict, tag_names, debug=True ):
         
         if debug: print( f"update_response_dictionary called with step [{step}]..." )
         
@@ -232,11 +233,11 @@ class CalendaringAgentIterative( CalendaringAgent ):
             if xml_tag == "code":
                 # the get_code method expects enclosing tags
                 xml_string = "<code>" + du.get_value_by_xml_tag_name( response, xml_tag ) + "</code>"
-                response_dict[ xml_tag ] = self._get_code( xml_string, debug=debug )
+                prompt_response_dict[ xml_tag ] = self._get_code( xml_string, debug=debug )
             else:
-                response_dict[ xml_tag ] = du.get_value_by_xml_tag_name( response, xml_tag ).strip()
+                prompt_response_dict[ xml_tag ] = du.get_value_by_xml_tag_name( response, xml_tag ).strip()
         
-        return response_dict
+        return prompt_response_dict
     
     def _get_code( self, xml_string, debug=False ):
         
@@ -244,7 +245,7 @@ class CalendaringAgentIterative( CalendaringAgent ):
         #     du.print_banner( "get_code called..." )
         #     print( f"xml_string [{xml_string}]" )
         
-        skip_list = [ "import pandas", "import datetime" ]
+        skip_list = [ ]  # [ "import pandas", "import datetime" ]
         
         # Matches all text between the opening and closing line tags, including the white space after the opening line tag
         pattern = re.compile( r"<line>(.*?)</line>" )
@@ -263,6 +264,7 @@ class CalendaringAgentIterative( CalendaringAgent ):
             
             if match:
                 line = match.group( 1 )
+                line = line.replace( "&gt;", ">" ).replace( "&lt;", "<" ).replace( "&amp;", "&" )
                 code_list.append( line )
                 if debug: print( line )
             else:
@@ -271,15 +273,16 @@ class CalendaringAgentIterative( CalendaringAgent ):
         
         return code_list
 
-
 if __name__ == "__main__":
     
     path_to_df = "/src/conf/long-term-memory/events.csv"
     # question = "What birthdays do I have on my calendar this week?"
-    question = "What todo items do I have on my calendar for today?"
-    
+    # question = "What todo items do I have on my calendar for today?"
+    question  = "What's today's date?"
     agent = CalendaringAgentIterative( path_to_df, question=question, debug=True, verbose=False )
     response_dict = agent.run_prompt()
+    code_response = agent.run_code()
+    # formatted_output = agent.format_output()
     
     du.print_banner( "Done! response_dict:", prepend_nl=True )
     print( response_dict )
