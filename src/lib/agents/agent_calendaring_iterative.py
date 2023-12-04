@@ -32,8 +32,10 @@ class IterativeCalendaringAgent( CalendaringAgent ):
         self.step_len          = -1
         self.token_count       = 0
         self.prompt_components = None
-        self.question          = SolutionSnapshot.clean_question( question )
-        self.prompt_components = self._initialize_prompt_components( self.df, self.question )
+        self.question          = question
+        self.prompt_response_dict = None
+        # Initialization a prompt components pushed to the writing prompt method
+        # self.prompt_components = self._initialize_prompt_components( self.df, self.question )
         self.do_not_serialize  = [ "df" ]
     
     def serialize_to_json( self, current_step, total_steps, now ):
@@ -47,13 +49,37 @@ class IterativeCalendaringAgent( CalendaringAgent ):
         
         # Constructing the filename
         # Format: "question_year-month-day-hour-minute-step-N-of-M.json"
-        filename = f"{du.get_project_root()}/io/log/{self.question.replace( ' ', '-' )}-{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-step-{( current_step + 1 )}-of-{total_steps}.json"
+        fn_question = SolutionSnapshot.clean_question( self.question ).replace( " ", "-" )
+        filename = f"{du.get_project_root()}/io/log/{fn_question}-{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-step-{( current_step + 1 )}-of-{total_steps}.json"
         
         # Serialize and save to file
         with open( filename, 'w' ) as file:
             json.dump( state_dict, file, indent=4 )
         
         print( f"Serialized to {filename}" )
+    
+    @classmethod
+    def from_json_file( cls, file_path ):
+        # Read the file and parse JSON
+        with open( file_path, 'r' ) as file:
+            data = json.load( file )
+        
+        # Extract the question attribute for the constructor
+        question = data.pop( 'question', None )
+        if question is None:
+            raise ValueError( "JSON file does not contain 'question' attribute" )
+        
+        # Create a new object instance with the parsed data
+        restored_agent = IterativeCalendaringAgent( data[ "path_to_df" ], question=data[ "last_question_asked" ], default_model=data[ "default_model" ], push_counter=data[ "push_counter" ], debug=data[ "debug" ], verbose=data[ "verbose" ] )
+        # Set the remaining attributes from the parsed data, skipping the ones that we've already set
+        keys_to_skip   = [ "path_to_df", "last_question_asked", "default_model", "push_counter", "debug", "verbose" ]
+        for k, v in data.items():
+            if k not in keys_to_skip:
+                setattr( restored_agent, k, v )
+            else:
+                print( f"Skipping key [{k}], it's already been set" )
+                
+        return restored_agent
     
     def _initialize_prompt_components( self, df, question ):
         
@@ -182,6 +208,8 @@ class IterativeCalendaringAgent( CalendaringAgent ):
         timer = sw.Stopwatch( msg=f"Running iterative prompt with {len( self.prompt_components[ 'steps' ] )} steps..." )
         prompt_response_dict = { }
         
+        self.prompt_components      = self._initialize_prompt_components( self.df, self.question )
+        
         steps                       = self.prompt_components[ "steps" ]
         xml_formatting_instructions = self.prompt_components[ "xml_formatting_instructions" ]
         response_tag_names          = self.prompt_components[ "response_tag_names" ]
@@ -309,16 +337,19 @@ class IterativeCalendaringAgent( CalendaringAgent ):
     
 if __name__ == "__main__":
     
-    path_to_df = "/src/conf/long-term-memory/events.csv"
-    # question = "What birthdays do I have on my calendar this week?"
-    # question = "What todo items do I have on my calendar for today?"
-    question  = "What's today's date?"
-    agent = IterativeCalendaringAgent( path_to_df, question=question, debug=True, verbose=False )
-    response_dict = agent.run_prompt()
-    code_response = agent.run_code()
-    # formatted_output = agent.format_output()
-    
-    du.print_banner( "Done! response_dict:", prepend_nl=True )
-    print( response_dict )
+    # path_to_df = "/src/conf/long-term-memory/events.csv"
+    # # question = "What birthdays do I have on my calendar this week?"
+    # # question = "What todo items do I have on my calendar for today?"
+    # question  = "What's today's date?"
+    # agent = IterativeCalendaringAgent( path_to_df, question=question, debug=True, verbose=False )
+    # response_dict = agent.run_prompt()
+    # code_response = agent.run_code()
+    # # formatted_output = agent.format_output()
+    #
+    # du.print_banner( "Done! response_dict:", prepend_nl=True )
+    # print( response_dict )
+    path = du.get_project_root() + "/io/log/whats-todays-date-2023-12-4-13-55-step-4-of-4.json"
         
+    restored_agent = IterativeCalendaringAgent.from_json_file( path )
+    restored_agent.run_code()
     
