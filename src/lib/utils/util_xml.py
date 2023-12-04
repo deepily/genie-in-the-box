@@ -6,7 +6,7 @@ def get_value_by_xml_tag_name( xml_string, name, default_value=f"Error: `{{name}
     
     return xml_string.split( f"<{name}>" )[ 1 ].split( f"</{name}>" )[ 0 ]
     
-def get_code_list( self, xml_string, debug=False ):
+def get_code_list( xml_string, debug=False ):
     
     # if debug:
     #     du.print_banner( "get_code called..." )
