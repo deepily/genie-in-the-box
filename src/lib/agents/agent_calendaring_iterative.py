@@ -1,4 +1,5 @@
 import json
+import datetime
 import re
 import xml.etree.ElementTree as et
 
@@ -10,26 +11,49 @@ from lib.memory import solution_snapshot as ss
 
 from lib.agents.agent import Agent
 from lib.agents.agent_calendaring import CalendaringAgent
+from lib.memory.solution_snapshot import SolutionSnapshot
 
 import pandas as pd
+from huggingface_hub import InferenceClient
 
 
 class IterativeCalendaringAgent( CalendaringAgent ):
     
     PHIND_34B_v2 = "Phind/Phind-CodeLlama-34B-v2"
     
-    def __init__( self, path_to_df, question="", default_model=Agent.PHIND_34B_v2, push_counter=-1, debug=False,
-                  verbose=False
-                  ):
+    def __init__(
+            self, path_to_df, question="", default_model=Agent.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False
+        ):
         
-        super().__init__( path_to_df, question=question, default_model=default_model, push_counter=push_counter,
-                          debug=debug, verbose=verbose
-                          )
+        super().__init__(
+            path_to_df, question=question, default_model=default_model, push_counter=push_counter, debug=debug, verbose=verbose
+        )
         
-        self.token_count = 0
+        self.step_len          = -1
+        self.token_count       = 0
         self.prompt_components = None
-        self.question = question
+        self.question          = SolutionSnapshot.clean_question( question )
         self.prompt_components = self._initialize_prompt_components( self.df, self.question )
+        self.do_not_serialize  = [ "df" ]
+    
+    def serialize_to_json( self, current_step, total_steps, now ):
+        
+        # Convert object's state to a dictionary
+        state_dict = self.__dict__
+        
+        # Remove any private attributes
+        # Convert object's state to a dictionary, omitting specified fields
+        state_dict = { k: v for k, v in self.__dict__.items() if k not in self.do_not_serialize }
+        
+        # Constructing the filename
+        # Format: "question_year-month-day-hour-minute-step-N-of-M.json"
+        filename = f"{du.get_project_root()}/io/log/{self.question.replace( ' ', '-' )}-{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-step-{( current_step + 1 )}-of-{total_steps}.json"
+        
+        # Serialize and save to file
+        with open( filename, 'w' ) as file:
+            json.dump( state_dict, file, indent=4 )
+        
+        print( f"Serialized to {filename}" )
     
     def _initialize_prompt_components( self, df, question ):
         
@@ -127,8 +151,10 @@ class IterativeCalendaringAgent( CalendaringAgent ):
 
         """
         
+        steps = [ step_1, step_2, step_3, step_4 ]
+        self.step_len = len( steps )
         prompt_components = {
-            "steps"                      : [ step_1, step_2, step_3, step_4 ],
+            "steps"                      : steps,
             "responses"                  : [ ],
             "response_tag_names"         : [ [ "thoughts" ], [ "code" ], [ "returns", "example", "explanation" ] ],
             "running_history"            : "",
@@ -156,11 +182,14 @@ class IterativeCalendaringAgent( CalendaringAgent ):
         timer = sw.Stopwatch( msg=f"Running iterative prompt with {len( self.prompt_components[ 'steps' ] )} steps..." )
         prompt_response_dict = { }
         
-        steps = self.prompt_components[ "steps" ]
+        steps                       = self.prompt_components[ "steps" ]
         xml_formatting_instructions = self.prompt_components[ "xml_formatting_instructions" ]
-        response_tag_names = self.prompt_components[ "response_tag_names" ]
-        responses = self.prompt_components[ "responses" ]
-        running_history = self.prompt_components[ "running_history" ]
+        response_tag_names          = self.prompt_components[ "response_tag_names" ]
+        responses                   = self.prompt_components[ "responses" ]
+        running_history             = self.prompt_components[ "running_history" ]
+        
+        # Get the current time so that we can track all the steps in this iterative prompt using the same time stamp
+        now = datetime.datetime.now()
         
         for step in range( len( steps ) ):
             
@@ -168,21 +197,28 @@ class IterativeCalendaringAgent( CalendaringAgent ):
                 # the first step doesn't have any previous responses to incorporate into it
                 running_history = steps[ step ]
             else:
-                # incorporate the previous response into the current step, append it to the running history
+                # incorporate the previous response into the current step, then append it to the running history
                 running_history = running_history + steps[ step ].format( response=responses[ step - 1 ] )
             
             # we're not going to execute the last step, it's been added just to keep the running history current
             if step != len( steps ) - 1:
+                
                 response = self._query_llm_phind( running_history, xml_formatting_instructions[ step ] )
                 responses.append( response )
                 
                 # Incrementally update the contents of the response dictionary according to the results of the XML-esque parsing
-                prompt_response_dict = self._update_response_dictionary( step, response, prompt_response_dict,
-                                                                         response_tag_names, debug=False
-                                                                         )
-        
-        self.prompt_components[ "running_history" ] = running_history
-        self.prompt_response_dict = prompt_response_dict
+                prompt_response_dict = self._update_response_dictionary(
+                    step, response, prompt_response_dict, response_tag_names, debug=False
+                )
+            
+            # Update the prompt component's state before serializing a copy of it
+            self.prompt_components[ "running_history" ] = running_history
+            self.prompt_response_dict = prompt_response_dict
+            
+            self.serialize_to_json( step, self.step_len, now )
+            
+        # self.prompt_components[ "running_history" ] = running_history
+        # self.prompt_response_dict = prompt_response_dict
         
         timer.print( "Done!", use_millis=True, prepend_nl=False )
         tokens_per_second = self.token_count / (timer.get_delta_ms() / 1000.0)
@@ -190,16 +226,12 @@ class IterativeCalendaringAgent( CalendaringAgent ):
         
         return self.prompt_response_dict
     
-    def _query_llm_phind( self, preamble, instructions, model=PHIND_34B_v2, temperature=0.50, max_new_tokens=1024,
-                          debug=False
-                          ):
+    def _query_llm_phind( self, preamble, instructions, model=PHIND_34B_v2, temperature=0.50, max_new_tokens=1024, debug=False ):
         
         timer = sw.Stopwatch( msg=f"Asking LLM [{model}]..." )
         
-        client = code_response    = agent.run_code()
-#     formatted_output = agent.format_output()( du.get_tgi_server_url() )
-        token_list = [ ]
-        ellipsis_count = 0
+        client         = InferenceClient( model=self.phind_tgi_url )
+        token_list     = [ ]
         
         prompt = f"{preamble}{instructions}\n"
         print( prompt )
@@ -211,14 +243,14 @@ class IterativeCalendaringAgent( CalendaringAgent ):
             print( token, end="" )
             token_list.append( token )
         
-        response = "".join( token_list ).strip()
+        # response = "".join( token_list ).strip()
         self.token_count = self.token_count + len( token_list )
         
         print()
         print( f"Response tokens [{len( token_list )}]" )
         timer.print( "Done!", use_millis=True, prepend_nl=True )
         
-        return response
+        return "".join( token_list ).strip()
     
     def _update_response_dictionary( self, step, response, prompt_response_dict, tag_names, debug=True ):
         
@@ -274,6 +306,7 @@ class IterativeCalendaringAgent( CalendaringAgent ):
     #
     #     return code_list
 
+    
 if __name__ == "__main__":
     
     path_to_df = "/src/conf/long-term-memory/events.csv"
