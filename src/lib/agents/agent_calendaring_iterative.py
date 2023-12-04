@@ -29,14 +29,14 @@ class IterativeCalendaringAgent( CalendaringAgent ):
             path_to_df, question=question, default_model=default_model, push_counter=push_counter, debug=debug, verbose=verbose
         )
         
-        self.step_len          = -1
-        self.token_count       = 0
-        self.prompt_components = None
-        self.question          = question
+        self.step_len             = -1
+        self.token_count          = 0
+        self.prompt_components    = None
+        self.question             = question
         self.prompt_response_dict = None
-        # Initialization a prompt components pushed to the writing prompt method
+        # Initialization of prompt components pushed to run_prompt
         # self.prompt_components = self._initialize_prompt_components( self.df, self.question )
-        self.do_not_serialize  = [ "df" ]
+        self.do_not_serialize     = [ "df" ]
     
     def serialize_to_json( self, current_step, total_steps, now ):
         
@@ -59,7 +59,10 @@ class IterativeCalendaringAgent( CalendaringAgent ):
         print( f"Serialized to {filename}" )
     
     @classmethod
-    def from_json_file( cls, file_path ):
+    def restore_from_serialized_state( cls, file_path ):
+        
+        print( f"Restoring from {file_path}...")
+        
         # Read the file and parse JSON
         with open( file_path, 'r' ) as file:
             data = json.load( file )
@@ -316,6 +319,6 @@ if __name__ == "__main__":
     # print( response_dict )
     path = du.get_project_root() + "/io/log/whats-todays-date-2023-12-4-13-55-step-4-of-4.json"
         
-    restored_agent = IterativeCalendaringAgent.from_json_file( path )
+    restored_agent = IterativeCalendaringAgent.restore_from_serialized_state( path )
     restored_agent.run_code()
     
