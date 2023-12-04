@@ -14,7 +14,7 @@ from lib.agents.agent_calendaring import CalendaringAgent
 import pandas as pd
 
 
-class CalendaringAgentIterative( CalendaringAgent ):
+class IterativeCalendaringAgent( CalendaringAgent ):
     
     PHIND_34B_v2 = "Phind/Phind-CodeLlama-34B-v2"
     
@@ -280,7 +280,7 @@ if __name__ == "__main__":
     # question = "What birthdays do I have on my calendar this week?"
     # question = "What todo items do I have on my calendar for today?"
     question  = "What's today's date?"
-    agent = CalendaringAgentIterative( path_to_df, question=question, debug=True, verbose=False )
+    agent = IterativeCalendaringAgent( path_to_df, question=question, debug=True, verbose=False )
     response_dict = agent.run_prompt()
     code_response = agent.run_code()
     # formatted_output = agent.format_output()
