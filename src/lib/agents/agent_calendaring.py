@@ -21,8 +21,8 @@ class CalendaringAgent( Agent ):
         # self.debug      = debug
         # self.verbose    = verbose
         
-        self.path_to_df = du.get_project_root() + path_to_df
-        self.df         = pd.read_csv( self.path_to_df )
+        self.path_to_df = path_to_df
+        self.df         = pd.read_csv( du.get_project_root() + self.path_to_df )
         self.df         = dup.cast_to_datetime( self.df )
         
         self.default_model         = default_model
@@ -184,52 +184,52 @@ class CalendaringAgent( Agent ):
         du.print_banner( "TODO: Implement is_runnable()", expletive=True )
         return True
     
-    def validate_xml( self, xml_string ):
-        
-        # ¡OJO! skip for now: parsing chokes on the <= and the >=. consider escaping contents?? or not??
-        # xml_string = """
-        # <response>
-        #     <question>got the time</question>
-        #     <thoughts>The question is asking for events that are happening today. I need to filter the dataframe by the start and end dates, and return the events that are happening today.</thoughts>
-        #     <code>
-        #         <line>import pandas as pd</line>
-        #         <line>def get_events_today(df):</line>
-        #         <line>    today = pd.Timestamp(pd.Timestamp.today())</line>
-        #         <line>    solution = df[(df['start_date'] <= today) & (df['end_date'] >= today)]</line>
-        #         <line>    return solution</line>
-        #     </code>
-        #     <returns>dataframe</returns>
-        #     <example>solution = get_events_today(df)</example>
-        #     <explanation>The function first gets the current date as a pandas timestamp. Then it filters the dataframe to include only the rows where the start date is less than or equal to today and the end date is greater than or equal to today. The filtered dataframe is then returned as the solution.</explanation>
-        #     <error>None</error>
-        # </response>"""
-        
-        # TODO: This is a hacky way to validate XML. We should use a proper XML parser instead.
-        # From: https://www.phind.com/agent?cache=clplcnojm0004l2087q5mn10z
-        class MalformedXmlError( Exception ):
-            pass
-        
-        def validate( xml_string ):
-            try:
-                root = et.fromstring( xml_string )
-            except et.ParseError:
-                raise MalformedXmlError( "The XML is malformed." )
-            
-            expected_tags = [ "question", "thoughts", "code", "returns", "example", "explanation", "error" ]
-            for tag in expected_tags:
-                if root.find( tag ) is None:
-                    raise MalformedXmlError( f"The XML is missing the <{tag}> tag." )
-            
-            code_tag = root.find( "code" )
-            if code_tag is None or len( code_tag.findall( "line" ) ) == 0:
-                raise MalformedXmlError( "The XML is missing the <line> tag inside the <code> tag." )
-        
-        try:
-            validate( xml_string )
-        except MalformedXmlError as e:
-            du.print_banner( e, expletive=True )
-            print( xml_string )
-            raise ValueError( e )
+    # def validate_xml( self, xml_string ):
+    #
+    #     # ¡OJO! skip for now: parsing chokes on the <= and the >=. consider escaping contents?? or not??
+    #     # xml_string = """
+    #     # <response>
+    #     #     <question>got the time</question>
+    #     #     <thoughts>The question is asking for events that are happening today. I need to filter the dataframe by the start and end dates, and return the events that are happening today.</thoughts>
+    #     #     <code>
+    #     #         <line>import pandas as pd</line>
+    #     #         <line>def get_events_today(df):</line>
+    #     #         <line>    today = pd.Timestamp(pd.Timestamp.today())</line>
+    #     #         <line>    solution = df[(df['start_date'] <= today) & (df['end_date'] >= today)]</line>
+    #     #         <line>    return solution</line>
+    #     #     </code>
+    #     #     <returns>dataframe</returns>
+    #     #     <example>solution = get_events_today(df)</example>
+    #     #     <explanation>The function first gets the current date as a pandas timestamp. Then it filters the dataframe to include only the rows where the start date is less than or equal to today and the end date is greater than or equal to today. The filtered dataframe is then returned as the solution.</explanation>
+    #     #     <error>None</error>
+    #     # </response>"""
+    #
+    #     # TODO: This is a hacky way to validate XML. We should use a proper XML parser instead.
+    #     # From: https://www.phind.com/agent?cache=clplcnojm0004l2087q5mn10z
+    #     class MalformedXmlError( Exception ):
+    #         pass
+    #
+    #     def validate( xml_string ):
+    #         try:
+    #             root = et.fromstring( xml_string )
+    #         except et.ParseError:
+    #             raise MalformedXmlError( "The XML is malformed." )
+    #
+    #         expected_tags = [ "question", "thoughts", "code", "returns", "example", "explanation", "error" ]
+    #         for tag in expected_tags:
+    #             if root.find( tag ) is None:
+    #                 raise MalformedXmlError( f"The XML is missing the <{tag}> tag." )
+    #
+    #         code_tag = root.find( "code" )
+    #         if code_tag is None or len( code_tag.findall( "line" ) ) == 0:
+    #             raise MalformedXmlError( "The XML is missing the <line> tag inside the <code> tag." )
+    #
+    #     try:
+    #         validate( xml_string )
+    #     except MalformedXmlError as e:
+    #         du.print_banner( e, expletive=True )
+    #         print( xml_string )
+    #         raise ValueError( e )
     
     def run_prompt( self, question="" ):
         
@@ -262,35 +262,6 @@ class CalendaringAgent( Agent ):
     
     # ¡OJO! Something tells me this should live somewhere else?
     def _get_prompt_response_dict( self, xml_string, debug=False ):
-
-        # def _get_code_list( xml_string, debug=False ):
-        #
-        #     skip_list = [] # [ "import pandas", "import datetime" ]
-        #
-        #     # Matches all text between the opening and closing line tags, including the white space after the opening line tag
-        #     pattern = re.compile( r"<line>(.*?)</line>" )
-        #     code = dux.get_value_by_xml_tag_name( xml_string, "code" )
-        #     code_list = [ ]
-        #
-        #     for line in code.split( "\n" ):
-        #
-        #         match = pattern.search( line )
-        #
-        #         for skip in skip_list:
-        #             if skip in line:
-        #                 if debug: print( f"[SKIPPING '{skip}']" )
-        #                 match = None
-        #                 break
-        #
-        #         if match:
-        #             line = match.group( 1 )
-        #             code_list.append( line )
-        #             if debug: print( line )
-        #         else:
-        #             code_list.append( "" )
-        #             if debug: print( "[]" )
-        #
-        #     return code_list
 
         # Trim everything down to only what's contained between the response open and close tags'
         xml_string = dux.get_value_by_xml_tag_name( xml_string, "response" )
