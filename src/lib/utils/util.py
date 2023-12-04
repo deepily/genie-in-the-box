@@ -1,4 +1,3 @@
-import json
 import os
 import regex as re
 import random
@@ -244,13 +243,7 @@ def get_tgi_server_url():
         return os.environ[ "GENIE_IN_THE_BOX_TGI_SERVER" ]
     else:
         return "http://172.17.0.5:3000"
-    
-def get_value_by_xml_tag_name( xml_string, name, default_value=f"Error: `{{name}}` not found in xml_string" ):
-    
-    if f"<{name}>" not in xml_string or f"</{name}>" not in xml_string:
-        return default_value.format( name=name )
-    
-    return xml_string.split( f"<{name}>" )[ 1 ].split( f"</{name}>" )[ 0 ]
+
 
 def generate_domain_names( count=10, remove_dots=False, debug=False ):
     
