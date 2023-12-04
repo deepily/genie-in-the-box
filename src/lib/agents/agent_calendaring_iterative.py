@@ -5,6 +5,7 @@ import xml.etree.ElementTree as et
 import lib.utils.util as du
 import lib.utils.util_pandas as dup
 import lib.utils.util_stopwatch as sw
+import lib.utils.util_xml as dux
 from lib.memory import solution_snapshot as ss
 
 from lib.agents.agent import Agent
@@ -232,46 +233,46 @@ class CalendaringAgentIterative( CalendaringAgent ):
             
             if xml_tag == "code":
                 # the get_code method expects enclosing tags
-                xml_string = "<code>" + du.get_value_by_xml_tag_name( response, xml_tag ) + "</code>"
-                prompt_response_dict[ xml_tag ] = self._get_code( xml_string, debug=debug )
+                xml_string = "<code>" + dux.get_value_by_xml_tag_name( response, xml_tag ) + "</code>"
+                prompt_response_dict[ xml_tag ] = dux.get_code_list( xml_string, debug=debug )
             else:
-                prompt_response_dict[ xml_tag ] = du.get_value_by_xml_tag_name( response, xml_tag ).strip()
+                prompt_response_dict[ xml_tag ] = dux.get_value_by_xml_tag_name( response, xml_tag ).strip()
         
         return prompt_response_dict
     
-    def _get_code( self, xml_string, debug=False ):
-        
-        # if debug:
-        #     du.print_banner( "get_code called..." )
-        #     print( f"xml_string [{xml_string}]" )
-        
-        skip_list = [ ]  # [ "import pandas", "import datetime" ]
-        
-        # Matches all text between the opening and closing line tags, including the white space after the opening line tag
-        pattern = re.compile( r"<line>(.*?)</line>" )
-        code = du.get_value_by_xml_tag_name( xml_string, "code" )
-        code_list = [ ]
-        
-        for line in code.split( "\n" ):
-            
-            match = pattern.search( line )
-            
-            for skip in skip_list:
-                if skip in line:
-                    if debug: print( f"[SKIPPING '{skip}']" )
-                    match = None
-                    break
-            
-            if match:
-                line = match.group( 1 )
-                line = line.replace( "&gt;", ">" ).replace( "&lt;", "<" ).replace( "&amp;", "&" )
-                code_list.append( line )
-                if debug: print( line )
-            else:
-                code_list.append( "" )
-                if debug: print( "[]" )
-        
-        return code_list
+    # def _get_code_list( self, xml_string, debug=False ):
+    #
+    #     # if debug:
+    #     #     du.print_banner( "get_code called..." )
+    #     #     print( f"xml_string [{xml_string}]" )
+    #
+    #     skip_list = [ ]  # [ "import pandas", "import datetime" ]
+    #
+    #     # Matches all text between the opening and closing line tags, including the white space after the opening line tag
+    #     pattern = re.compile( r"<line>(.*?)</line>" )
+    #     code = dux.get_value_by_xml_tag_name( xml_string, "code" )
+    #     code_list = [ ]
+    #
+    #     for line in code.split( "\n" ):
+    #
+    #         match = pattern.search( line )
+    #
+    #         for skip in skip_list:
+    #             if skip in line:
+    #                 if debug: print( f"[SKIPPING '{skip}']" )
+    #                 match = None
+    #                 break
+    #
+    #         if match:
+    #             line = match.group( 1 )
+    #             line = line.replace( "&gt;", ">" ).replace( "&lt;", "<" ).replace( "&amp;", "&" )
+    #             code_list.append( line )
+    #             if debug: print( line )
+    #         else:
+    #             code_list.append( "" )
+    #             if debug: print( "[]" )
+    #
+    #     return code_list
 
 if __name__ == "__main__":
     

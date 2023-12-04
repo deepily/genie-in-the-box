@@ -5,6 +5,7 @@ import xml.etree.ElementTree as et
 import lib.utils.util as du
 import lib.utils.util_pandas as dup
 import lib.utils.util_stopwatch as sw
+import lib.utils.util_xml as dux
 from lib.memory import solution_snapshot as ss
 
 from lib.agents.agent import Agent
@@ -262,51 +263,47 @@ class CalendaringAgent( Agent ):
     # ¡OJO! Something tells me this should live somewhere else?
     def _get_prompt_response_dict( self, xml_string, debug=False ):
 
-        def _get_code( xml_string, debug=False ):
-            
-            # if debug:
-            #     du.print_banner( "get_code called..." )
-            #     print( f"xml_string [{xml_string}]" )
-            
-            skip_list = [ "import pandas", "import datetime" ]
-            
-            # Matches all text between the opening and closing line tags, including the white space after the opening line tag
-            pattern = re.compile( r"<line>(.*?)</line>" )
-            code = du.get_value_by_xml_tag_name( xml_string, "code" )
-            code_list = [ ]
-            
-            for line in code.split( "\n" ):
-                
-                match = pattern.search( line )
-                
-                for skip in skip_list:
-                    if skip in line:
-                        if debug: print( f"[SKIPPING '{skip}']" )
-                        match = None
-                        break
-                
-                if match:
-                    line = match.group( 1 )
-                    code_list.append( line )
-                    if debug: print( line )
-                else:
-                    code_list.append( "" )
-                    if debug: print( "[]" )
-            
-            return code_list
+        # def _get_code_list( xml_string, debug=False ):
+        #
+        #     skip_list = [] # [ "import pandas", "import datetime" ]
+        #
+        #     # Matches all text between the opening and closing line tags, including the white space after the opening line tag
+        #     pattern = re.compile( r"<line>(.*?)</line>" )
+        #     code = dux.get_value_by_xml_tag_name( xml_string, "code" )
+        #     code_list = [ ]
+        #
+        #     for line in code.split( "\n" ):
+        #
+        #         match = pattern.search( line )
+        #
+        #         for skip in skip_list:
+        #             if skip in line:
+        #                 if debug: print( f"[SKIPPING '{skip}']" )
+        #                 match = None
+        #                 break
+        #
+        #         if match:
+        #             line = match.group( 1 )
+        #             code_list.append( line )
+        #             if debug: print( line )
+        #         else:
+        #             code_list.append( "" )
+        #             if debug: print( "[]" )
+        #
+        #     return code_list
 
         # Trim everything down to only what's contained between the response open and close tags'
-        xml_string = du.get_value_by_xml_tag_name( xml_string, "response" )
+        xml_string = dux.get_value_by_xml_tag_name( xml_string, "response" )
 
         response_dict = {
                # "answer": _get_value_by_tag_name( xml_string, "answer", default_value="" ),
-               "question": du.get_value_by_xml_tag_name( xml_string, "question" ),
-               "thoughts": du.get_value_by_xml_tag_name( xml_string, "thoughts" ),
-                   "code": _get_code( xml_string, debug=debug ),
-                "returns": du.get_value_by_xml_tag_name( xml_string, "returns" ),
-                "example": du.get_value_by_xml_tag_name( xml_string, "example" ),
-            "explanation": du.get_value_by_xml_tag_name( xml_string, "explanation" ),
-                  "error": du.get_value_by_xml_tag_name( xml_string, "error" )
+               "question": dux.get_value_by_xml_tag_name( xml_string, "question" ),
+               "thoughts": dux.get_value_by_xml_tag_name( xml_string, "thoughts" ),
+                   "code": dux.get_code_list( xml_string, debug=debug ),
+                "returns": dux.get_value_by_xml_tag_name( xml_string, "returns" ),
+                "example": dux.get_value_by_xml_tag_name( xml_string, "example" ),
+            "explanation": dux.get_value_by_xml_tag_name( xml_string, "explanation" ),
+                  "error": dux.get_value_by_xml_tag_name( xml_string, "error" )
         }
         return response_dict
     
@@ -322,7 +319,7 @@ class CalendaringAgent( Agent ):
         self.answer_conversational = self._query_llm( preamble, instructions, model=format_model, debug=self.debug )
         
         # if we've just received an xml-esque string then pull `<rephrased_answer>` from it. Otherwise, just return the string
-        self.answer_conversational = du.get_value_by_xml_tag_name(
+        self.answer_conversational = dux.get_value_by_xml_tag_name(
             self.answer_conversational, "rephrased_answer", default_value=self.answer_conversational
         )
         return self.answer_conversational
