@@ -22,27 +22,29 @@ def add_to_path( path ):
         print( "Path [{}] already in sys.path".format( path ) )
 
 
+def get_current_datetime_raw( tz_name="US/Eastern" ):
+
+    now = dt.datetime.now()
+    tz = pytz.timezone( tz_name )
+    tz_date = now.astimezone( tz )
+    
+    return tz_date
+
 def get_current_datetime( tz_name="US/Eastern" ):
     
-    now     = dt.datetime.now()
-    tz      = pytz.timezone( tz_name )
-    tz_date = now.astimezone( tz )
+    tz_date = get_current_datetime_raw( tz_name )
     
     return tz_date.strftime( '%Y-%m-%d @ %H:%M:%S %Z' )
 
 def get_current_date( tz_name="US/Eastern" ):
     
-    now = dt.datetime.now()
-    tz = pytz.timezone( tz_name )
-    tz_date = now.astimezone( tz )
+    tz_date = get_current_datetime_raw( tz_name )
     
     return tz_date.strftime( "%Y-%m-%d" )
 
 def get_current_time( tz_name="US/Eastern" ):
     
-    now = dt.datetime.now()
-    tz = pytz.timezone( tz_name )
-    tz_date = now.astimezone( tz )
+    tz_date = get_current_datetime_raw( tz_name )
     
     return tz_date.strftime( "%H:%M:%S %Z" )
 
