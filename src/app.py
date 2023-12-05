@@ -34,7 +34,7 @@ import lib.app.todo_fifo_queue as tdq
 from lib.clients.genie_client import GPT_3_5
 
 from lib.memory.solution_snapshot import SolutionSnapshot
-from lib.agents.agent_calendaring import CalendaringAgent
+from lib.agents.calendaring_agent import CalendaringAgent
 
 from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
 from lib.app.fifo_queue import FifoQueue

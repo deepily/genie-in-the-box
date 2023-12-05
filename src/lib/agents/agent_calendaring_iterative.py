@@ -10,7 +10,7 @@ import lib.utils.util_xml as dux
 from lib.memory import solution_snapshot as ss
 
 from lib.agents.agent import Agent
-from lib.agents.agent_calendaring import CalendaringAgent
+from lib.agents.calendaring_agent import CalendaringAgent
 from lib.memory.solution_snapshot import SolutionSnapshot
 
 import pandas as pd
