@@ -12,7 +12,7 @@ import lib.utils.util as du
 
 from subprocess import PIPE, run
 
-def append_example_and_print_code( code, code_return_type, example_code, debug=False, verbose=False ):
+def _append_example_and_print_code( code, code_return_type, example_code, debug=False, verbose=False ):
     
     """
     Appends the method's invocation example code to the given code list and the prints the returned solution value based on the code return type (dataframe or plain print).
@@ -55,10 +55,12 @@ def append_example_and_print_code( code, code_return_type, example_code, debug=F
     
     duplicates_report, clean_code = _remove_duplicate_lines( code )
     
-    du.print_banner( "Duplicate lines removed:", prepend_nl=True )
-    for line, count in duplicates_report.items():
-        print( f"{count:02d} {line}" )
-        
+    if len( duplicates_report ) > 0:
+        du.print_banner( "Duplicate lines removed:", prepend_nl=True )
+        for line, count in duplicates_report.items():
+            print( f"{count:02d} {line}" )
+        print()
+    
     return clean_code
 
 
@@ -104,17 +106,17 @@ def _remove_duplicate_lines( code_lines ):
 
 
 # TODO: This should generalize to include more than two instances of a string?
-def remove_last_occurrence( the_list, the_string ):
-
-    # ¡OJO! This has issues with white space that precedes any target strings. Not worth worrying about right now
-    # Example: "    import datetime" will not be removed if the List contains "import datetime", and vice versa
-    if the_list.count( the_string ) > 1:
-
-        the_list.reverse()
-        the_list.remove( the_string )
-        the_list.reverse()
-
-    return the_list
+# def remove_last_occurrence( the_list, the_string ):
+#
+#     # ¡OJO! This has issues with white space that precedes any target strings. Not worth worrying about right now
+#     # Example: "    import datetime" will not be removed if the List contains "import datetime", and vice versa
+#     if the_list.count( the_string ) > 1:
+#
+#         the_list.reverse()
+#         the_list.remove( the_string )
+#         the_list.reverse()
+#
+#     return the_list
 
 def assemble_and_run_solution( solution_code, example_code, path=None, solution_code_returns="string", debug=debug, verbose=False ):
     
@@ -147,7 +149,7 @@ def assemble_and_run_solution( solution_code, example_code, path=None, solution_
         du.print_banner( "Solution code BEFORE:", prepend_nl=True)
         du.print_list( solution_code)
     
-    solution_code = append_example_and_print_code( solution_code, solution_code_returns, example_code, debug=debug )
+    solution_code = _append_example_and_print_code( solution_code, solution_code_returns, example_code, debug=debug )
     
     if debug and verbose:
         du.print_banner( "Solution code AFTER:", prepend_nl=True)
@@ -202,6 +204,9 @@ def test_assemble_and_run_solution():
     solution_code = [
         "import datetime",
         "import pytz",
+        "import datetime",
+        "import pytz",
+        "def get_time():",
         "def get_time():",
         "    import datetime",
         "    now = datetime.datetime.now()",
