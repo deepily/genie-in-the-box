@@ -8,10 +8,6 @@ def get_value_by_xml_tag_name( xml_string, name, default_value=f"Error: `{{name}
     
 def get_code_list( xml_string, debug=False ):
     
-    # if debug:
-    #     du.print_banner( "get_code called..." )
-    #     print( f"xml_string [{xml_string}]" )
-    
     skip_list = [ ]  # [ "import pandas", "import datetime" ]
     
     # Matches all text between the opening and closing line tags, including the white space after the opening line tag
