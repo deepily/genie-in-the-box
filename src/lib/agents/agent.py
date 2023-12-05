@@ -8,6 +8,8 @@ import lib.utils.util_stopwatch as sw
 
 from lib.agents.runnable_code import RunnableCode
 
+# from lib.memory.solution_snapshot import SolutionSnapshot
+
 import openai
 import tiktoken
 from huggingface_hub import InferenceClient
@@ -46,14 +48,14 @@ class Agent( RunnableCode, abc.ABC ):
         
         return num_tokens
     
-    def _query_llm( self, preamble, question, model=DEFAULT_MODEL, debug=True ):
+    def _query_llm( self, preamble, question, model=DEFAULT_MODEL, max_new_tokens=1024, temperature=0.5, debug=True ):
         
         if model == Agent.PHIND_34B_v2:
             
             prompt = preamble + "\n" + question
             
             self.debug = debug
-            return self._query_llm_phind( prompt, model=model )
+            return self._query_llm_phind( prompt, model=model, max_new_tokens=max_new_tokens, temperature=temperature )
             
         else:
             if debug:
@@ -95,10 +97,10 @@ class Agent( RunnableCode, abc.ABC ):
         token_list     = [ ]
         ellipsis_count = 0
         
-        if self.debug: print( f"Prompt:\n[{prompt}]" )
+        if self.debug: print( {prompt} )
         
         for token in client.text_generation(
-            prompt, max_new_tokens=max_new_tokens, stream=True, stop_sequences=[ "</response>", "</s>" ], temperature=temperature
+            prompt, max_new_tokens=max_new_tokens, stream=True, stop_sequences=[ "</response>" ], temperature=temperature
         ):
             if self.debug:
                 print( token, end="" )
@@ -111,7 +113,6 @@ class Agent( RunnableCode, abc.ABC ):
                 
             token_list.append( token )
             
-        # print()
         response = "".join( token_list ).strip()
         
         timer.print( use_millis=True, prepend_nl=True )
@@ -269,4 +270,22 @@ class Agent( RunnableCode, abc.ABC ):
         """
         return preamble
     
-    
+    # def serialize_to_json( self, question, current_step, total_steps, now ):
+    #
+    #     # Convert object's state to a dictionary
+    #     state_dict = self.__dict__
+    #
+    #     # Remove any private attributes
+    #     # Convert object's state to a dictionary, omitting specified fields
+    #     state_dict = { k: v for k, v in self.__dict__.items() if k not in self.do_not_serialize }
+    #
+    #     # Constructing the filename
+    #     # Format: "question_year-month-day-hour-minute-step-N-of-M.json"
+    #     fn_question = SolutionSnapshot.clean_question( question ).replace( " ", "-" )
+    #     filename = f"{du.get_project_root()}/io/log/{fn_question}-{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-step-{(current_step + 1)}-of-{total_steps}.json"
+    #
+    #     # Serialize and save to file
+    #     with open( filename, 'w' ) as file:
+    #         json.dump( state_dict, file, indent=4 )
+    #
+    #     print( f"Serialized to {filename}" )
