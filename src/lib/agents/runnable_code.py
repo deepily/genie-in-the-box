@@ -35,3 +35,7 @@ class RunnableCode:
                 print( line )
 
         return self.code_response_dict
+    
+    def ran_to_completion( self ):
+        
+        return self.code_response_dict is not None and self.code_response_dict[ "return_code" ] == 0
