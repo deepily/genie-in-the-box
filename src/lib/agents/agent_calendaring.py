@@ -174,14 +174,14 @@ class CalendaringAgent( Agent ):
         
         return self.question
         
-    def is_promptable( self ):
+    def is_prompt_executable( self ):
         
         du.print_banner( "TODO: Implement is_promptable()", expletive=True )
         return True
     
-    def is_runnable( self ):
+    def is_code_runnable( self ):
         
-        du.print_banner( "TODO: Implement is_runnable()", expletive=True )
+        du.print_banner( "TODO: Implement is_code_runnable()", expletive=True )
         return True
     
     # def validate_xml( self, xml_string ):

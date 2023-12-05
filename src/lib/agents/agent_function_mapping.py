@@ -97,7 +97,7 @@ class FunctionMappingAgent( Agent ):
         """
         return self.user_message
     
-    def is_promptable( self ):
+    def is_prompt_executable( self ):
         
         return self.question != "" and self.signatures_dict != { }
         
@@ -125,7 +125,7 @@ class FunctionMappingAgent( Agent ):
         
         return self.prompt_response_dict
     
-    def is_runnable( self ):
+    def is_code_runnable( self ):
         
         if self.prompt_response_dict[ "code" ] != [ ]:
             return True

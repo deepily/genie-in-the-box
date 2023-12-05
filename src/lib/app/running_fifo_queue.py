@@ -80,7 +80,7 @@ class RunningFifoQueue( FifoQueue ):
         
         response_dict = running_job.run_prompt()
         
-        if running_job.is_runnable():
+        if running_job.is_code_runnable():
             
             code_response = running_job.run_code()
             

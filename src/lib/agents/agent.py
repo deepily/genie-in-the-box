@@ -137,11 +137,11 @@ class Agent( RunnableCode, abc.ABC ):
         pass
     
     @abc.abstractmethod
-    def is_promptable( self ):
+    def is_prompt_executable( self ):
         pass
     
     @abc.abstractmethod
-    def is_runnable( self ):
+    def is_code_runnable( self ):
         pass
         
     @abc.abstractmethod

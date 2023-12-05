@@ -114,7 +114,7 @@ class RefactoringAgent( Agent ):
         
         return user_message
     
-    def is_promptable( self ):
+    def is_prompt_executable( self ):
         
         if len( self.snippets ) == 0:
             return False
@@ -171,7 +171,7 @@ class RefactoringAgent( Agent ):
         
         if update_example_code: self._update_snapshot_code( self.similar_snapshots, response_dict, debug=debug )
     
-    def is_runnable( self ):
+    def is_code_runnable( self ):
         
         for similar_snapshot in self.similar_snapshots:
             if similar_snapshot[ 1 ].code == [ ]:
@@ -376,7 +376,7 @@ if __name__ == "__main__":
     similar_snapshots = snapshot_mgr.get_snapshots_by_code_similarity( exemplar_snapshot, threshold=threshold )
     
     agent         = RefactoringAgent( similar_snapshots=similar_snapshots, path_to_solutions="/src/conf/long-term-memory/solutions", debug=True, verbose=True )
-    if agent.is_promptable():
+    if agent.is_prompt_executable():
         response_dict = agent.run_prompt()
     else:
         print( f"No prompts available to refactor for this Q: [{question}]" )

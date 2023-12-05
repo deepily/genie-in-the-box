@@ -351,7 +351,7 @@ class SolutionSnapshot( Agent ):
         du.print_banner( msg, expletive=True )
         raise NotImplementedError( msg )
     
-    def is_runnable( self ):
+    def is_code_runnable( self ):
         
         if hasattr( self, 'code' ) and self.code != [ ]:
             return True
@@ -364,7 +364,7 @@ class SolutionSnapshot( Agent ):
         du.print_banner( msg, expletive=True )
         raise NotImplementedError( msg )
     
-    def is_promptable( self ):
+    def is_prompt_executable( self ):
         
         return False
     
