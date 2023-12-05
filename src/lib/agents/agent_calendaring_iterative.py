@@ -38,24 +38,25 @@ class IterativeCalendaringAgent( CalendaringAgent ):
         # self.prompt_components = self._initialize_prompt_components( self.df, self.question )
         self.do_not_serialize     = [ "df" ]
     
-    def serialize_to_json( self, current_step, total_steps, now ):
-        
+    def serialize_to_json( self, question, current_step, total_steps, now ):
+
         # Convert object's state to a dictionary
         state_dict = self.__dict__
-        
+
         # Remove any private attributes
         # Convert object's state to a dictionary, omitting specified fields
         state_dict = { k: v for k, v in self.__dict__.items() if k not in self.do_not_serialize }
-        
+
         # Constructing the filename
         # Format: "question_year-month-day-hour-minute-step-N-of-M.json"
-        fn_question = SolutionSnapshot.clean_question( self.question ).replace( " ", "-" )
+        print( f"Q: {question}" )
+        fn_question = SolutionSnapshot.clean_question( question ).replace( " ", "-" )
         filename = f"{du.get_project_root()}/io/log/{fn_question}-{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-step-{( current_step + 1 )}-of-{total_steps}.json"
-        
+
         # Serialize and save to file
         with open( filename, 'w' ) as file:
             json.dump( state_dict, file, indent=4 )
-        
+
         print( f"Serialized to {filename}" )
     
     @classmethod
@@ -84,7 +85,7 @@ class IterativeCalendaringAgent( CalendaringAgent ):
                 
         return restored_agent
     
-    def _initialize_prompt_components( self, df, question ):
+    def _initialize_prompt_components( self, df ):
         
         head, event_value_counts = self._get_df_metadata( df )
         
@@ -110,7 +111,7 @@ class IterativeCalendaringAgent( CalendaringAgent ):
 
         Given the context I have provided above, I want you to write a Python function to answer the following question:
 
-        Question: `{question}`
+        Question: `{self.question}`
 
         In order to successfully write a function that answers the question above, you must follow my instructions step by step. As you complete each step I will recount your progress on the previous steps and provide you with the next step's instructions.
 
@@ -207,11 +208,11 @@ class IterativeCalendaringAgent( CalendaringAgent ):
     
     def run_prompt( self ):
         
+        self.prompt_components      = self._initialize_prompt_components( self.df )
+
         self.token_count = 0
         timer = sw.Stopwatch( msg=f"Running iterative prompt with {len( self.prompt_components[ 'steps' ] )} steps..." )
         prompt_response_dict = { }
-        
-        self.prompt_components      = self._initialize_prompt_components( self.df, self.question )
         
         steps                       = self.prompt_components[ "steps" ]
         xml_formatting_instructions = self.prompt_components[ "xml_formatting_instructions" ]
@@ -246,7 +247,7 @@ class IterativeCalendaringAgent( CalendaringAgent ):
             self.prompt_components[ "running_history" ] = running_history
             self.prompt_response_dict = prompt_response_dict
             
-            self.serialize_to_json( step, self.step_len, now )
+            self.serialize_to_json( self.question, step, self.step_len, now )
             
         # self.prompt_components[ "running_history" ] = running_history
         # self.prompt_response_dict = prompt_response_dict
@@ -283,42 +284,44 @@ class IterativeCalendaringAgent( CalendaringAgent ):
         
         return "".join( token_list ).strip()
     
-    def _update_response_dictionary( self, step, response, prompt_response_dict, tag_names, debug=True ):
-        
-        if debug: print( f"update_response_dictionary called with step [{step}]..." )
-        
-        # Parse response and update response dictionary
-        xml_tags_for_step_n = tag_names[ step ]
-        
-        for xml_tag in xml_tags_for_step_n:
-            
-            if debug: print( f"Looking for xml_tag [{xml_tag}]" )
-            
-            if xml_tag == "code":
-                # the get_code method expects enclosing tags
-                xml_string = "<code>" + dux.get_value_by_xml_tag_name( response, xml_tag ) + "</code>"
-                prompt_response_dict[ xml_tag ] = dux.get_code_list( xml_string, debug=debug )
-            else:
-                prompt_response_dict[ xml_tag ] = dux.get_value_by_xml_tag_name( response, xml_tag ).strip()
-        
-        return prompt_response_dict
+    # def _update_response_dictionary( self, step, response, prompt_response_dict, tag_names, debug=True ):
+    #
+    #     if debug: print( f"update_response_dictionary called with step [{step}]..." )
+    #
+    #     # Parse response and update response dictionary
+    #     xml_tags_for_step_n = tag_names[ step ]
+    #
+    #     for xml_tag in xml_tags_for_step_n:
+    #
+    #         if debug: print( f"Looking for xml_tag [{xml_tag}]" )
+    #
+    #         if xml_tag == "code":
+    #             # the get_code method expects enclosing tags
+    #             xml_string = "<code>" + dux.get_value_by_xml_tag_name( response, xml_tag ) + "</code>"
+    #             prompt_response_dict[ xml_tag ] = dux.get_code_list( xml_string, debug=debug )
+    #         else:
+    #             prompt_response_dict[ xml_tag ] = dux.get_value_by_xml_tag_name( response, xml_tag ).strip()
+    #
+    #     return prompt_response_dict
     
     
 if __name__ == "__main__":
     
-    # path_to_df = "/src/conf/long-term-memory/events.csv"
-    # # question = "What birthdays do I have on my calendar this week?"
-    # # question = "What todo items do I have on my calendar for today?"
-    # question  = "What's today's date?"
-    # agent = IterativeCalendaringAgent( path_to_df, question=question, debug=True, verbose=False )
-    # response_dict = agent.run_prompt()
-    # code_response = agent.run_code()
-    # # formatted_output = agent.format_output()
+    # # # question = "What birthdays do I have on my calendar this week?"
+    # # # question = "What todo items do I have on my calendar for today?"
+    path_to_df = "/src/conf/long-term-memory/events.csv"
+    question  = "What's today's date?"
+    agent = IterativeCalendaringAgent( path_to_df, question=question, debug=True, verbose=False )
+    response_dict = agent.run_prompt()
+    # # code_response = agent.run_code()
+    # # # formatted_output = agent.format_output()
+    # #
+    # # du.print_banner( "Done! response_dict:", prepend_nl=True )
+    # # print( response_dict )
+    
+    # path = du.get_project_root() + "/io/log/whats-todays-date-2023-12-4-13-55-step-4-of-4.json"
     #
-    # du.print_banner( "Done! response_dict:", prepend_nl=True )
-    # print( response_dict )
-    path = du.get_project_root() + "/io/log/whats-todays-date-2023-12-4-13-55-step-4-of-4.json"
-        
-    restored_agent = IterativeCalendaringAgent.restore_from_serialized_state( path )
-    restored_agent.run_code()
+    # restored_agent = IterativeCalendaringAgent.restore_from_serialized_state( path )
+    # restored_agent.run_code()
+    
     
