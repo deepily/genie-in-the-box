@@ -1,4 +1,6 @@
 import os
+from collections import Counter
+
 debug = os.getenv( "GIB_CODE_EXEC_DEBUG", "False" ) == "True"
 
 import sys
@@ -48,11 +50,40 @@ def append_example_and_print_code( code, code_return_type, example_code, debug=F
             code.append( plain_print )
     
     # Remove duplicate imports if present
-    code = remove_last_occurrence( code, "import pandas as pd" )
-    code = remove_last_occurrence( code, "import datetime" )
+    # code = remove_last_occurrence( code, "import pandas as pd" )
+    # code = remove_last_occurrence( code, "import datetime" )
     
-    return code
+    duplicates_report, clean_code = _remove_duplicate_lines( code )
+    
+    du.print_banner( "Duplicate lines removed:", prepend_nl=True )
+    for line, count in duplicates_report.items():
+        print( f"{count:02d} {line}" )
+        
+    return clean_code
 
+
+def _remove_duplicate_lines( code_lines ):
+    
+    # Count the occurrences of each line
+    line_count = Counter( code_lines )
+    
+    # Report the duplicate lines and their frequencies
+    duplicates_report = { line: count for line, count in line_count.items() if count > 1 }
+    
+    # Remove duplicate lines, keeping only the first occurrence
+    unique_lines = [ ]
+    seen_lines   = set()
+    
+    for line in code_lines:
+        if line not in seen_lines:
+            unique_lines.append( line )
+            seen_lines.add( line )
+    
+    return duplicates_report, unique_lines
+
+
+# Apply the method to the sample code
+# duplicates_report, unique_code_lines = remove_duplicate_lines( code_lines )
 
 # TODO: This may be overkill/superfluous
 # def swap_return_value_assignment( code ):
