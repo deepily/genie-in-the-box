@@ -97,7 +97,9 @@ class Agent( RunnableCode, abc.ABC ):
         token_list     = [ ]
         ellipsis_count = 0
         
-        if self.debug: print( {prompt} )
+        if self.debug:
+            for line in prompt.split( "\n" ):
+                print( line )
         
         for token in client.text_generation(
             prompt, max_new_tokens=max_new_tokens, stream=True, stop_sequences=[ "</response>" ], temperature=temperature
