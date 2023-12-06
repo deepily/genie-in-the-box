@@ -1,5 +1,8 @@
-import lib.utils.util as du
+import lib.utils.util             as du
 import lib.utils.util_code_runner as ucr
+
+# from lib.agents.iterative_debugging_agent import IterativeDebuggingAgent
+
 class RunnableCode:
     def __init__( self, debug=False, verbose=False ):
         
@@ -21,14 +24,14 @@ class RunnableCode:
         du.print_banner( "Code", prepend_nl=True )
         for line in self.prompt_response_dict[ "code" ]: print( line )
         
-    def run_code( self ):
+    def run_code( self, inject_bugs=False ):
         
         self.code_response_dict = ucr.assemble_and_run_solution(
             self.prompt_response_dict[ "code" ],
             self.prompt_response_dict[ "example" ],
             path="/src/conf/long-term-memory/events.csv",
             solution_code_returns=self.prompt_response_dict.get( "returns", "" ),
-            debug=self.debug
+            debug=self.debug, inject_bugs=inject_bugs
         )
         self.answer = self.code_response_dict[ "output" ]
         
@@ -36,7 +39,7 @@ class RunnableCode:
             du.print_banner("Code output", prepend_nl=True )
             for line in self.code_response_dict[ "output" ].split( "\n" ):
                 print( line )
-
+                
         return self.code_response_dict
     
     def ran_to_completion( self ):

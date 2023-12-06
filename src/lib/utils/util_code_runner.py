@@ -118,7 +118,7 @@ def _remove_duplicate_lines( code_lines ):
 #
 #     return the_list
 
-def assemble_and_run_solution( solution_code, example_code, path=None, solution_code_returns="string", debug=debug, verbose=False ):
+def assemble_and_run_solution( solution_code, example_code, path=None, solution_code_returns="string", debug=debug, verbose=False, inject_bugs=False ):
     
     # if there's no dataframe to open or prep, then skip it
     if path is None:
@@ -156,6 +156,9 @@ def assemble_and_run_solution( solution_code, example_code, path=None, solution_
         du.print_list( solution_code)
     
     code = code_preamble + solution_code + [ "" ]
+    
+    if inject_bugs:
+        du.print_banner( "Injecting bugs here!", prepend_nl=True, expletive=True )
     
     code_path = du.get_project_root() + "/io/code.py"
     du.write_lines_to_file( code_path, code )
