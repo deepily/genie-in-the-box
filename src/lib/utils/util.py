@@ -98,6 +98,19 @@ def get_name_value_pairs( arg_list, debug=False, verbose=False ):
     return name_value_pairs
 
 
+def get_file_as_source_code_with_line_numbers( path ):
+    
+    source_code = get_file_as_list( path, lower_case=False, clean=False, randomize=False )
+    
+    # iterate through the source code and prepend the line number to each line
+    for i in range( len( source_code ) ):
+        source_code[ i ] = f"{i + 1:03d} {source_code[ i ]}"
+    
+    # join the lines back together into a single string
+    source_code = "".join( source_code )
+    
+    return source_code
+
 # Load a plain text file as a list of lines.
 def get_file_as_list( path, lower_case=False, clean=False, randomize=False ):
     
