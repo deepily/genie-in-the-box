@@ -1,0 +1,300 @@
+import lib.utils.util           as du
+import lib.utils.util_stopwatch as sw
+
+from lib.agents.agent      import Agent
+from lib.agents.code_agent import CodeAgent
+
+import lib.utils.util_xml as dux
+class IterativeDebuggingAgent( CodeAgent ):
+    
+    def __init__( self, error_message, path_to_code, debug=False, verbose=False ):
+        
+        super().__init__( debug=debug, verbose=verbose )
+        
+        self.token_count          = 0
+        self.prompt_components    = None
+        self.prompt_response_dict = None
+        self.available_llms       = self._inialize_available_llms()
+        self.error_message        = error_message
+        self.path_to_code         = path_to_code
+        
+        self.do_not_serialize     = []
+        
+    def _inialize_available_llms( self ):
+        
+        # TODO: make run-time configurable, like AMPE's dynamic configuration
+        prompt_run_llms = [
+            { "model": Agent.PHIND_34B_v2, "short_name": "phind34b", "temperature": 0.50, "max_new_tokens": 1024 },
+            { "model": Agent.GPT_3_5, "short_name": "gpt3.5" },
+            { "model": Agent.GPT_4, "short_name": "gpt4" }
+        ]
+        return prompt_run_llms
+    
+    def _initialize_prompt_components( self ):
+        
+        step_1 = f"""
+        You are a cheerful and helpful assistant, with proven expertise using Python to query pandas dataframes.
+        
+        Your job is to debug the code that produced the following error message and generate valid Python code that will correct the bug. You will return your response to each question using XML format.
+        
+        {self.error_message}
+        
+Source code:
+{self._get_source_code( self.path_to_code )}
+        
+        In order to successfully address the error message above, you must follow my instructions step by step. As you complete each step I will recount your progress on the previous steps and provide you with the next step's instructions.
+        
+        Step one) Think: think out loud about what you are being asked, including what are the steps that you will need to take to solve this problem. Be critical of your thought process!
+        
+        """
+        # Hint: When joining multiple filtering conditions using and/or in pandas, you must use the single bitwise operators `&` and `|` instead of the boolean operators `and` and `or``.
+        
+        xml_formatting_instructions_step_1 = """
+        You must respond to the step one directive using the following XML format:
+        <response>
+            <thoughts>Your thoughts</thoughts>
+        </response>
+        
+        Begin!
+        """
+        step_2 = """
+        In response to the instructions that you received for step one you replied:
+        
+        {response}
+        
+        Step two) Code: Now that you have thought about how you are going to solve the problem, it's time to generate the Python code that fix the buggy code. The code must be complete, syntactically correct, and capable of running to completion. The last line of your function code must be `return solution`. Remember: You must make the least amount of changes that will fix the bug
+        """
+        xml_formatting_instructions_step_2 = """
+        You must respond to the step 2 directive using the following XML format:
+        <response>
+            <code>
+                <line>def function_name_here( df, arg1, arg2 ):</line>
+                <line>    ...</line>
+                <line>    ...</line>
+                <line>    return solution</line>
+            </code>
+        </response>
+        
+        Begin!
+        """
+        
+        step_3 = """
+        In response to the instructions that you received for step two, you replied:
+
+        {response}
+
+        Now that you have generated the code that addresses the bug mentioned above, you will need to perform the following three steps:
+
+        Step three) Return: Report on the object type of the variable `solution` returned in your last line of code. Use one word to represent the object type.
+
+        Step four) Example: Create a one line example of how to call your code.
+
+        Step five) Explain: Explain how your code works, including any assumptions that you have made.
+        """
+        xml_formatting_instructions_step_3 = """
+        You must respond to the directives in steps three, four and five using the following XML format:
+
+        <response>
+            <returns>Object type of the variable `solution`</returns>
+            <example>One-line example of how to call your code: solution = function_name_here( arguments )</example>
+            <explanation>Explanation of how the code works</explanation>
+        </response>
+
+        Begin!
+        """
+        
+        step_4 = """
+        In response to the instructions that you received for step three, you replied:
+
+        {response}
+
+        Congratulations! We're finished 😀
+
+        """
+        
+        steps = [ step_1, step_2, step_3, step_4 ]
+        self.step_len = len( steps )
+        prompt_components = {
+            "steps"                      : steps,
+            "responses"                  : [ ],
+            "response_tag_names"         : [ [ "thoughts" ], [ "code" ], [ "returns", "example", "explanation" ] ],
+            "running_history"            : "",
+            "xml_formatting_instructions": [
+                xml_formatting_instructions_step_1, xml_formatting_instructions_step_2, xml_formatting_instructions_step_3
+            ]
+        }
+        
+        return prompt_components
+    
+    def run_prompts( self ):
+        
+        idx = 1
+        ran_to_completion = False
+        
+        for llm in self.available_llms:
+            
+            run_descriptor = f"Run {idx} of {len( self.available_llms )}"
+            
+            if ran_to_completion:
+                print( f"Ran to completion? ¡Yes! Exiting LLM loop..." )
+                break
+                
+            model_name     = llm[ "model" ]
+            short_name     = llm[ "short_name" ]
+            temperature    = llm[ "temperature"    ] if "temperature"    in llm else 0.5
+            max_new_tokens = llm[ "max_new_tokens" ] if "max_new_tokens" in llm else 1024
+            
+            du.print_banner( f"{run_descriptor}: Executing prompt using model [{model_name}] and short name [{short_name}]..." )
+            
+            prompt_response_dict = self.run_prompt( run_descriptor=run_descriptor, model=model_name, short_name=short_name, temperature=temperature, max_new_tokens=max_new_tokens )
+            if self.is_code_runnable():
+                
+                code_response_dict = self.run_code()
+                ran_to_completion  = self.ran_to_completion()
+                if not ran_to_completion: print( f"Ran to completion? ¡FAIL! Moving on to the next LLM..." )
+            else:
+                print( "Skipping code execution step because the prompt did not produce any code to run." )
+                
+            idx += 1
+    
+    def run_prompt( self, run_descriptor="Run 1 of 1", model=Agent.PHIND_34B_v2, short_name="phind34b", max_new_tokens=1024, temperature=0.5 ):
+        
+        self.prompt_components      = self._initialize_prompt_components()
+        
+        steps                       = self.prompt_components[ "steps" ]
+        xml_formatting_instructions = self.prompt_components[ "xml_formatting_instructions" ]
+        response_tag_names          = self.prompt_components[ "response_tag_names" ]
+        responses                   = self.prompt_components[ "responses" ]
+        running_history             = self.prompt_components[ "running_history" ]
+        timer                       = sw.Stopwatch( msg=f"{run_descriptor}: Executing iterative prompt(s) with {len( steps )} steps..." )
+        
+        self.token_count            = 0
+        prompt_response_dict        = { }
+        
+        # Get the current time so that we can track all the steps in this iterative prompt using the same timestamp
+        now = du.get_current_datetime_raw()
+        
+        for step in range( len( steps ) ):
+            
+            print( f"Step [{step + 1}] of [{len( steps )}]" )
+            if step == 0:
+                # the first step doesn't have any previous responses to incorporate into it
+                running_history = steps[ step ]
+            else:
+                # incorporate the previous response into the current step, then append it to the running history
+                running_history = running_history + steps[ step ].format( response=responses[ step - 1 ] )
+            
+            # we're not going to execute the last step, it's been added just to keep the running history current
+            if step != len( steps ) - 1:
+                
+                # response = self._query_llm_phind( running_history + xml_formatting_instructions[ step ], model=model, debug=True )
+                response = self._query_llm(
+                    running_history, xml_formatting_instructions[ step ], model=model, max_new_tokens=max_new_tokens, temperature=temperature, debug=True
+                )
+                responses.append( response )
+                
+                # Incrementally update the contents of the response dictionary according to the results of the XML-esque parsing
+                prompt_response_dict = self._update_response_dictionary(
+                    step, response, prompt_response_dict, response_tag_names, debug=False
+                )
+            else:
+                print( "LAST STEP: Skipping execution. Response from the previous step:" )
+                print( responses[ step - 1 ] )
+            
+            # Update the prompt component's state before serializing a copy of it
+            self.prompt_components[ "running_history" ] = running_history
+            self.prompt_response_dict = prompt_response_dict
+            
+            self.serialize_to_json( "code-debugging", step, self.step_len, now, run_descriptor=run_descriptor, short_name=short_name )
+            
+        timer.print( "Done!", use_millis=True, prepend_nl=False )
+        tokens_per_second = self.token_count / (timer.get_delta_ms() / 1000.0 )
+        print( f"Tokens per second [{round( tokens_per_second, 1 )}]" )
+        
+        return self.prompt_response_dict
+    
+    def _update_response_dictionary( self, step, response, prompt_response_dict, tag_names, debug=True ):
+        
+        if debug: print( f"update_response_dictionary called with step [{step}]..." )
+
+        # Parse response and update response dictionary
+        xml_tags_for_step_n = tag_names[ step ]
+
+        for xml_tag in xml_tags_for_step_n:
+
+            if debug: print( f"Looking for xml_tag [{xml_tag}]" )
+
+            if xml_tag == "code":
+                # the get_code method expects enclosing tags
+                xml_string = "<code>" + dux.get_value_by_xml_tag_name( response, xml_tag ) + "</code>"
+                prompt_response_dict[ xml_tag ] = dux.get_code_list( xml_string, debug=debug )
+            else:
+                prompt_response_dict[ xml_tag ] = dux.get_value_by_xml_tag_name( response, xml_tag ).strip()
+
+        return prompt_response_dict
+    
+    def serialize_to_json( self, topic, current_step, total_steps, now, run_descriptor="Run 1 of 1", short_name="phind34b" ):
+
+        # Convert object's state to a dictionary
+        state_dict = self.__dict__
+
+        # Convert object's state to a dictionary, omitting specified fields
+        state_dict = { key: value for key, value in self.__dict__.items() if key not in self.do_not_serialize }
+
+        # Constructing the filename, format: "topic-run-on-llm-at-year-month-day-hour-minute-step-N-of-M.json"
+        run_descriptor = run_descriptor.replace( " ", "-" ).lower()
+        short_name     = short_name.replace( " ", "-" ).lower()
+        filename       = f"{du.get_project_root()}/io/log/{topic}-{run_descriptor}-on-{short_name}-at-{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-step-{( current_step + 1 )}-of-{total_steps}.json"
+
+        # Serialize and save to file
+        with open( filename, 'w' ) as file:
+            json.dump( state_dict, file, indent=4 )
+
+        print( f"Serialized to {filename}" )
+        
+    def _get_system_message( self ):
+        
+        print( " _get_system_message NOT implemented" )
+        
+    def _get_user_message( self ):
+        
+        print( " _get_user_message NOT implemented" )
+        
+    def format_output( self ):
+        
+        print( " format_output NOT implemented" )
+        
+    def is_code_runnable( self ):
+        
+        if self.prompt_response_dict is not None and len( self.prompt_response_dict[ "code" ] ) > 0:
+            return True
+        else:
+            print( "No code to run: self.response_dict[ 'code' ] = [ ]" )
+            return False
+        
+    def is_prompt_executable( self ):
+        
+        return self.prompt_components is not None
+        
+if __name__ == "__main__":
+    
+    error_message = """
+ERROR executing code:
+
+File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 14
+    mask = (df['start_date'] <= today) && (df['end_date'] >= today)
+                                        ^
+SyntaxError: invalid syntax"""
+    
+    debugging_agent = IterativeDebuggingAgent( error_message, du.get_project_root() + "/io/code.py", debug=True, verbose=False )
+    
+    debugging_agent.run_prompts()
+    # print( f"Is promptable? {debugging_agent.is_prompt_executable()}, is runnable? {debugging_agent.is_code_runnable()}" )
+    # prompt_response = debugging_agent.run_prompt()
+    # print( f"Is promptable? {debugging_agent.is_prompt_executable()}, is runnable? {debugging_agent.is_code_runnable()}" )
+    #
+    # code_response     = debugging_agent.run_code()
+    # ran_to_completion = debugging_agent.ran_to_completion()
+    #
+    # du.print_banner( f"Ran to completion? ¡{ran_to_completion}!", prepend_nl=False )
+    
