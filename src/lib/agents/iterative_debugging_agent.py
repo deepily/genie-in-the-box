@@ -1,3 +1,5 @@
+import json
+
 import lib.utils.util           as du
 import lib.utils.util_stopwatch as sw
 
@@ -24,7 +26,7 @@ class IterativeDebuggingAgent( CodeAgent ):
         
         # TODO: make run-time configurable, like AMPE's dynamic configuration
         prompt_run_llms = [
-            { "model": Agent.PHIND_34B_v2, "short_name": "phind34b", "temperature": 0.50, "max_new_tokens": 1024 },
+            { "model": Agent.PHIND_34B_v2, "short_name": "phind34b", "temperature": 1.0, "max_new_tokens": 1024 },
             { "model": Agent.GPT_3_5, "short_name": "gpt3.5" },
             { "model": Agent.GPT_4, "short_name": "gpt4" }
         ]
@@ -96,7 +98,7 @@ Source code:
 
         <response>
             <returns>Object type of the variable `solution`</returns>
-            <example>One-line example of how to call your code: solution = function_name_here( arguments )</example>
+            <example>solution = function_name_here( arguments )</example>
             <explanation>Explanation of how the code works</explanation>
         </response>
 
@@ -166,7 +168,7 @@ Source code:
         response_tag_names          = self.prompt_components[ "response_tag_names" ]
         responses                   = self.prompt_components[ "responses" ]
         running_history             = self.prompt_components[ "running_history" ]
-        timer                       = sw.Stopwatch( msg=f"{run_descriptor}: Executing iterative prompt(s) with {len( steps )} steps..." )
+        timer                       = sw.Stopwatch( msg=f"{run_descriptor}: Executing iterative prompt(s) on {short_name} with {len( steps )} steps..." )
         
         self.token_count            = 0
         prompt_response_dict        = { }
@@ -225,9 +227,20 @@ Source code:
             if debug: print( f"Looking for xml_tag [{xml_tag}]" )
 
             if xml_tag == "code":
+                
+                xml_string = dux.get_value_by_xml_tag_name( response, xml_tag, default_value="" )
+                if xml_string == "":
+                    print( f"WARNING: No <code> tags found, falling back to the default tick tick tick syntax..." )
+                    xml_string = dux.rescue_code_using_tick_tick_tick_syntax( response )
+                    # TODO: Find a principal the way to update the response object with the newly rescued and reformatted code
+                
                 # the get_code method expects enclosing tags
-                xml_string = "<code>" + dux.get_value_by_xml_tag_name( response, xml_tag ) + "</code>"
+                xml_string = "<code>" + xml_string + "</code>"
                 prompt_response_dict[ xml_tag ] = dux.get_code_list( xml_string, debug=debug )
+                
+                # # the get_code method expects enclosing tags
+                # xml_string = "<code>" + dux.get_value_by_xml_tag_name( response, xml_tag ) + "</code>"
+                # prompt_response_dict[ xml_tag ] = dux.get_code_list( xml_string, debug=debug )
             else:
                 prompt_response_dict[ xml_tag ] = dux.get_value_by_xml_tag_name( response, xml_tag ).strip()
 
@@ -241,10 +254,10 @@ Source code:
         # Convert object's state to a dictionary, omitting specified fields
         state_dict = { key: value for key, value in self.__dict__.items() if key not in self.do_not_serialize }
 
-        # Constructing the filename, format: "topic-run-on-llm-at-year-month-day-hour-minute-step-N-of-M.json"
+        # Constructing the filename, format: "topic-run-on-year-month-day-at-hour-minute-run-1-of-3-using-llm-short_name-step-N-of-M.json"
         run_descriptor = run_descriptor.replace( " ", "-" ).lower()
         short_name     = short_name.replace( " ", "-" ).lower()
-        filename       = f"{du.get_project_root()}/io/log/{topic}-{run_descriptor}-on-{short_name}-at-{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-step-{( current_step + 1 )}-of-{total_steps}.json"
+        filename       = f"{du.get_project_root()}/io/log/{topic}-on-{now.year}-{now.month}-{now.day}-at-{now.hour}-{now.minute}-{run_descriptor}-using-llm-{short_name}-step-{( current_step + 1 )}-of-{total_steps}.json"
 
         # Serialize and save to file
         with open( filename, 'w' ) as file:
@@ -289,6 +302,8 @@ SyntaxError: invalid syntax"""
     debugging_agent = IterativeDebuggingAgent( error_message, du.get_project_root() + "/io/code.py", debug=True, verbose=False )
     
     debugging_agent.run_prompts()
+    
+    du.print_banner( "This fails to run the completion due to a library version conflict 😢", expletive=True )
     # print( f"Is promptable? {debugging_agent.is_prompt_executable()}, is runnable? {debugging_agent.is_code_runnable()}" )
     # prompt_response = debugging_agent.run_prompt()
     # print( f"Is promptable? {debugging_agent.is_prompt_executable()}, is runnable? {debugging_agent.is_code_runnable()}" )
