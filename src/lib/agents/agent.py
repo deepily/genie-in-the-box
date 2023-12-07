@@ -82,7 +82,7 @@ class Agent( RunnableCode, abc.ABC ):
             presence_penalty=0.0
         )
         
-        timer.print( use_millis=True )
+        timer.print( "Done!", use_millis=True )
         if debug and self.verbose:
             # print( json.dumps( response.to_dict(), indent=4 ) )
             print( response )
@@ -117,7 +117,7 @@ class Agent( RunnableCode, abc.ABC ):
             
         response = "".join( token_list ).strip()
         
-        timer.print( use_millis=True, prepend_nl=True )
+        timer.print( msg="Done!", use_millis=True, prepend_nl=True )
         if self.debug:
             print( f"Token list length [{len( token_list )}]" )
             if self.verbose:
