@@ -6,7 +6,7 @@ import datetime
 from lib.agents.calendaring_agent         import CalendaringAgent
 from lib.memory.solution_snapshot         import SolutionSnapshot
 from lib.agents.agent                     import Agent
-# from lib.agents.iterative_debugging_agent import IterativeDebuggingAgent
+from lib.agents.iterative_debugging_agent import IterativeDebuggingAgent
 
 import lib.utils.util as du
 import lib.utils.util_xml as dux
@@ -330,36 +330,46 @@ class IterativeCalendaringAgent( CalendaringAgent ):
     
     def run_code( self, auto_debug=False, inject_bugs=False ):
         
-        # TODO: figure out where this should live come i suspect it will be best located in util_code_runner.py
+        # TODO: figure out where this should live, i suspect it will be best located in util_code_runner.py
         print( f"Executing super().run_code() with inject_bugs [{inject_bugs}] and auto_debug [{auto_debug}]...")
-        return super().run_code( inject_bugs=inject_bugs )
-        # if inject_bugs:
-        #     self.prompt_response_dict[ "code" ] = ucr.inject_bugs( self.prompt_response_dict[ "code" ] )
-        #
-        # if self.code_response_dict[ "return_code" ] != 0 and auto_debug:
-        #
-        #     debugging_agent = IterativeDebuggingAgent(
-        #         self.code_response_dict[ "output" ], du.get_project_root() + "/io/code.py", debug=self.debug,
-        #         verbose=self.verbose
-        #     )
-        #     debugging_agent.run_prompts()
-        #
-        #     if debugging_agent.ran_to_completion():
-        #         self.code_response_dict = debugging_agent.get_code_and_metadata()
-        #         self.answer = self.code_response_dict[ "output" ]
-        #         self.error = None
+        code_response_dict = super().run_code(  inject_bugs=inject_bugs )
+        if self.ran_to_completion():
+            
+            self.error  = None
+            return self.code_response_dict
+            
+        elif auto_debug:
+            
+            self.error = self.code_response_dict[ "output" ]
+            
+            debugging_agent = IterativeDebuggingAgent( code_response_dict[ "output" ], du.get_project_root() + "/io/code.py", debug=self.debug, verbose=self.verbose )
+            debugging_agent.run_prompts()
+            
+            if debugging_agent.was_successfully_debugged():
+                
+                self.code_response_dict = debugging_agent.get_code_and_metadata()
+                self.error              = None
 
+            else:
+                
+                du.print_banner( "Debugging failed, returning original code, such as it is... 😢 sniff 😢" )
+                
+        return self.code_response_dict
+                
 if __name__ == "__main__":
     
     path_to_df      = "/src/conf/long-term-memory/events.csv"
-    # question      = "What birthdays do I have on my calendar this week?"
+    question      = "What birthdays do I have on my calendar this week?"
     # question        = "What's today's date?"
-    question        = "What time is it?"
-    agent           = IterativeCalendaringAgent( path_to_df, question=question, debug=True, verbose=False )
+    # question        = "What time is it?"
+    agent           = IterativeCalendaringAgent( path_to_df, question=question, debug=False, verbose=False )
     prompt_response = agent.run_prompt()
-    code_response   = agent.run_code( auto_debug=False, inject_bugs=False )
+    code_response   = agent.run_code( auto_debug=True, inject_bugs=False )
     du.print_banner( "code_response:", prepend_nl=False )
-    print( code_response )
+    print( code_response[ "return_code" ] )
+    for line in code_response[ "output" ].split( "\n" ):
+        print( line )
+        
     # formatted_output = agent.format_output()
     #
     # du.print_banner( question, prepend_nl=False )
