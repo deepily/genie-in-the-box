@@ -8,19 +8,19 @@ class CodeAgent( Agent ):
         
         super().__init__( debug=debug, verbose=verbose )
     
-    def _get_source_code( self, path ):
-        
-        return du.get_file_as_source_code_with_line_numbers( path )
-        # source_code = du.get_file_as_list( path )
-        #
-        # # iterate through the source code and prepend the line number to each line
-        # for i in range( len( source_code ) ):
-        #     source_code[ i ] = f"{i + 1:03d} {source_code[ i ]}"
-        #
-        # # join the lines back together into a single string
-        # source_code = "".join( source_code )
-        # return source_code
-    
+    # def _get_source_code( self, path ):
+    #
+    #     return du.get_file_as_source_code_with_line_numbers( path )
+    #     # source_code = du.get_file_as_list( path )
+    #     #
+    #     # # iterate through the source code and prepend the line number to each line
+    #     # for i in range( len( source_code ) ):
+    #     #     source_code[ i ] = f"{i + 1:03d} {source_code[ i ]}"
+    #     #
+    #     # # join the lines back together into a single string
+    #     # source_code = "".join( source_code )
+    #     # return source_code
+    #
     # def _update_response_dictionary( self, step, response, prompt_response_dict, tag_names, debug=True ):
     #
     #     if debug: print( f"update_response_dictionary called with step [{step}]..." )
