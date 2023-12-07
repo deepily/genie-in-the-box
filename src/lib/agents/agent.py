@@ -48,14 +48,14 @@ class Agent( RunnableCode, abc.ABC ):
         
         return num_tokens
     
-    def _query_llm( self, preamble, question, model=DEFAULT_MODEL, max_new_tokens=1024, temperature=0.5, debug=True ):
+    def _query_llm( self, preamble, question, model=DEFAULT_MODEL, max_new_tokens=1024, temperature=0.5, top_k=100, top_p=0.25, debug=True ):
         
         if model == Agent.PHIND_34B_v2:
             
             prompt = preamble + "\n" + question
             
             self.debug = debug
-            return self._query_llm_phind( prompt, model=model, max_new_tokens=max_new_tokens, temperature=temperature )
+            return self._query_llm_phind( prompt, model=model, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, debug=debug )
             
         else:
             if debug:
@@ -89,7 +89,7 @@ class Agent( RunnableCode, abc.ABC ):
         
         return response.choices[ 0 ].message.content.strip()
     
-    def _query_llm_phind( self, prompt, model=DEFAULT_MODEL, max_new_tokens=1024, temperature=0.5 ):
+    def _query_llm_phind( self, prompt, model=DEFAULT_MODEL, max_new_tokens=1024, temperature=0.5, top_k=100, top_p=0.9, debug=False ):
         
         timer = sw.Stopwatch( msg=f"Asking LLM [{model}]...".format( model ) )
         
@@ -102,7 +102,7 @@ class Agent( RunnableCode, abc.ABC ):
                 print( line )
         
         for token in client.text_generation(
-            prompt, max_new_tokens=max_new_tokens, stream=True, stop_sequences=[ "</response>" ], temperature=temperature
+            prompt, max_new_tokens=max_new_tokens, stream=True, temperature=temperature, top_k=top_k, top_p=top_p, stop_sequences=[ "</response>" ]
         ):
             if self.debug:
                 print( token, end="" )
