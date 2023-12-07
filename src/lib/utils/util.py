@@ -101,13 +101,16 @@ def get_name_value_pairs( arg_list, debug=False, verbose=False ):
 def get_file_as_source_code_with_line_numbers( path ):
     
     source_code = get_file_as_list( path, lower_case=False, clean=False, randomize=False )
+    return get_source_code_with_line_numbers( source_code )
+    
+def get_source_code_with_line_numbers( source_code, join_str="" ):
     
     # iterate through the source code and prepend the line number to each line
     for i in range( len( source_code ) ):
         source_code[ i ] = f"{i + 1:03d} {source_code[ i ]}"
     
     # join the lines back together into a single string
-    source_code = "".join( source_code )
+    source_code = join_str.join( source_code )
     
     return source_code
 
@@ -167,10 +170,12 @@ def get_file_as_dictionary( path, lower_case=False, omit_comments=True, debug=Fa
     
     return lines_as_dict
 
-def write_lines_to_file( path, lines ):
+def write_lines_to_file( path, lines, world_read_write=False ):
 
     with open( path, "w" ) as outfile:
         outfile.write( "\n".join( lines ) )
+        
+    if world_read_write: os.chmod( path, 0o666 )
         
 def write_string_to_file( path, string ):
     
