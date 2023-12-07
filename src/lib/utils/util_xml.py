@@ -43,7 +43,7 @@ def get_code_list( xml_string, debug=False ):
     return code_list
 
 
-def rescue_code_using_tick_tick_tick_syntax( raw_response_text, debug=True ):
+def rescue_code_using_tick_tick_tick_syntax( raw_response_text, debug=False ):
     
     if debug: print( f"before: [{raw_response_text}]" )
     raw_response_text = raw_response_text.strip()
