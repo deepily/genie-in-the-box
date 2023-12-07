@@ -1,16 +1,24 @@
 import os
 from collections import Counter
+from subprocess import PIPE, run
 
 debug = os.getenv( "GIB_CODE_EXEC_DEBUG", "False" ) == "True"
 
-import sys
-if debug:
-    sys.path.sort()
-    for path in sys.path: print( path )
+# import sys
+# if debug:
+#     sys.path.sort()
+#     for path in sys.path: print( path )
 
 import lib.utils.util as du
 
-from subprocess import PIPE, run
+@staticmethod
+def initialize_code_response_dict():
+    
+    # defaults to unsuccessful run state
+    return {
+        "return_code": -1,
+             "output": "No code run yet"
+    }
 
 def _append_example_and_print_code( code, code_return_type, example_code, debug=False, verbose=False ):
     
@@ -158,8 +166,14 @@ def assemble_and_run_solution( solution_code, example_code, path=None, solution_
     code = code_preamble + solution_code + [ "" ]
     
     if inject_bugs:
-        du.print_banner( "Injecting bugs here!", prepend_nl=True, expletive=True )
-    
+        
+        from lib.agents.bug_injector import BugInjector
+        
+        du.print_banner( "Injecting bugs...", prepend_nl=True, expletive=True, chunk="buggy 🦂 bug injector 💉 " )
+        bug_injector  = BugInjector( code, debug=debug, verbose=verbose )
+        response_dict = bug_injector.run_prompt()
+        code          = response_dict[ "code" ]
+        
     code_path = du.get_project_root() + "/io/code.py"
     du.write_lines_to_file( code_path, code )
     
@@ -182,10 +196,9 @@ def assemble_and_run_solution( solution_code, example_code, path=None, solution_
         if output == "":
             output = "No results returned"
     
-    results_dict = {
-        "return_code": results.returncode,
-             "output": output
-    }
+    results_dict = initialize_code_response_dict()
+    results_dict[ "return_code" ] = results.returncode
+    results_dict[ "output"      ] = output
     
     # Return to original working directory
     os.chdir( original_wd )
@@ -219,7 +232,7 @@ def test_assemble_and_run_solution():
         "    return tz_date.strftime( '%I:%M %p %Z' )"
     ]
     example_code = "solution = get_time()"
-    results = assemble_and_run_solution( solution_code, example_code, solution_code_returns="string", debug=True, verbose=True )
+    results = assemble_and_run_solution( solution_code, example_code, solution_code_returns="string", debug=False, verbose=False, inject_bugs=False )
 
     for line in results[ "output" ].split( "\n" ): print( line )
         
