@@ -22,7 +22,7 @@ class RunnableCode:
     def print_code( self ):
         
         du.print_banner( "Code", prepend_nl=True )
-        for line in self.prompt_response_dict[ "code" ]: print( line )
+        du.print_list( self.prompt_response_dict[ "code" ] )
         
     def run_code( self, inject_bugs=False ):
         
@@ -33,7 +33,11 @@ class RunnableCode:
             solution_code_returns=self.prompt_response_dict.get( "returns", "" ),
             debug=self.debug, inject_bugs=inject_bugs
         )
-        self.answer = self.code_response_dict[ "output" ]
+        if self.code_response_dict[ "return_code" ] != 0:
+            self.error = self.code_response_dict[ "output" ]
+        else:
+            self.error = None
+            self.answer = self.code_response_dict[ "output" ]
         
         if self.debug and self.verbose:
             du.print_banner("Code output", prepend_nl=True )
