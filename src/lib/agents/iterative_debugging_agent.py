@@ -1,8 +1,9 @@
 import os
 import json
 
-import lib.utils.util           as du
-import lib.utils.util_stopwatch as sw
+import lib.utils.util             as du
+import lib.utils.util_stopwatch   as sw
+import lib.utils.util_code_runner as ucr
 
 from lib.agents.agent      import Agent
 from lib.agents.code_agent import CodeAgent
@@ -14,12 +15,15 @@ class IterativeDebuggingAgent( CodeAgent ):
         
         super().__init__( debug=debug, verbose=verbose )
         
-        self.token_count          = 0
-        self.prompt_components    = None
-        self.prompt_response_dict = None
-        self.available_llms       = self._inialize_available_llms()
-        self.error_message        = error_message
-        self.path_to_code         = path_to_code
+        self.code                  = []
+        self.path_to_code          = path_to_code
+        self.formatted_code        = du.get_file_as_source_code_with_line_numbers( self.path_to_code )
+        self.token_count           = 0
+        self.prompt_components     = None
+        self.prompt_response_dict  = None
+        self.available_llms        = self._inialize_available_llms()
+        self.error_message         = error_message
+        self.successfully_debugged = False
         
         self.do_not_serialize     = []
         
@@ -27,7 +31,7 @@ class IterativeDebuggingAgent( CodeAgent ):
         
         # TODO: make run-time configurable, like AMPE's dynamic configuration
         prompt_run_llms = [
-            { "model": Agent.PHIND_34B_v2, "short_name": "phind34b", "temperature": 1.0, "max_new_tokens": 1024 },
+            { "model": Agent.PHIND_34B_v2, "short_name": "phind34b", "temperature": 0.5, "top_k": 10, "top_p": 0.25, "max_new_tokens": 1024 },
             { "model": Agent.GPT_3_5, "short_name": "gpt3.5" },
             { "model": Agent.GPT_4, "short_name": "gpt4" }
         ]
@@ -43,7 +47,7 @@ class IterativeDebuggingAgent( CodeAgent ):
         {self.error_message}
         
 Source code:
-{self._get_source_code( self.path_to_code )}
+{self.formatted_code}
         
         In order to successfully address the error message above, you must follow my instructions step by step. As you complete each step I will recount your progress on the previous steps and provide you with the next step's instructions.
         
@@ -71,10 +75,12 @@ Source code:
         You must respond to the step 2 directive using the following XML format:
         <response>
             <code>
-                <line>def function_name_here( df, arg1, arg2 ):</line>
+                <line>def function_name_here( df, arg1 ):</line>
                 <line>    ...</line>
                 <line>    ...</line>
                 <line>    return solution</line>
+                <line>solution = function_name_here( df, arg1 )</line>
+                <line>print( solution )</line>
             </code>
         </response>
         
@@ -132,35 +138,57 @@ Source code:
     def run_prompts( self ):
         
         idx = 1
-        ran_to_completion = False
+        self.successfully_debugged = False
         
         for llm in self.available_llms:
             
             run_descriptor = f"Run {idx} of {len( self.available_llms )}"
             
-            if ran_to_completion:
-                print( f"Ran to completion? ¡Yes! Exiting LLM loop..." )
+            if self.successfully_debugged:
                 break
                 
             model_name     = llm[ "model" ]
             short_name     = llm[ "short_name" ]
-            temperature    = llm[ "temperature"    ] if "temperature"    in llm else 0.5
+            temperature    = llm[ "temperature"    ] if "temperature"    in llm else 0.50
+            top_p          = llm[ "top_p"          ] if "top_p"          in llm else 0.25
+            top_k          = llm[ "top_k"          ] if "top_k"          in llm else 10
             max_new_tokens = llm[ "max_new_tokens" ] if "max_new_tokens" in llm else 1024
             
-            du.print_banner( f"{run_descriptor}: Executing prompt using model [{model_name}] and short name [{short_name}]..." )
+            du.print_banner( f"{run_descriptor}: Executing debugging prompt using model [{model_name}] and short name [{short_name}]..." )
             
-            prompt_response_dict = self.run_prompt( run_descriptor=run_descriptor, model=model_name, short_name=short_name, temperature=temperature, max_new_tokens=max_new_tokens )
+            prompt_response_dict = self.run_prompt( run_descriptor=run_descriptor, model=model_name, short_name=short_name, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens )
+            
+            code_response_dict = ucr.initialize_code_response_dict()
             if self.is_code_runnable():
                 
-                code_response_dict = self.run_code()
-                ran_to_completion  = self.ran_to_completion()
-                if not ran_to_completion: print( f"Ran to completion? ¡FAIL! Moving on to the next LLM..." )
+                code_response_dict         = self.run_code()
+                self.successfully_debugged = self.ran_to_completion()
+                
+                # Only update the code if it was successfully debugged and run to completion
+                if self.successfully_debugged:
+                    self.code = prompt_response_dict[ "code" ]
+                    print( f"Successfully debugged? 😊¡Sí! 😊 Exiting LLM loop..." )
+                else:
+                    print( f"Successfully debugged? 😢¡Nooooooo! 😢 ", end="" )
+                    
+                    # test for the last llm in this list
+                    if llm == self.available_llms[ -1 ]:
+                        print( "No more LLMs to try. Exiting LLM loop..." )
+                    else:
+                        print( "Moving on to the next LLM..." )
             else:
                 print( "Skipping code execution step because the prompt did not produce any code to run." )
+                code_response_dict[ "output" ] = "Code was deemed un-runnable by iterative debugging agent"
                 
             idx += 1
+            
+        return code_response_dict
     
-    def run_prompt( self, run_descriptor="Run 1 of 1", model=Agent.PHIND_34B_v2, short_name="phind34b", max_new_tokens=1024, temperature=0.5 ):
+    def was_successfully_debugged( self ):
+        
+        return self.successfully_debugged
+    
+    def run_prompt( self, run_descriptor="Run 1 of 1", model=Agent.PHIND_34B_v2, short_name="phind34b", max_new_tokens=1024, temperature=0.5, top_p=0.25, top_k=10, debug=False ):
         
         self.prompt_components      = self._initialize_prompt_components()
         
@@ -190,19 +218,19 @@ Source code:
             # we're not going to execute the last step, it's been added just to keep the running history current
             if step != len( steps ) - 1:
                 
-                # response = self._query_llm_phind( running_history + xml_formatting_instructions[ step ], model=model, debug=True )
                 response = self._query_llm(
-                    running_history, xml_formatting_instructions[ step ], model=model, max_new_tokens=max_new_tokens, temperature=temperature, debug=True
+                    running_history, xml_formatting_instructions[ step ], model=model, max_new_tokens=max_new_tokens, temperature=temperature, top_p=top_p, top_k=top_k, debug=debug
                 )
                 responses.append( response )
                 
                 # Incrementally update the contents of the response dictionary according to the results of the XML-esque parsing
                 prompt_response_dict = self._update_response_dictionary(
-                    step, response, prompt_response_dict, response_tag_names, debug=False
+                    step, response, prompt_response_dict, response_tag_names, debug=debug
                 )
             else:
-                print( "LAST STEP: Skipping execution. Response from the previous step:" )
-                print( responses[ step - 1 ] )
+                if debug:
+                    print( "LAST STEP: Skipping execution. Response from the previous step:" )
+                    print( responses[ step - 1 ] )
             
             # Update the prompt component's state before serializing a copy of it
             self.prompt_components[ "running_history" ] = running_history
@@ -232,7 +260,7 @@ Source code:
                 xml_string = dux.get_value_by_xml_tag_name( response, xml_tag, default_value="" )
                 if xml_string == "":
                     print( f"WARNING: No <code> tags found, falling back to the default tick tick tick syntax..." )
-                    xml_string = dux.rescue_code_using_tick_tick_tick_syntax( response )
+                    xml_string = dux.rescue_code_using_tick_tick_tick_syntax( response, debug=debug )
                     # TODO: Find a principal the way to update the response object with the newly rescued and reformatted code
                 
                 # the get_code method expects enclosing tags
@@ -296,16 +324,16 @@ if __name__ == "__main__":
     error_message = """
 ERROR executing code:
 
-File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 14
+File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 12
     mask = (df['start_date'] <= today) && (df['end_date'] >= today)
                                         ^
 SyntaxError: invalid syntax"""
     
-    debugging_agent = IterativeDebuggingAgent( error_message, du.get_project_root() + "/io/code.py", debug=True, verbose=False )
+    debugging_agent = IterativeDebuggingAgent( error_message, du.get_project_root() + "/io/code.py", debug=False, verbose=False )
     
     debugging_agent.run_prompts()
     
-    du.print_banner( "This fails to run the completion due to a library version conflict 😢", expletive=True )
+    # du.print_banner( "This may fail to run the completion due to a library version conflict 😢", expletive=True )
     # print( f"Is promptable? {debugging_agent.is_prompt_executable()}, is runnable? {debugging_agent.is_code_runnable()}" )
     # prompt_response = debugging_agent.run_prompt()
     # print( f"Is promptable? {debugging_agent.is_prompt_executable()}, is runnable? {debugging_agent.is_code_runnable()}" )
