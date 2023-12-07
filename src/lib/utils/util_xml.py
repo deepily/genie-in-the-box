@@ -2,10 +2,13 @@ import re
 
 import lib.utils.util as du
 
-def get_value_by_xml_tag_name( xml_string, name, default_value=f"Error: `{{name}}` not found in xml_string" ):
+def get_value_by_xml_tag_name( xml_string, name, default_value=None ):
     
     if f"<{name}>" not in xml_string or f"</{name}>" not in xml_string:
-        return default_value.format( name=name )
+        if default_value is None:
+            return f"Error: `{{name}}` not found in xml_string"
+        else:
+            return default_value
     
     return xml_string.split( f"<{name}>" )[ 1 ].split( f"</{name}>" )[ 0 ]
     
