@@ -1,3 +1,4 @@
+import os
 import json
 
 import lib.utils.util           as du
@@ -257,13 +258,14 @@ Source code:
         # Constructing the filename, format: "topic-run-on-year-month-day-at-hour-minute-run-1-of-3-using-llm-short_name-step-N-of-M.json"
         run_descriptor = run_descriptor.replace( " ", "-" ).lower()
         short_name     = short_name.replace( " ", "-" ).lower()
-        filename       = f"{du.get_project_root()}/io/log/{topic}-on-{now.year}-{now.month}-{now.day}-at-{now.hour}-{now.minute}-{run_descriptor}-using-llm-{short_name}-step-{( current_step + 1 )}-of-{total_steps}.json"
+        file_path       = f"{du.get_project_root()}/io/log/{topic}-on-{now.year}-{now.month}-{now.day}-at-{now.hour}-{now.minute}-{run_descriptor}-using-llm-{short_name}-step-{( current_step + 1 )}-of-{total_steps}.json"
 
         # Serialize and save to file
-        with open( filename, 'w' ) as file:
+        with open( file_path, 'w' ) as file:
             json.dump( state_dict, file, indent=4 )
-
-        print( f"Serialized to {filename}" )
+        os.chmod( file_path, 0o666 )
+        
+        print( f"Serialized to {file_path}" )
         
     def _get_system_message( self ):
         

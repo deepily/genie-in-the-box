@@ -1,10 +1,12 @@
+import os
 import re
 import json
 import datetime
 
-from lib.agents.calendaring_agent import CalendaringAgent
-from lib.memory.solution_snapshot import SolutionSnapshot
-from lib.agents.agent import Agent
+from lib.agents.calendaring_agent         import CalendaringAgent
+from lib.memory.solution_snapshot         import SolutionSnapshot
+from lib.agents.agent                     import Agent
+# from lib.agents.iterative_debugging_agent import IterativeDebuggingAgent
 
 import lib.utils.util as du
 import lib.utils.util_xml as dux
@@ -19,9 +21,9 @@ class IterativeCalendaringAgent( CalendaringAgent ):
         super().__init__( path_to_df, question=question, default_model=default_model, push_counter=push_counter, debug=debug, verbose=verbose )
         
         self.step_len             = -1
-        self.token_count       = 0
-        self.prompt_components = None
-        self.question          = question
+        self.token_count          = 0
+        self.prompt_components    = None
+        self.question             = question
         self.prompt_response_dict = None
         # Initialization of prompt components pushed to run_prompt
         # self.prompt_components = self._initialize_prompt_components( self.df, self.question )
@@ -34,19 +36,21 @@ class IterativeCalendaringAgent( CalendaringAgent ):
         
         # Remove any private attributes
         # Convert object's state to a dictionary, omitting specified fields
-        state_dict = { k: v for k, v in self.__dict__.items() if k not in self.do_not_serialize }
+        state_dict = { key: value for key, value in self.__dict__.items() if key not in self.do_not_serialize }
         
         # Constructing the filename
         # Format: "question_year-month-day-hour-minute-step-N-of-M.json"
         print( f"Q: {question}" )
-        fn_question = SolutionSnapshot.clean_question( question ).replace( " ", "-" )
-        filename = f"{du.get_project_root()}/io/log/{fn_question}-{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-step-{(current_step + 1)}-of-{total_steps}.json"
+        # limit question to the first 96 characters
+        topic     = SolutionSnapshot.clean_question( question[ :96 ] ).replace( " ", "-" )
+        file_path = f"{du.get_project_root()}/io/log/{topic}-{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-step-{(current_step + 1)}-of-{total_steps}.json"
         
         # Serialize and save to file
-        with open( filename, 'w' ) as file:
+        with open( file_path, 'w' ) as file:
             json.dump( state_dict, file, indent=4 )
+        os.chmod( file_path, 0o666 )
         
-        print( f"Serialized to {filename}" )
+        print( f"Serialized to {file_path}" )
     
     @classmethod
     def restore_from_serialized_state( cls, file_path ):
@@ -324,14 +328,36 @@ class IterativeCalendaringAgent( CalendaringAgent ):
     
         return code_list
     
+    def run_code( self, auto_debug=False, inject_bugs=False ):
+        
+        # TODO: figure out where this should live come i suspect it will be best located in util_code_runner.py
+        print( f"Executing super().run_code() with inject_bugs [{inject_bugs}] and auto_debug [{auto_debug}]...")
+        return super().run_code( inject_bugs=inject_bugs )
+        # if inject_bugs:
+        #     self.prompt_response_dict[ "code" ] = ucr.inject_bugs( self.prompt_response_dict[ "code" ] )
+        #
+        # if self.code_response_dict[ "return_code" ] != 0 and auto_debug:
+        #
+        #     debugging_agent = IterativeDebuggingAgent(
+        #         self.code_response_dict[ "output" ], du.get_project_root() + "/io/code.py", debug=self.debug,
+        #         verbose=self.verbose
+        #     )
+        #     debugging_agent.run_prompts()
+        #
+        #     if debugging_agent.ran_to_completion():
+        #         self.code_response_dict = debugging_agent.get_code_and_metadata()
+        #         self.answer = self.code_response_dict[ "output" ]
+        #         self.error = None
+
 if __name__ == "__main__":
     
     path_to_df      = "/src/conf/long-term-memory/events.csv"
     # question      = "What birthdays do I have on my calendar this week?"
-    question        = "What's today's date?"
+    # question        = "What's today's date?"
+    question        = "What time is it?"
     agent           = IterativeCalendaringAgent( path_to_df, question=question, debug=True, verbose=False )
     prompt_response = agent.run_prompt()
-    code_response   = agent.run_code()
+    code_response   = agent.run_code( auto_debug=False, inject_bugs=False )
     du.print_banner( "code_response:", prepend_nl=False )
     print( code_response )
     # formatted_output = agent.format_output()
