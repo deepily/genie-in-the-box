@@ -230,7 +230,7 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
             # we're not going to execute the last step, it's been added just to keep the running history current
             if step != len( steps ) - 1:
                 
-                response = self._query_llm_phind( running_history, xml_formatting_instructions[ step ] )
+                response = self._query_llm_phind( running_history, xml_formatting_instructions[ step ], debug=self.debug, verbose=self.verbose )
                 responses.append( response )
                 
                 # Incrementally update the contents of the response dictionary according to the results of the XML-esque parsing
@@ -247,13 +247,12 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
         # self.prompt_components[ "running_history" ] = running_history
         # self.prompt_response_dict = prompt_response_dict
         
-        timer.print( "Done!", use_millis=True, prepend_nl=False )
         tokens_per_second = self.token_count / ( timer.get_delta_ms() / 1000.0 )
-        print( f"Tokens per second [{round( tokens_per_second, 1 )}]" )
+        timer.print( f"Done! Tokens per second [{round( tokens_per_second, 1 )}]", use_millis=True, prepend_nl=True )
         
         return self.prompt_response_dict
 
-    def _query_llm_phind( self, preamble, instructions, model=Agent.PHIND_34B_v2, temperature=0.50, max_new_tokens=1024, debug=False ):
+    def _query_llm_phind( self, preamble, instructions, model=Agent.PHIND_34B_v2, temperature=0.50, max_new_tokens=1024, debug=False, verbose=False ):
     
         timer = sw.Stopwatch( msg=f"Asking LLM [{model}]..." )
         
@@ -261,7 +260,7 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
         token_list     = [ ]
         
         prompt = f"{preamble}{instructions}\n"
-        print( prompt )
+        if debug and verbose: print( prompt )
         
         for token in client.text_generation(
             prompt, max_new_tokens=max_new_tokens, stream=True, stop_sequences=[ "</response>" ], temperature=temperature
@@ -362,7 +361,7 @@ if __name__ == "__main__":
     question      = "What birthdays do I have on my calendar this week?"
     # question        = "What's today's date?"
     # question        = "What time is it?"
-    agent           = IncrementalCalendaringAgent( path_to_df, question=question, debug=False, verbose=False )
+    agent           = IncrementalCalendaringAgent( path_to_df, question=question, debug=True, verbose=False )
     prompt_response = agent.run_prompt()
     code_response   = agent.run_code( auto_debug=True, inject_bugs=False )
     du.print_banner( f"code_response[ 'return_code' ] = [{code_response[ 'return_code' ]}]", prepend_nl=False )
