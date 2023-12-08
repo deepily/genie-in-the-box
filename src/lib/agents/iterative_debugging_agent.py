@@ -52,8 +52,8 @@ Source code:
         
         Step one) Think: think out loud about what you are being asked, including what are the steps that you will need to take to solve this problem. Be critical of your thought process!
         
+        Hint: When joining multiple filtering condition clauses in pandas, you must use the single bitwise operators `&` and `|` instead of the double logical operators `&&` and `||`.
         """
-        # Hint: When joining multiple filtering conditions using and/or in pandas, you must use the single bitwise operators `&` and `|` instead of the boolean operators `and` and `or``.
         
         xml_formatting_instructions_step_1 = """
         You must respond to the step one directive using the following XML format:
@@ -153,7 +153,7 @@ Source code:
             top_k          = llm[ "top_k"          ] if "top_k"          in llm else 10
             max_new_tokens = llm[ "max_new_tokens" ] if "max_new_tokens" in llm else 1024
             
-            du.print_banner( f"{run_descriptor}: Executing debugging prompt using model [{model_name}] and short name [{short_name}]..." )
+            du.print_banner( f"{run_descriptor}: Executing debugging prompt using model [{model_name}] and short name [{short_name}]...", end="\n" )
             
             prompt_response_dict = self.run_prompt( run_descriptor=run_descriptor, model=model_name, short_name=short_name, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens )
             
@@ -196,7 +196,7 @@ Source code:
         response_tag_names          = self.prompt_components[ "response_tag_names" ]
         responses                   = self.prompt_components[ "responses" ]
         running_history             = self.prompt_components[ "running_history" ]
-        timer                       = sw.Stopwatch( msg=f"{run_descriptor}: Executing iterative prompt(s) on {short_name} with {len( steps )} steps..." )
+        timer                       = sw.Stopwatch( msg=f"Executing iterative prompt(s) on {short_name} with {len( steps )} steps..." )
         
         self.token_count            = 0
         prompt_response_dict        = { }
@@ -206,6 +206,7 @@ Source code:
         
         for step in range( len( steps ) ):
             
+            print()
             print( f"Step [{step + 1}] of [{len( steps )}]" )
             if step == 0:
                 # the first step doesn't have any previous responses to incorporate into it
@@ -238,8 +239,8 @@ Source code:
             self.serialize_to_json( "code-debugging", step, self.step_len, now, run_descriptor=run_descriptor, short_name=short_name )
             
         timer.print( "Done!", use_millis=True, prepend_nl=False )
-        tokens_per_second = self.token_count / (timer.get_delta_ms() / 1000.0 )
-        print( f"Tokens per second [{round( tokens_per_second, 1 )}]" )
+        # tokens_per_second = self.token_count / (timer.get_delta_ms() / 1000.0 )
+        # print( f"Tokens per second [{round( tokens_per_second, 1 )}]" )
         
         return self.prompt_response_dict
     

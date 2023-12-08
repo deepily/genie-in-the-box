@@ -64,9 +64,9 @@ def _append_example_and_print_code( code, code_return_type, example_code, debug=
     duplicates_report, clean_code = _remove_duplicate_lines( code )
     
     if len( duplicates_report ) > 0:
-        du.print_banner( "Duplicate lines removed:", prepend_nl=True )
+        du.print_banner( "Code Runner: Duplicate lines removed:", prepend_nl=False, end="\n" )
         for line, count in duplicates_report.items():
-            print( f"{count:02d} {line}" )
+            print( f"Count: [{count:02d}] Line [{line}]" )
         print()
     
     return clean_code

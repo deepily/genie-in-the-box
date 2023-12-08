@@ -117,12 +117,16 @@ class Agent( RunnableCode, abc.ABC ):
             
         response = "".join( token_list ).strip()
         
-        timer.print( msg="Done!", use_millis=True, prepend_nl=True )
+        timer.print( msg="Done!", use_millis=True, prepend_nl=True, end="\n" )
+        tokens_per_second = len( token_list ) / ( timer.get_delta_ms() / 1000.0 )
+        print( f"Tokens per second [{round( tokens_per_second, 1 )}]" )
+        
         if self.debug:
             print( f"Token list length [{len( token_list )}]" )
             if self.verbose:
                 for line in response.split( "\n" ):
                     print( line )
+        
         
         return response
     
