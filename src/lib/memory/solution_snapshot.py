@@ -335,7 +335,7 @@ class SolutionSnapshot( Agent ):
         self.answer_conversational = self._query_llm( preamble, instructions, model=format_model, debug=True )
         
         # if we've just received an xml-esque string then pull `<rephrased_answer>` from it. Otherwise, just return the string
-        self.answer_conversational = dux.util_xml.get_value_by_xml_tag_name( self.answer_conversational, "rephrased_answer", default_value=self.answer_conversational )
+        self.answer_conversational = dux.get_value_by_xml_tag_name( self.answer_conversational, "rephrased_answer", default_value=self.answer_conversational )
         
         return self.answer_conversational
     
