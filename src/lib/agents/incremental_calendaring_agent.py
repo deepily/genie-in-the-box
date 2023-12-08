@@ -14,7 +14,7 @@ import lib.utils.util_stopwatch as sw
 
 from huggingface_hub import InferenceClient
 
-class IterativeCalendaringAgent( CalendaringAgent ):
+class IncrementalCalendaringAgent( CalendaringAgent ):
     
     def __init__( self, path_to_df, question="", default_model=Agent.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False ):
         
@@ -67,7 +67,7 @@ class IterativeCalendaringAgent( CalendaringAgent ):
             raise ValueError( "JSON file does not contain 'question' attribute" )
         
         # Create a new object instance with the parsed data
-        restored_agent = IterativeCalendaringAgent(
+        restored_agent = IncrementalCalendaringAgent(
             data[ "path_to_df" ], question=data[ "last_question_asked" ], default_model=data[ "default_model" ], push_counter=data[ "push_counter" ],
             debug=data[ "debug" ], verbose=data[ "verbose" ]
         )
@@ -362,11 +362,10 @@ if __name__ == "__main__":
     question      = "What birthdays do I have on my calendar this week?"
     # question        = "What's today's date?"
     # question        = "What time is it?"
-    agent           = IterativeCalendaringAgent( path_to_df, question=question, debug=False, verbose=False )
+    agent           = IncrementalCalendaringAgent( path_to_df, question=question, debug=False, verbose=False )
     prompt_response = agent.run_prompt()
     code_response   = agent.run_code( auto_debug=True, inject_bugs=False )
-    du.print_banner( "code_response:", prepend_nl=False )
-    print( code_response[ "return_code" ] )
+    du.print_banner( f"code_response[ 'return_code' ] = [{code_response[ 'return_code' ]}]", prepend_nl=False )
     for line in code_response[ "output" ].split( "\n" ):
         print( line )
         

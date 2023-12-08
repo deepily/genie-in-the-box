@@ -6,10 +6,9 @@ import lib.utils.util_stopwatch   as sw
 import lib.utils.util_code_runner as ucr
 
 from lib.agents.agent      import Agent
-from lib.agents.code_agent import CodeAgent
 
 import lib.utils.util_xml as dux
-class IterativeDebuggingAgent( CodeAgent ):
+class IterativeDebuggingAgent( Agent ):
     
     def __init__( self, error_message, path_to_code, debug=False, verbose=False ):
         
