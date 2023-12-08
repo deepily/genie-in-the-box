@@ -230,7 +230,7 @@ class Agent( RunnableCode, abc.ABC ):
         
         Return your rephrased answer as a simple xml document with the following fields:
         <response>
-            <rephrased_answer></rephrased_answer>
+            <rephrased-answer></rephrased-answer>
         </response>
         """
         # Rephrase the raw answer in {data_format} format below and output it using brief yet conversational English to the <rephrased_answer> field so that it answers the question in the <question> field.
@@ -240,10 +240,10 @@ class Agent( RunnableCode, abc.ABC ):
         # Generate an XML document containing your response composed of one or more sentences. Each sentence of the output that you create should contain or reference one date, time, event or answer.
         # <response>
         #     <question>{self.question}</question>
-        #     <raw_answer>{self.code_response_dict[ "output" ]}</raw_answer>
-        #     <rephrased_answer>
+        #     <raw-answer>{self.code_response_dict[ "output" ]}</raw-answer>
+        #     <rephrased-answer>
         #         <sentence>Your rephrased answer</sentence>
-        #     </rephrased_answer>
+        #     </rephrased-answer>
         # </response>
         # """
         return instructions
