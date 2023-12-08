@@ -535,25 +535,25 @@ class GenieClient:
         
         return transcribed_text
 
-    def do_vox_edit_of_prose_prompt( self ):
-
-        print( "do_vox_edit_of_prose_prompt() called..." )
-        transcript = self.do_transcription( copy_to_clipboard=False )
-        transcript = self.munge_prose( transcript )
-        self.copy_to_clipboard( transcript )
-        self.calling_gui.txt_response.insert( "1.0", transcript )
-        self.calling_gui.last_text_with_focus.focus_force()
-
-    def do_process_prose_prompt( self ):
-
-        print( "do_process_prose_prompt() called..." )
-        response = "\n\n" + self.ask_chat_gpt_text( self.calling_gui.txt_content.get('1.0', 'end'), preamble=self.calling_gui.txt_prompt.get('1.0', 'end') ) + "\n\n"
-        hr = "-" * 50
-        hr = hr + "\n\n"
-        self.copy_to_clipboard( response )
-        self.calling_gui.txt_response.insert( "1.0", hr )
-        self.calling_gui.txt_response.insert( "1.0", response )
-        self.calling_gui.last_text_with_focus.focus_force()
+    # def do_vox_edit_of_prose_prompt( self ):
+    #
+    #     print( "do_vox_edit_of_prose_prompt() called..." )
+    #     transcript = self.do_transcription( copy_to_clipboard=False )
+    #     transcript = self.munge_prose( transcript )
+    #     self.copy_to_clipboard( transcript )
+    #     self.calling_gui.txt_response.insert( "1.0", transcript )
+    #     self.calling_gui.last_text_with_focus.focus_force()
+    #
+    # def do_process_prose_prompt( self ):
+    #
+    #     print( "do_process_prose_prompt() called..." )
+    #     response = "\n\n" + self.ask_chat_gpt_text( self.calling_gui.txt_content.get('1.0', 'end'), preamble=self.calling_gui.txt_prompt.get('1.0', 'end') ) + "\n\n"
+    #     hr = "-" * 50
+    #     hr = hr + "\n\n"
+    #     self.copy_to_clipboard( response )
+    #     self.calling_gui.txt_response.insert( "1.0", hr )
+    #     self.calling_gui.txt_response.insert( "1.0", response )
+    #     self.calling_gui.last_text_with_focus.focus_force()
 
     def copy_to_clipboard( self, text ):
         
