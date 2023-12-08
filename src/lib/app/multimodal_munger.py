@@ -132,7 +132,7 @@ class MultiModalMunger:
         if self.prefix == trans_mode_vox_cmd_browser or transcription.startswith( trans_mode_vox_cmd_browser ):
             
             # ad hoc short circuit for the 'repeat' command
-            if (transcription == "repeat" or transcription == trans_mode_vox_cmd_browser + " repeat") and self.last_response is not None:
+            if (transcription == "repeat" or transcription == trans_mode_vox_cmd_browser + " repeat" ) and self.last_response is not None:
                 
                 print( self.last_response )
                 
@@ -270,9 +270,24 @@ class MultiModalMunger:
         prose = prose.replace( ' "', '"' )
         
         return prose
+    
+    def _remove_dashes_from_single_letters_within_word( self, word ):
+        """
+        Function to remove dashes between single letters in a word, while leaving hyphenated words unchanged.
+        """
+        return re.sub(
+            r'\b(\w)(-\w)+\b', lambda m: ''.join( [ char for char in m.group( 0 ) if char.isalpha() ] ), word
+       )
+    
+    def _remove_dashed_spellings( self, sentence ):
+        """
+        Function to remove dashes between single letters in a sentence, while leaving hyphenated words unchanged.
+        """
+        return " ".join( [ self._remove_dashes_from_single_letters_within_word( word ) for word in sentence.split( " " ) ] )
     def munge_text_raw( self, raw_transcription, mode ):
         
-        return raw_transcription, mode
+        transcription = self._remove_dashed_spellings( raw_transcription )
+        return transcription, mode
     
     def munge_text_email( self, raw_transcription, mode ):
     
@@ -311,12 +326,10 @@ class MultiModalMunger:
         # Remove extra spaces
         email = email.replace( " ", "" )
         
-        # Add back in the dot: yet another ad hoc fix up
-        # if not prose.endswith( ".com" ) and prose.endswith( "com" ):
-        #     prose = prose.replace( "com", ".com" )
-        
         # Remove trailing periods.
         email = email.rstrip( "." )
+        
+        email = self._remove_dashed_spellings( email )
         
         return email, mode
     
@@ -372,6 +385,8 @@ class MultiModalMunger:
             
         # Remove extra spaces.
         prose = self._remove_spaces_around_punctuation( prose )
+        
+        prose = self._remove_dashed_spellings( prose )
         
         return prose, mode
     
@@ -456,6 +471,8 @@ class MultiModalMunger:
 
         # Remove extra spaces.
         code = " ".join( code.split() )
+        
+        code = self._remove_dashed_spellings( code )
         
         print( "AFTER code:", code )
         
