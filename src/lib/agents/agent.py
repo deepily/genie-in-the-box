@@ -228,9 +228,9 @@ class Agent( RunnableCode, abc.ABC ):
         Question: {self.question}
         Raw Answer: {self.code_response_dict[ "output" ]}
         
-        Return your answer as a simple xml document with the following fields:
+        Return your rephrased answer as a simple xml document with the following fields:
         <response>
-            <rephrased_answer>Your rephrased answer</rephrased_answer>
+            <rephrased_answer></rephrased_answer>
         </response>
         """
         # Rephrase the raw answer in {data_format} format below and output it using brief yet conversational English to the <rephrased_answer> field so that it answers the question in the <question> field.
