@@ -6,7 +6,7 @@ def get_value_by_xml_tag_name( xml_string, name, default_value=None ):
     
     if f"<{name}>" not in xml_string or f"</{name}>" not in xml_string:
         if default_value is None:
-            return f"Error: `{{name}}` not found in xml_string"
+            return f"Error: `{name}` not found in xml_string"
         else:
             return default_value
     
