@@ -1,6 +1,5 @@
-
-from lib.app.fifo_queue import FifoQueue
-from lib.agents.calendaring_agent import CalendaringAgent
+from lib.app.fifo_queue                       import FifoQueue
+from lib.agents.incremental_calendaring_agent import IncrementalCalendaringAgent
 from lib.agents.agent_function_mapping import FunctionMappingAgent
 from lib.memory.solution_snapshot import SolutionSnapshot
 # from lib.utils.util import print_banner, get_current_datetime, truncate_string
@@ -12,7 +11,6 @@ import lib.utils.util_stopwatch as sw
 from flask import url_for
 import traceback
 import pprint
-
 
 class RunningFifoQueue( FifoQueue ):
     def __init__( self, app, socketio, snapshot_mgr, jobs_todo_queue, jobs_done_queue, jobs_dead_queue ):
@@ -50,7 +48,7 @@ class RunningFifoQueue( FifoQueue ):
                 if type( running_job ) == FunctionMappingAgent:
                     running_job = self._handle_function_mapping_agent( running_job, truncated_question )
                     
-                if type( running_job ) == CalendaringAgent:
+                if type( running_job ) == IncrementalCalendaringAgent:
                     running_job = self._handle_calendaring_agent( running_job, truncated_question )
                     
                 else:
@@ -109,7 +107,7 @@ class RunningFifoQueue( FifoQueue ):
             
             print( f"Executing [{truncated_question}] as a open ended calendaring agent job instead..." )
             self.socketio.emit( 'notification_sound_update', { 'soundFile': '/static/gentle-gong.mp3' } )
-            running_job = CalendaringAgent( "/src/conf/long-term-memory/events.csv", question=running_job.question, push_counter=running_job.push_counter, debug=True, verbose=True )
+            running_job = IncrementalCalendaringAgent( "/src/conf/long-term-memory/events.csv", question=running_job.question, push_counter=running_job.push_counter, debug=True, verbose=True )
             
         return running_job
         
@@ -131,7 +129,7 @@ class RunningFifoQueue( FifoQueue ):
         
     def _handle_calendaring_agent( self, running_job, truncated_question ):
         
-        msg = f"Running CalendaringAgent for [{truncated_question}]..."
+        msg = f"Running IncrementalCalendaringAgent for [{truncated_question}]..."
         
         code_response = {
             "return_code": -1,

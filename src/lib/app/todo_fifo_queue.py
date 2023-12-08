@@ -1,8 +1,9 @@
 from flask import url_for
-from lib.app.fifo_queue import FifoQueue
-from lib.agents.calendaring_agent import CalendaringAgent
-from lib.agents.agent_function_mapping import FunctionMappingAgent
-from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
+
+from lib.app.fifo_queue                       import FifoQueue
+from lib.agents.incremental_calendaring_agent import IncrementalCalendaringAgent
+# from lib.agents.agent_function_mapping        import FunctionMappingAgent
+# from lib.memory.solution_snapshot_mgr         import SolutionSnapshotManager
 
 from lib.utils.util import print_banner, get_current_datetime
 from lib.memory.solution_snapshot import SolutionSnapshot
@@ -71,9 +72,9 @@ class TodoFifoQueue( FifoQueue ):
             
             self.socketio.emit( 'notification_sound_update', { 'soundFile': '/static/gentle-gong.mp3' } )
             
-            calendaring_agent = CalendaringAgent( self.path_to_events_df, question=question, push_counter=self.push_counter, debug=True, verbose=False )
+            calendaring_agent = IncrementalCalendaringAgent( self.path_to_events_df, question=question, push_counter=self.push_counter, debug=True, verbose=False )
             self.push( calendaring_agent )
-            msg = f"No similar snapshots found, adding NEW CalendaringAgent to TODO queue. Queue size [{self.size()}]"
+            msg = f"No similar snapshots found, adding NEW IncrementalCalendaringAgent to TODO queue. Queue size [{self.size()}]"
             print( msg )
             return msg
             
