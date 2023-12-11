@@ -61,7 +61,7 @@ class SolutionSnapshot( Agent ):
             "last_run_ms": 0
         }
     
-    def __init__( self, push_counter=-1, question="", synonymous_questions=OrderedDict(),
+    def __init__( self, push_counter=-1, question="", synonymous_questions=OrderedDict(), non_synonymous_questions=[],
                   last_question_asked="", answer="", answer_short="", answer_conversational="", error="",
                   created_date=get_timestamp(), updated_date=get_timestamp(), run_date=get_timestamp(),
                   runtime_stats=get_default_stats_dict(),
@@ -89,6 +89,8 @@ class SolutionSnapshot( Agent ):
             self.synonymous_questions = synonymous_questions[ question ] = 100.0
         else:
             self.synonymous_questions = synonymous_questions
+            
+        self.non_synonymous_questions = non_synonymous_questions
             
         self.last_question_asked   = last_question_asked
         
@@ -335,7 +337,8 @@ class SolutionSnapshot( Agent ):
         self.answer_conversational = self._query_llm( preamble, instructions, model=format_model, debug=True )
         
         # if we've just received an xml-esque string then pull `<rephrased_answer>` from it. Otherwise, just return the string
-        self.answer_conversational = dux.get_value_by_xml_tag_name( self.answer_conversational, "rephrased_answer", default_value=self.answer_conversational )
+        self.answer_conversational = dux.get_value_by_xml_tag_name( self.answer_conversational, "rephrased-answer", default_value=self.answer_conversational )
+        print( f"self.answer_conversational: [{self.answer_conversational}]" )
         
         return self.answer_conversational
     
@@ -367,49 +370,6 @@ class SolutionSnapshot( Agent ):
     def is_prompt_executable( self ):
         
         return False
-    
-    # @staticmethod
-    # def get_timestamp():
-    #
-    #     return du.get_current_datetime()
-    #
-    # @staticmethod
-    # def clean_question( question ):
-    #
-    #     regex = re.compile( "[^a-zA-Z ]" )
-    #     cleaned_question = regex.sub( '', question ).lower()
-    #
-    #     return cleaned_question
-    #
-    # @staticmethod
-    # def generate_embedding( text ):
-    #
-    #     msg = f"Generating embedding for [{du.truncate_string( text )}]..."
-    #     timer = sw.Stopwatch( msg=msg )
-    #     openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
-    #
-    #     response = openai.embeddings.create(
-    #         input=text,
-    #         model="text-embedding-ada-002"
-    #     )
-    #     timer.print( "Done!", use_millis=True )
-    #
-    #     return response.data[ 0 ].embedding
-    #
-    # @staticmethod
-    # def generate_id_hash( push_counter, run_date ):
-    #
-    #     return hashlib.sha256( (str( push_counter ) + run_date).encode() ).hexdigest()
-    #
-    # @staticmethod
-    # def get_default_stats_dict():
-    #
-    #     return {
-    #         "run_count"  : 0,
-    #         "total_ms"   : 0,
-    #         "mean_run_ms": 0,
-    #         "last_run_ms": 0
-    #     }
 
 
 # Add main method
