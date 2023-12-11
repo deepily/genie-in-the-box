@@ -96,7 +96,7 @@ class SolutionSnapshotManager:
             print( f"Snapshot with question [{question}] does not exist!" )
             return False
         
-    def get_snapshots_by_question_similarity( self, question, threshold=85.0, limit=7 ):
+    def get_snapshots_by_question_similarity( self, question, threshold=85.0, limit=7, exclude_non_synonymous_questions=True ):
         
         print( f"get_snapshots_by_question_similarity( '{question}' )..." )
         # Generate the embedding for the question, if it doesn't already exist
@@ -112,6 +112,13 @@ class SolutionSnapshotManager:
         
         for snapshot in self.snapshots_by_question.values():
             
+            if exclude_non_synonymous_questions and question in snapshot.synonymous_questions:
+                if self.debug:
+                    du.print_banner( f"Snapshot [{question}] is in the NON synonymous list!", prepend_nl=True)
+                    print( f"Snapshot [{question}] has been blacklisted by [{snapshot.question}]" )
+                    print( "Continuing to next snapshot..." )
+                continue
+                
             similarity_score = snapshot.get_question_similarity( question_snapshot )
             
             if similarity_score >= threshold:
