@@ -23,7 +23,7 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
         self.step_len             = -1
         self.token_count          = 0
         self.prompt_components    = None
-        self.question             = question
+        self.question             = SolutionSnapshot.clean_question( question )
         self.prompt_response_dict = None
         # Initialization of prompt components pushed to run_prompt
         # self.prompt_components = self._initialize_prompt_components( self.df, self.question )
