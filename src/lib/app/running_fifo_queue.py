@@ -138,8 +138,9 @@ class RunningFifoQueue( FifoQueue ):
         
         agent_timer = sw.Stopwatch( msg=msg )
         try:
+            # TODO: auto_debug flag should be runtime configurable similar to how AMPE used to do
             response_dict    = running_job.run_prompt()
-            code_response    = running_job.run_code()
+            code_response    = running_job.run_code( auto_debug=True, inject_bugs=False )
             formatted_output = running_job.format_output()
         
         except Exception as e:
