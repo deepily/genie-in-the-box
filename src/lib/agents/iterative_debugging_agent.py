@@ -321,13 +321,15 @@ Source code:
         
 if __name__ == "__main__":
     
-    error_message = """
-ERROR executing code:
-
-File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 12
-    mask = (df['start_date'] <= today) && (df['end_date'] >= today)
-                                        ^
-SyntaxError: invalid syntax"""
+#     error_message = """
+# ERROR executing code:
+#
+# File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 12
+#     mask = (df['start_date'] <= today) && (df['end_date'] >= today)
+#                                         ^
+# SyntaxError: invalid syntax"""
+    
+    error_message = ""
     
     debugging_agent = IterativeDebuggingAgent( error_message, du.get_project_root() + "/io/code.py", debug=False, verbose=False )
     
