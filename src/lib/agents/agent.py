@@ -225,8 +225,8 @@ class Agent( RunnableCode, abc.ABC ):
         instructions = f"""
         Rephrase the raw answer in {data_format} format below so that it briefly answers the question below, and nothing more.
 
-        Question: {self.question}
         Raw Answer: {self.code_response_dict[ "output" ]}
+        Question: {self.question}
         
         Return your rephrased answer as a simple xml document with the following fields:
         <response>
