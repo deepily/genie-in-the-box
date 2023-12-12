@@ -22,6 +22,9 @@ src/conf/contact-information.map
 # This is also personal information.
 src/conf/memory/**
 
+#skip the keys directory
+src/conf/keys/**
+
 # Skip the io/logs directory
 io/**
 
