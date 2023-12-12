@@ -112,7 +112,7 @@ class SolutionSnapshotManager:
         
         for snapshot in self.snapshots_by_question.values():
             
-            if exclude_non_synonymous_questions and question in snapshot.synonymous_questions:
+            if exclude_non_synonymous_questions and question in snapshot.non_synonymous_questions:
                 if self.debug:
                     du.print_banner( f"Snapshot [{question}] is in the NON synonymous list!", prepend_nl=True)
                     print( f"Snapshot [{question}] has been blacklisted by [{snapshot.question}]" )
