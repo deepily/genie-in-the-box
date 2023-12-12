@@ -126,7 +126,7 @@ def _remove_duplicate_lines( code_lines ):
 #
 #     return the_list
 
-def assemble_and_run_solution( solution_code, example_code, path=None, solution_code_returns="string", debug=debug, verbose=False, inject_bugs=False ):
+def assemble_and_run_solution( solution_code, example_code, path=None, solution_code_returns="string", debug=True, verbose=False, inject_bugs=False ):
     
     # if there's no dataframe to open or prep, then skip it
     if path is None:
@@ -186,9 +186,11 @@ def assemble_and_run_solution( solution_code, example_code, path=None, solution_
     # ¡OJO! Hardcoded value of python run time... Make this runtime configurable
     results = run( [ "python", code_path ], stdout=PIPE, stderr=PIPE, universal_newlines=True )
     
+    if debug: print( f"results.returncode = [{results.returncode}]...", end="" )
+    
     if results.returncode != 0:
         if debug: print()
-        output = "ERROR executing code: \n\n{}".format( results.stderr.strip() )
+        output = f"ERROR executing code: \n\n{results.stderr.strip()}"
         if debug: print( output )
     else:
         if debug: print( "Done!" )
@@ -199,6 +201,10 @@ def assemble_and_run_solution( solution_code, example_code, path=None, solution_
     results_dict = initialize_code_response_dict()
     results_dict[ "return_code" ] = results.returncode
     results_dict[ "output"      ] = output
+    
+    if debug:
+        du.print_banner( "Code runner output:", prepend_nl=True )
+        print( results_dict[ "output" ] )
     
     # Return to original working directory
     os.chdir( original_wd )
