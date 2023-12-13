@@ -62,6 +62,7 @@ class ConfigurationManager():
         self._calculate_inheritance()
         self._calculate_defaults()
         self._override_configuration( cli_args )
+        self._load_splainer_definitions()
 
     def _override_configuration( self, cli_args ):
 
@@ -334,33 +335,6 @@ class ConfigurationManager():
         :param value: The 'value' part of the 'key=value' configuration pair
 
         :return: None
-
-        Example:
-        <pre><code>
-        %autoreload
-
-        ampe.init_configuration( config_block_id, silent=True )
-
-        # turn off predictive binning for now, it takes ~8 minutes for so many numerics!
-        ampe.set_config( "feature_bin_numbers_predictive", False )
-
-        # only run basic dimensionality reduction, w/o full-blown vif analysis
-        ampe.set_config( "stage_dimensionality_modules", "generic_dimensionality_reduction" )
-
-        # turn off multiple algorithms, just use xgboost for now
-        ampe.set_config( "stage_modeling_modules", "generic_model_build_xgb" )
-
-        # reduce the size of the dataset to speed up turnaround, default is 1.0
-        ampe.set_config( "clean_row_resample_rate", 0.1 )
-
-        # raw_df       = ampe.run_ingest_stage( sort=True )
-        # hm_df        = ampe.run_harmonization_stage( raw_df.copy() )
-        # clean_df     = ampe.run_data_cleaning_stage( hm_df.copy() )
-        # fe_df        = ampe.run_feature_engineering_stages( clean_df.copy() )
-        # culled_df    = ampe.run_dimensionality_reduction_stages( fe_df.copy() )
-        # models_list  = ampe.run_modeling_stages( culled_df )
-        # models_list  = ampe.run_post_modeling_stages( models_list )
-        </code></pre>
         """
 
         self.config.set( self.config_block_id, config_key, str( value ) )
@@ -375,24 +349,10 @@ class ConfigurationManager():
         :param config_key: The 'key' part of the configuration 'key=value' pair found in this sessions config_block_id
 
         :return: True | False
-
-        Example:
-        <pre><code>
-        ingest_module_key = "stage_adhoc_ingest_module"
-        if self.in_config( ingest_module_key ) and self.get_config( ingest_module_key ) != "":
-            # Do some optional thing
-        </code></pre>
         """
 
         return config_key in self.config.options( self.config_block_id )
 
-    def get_config( self, config_key, default="[{0}] not found" ):
-
-        #  TODO: Remove original missing key handling into this block *before* deprecating the original code
-        if config_key in self.config.options( self.config_block_id ):
-            return self.config.get( self.config_block_id, config_key )
-        else:
-            return default.format( config_key )
 
     def print_configuration( self, brackets=True, include_sections=True, prefixes=None ):
 
@@ -518,17 +478,143 @@ class ConfigurationManager():
             value = configuration.get( block_id, key )
             print( "{0} = {1}{2}{3}".format( key.ljust( max_len, ' ' ), lb, value, rb ) )
 
-def main():
-
-    print( "[{0}] main() called...".format( os.path.basename( __file__ ) ), end="\n\n" )
-    print( "cwd", os.getcwd() )
+    def get_config( self, key, default="@@@_None_@@@", silent=False, return_type="string" ):
     
-    config_path     = du.get_project_root() + "/src/conf/gib-app.ini"
-    config_block_id = "Genie in the Box: Development"
-    config_manager  = ConfigurationManager( config_path, config_block_id=config_block_id, debug=True, verbose=False, silent=False )
+        """
+        Wrapper for accessing configuration object
     
-    config_manager.print_configuration( brackets=True )
+        Designed to catch missing keys in the current configuration file and explain them according to the contents of
+        the splainer-doc.ini file.  If no key is found, and after giving you splainer feedback, it returns None to the
+        calling code, which then fails.  Hopefully this will help you to understand why it failed.
+    
+        :param key: The 'key' half of the 'key=value' pair
+    
+        :param default: Allows you to specify a value to return when there's no value to be found in the 'key=value' pair
+        NOTE: current default="@@@_None_@@@", essentially making "@@@_None_@@@" a reserved word, ¡OJO!
+    
+        :param silent: Turn off the 'splainer messaging, useful for stealth feature addition.  Defaults to False
+    
+        :param return_type: Which of the five types should this value be returned as? Accepts: 'boolean', 'float', 'int/integer',
+        'str/string' and 'list-string' Defaults to 'string'
+    
+        :return: Typed representation of the 'value' half of the 'key=value' pair
+        """
+    
+        if self.in_config( key ):
+    
+            # Get the value
+            value = self.config.get( self.config_block_id, key )
+            # value = self.config.get_config( key )
+    
+            return self._get_typed_value( value, return_type )
+    
+        else:
+    
+            # If there's a default specified, then return it
+            if default != "@@@_None_@@@":
+    
+                # only 'splain them when called for
+                if not silent and not self.mute_splainer:
+    
+                    du.print_banner( "Key [{0}] NOT found, returning default [{1}]".format( key, default ), end="\n" )
+                    self.splain_me( key )
+    
+                # return typed default
+                return self._get_typed_value( default, return_type )
+    
+            else:
+            
+                print()
+                du.print_banner( "Key [{0}] NOT found".format( key ), end="\n" )
+                self.splain_me( key )
+    
+                return None
 
+    def _get_typed_value( self, value, return_type ):
+
+        """
+        Casts the string value to the requested type. Helper method for get_config(...)
+
+        :param value: String representing the raw value
+
+        :param return_type: Which of the five types should this value be returned as? Accepts: 'boolean', 'float', 'int/integer',
+            'str/string' and 'list-string' Throws ValueError if not one of these five. NOT case sensitive.
+
+        :return: Input value cast to specified type
+        """
+        # Force return type to lowercase
+        return_type = return_type.lower()
+
+        if return_type == "boolean":
+            # Allow the default value to be passed in as a Boolean or as a string
+            return value == "True" or value is True
+        elif return_type == "float":
+            return float( value )
+        elif return_type.startswith( "int" ):
+            return int( value )
+        elif return_type.startswith( "str" ):
+            return value
+        elif return_type == "list-string":
+            return value.split( ", " )
+        else:
+            raise ValueError( f"Return type [{return_type}] is invalid.  Accepts: 'boolean', 'float', 'int', 'string' and 'list-string'".format( return_type ) )
+        
+    def splain_me( self, key, end="\n\n" ):
+
+        """
+        Colloquial lookup of configuration key definitions, prints to console.
+
+        :param key: Term to lookup in the splainer dictionary
+
+        :param end: Formatting option, use "\n" for one carriage return
+
+        :return: None
+
+        Example:
+        <pre><code>
+        ampe.splain_me( "42" )
+
+        [42] = I'm sorry Dave, I'm afraid I can't tell you that.  You could ask Douglas Adams though.
+
+        ampe.splain_me( "flux_capacitor" )
+
+        [flux_capacitor] = A Y-shaped electronic device that's essential to time travel
+        </code></pre>
+        """
+
+        if key in self.splainer.options( "default" ):
+
+            definition = self.splainer.get( "default", key )
+            print()
+            print( "'Splainer says: [{0}] = {1}".format( key, definition ), end=end )
+
+        else:
+
+            print( "\n'Splainer says: ¿WUH? The key [{0}] NOT found in the 'splainer.ini file. "
+                   "Check spelling and/or contact the AMPE project maintainer?".format( key ), end=end )
+
+    def _load_splainer_definitions( self, splainer_path="/src/conf/gib-app-splainer.ini" ):
+
+        """
+        Loads the splainer doc
+
+        :param splainer_path: Where's the 'splainer file located?
+
+        :return: None
+        """
+
+        splainer = configparser.ConfigParser()
+        splainer.read( du.get_project_root() + splainer_path )
+
+        self.splainer = splainer
+    
 if __name__ == "__main__":
 
-    main()
+    config_path     = du.get_project_root() + "/src/conf/gib-app.ini"
+    config_block_id = "Genie in the Box: Development"
+    config_manager  = ConfigurationManager( config_path, config_block_id=config_block_id, debug=False, verbose=False, silent=False )
+    
+    config_manager.print_configuration( brackets=True )
+    
+    foo = config_manager.get_config( "foo" )
+    print( f"foo: [{foo}] type: [{type( foo )}]" )
