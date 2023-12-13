@@ -38,8 +38,18 @@ import lib.app.todo_fifo_queue as tdq
 # from lib.agents.calendaring_agent import CalendaringAgent
 
 from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
-from lib.app.fifo_queue import FifoQueue
-from lib.app.running_fifo_queue import RunningFifoQueue
+from lib.app.fifo_queue               import FifoQueue
+from lib.app.running_fifo_queue       import RunningFifoQueue
+from lib.app.configuration_manager    import ConfigurationManager
+
+"""
+Instantiate configuration manager
+"""
+config_path     = du.get_project_root() + "/src/conf/gib-app.ini"
+config_block_id = "Genie in the Box: Development"
+config_mgr      = ConfigurationManager( config_path, config_block_id=config_block_id, debug=False, verbose=False, silent=False )
+
+config_mgr.print_configuration( brackets=True )
 
 whisper_pipeline = None
 
