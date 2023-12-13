@@ -17,7 +17,7 @@ from huggingface_hub import InferenceClient
 class Agent( RunnableCode, abc.ABC ):
     
     GPT_4         = "gpt-4-0613"
-    GPT_3_5       = "gpt-3.5-turbo-1106"
+    GPT_3_5       = "gpt-3.5-turbo-instruct"
     PHIND_34B_v2  = "Phind/Phind-CodeLlama-34B-v2"
     
     DEFAULT_MODEL = PHIND_34B_v2
@@ -48,7 +48,7 @@ class Agent( RunnableCode, abc.ABC ):
         
         return num_tokens
     
-    def _query_llm( self, preamble, question, model=DEFAULT_MODEL, max_new_tokens=1024, temperature=0.5, top_k=100, top_p=0.25, debug=True ):
+    def _query_llm( self, preamble, question, model=PHIND_34B_v2, max_new_tokens=1024, temperature=0.5, top_k=100, top_p=0.25, debug=True ):
         
         if model == Agent.PHIND_34B_v2:
             
@@ -63,7 +63,7 @@ class Agent( RunnableCode, abc.ABC ):
                 print( f"Question: [{question}]" )
             return self._query_llm_openai( preamble, question, model=model, debug=debug )
         
-    def _query_llm_openai( self, preamble, query, model=DEFAULT_MODEL, debug=False ):
+    def _query_llm_openai( self, preamble, query, model=GPT_3_5, debug=False ):
         
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
         
@@ -89,7 +89,7 @@ class Agent( RunnableCode, abc.ABC ):
         
         return response.choices[ 0 ].message.content.strip()
     
-    def _query_llm_phind( self, prompt, model=DEFAULT_MODEL, max_new_tokens=1024, temperature=0.5, top_k=100, top_p=0.9, debug=False ):
+    def _query_llm_phind( self, prompt, model=PHIND_34B_v2, max_new_tokens=1024, temperature=0.5, top_k=100, top_p=0.9, debug=False ):
         
         timer = sw.Stopwatch( msg=f"Asking LLM [{model}]...".format( model ) )
         
