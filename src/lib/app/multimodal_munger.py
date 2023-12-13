@@ -336,6 +336,7 @@ class MultiModalMunger:
     def munge_vox_cmd_browser( self, raw_transcription, mode ):
         
         command = raw_transcription.lower()
+        command = self._remove_dashed_spellings( command )
 
         # Remove the protocol from URLs
         command = self._remove_protocols( command )
@@ -363,7 +364,9 @@ class MultiModalMunger:
         du.print_banner( "AGENT MODE for [{}]".format( raw_transcription ), end="\n" )
         print( "TODO: Implement munge_vox_cmd_agent()... For now this is just a simple passthrough..." )
         
-        return raw_transcription, mode
+        transcription = self._remove_dashed_spellings( raw_transcription )
+        
+        return transcription, mode
     
     def munge_text_punctuation( self, raw_transcription, mode ):
     
