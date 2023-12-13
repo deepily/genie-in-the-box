@@ -368,11 +368,30 @@ def print_list( list_to_print, end="\n" ):
     for item in list_to_print:
         print( item, end=end )
     
+    
+def sanity_check_file_path( file_path, silent=False ):
+
+    """
+    Check to see if file exists
+
+    :param file_path: path to be checked
+
+    :param silent: Suppresses any output, defaults to false
+
+    :return: None, throws assertion error if not
+    """
+
+    fail_msg = "That file doesn't exist: [{0}] Please correct path to file".format( file_path )
+    assert os.path.isfile( file_path ), fail_msg
+
+    if not silent: print( "File [{0}] exists!".format( file_path ) )
+    
 if __name__ == "__main__":
     
     print( get_current_datetime() )
     print( get_tgi_server_url())
     print( get_api_key( "eleven11" ) )
+    print( get_api_key( "openai" ) )
     # generate_domain_names( 10, debug=True )
     
     # search_terms = get_file_as_list( get_project_root() + "/src/conf/search-terms.txt", lower_case=True, clean=True, randomize=True )
