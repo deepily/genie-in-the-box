@@ -6,15 +6,7 @@ import tkinter.font as tkf
 from threading import Thread
 from tkinter import ttk, ACTIVE, DISABLED
 
-# TODO: Why do I have to do this manually? There's some thing about python paths that I am missing...
-# Add src to path
-# print( f"cwd: [{os.getcwd()}]" )
 sys.path.append( os.getcwd() )
-#
-# for path in sys.path:
-#     print( f"Path: {path}" )
-
-
 
 import lib.clients.genie_client as gc
 import lib.utils.util as du
@@ -276,7 +268,7 @@ if __name__ == "__main__":
     startup_mode             = cli_args.get( "startup_mode", "transcribe" )
     # startup_mode           = cli_args.get( "startup_mode", "transcribe_and_clean_python" )
     recording_timeout      = int( cli_args.get( "recording_timeout", 30 ) )
-    record_once_on_startup = cli_args.get( "record_once_on_startup", "False" ) == "True"
+    record_once_on_startup = cli_args.get( "record_once_on_startup", "True" ) == "True"
 
     # and now for something completely different !
     gg = GenieGui(
@@ -287,5 +279,5 @@ if __name__ == "__main__":
     )
     # print( "gg.finished_transcription [{}]".format( gg.finished_transcription ) )
     # exit and push transcription to the console
-    # sys.exit( gg.finished_transcription )
-    sys.exit( 0 )
+    sys.exit( gg.finished_transcription )
+    # sys.exit( 0 )
