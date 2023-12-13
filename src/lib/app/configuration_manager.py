@@ -523,8 +523,9 @@ def main():
     print( "[{0}] main() called...".format( os.path.basename( __file__ ) ), end="\n\n" )
     print( "cwd", os.getcwd() )
     
-    config_path = du.get_project_root() + "/src/conf/flask-app.ini"
-    config_manager = ConfigurationManager( config_path, config_block_id="default", debug=True, verbose=True, silent=False )
+    config_path     = du.get_project_root() + "/src/conf/gib-app.ini"
+    config_block_id = "Genie in the Box: Development"
+    config_manager  = ConfigurationManager( config_path, config_block_id=config_block_id, debug=True, verbose=False, silent=False )
     
     config_manager.print_configuration( brackets=True )
 
