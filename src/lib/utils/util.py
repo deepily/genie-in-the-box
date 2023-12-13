@@ -264,6 +264,18 @@ def get_tgi_server_url():
     else:
         return "http://172.17.0.2:3000"
 
+# get api key
+def get_api_key( key_name ):
+    
+    path = get_project_root() + f"/src/conf/keys/{key_name}"
+    if debug: print( f"Fetching [{key_name}] from [{path}]..." )
+    
+    # test path to see if key exists
+    if not os.path.exists( path ):
+        print_banner( f"ERROR: Key [{key_name}] not found at [{path}]" )
+        return None
+    
+    return get_file_as_string( path )
 
 def generate_domain_names( count=10, remove_dots=False, debug=False ):
     
@@ -360,6 +372,7 @@ if __name__ == "__main__":
     
     print( get_current_datetime() )
     print( get_tgi_server_url())
+    print( get_api_key( "eleven11" ) )
     # generate_domain_names( 10, debug=True )
     
     # search_terms = get_file_as_list( get_project_root() + "/src/conf/search-terms.txt", lower_case=True, clean=True, randomize=True )
