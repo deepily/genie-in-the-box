@@ -62,7 +62,7 @@ class GenieClient:
         if debug: print( "translation-dictionary.map [{}]".format( self.project_root + "/src/conf/translation-dictionary.map" ) )
         
         self.punctuation        = du.get_file_as_dictionary( self.project_root + "/src/conf/translation-dictionary.map", lower_case=True )
-        self.prompts_dict       = du.get_file_as_dictionary( self.project_root + "/src/conf/prompts.map", lower_case=False )
+        self.prompts_dict       = du.get_file_as_dictionary( self.project_root + "/src/conf/prompts.map",                lower_case=False )
         self.modes_dict         = du.get_file_as_json(       self.project_root + "/src/conf/modes.json" )
         self.methods_dict       = self._get_titles_to_methods_dict()
         self.keys_dict          = self._get_titles_to_keys_dict()

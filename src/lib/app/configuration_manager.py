@@ -27,9 +27,9 @@ class ConfigurationManager():
         """
         self.debug           = debug
         self.verbose         = verbose
+        self.silent          = silent
 
         # set by call below
-        self.silent          = None
         self.config          = None
         self.config_path     = None
         self.config_block_id = None
@@ -42,9 +42,10 @@ class ConfigurationManager():
         if config_path is not None:
             self.config_path = config_path.strip()
 
-        du.sanity_check_file_path( self.config_path )
-
-        du.print_banner( "Initializing configuration_manager [{0}]".format( self.config_path ), prepend_nl=True )
+        du.sanity_check_file_path( self.config_path, silent=silent )
+        
+        if not self.silent:
+            du.print_banner( f"Initializing configuration_manager [{self.config_path}]", prepend_nl=True )
 
         self.silent          = silent
         self.config          = configparser.ConfigParser()
@@ -97,7 +98,7 @@ class ConfigurationManager():
 
     def _calculate_defaults( self ):
 
-        if not self.silent: du.print_banner( "Calculating defaults..." )
+        if not self.silent: du.print_banner( "Calculating defaults...", prepend_nl=True )
 
         # All configurations get default values, except for the default config
         if self.config_block_id != "default":
@@ -424,7 +425,7 @@ class ConfigurationManager():
                 print( "No configuration keys to print" )
                 return
 
-        du.print_banner( "Configuration for [{0}]".format( self.config_block_id ) )
+        du.print_banner( "Configuration for [{0}]".format( self.config_block_id ), end="\n" )
         self.print_configuration_to_stdout( keys, self.config, block_id, brackets )
 
     def get_keys( self ):
@@ -614,7 +615,7 @@ if __name__ == "__main__":
     config_block_id = "Genie in the Box: Development"
     config_manager  = ConfigurationManager( config_path, config_block_id=config_block_id, debug=False, verbose=False, silent=False )
     
-    config_manager.print_configuration( brackets=True )
-    
-    foo = config_manager.get_config( "foo" )
-    print( f"foo: [{foo}] type: [{type( foo )}]" )
+    # config_manager.print_configuration( brackets=True )
+    #
+    # foo = config_manager.get_config( "foo" )
+    # print( f"foo: [{foo}] type: [{type( foo )}]" )
