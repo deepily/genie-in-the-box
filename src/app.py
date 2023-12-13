@@ -21,6 +21,7 @@ from flask_cors import CORS
 import requests
 from flask          import Flask, request, make_response, send_file, url_for
 from flask_socketio import SocketIO
+from openai         import OpenAI
 
 from lib.clients import genie_client as gc
 from lib.app import multimodal_munger as mmm
@@ -31,10 +32,10 @@ import lib.utils.util_code_runner as ulc
 import lib.app.todo_fifo_queue as tdq
 
 
-from lib.clients.genie_client import GPT_3_5
-
-from lib.memory.solution_snapshot import SolutionSnapshot
-from lib.agents.calendaring_agent import CalendaringAgent
+# from lib.clients.genie_client import GPT_3_5
+#
+# from lib.memory.solution_snapshot import SolutionSnapshot
+# from lib.agents.calendaring_agent import CalendaringAgent
 
 from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
 from lib.app.fifo_queue import FifoQueue
@@ -125,24 +126,38 @@ def get_tts_url( tts_text ):
 
 def get_audio_file( tts_text ):
     
-    tts_url = get_tts_url( tts_text )
+    du.print_banner( f"TTS text [{tts_text}] )", prepend_nl=True )
     
-    print( f"Fetching audio file...", end="" )
-    response = requests.get( tts_url )
-    path = du.get_project_root() + "/io/tts.wav"
+    client     = OpenAI( api_key=du.get_api_key( "openai" ) )
     
-    # Check if the request was successful
-    if response.status_code == 200:
-        
-        # Write the content of the response to a file
-        with open( path, "wb" ) as audio_file:
-            audio_file.write( response.content )
-        print( f"Fetching audio file... Done!" )
-    else:
-        print( f"Failed to get UPDATED audio file: {response.status_code}" )
-        path = du.get_project_root() + "/io/failed-to-fetch-tts-file.wav"
+    path = du.get_project_root() + "/io/openai-speech.mp3"
+    mimetype = "audio/mpeg"
+    response = client.audio.speech.create(
+        model="tts-1",
+        voice="alloy",
+        speed=1.125,
+        input=tts_text
+    )
+    response.stream_to_file( path )
     
-    return send_file( path, mimetype="audio/wav" )
+    # print( f"Fetching audio file...", end="" )
+    # mimetype = "audio/wav"
+    # tts_url  = get_tts_url( tts_text )
+    # response = requests.get( tts_url )
+    # path     = du.get_project_root() + "/io/tts.wav"
+    #
+    # # Check if the request was successful
+    # if response.status_code == 200:
+    #
+    #     # Write the content of the response to a file
+    #     with open( path, "wb" ) as audio_file:
+    #         audio_file.write( response.content )
+    #     print( f"Fetching audio file... Done!" )
+    # else:
+    #     print( f"Failed to get UPDATED audio file: {response.status_code}" )
+    #     path = du.get_project_root() + "/io/failed-to-fetch-tts-file.wav"
+    
+    return send_file( path, mimetype=mimetype )
 
 @app.route( "/get_tts_audio", methods=[ "GET" ] )
 def get_tts_audio():
