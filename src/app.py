@@ -74,13 +74,14 @@ def init_configuration():
     global path_to_snapshots_dir_wo_root
     global tts_local_url_template
     
-    app_debug                          = config_mgr.get_config( "app_debug",   default=False, return_type="boolean" )
-    app_verbose                        = config_mgr.get_config( "app_verbose", default=False, return_type="boolean" )
-    app_silent                         = config_mgr.get_config( "app_silent",  default=False, return_type="boolean" )
-    app_config_server_name             = config_mgr.get_config( "app_config_server_name" )
-    path_to_events_df_wo_root          = config_mgr.get_config( "path_to_events_df_wo_root" )
-    path_to_snapshots_dir_wo_root      = config_mgr.get_config( "path_to_snapshots_dir_wo_root" )
-    tts_local_url_template             = config_mgr.get_config( "tts_local_url_template" )
+    app_debug                          = config_mgr.get( "app_debug",   default=False, return_type="boolean" )
+    app_verbose                        = config_mgr.get( "app_verbose", default=False, return_type="boolean" )
+    app_silent                         = config_mgr.get( "app_silent",  default=False, return_type="boolean" )
+    
+    app_config_server_name             = config_mgr.get( "app_config_server_name" )
+    path_to_events_df_wo_root          = config_mgr.get( "path_to_events_df_wo_root" )
+    path_to_snapshots_dir_wo_root      = config_mgr.get( "path_to_snapshots_dir_wo_root" )
+    tts_local_url_template             = config_mgr.get( "tts_local_url_template" )
     
 init_configuration()
 
@@ -101,7 +102,6 @@ socketio = SocketIO( app, cors_allowed_origins='*' )
 app.config[ 'SERVER_NAME' ] = app_config_server_name
 
 path_to_snapshots = du.get_project_root() + path_to_snapshots_dir_wo_root
-# du.print_banner( f"path_to_snapshots [{path_to_snapshots}]" )
 snapshot_mgr = SolutionSnapshotManager( path_to_snapshots, debug=app_debug, verbose=app_verbose )
 
 """
@@ -151,7 +151,7 @@ def get_tts_url( tts_text ):
 def get_tts_audio_file( tts_text ):
     
     du.print_banner( f"TTS text [{tts_text}] )", prepend_nl=True )
-    tts_generation_strategy = config_mgr.get_config( "tts_generation_strategy", default="local" )
+    tts_generation_strategy = config_mgr.get( "tts_generation_strategy", default="local" )
     
     if tts_generation_strategy == "openai":
         
@@ -458,8 +458,8 @@ def upload_and_transcribe_wav_file():
 def load_model():
     
     torch_dtype   = torch.bfloat16
-    stt_device_id = config_mgr.get_config( "stt_device_id", default="cuda:0" )
-    stt_model_id  = config_mgr.get_config( "stt_model_id" )
+    stt_device_id = config_mgr.get( "stt_device_id", default="cuda:0" )
+    stt_model_id  = config_mgr.get( "stt_model_id" )
     
     model = AutoModelForSpeechSeq2Seq.from_pretrained(
         stt_model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True, use_flash_attention_2=True
