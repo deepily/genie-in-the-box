@@ -1,25 +1,22 @@
 import json
 import os
-import pprint
 import time
-import traceback
 
 from threading         import Lock
 
 from duckduckgo_search import ddg
 
-# import whisper
 import torch
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 
 import base64
 
-# from flask import
+import flask
+
 from flask_cors import CORS
 
-# Dependencies for socket I/O prototyping
 import requests
-from flask          import Flask, request, make_response, send_file, url_for
+from flask          import Flask, request, make_response, send_file
 from flask_socketio import SocketIO
 from openai         import OpenAI
 
@@ -39,13 +36,19 @@ from lib.app.configuration_manager    import ConfigurationManager
 """
 Instantiate configuration manager
 """
-app_debug       = False
-app_verbose     = False
-app_silent      = True
+# grab the results of runtime environment export like this one:
+# export GIB_FLASK_CLI_ARGS="config_path=/src/conf/gib-app.ini splainer_path=/src/conf/gib-app-splainer.ini config_block_id=Genie+in+the+Box:+Development"
+cli_args         = os.environ[ "GIB_FLASK_CLI_ARGS" ].split( " " )
+cli_args         = du.get_name_value_pairs( cli_args )
 
-config_path     = du.get_project_root() + "/src/conf/gib-app.ini"
-config_block_id = "Genie in the Box: Development"
-config_mgr      = None
+app_debug        = cli_args.get( "debug",   "False" ) == "True"
+app_verbose      = cli_args.get( "verbose", "False" ) == "True"
+app_silent       = cli_args.get( "silent",  "True"  ) == "True"
+
+config_mgr       = None
+config_block_id  = cli_args[ "config_block_id" ]
+config_path      = du.get_project_root() + cli_args[ "config_path" ]
+splainer_path    = du.get_project_root() + cli_args[ "splainer_path" ]
 
 app_config_server_name        = None
 path_to_events_df_wo_root     = None
@@ -54,14 +57,17 @@ tts_local_url_template        = None
 
 def init_configuration():
 
-    global config_mgr
-    global config_block_id
     global app_debug
     global app_verbose
     global app_silent
+    global config_mgr
+    global config_block_id
     
-    config_mgr = ConfigurationManager( config_path, config_block_id=config_block_id, debug=False, verbose=False, silent=app_silent )
+    config_mgr = ConfigurationManager( config_path, splainer_path, config_block_id=config_block_id, debug=app_debug, verbose=app_verbose, silent=app_silent )
     config_mgr.print_configuration( brackets=True )
+    
+    # Running flask version 2.1.3
+    print( f"Running flask version {flask.__version__}" )
     
     global app_config_server_name
     global path_to_events_df_wo_root
@@ -79,16 +85,14 @@ def init_configuration():
 init_configuration()
 
 whisper_pipeline = None
-
-clock_thread = None
-run_thread   = None
-thread_lock  = Lock()
+clock_thread     = None
+run_thread       = None
+thread_lock      = Lock()
 
 # Track the number of jobs we've pushed into the queue
-push_count  = 1
+push_count       = 1
 # Track the number of client connections
-connection_count   = 0
-
+connection_count = 0
 
 app = Flask( __name__ )
 # Props to StackOverflow for this workaround:https://stackoverflow.com/questions/25594893/how-to-enable-cors-in-flask
@@ -137,17 +141,8 @@ def push():
     
     return jobs_todo_queue.push_job( question )
     
-# Rethink how/why we're killing/popping jobs in the todo queue
-# @app.route( "/pop", methods=[ "GET" ] )
-# def pop():
-#
-#     popped_job = jobs_todo_queue.pop()
-#     return f'Job [{popped_job}] popped from queue. queue size [{jobs_todo_queue.size()}]'
-
 def get_tts_url( tts_text ):
     
-    # ¡OJO! This is a hack to get around the fact that the docker container can't see the host machine's IPv6 address
-    # TODO: find a way to get the ip6 address dynamically
     tts_url = tts_local_url_template.format( tts_text=tts_text )
     tts_url = tts_url.replace( " ", "%20" )
 
@@ -460,32 +455,6 @@ def upload_and_transcribe_wav_file():
     
     return munger.transcription
 
-
-# @app.route( "/api/load-model" )
-# def load_model():
-#
-#     size = request.args.get( "size", default="base.en" )
-#     if size not in [ "base.en", "small.en", "medium.en", "large" ]:
-#         size = "base.en"
-#
-#     print( f"Model [{size}] requested. Loading..." )
-#     global model, model_size
-#     model_size = size
-#     model      = whisper.load_model( model_size )
-#     print( f"Model [{size}] requested. Loading... Done!" )
-#
-#     return f"Model [{size}] loaded"
-
-# @app.route( "/api/get-model-size" )
-# def get_model_size():
-#
-#     return model_size
-
-# print( "Loading whisper engine... ", end="" )
-# model_size  = "small.en"
-# model = whisper.load_model( model_size )
-# print( "Done!" )
-
 def load_model():
     
     torch_dtype   = torch.bfloat16
@@ -524,5 +493,11 @@ print( os.getenv( "FALSE_POSITIVE_API_KEY" ) )
 genie_client = gc.GenieClient()
 
 if __name__ == "__main__":
+    
+    # how do we pass the equivalent of command line parameters into the flask app?
+    # 1. use environment variables
+    # 2. use a config file
+    # 3. use command line parameters
+    # 4. use a combination of the above
     
     app.run( debug=True )
