@@ -30,12 +30,6 @@ import lib.utils.util as du
 import lib.utils.util_stopwatch as sw
 import lib.utils.util_code_runner as ulc
 
-
-# from lib.clients.genie_client import GPT_3_5
-#
-# from lib.memory.solution_snapshot import SolutionSnapshot
-# from lib.agents.calendaring_agent import CalendaringAgent
-
 from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
 from lib.app.fifo_queue               import FifoQueue
 from lib.app.running_fifo_queue       import RunningFifoQueue
@@ -45,18 +39,44 @@ from lib.app.configuration_manager    import ConfigurationManager
 """
 Instantiate configuration manager
 """
+app_debug       = False
+app_verbose     = False
+app_silent      = True
+
 config_path     = du.get_project_root() + "/src/conf/gib-app.ini"
 config_block_id = "Genie in the Box: Development"
-config_mgr      = ConfigurationManager( config_path, config_block_id=config_block_id, debug=False, verbose=False, silent=False )
+config_mgr      = None
 
-config_mgr.print_configuration( brackets=True )
+app_config_server_name        = None
+path_to_events_df_wo_root     = None
+path_to_snapshots_dir_wo_root = None
+tts_local_url_template        = None
 
-app_debug                          = config_mgr.get_config( "app_debug",   default=False, return_type="boolean" )
-app_verbose                        = config_mgr.get_config( "app_verbose", default=False, return_type="boolean" )
-app_config_server_name             = config_mgr.get_config( "app_config_server_name" )
-path_to_events_df_wo_root          = config_mgr.get_config( "path_to_events_df_wo_root" )
-path_to_snapshots_dir_wo_root      = config_mgr.get_config( "path_to_snapshots_dir_wo_root" )
-tts_url_template                   = config_mgr.get_config( "tts_url_template" )
+def init_configuration():
+
+    global config_mgr
+    global config_block_id
+    global app_debug
+    global app_verbose
+    global app_silent
+    
+    config_mgr = ConfigurationManager( config_path, config_block_id=config_block_id, debug=False, verbose=False, silent=app_silent )
+    config_mgr.print_configuration( brackets=True )
+    
+    global app_config_server_name
+    global path_to_events_df_wo_root
+    global path_to_snapshots_dir_wo_root
+    global tts_local_url_template
+    
+    app_debug                          = config_mgr.get_config( "app_debug",   default=False, return_type="boolean" )
+    app_verbose                        = config_mgr.get_config( "app_verbose", default=False, return_type="boolean" )
+    app_silent                         = config_mgr.get_config( "app_silent",  default=False, return_type="boolean" )
+    app_config_server_name             = config_mgr.get_config( "app_config_server_name" )
+    path_to_events_df_wo_root          = config_mgr.get_config( "path_to_events_df_wo_root" )
+    path_to_snapshots_dir_wo_root      = config_mgr.get_config( "path_to_snapshots_dir_wo_root" )
+    tts_local_url_template             = config_mgr.get_config( "tts_local_url_template" )
+    
+init_configuration()
 
 whisper_pipeline = None
 
@@ -128,7 +148,7 @@ def get_tts_url( tts_text ):
     
     # ¡OJO! This is a hack to get around the fact that the docker container can't see the host machine's IPv6 address
     # TODO: find a way to get the ip6 address dynamically
-    tts_url = tts_url_template.format( tts_text=tts_text )
+    tts_url = tts_local_url_template.format( tts_text=tts_text )
     tts_url = tts_url.replace( " ", "%20" )
 
     return tts_url
@@ -234,13 +254,14 @@ def delete_snapshot( id_hash ):
     
     return f"Deleted snapshot [{id_hash}]"
 
-# create an endpoint that refreshes the contents of the solution snapshot manager
-@app.route( '/reload-snapshots', methods=[ 'GET' ] )
-def reload_snapshots():
+# create an endpoint that refreshes the contents of the config manager and reloads the solution snapshot manager
+@app.route( '/api/init', methods=[ 'GET' ] )
+def init():
     
+    init_configuration()
     snapshot_mgr.load_snapshots()
     
-    return f"Snapshot manager refreshed"
+    return f"¡Success!"
 
 """
 Decorator for connect
