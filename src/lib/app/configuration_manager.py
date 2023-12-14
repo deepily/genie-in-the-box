@@ -478,6 +478,8 @@ class ConfigurationManager():
 
             value = configuration.get( block_id, key )
             print( "{0} = {1}{2}{3}".format( key.ljust( max_len, ' ' ), lb, value, rb ) )
+            
+        print()
 
     def get_config( self, key, default="@@@_None_@@@", silent=False, return_type="string" ):
     
