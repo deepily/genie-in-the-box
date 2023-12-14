@@ -10,12 +10,14 @@ import lib.utils.util as du
 
 class ConfigurationManager():
 
-    def __init__( self, config_path, config_block_id="default", debug=False, verbose=False, silent=False, cli_args=None ):
+    def __init__( self, config_path, splainer_path, config_block_id="default", debug=False, verbose=False, silent=False, cli_args=None ):
 
         """
         Instantiates configuration manager object
 
         :param config_path: Fully qualified path to configuration file
+        
+        :param splainer_path: Fully qualified path to splainer file
 
         :param config_block_id: [Text identifying which block to read from] Defaults to global 'default' block
 
@@ -28,24 +30,32 @@ class ConfigurationManager():
         self.debug           = debug
         self.verbose         = verbose
         self.silent          = silent
+        self.config_path     = config_path
+        self.splainer_path   = splainer_path
+        self.config_block_id = config_block_id
 
         # set by call below
         self.config          = None
-        self.config_path     = None
-        self.config_block_id = None
+        self.splainer        = None
 
-        self.init( config_block_id=config_block_id, config_path=config_path, silent=silent, cli_args=cli_args )
+        self.init(
+            config_block_id=config_block_id, config_path=config_path, splainer_path=splainer_path, debug=debug, verbose=verbose, silent=silent, cli_args=cli_args
+        )
 
-    def init( self, config_block_id=None, config_path=None, silent=False, debug=False, verbose=False, cli_args=None ):
+    def init( self, config_block_id=None, config_path=None, splainer_path=None, silent=False, debug=False, verbose=False, cli_args=None ):
 
-        # update config_path, if provided
+        # update paths, if provided
         if config_path is not None:
             self.config_path = config_path.strip()
+        if splainer_path is not None:
+            self.splainer_path = splainer_path.strip()
 
-        du.sanity_check_file_path( self.config_path, silent=silent )
+        du.sanity_check_file_path( self.config_path,   silent=silent )
+        du.sanity_check_file_path( self.splainer_path, silent=silent )
         
         if not self.silent:
             du.print_banner( f"Initializing configuration_manager [{self.config_path}]", prepend_nl=True )
+            print( f"Splainer path [{self.splainer_path}]" )
 
         self.silent          = silent
         self.config          = configparser.ConfigParser()
@@ -597,7 +607,7 @@ class ConfigurationManager():
             print( "\n'Splainer says: ¿WUH? The key [{0}] NOT found in the 'splainer.ini file. "
                    "Check spelling and/or contact the AMPE project maintainer?".format( key ), end=end )
 
-    def _load_splainer_definitions( self, splainer_path="/src/conf/gib-app-splainer.ini" ):
+    def _load_splainer_definitions( self ):
 
         """
         Loads the splainer doc
@@ -608,7 +618,7 @@ class ConfigurationManager():
         """
 
         splainer = configparser.ConfigParser()
-        splainer.read( du.get_project_root() + splainer_path )
+        splainer.read( du.get_project_root() + self.splainer_path )
 
         self.splainer = splainer
     
