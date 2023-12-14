@@ -130,7 +130,7 @@ class ConfigurationManager():
 
         if "inherits" in parent_block_keys:
 
-            inherits_from = self.get_config( "inherits" )
+            inherits_from = self.get( "inherits" )
 
             # Only sanity check inheritance if it's not a file
             if not os.path.isfile( inherits_from ):
@@ -492,7 +492,8 @@ class ConfigurationManager():
             
         print()
 
-    def get_config( self, key, default="@@@_None_@@@", silent=False, return_type="string" ):
+    # def get( self, key, default="@@@_None_@@@", silent=False, return_type="string" )
+    def get( self, key, default="@@@_None_@@@", silent=False, return_type="string" ):
     
         """
         Wrapper for accessing configuration object
@@ -518,7 +519,7 @@ class ConfigurationManager():
     
             # Get the value
             value = self.config.get( self.config_block_id, key )
-            # value = self.config.get_config( key )
+            # value = self.config.get( key )
     
             return self._get_typed_value( value, return_type )
     
@@ -547,7 +548,7 @@ class ConfigurationManager():
     def _get_typed_value( self, value, return_type ):
 
         """
-        Casts the string value to the requested type. Helper method for get_config(...)
+        Casts the string value to the requested type. Helper method for get(...)
 
         :param value: String representing the raw value
 
@@ -630,5 +631,5 @@ if __name__ == "__main__":
     
     # config_manager.print_configuration( brackets=True )
     #
-    # foo = config_manager.get_config( "foo" )
+    # foo = config_manager.get( "foo" )
     # print( f"foo: [{foo}] type: [{type( foo )}]" )
