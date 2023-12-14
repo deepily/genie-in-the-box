@@ -36,7 +36,7 @@ class ConfigurationManager():
 
         self.init( config_block_id=config_block_id, config_path=config_path, silent=silent, cli_args=cli_args )
 
-    def init( self, config_block_id="default", config_path=None, silent=False, cli_args=None ):
+    def init( self, config_block_id=None, config_path=None, silent=False, debug=False, verbose=False, cli_args=None ):
 
         # update config_path, if provided
         if config_path is not None:
@@ -49,7 +49,8 @@ class ConfigurationManager():
 
         self.silent          = silent
         self.config          = configparser.ConfigParser()
-        self.config_block_id = config_block_id
+        if config_block_id is not None:
+            self.config_block_id = config_block_id
 
         self.config.read( self.config_path )
 
