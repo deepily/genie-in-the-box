@@ -29,7 +29,6 @@ from lib.app import multimodal_munger as mmm
 import lib.utils.util as du
 import lib.utils.util_stopwatch as sw
 import lib.utils.util_code_runner as ulc
-import lib.app.todo_fifo_queue as tdq
 
 
 # from lib.clients.genie_client import GPT_3_5
@@ -40,6 +39,7 @@ import lib.app.todo_fifo_queue as tdq
 from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
 from lib.app.fifo_queue               import FifoQueue
 from lib.app.running_fifo_queue       import RunningFifoQueue
+from lib.app.todo_fifo_queue          import TodoFifoQueue
 from lib.app.configuration_manager    import ConfigurationManager
 
 """
@@ -51,47 +51,46 @@ config_mgr      = ConfigurationManager( config_path, config_block_id=config_bloc
 
 config_mgr.print_configuration( brackets=True )
 
+app_debug                          = config_mgr.get_config( "app_debug",   default=False, return_type="boolean" )
+app_verbose                        = config_mgr.get_config( "app_verbose", default=False, return_type="boolean" )
+app_config_server_name             = config_mgr.get_config( "app_config_server_name" )
+path_to_events_df_wo_root          = config_mgr.get_config( "path_to_events_df_wo_root" )
+path_to_snapshots_dir_wo_root      = config_mgr.get_config( "path_to_snapshots_dir_wo_root" )
+tts_url_template                   = config_mgr.get_config( "tts_url_template" )
+
 whisper_pipeline = None
 
 clock_thread = None
 run_thread   = None
 thread_lock  = Lock()
+
 # Track the number of jobs we've pushed into the queue
 push_count  = 1
 # Track the number of client connections
 connection_count   = 0
 
-# TODO: find a way to get this address dynamically
-tts_url_template = "http://192.168.0.188:5002/api/tts?text={tts_text}"
 
 app = Flask( __name__ )
 # Props to StackOverflow for this workaround:https://stackoverflow.com/questions/25594893/how-to-enable-cors-in-flask
 CORS( app )
 socketio = SocketIO( app, cors_allowed_origins='*' )
-app.config['SERVER_NAME'] = '127.0.0.1:7999'
+app.config[ 'SERVER_NAME' ] = app_config_server_name
 
-path_to_snapshots = os.path.join( du.get_project_root(), "src/conf/long-term-memory/solutions/" )
-print( "path_to_snapshots [{}]".format( path_to_snapshots ) )
-snapshot_mgr = SolutionSnapshotManager( path_to_snapshots, debug=True, verbose=True )
-
-EVENTS_DF_PATH = "/src/conf/long-term-memory/events.csv"
+path_to_snapshots = du.get_project_root() + path_to_snapshots_dir_wo_root
+# du.print_banner( f"path_to_snapshots [{path_to_snapshots}]" )
+snapshot_mgr = SolutionSnapshotManager( path_to_snapshots, debug=app_debug, verbose=app_verbose )
 
 """
-Globally visible queue object
+Globally visible queue objects
 """
-jobs_todo_queue = tdq.TodoFifoQueue( socketio, snapshot_mgr, app, EVENTS_DF_PATH )
+jobs_todo_queue = TodoFifoQueue( socketio, snapshot_mgr, app, path_to_events_df_wo_root )
 jobs_done_queue = FifoQueue()
 jobs_dead_queue = FifoQueue()
 jobs_run_queue  = RunningFifoQueue( app, socketio, snapshot_mgr, jobs_todo_queue, jobs_done_queue, jobs_dead_queue )
 
-
-
-"""
-Track the todo Q
-"""
 def enter_clock_loop():
     
-    print( "Tracking job TODO queue..." )
+    print( "enter_clock_loop..." )
     while True:
         
         socketio.emit( 'time_update', { "date": du.get_current_datetime() } )
@@ -134,38 +133,44 @@ def get_tts_url( tts_text ):
 
     return tts_url
 
-def get_audio_file( tts_text ):
+def get_tts_audio_file( tts_text ):
     
     du.print_banner( f"TTS text [{tts_text}] )", prepend_nl=True )
+    tts_generation_strategy = config_mgr.get_config( "tts_generation_strategy", default="local" )
     
-    client     = OpenAI( api_key=du.get_api_key( "openai" ) )
+    if tts_generation_strategy == "openai":
+        
+        client   = OpenAI( api_key=du.get_api_key( "openai" ) )
+        path     = du.get_project_root() + "/io/openai-speech.mp3"
+        mimetype = "audio/mpeg"
+        
+        # ¡OJO! this too could benefit from runtime configurable parameters
+        response = client.audio.speech.create(
+            model="tts-1",
+            voice="alloy",
+            speed=1.125,
+            input=tts_text
+        )
+        response.stream_to_file( path )
     
-    path = du.get_project_root() + "/io/openai-speech.mp3"
-    mimetype = "audio/mpeg"
-    response = client.audio.speech.create(
-        model="tts-1",
-        voice="alloy",
-        speed=1.125,
-        input=tts_text
-    )
-    response.stream_to_file( path )
-    
-    # print( f"Fetching audio file...", end="" )
-    # mimetype = "audio/wav"
-    # tts_url  = get_tts_url( tts_text )
-    # response = requests.get( tts_url )
-    # path     = du.get_project_root() + "/io/tts.wav"
-    #
-    # # Check if the request was successful
-    # if response.status_code == 200:
-    #
-    #     # Write the content of the response to a file
-    #     with open( path, "wb" ) as audio_file:
-    #         audio_file.write( response.content )
-    #     print( f"Fetching audio file... Done!" )
-    # else:
-    #     print( f"Failed to get UPDATED audio file: {response.status_code}" )
-    #     path = du.get_project_root() + "/io/failed-to-fetch-tts-file.wav"
+    else:
+        
+        print( f"Fetching audio file from local service...", end="" )
+        mimetype = "audio/wav"
+        tts_url  = get_tts_url( tts_text )
+        response = requests.get( tts_url )
+        path     = du.get_project_root() + "/io/tts.wav"
+
+        # Check if the request was successful
+        if response.status_code == 200:
+
+            # Write the content of the response to a file
+            with open( path, "wb" ) as audio_file:
+                audio_file.write( response.content )
+            print( f"Fetching audio file... Done!" )
+        else:
+            print( f"Failed to get UPDATED audio file: {response.status_code}" )
+            path = du.get_project_root() + "/io/failed-to-fetch-tts-file.wav"
     
     return send_file( path, mimetype=mimetype )
 
@@ -174,7 +179,7 @@ def get_tts_audio():
     
     tts_text = request.args.get( "tts_text" )
 
-    return get_audio_file( tts_text )
+    return get_tts_audio_file( tts_text )
 
 def generate_html_list( fifo_queue, descending=False, add_play_button=False ):
     
@@ -210,7 +215,7 @@ def get_answer( id_hash ):
     
     answer_conversational = jobs_done_queue.get_by_id_hash( id_hash ).answer_conversational
     
-    return get_audio_file( answer_conversational)
+    return get_tts_audio_file( answer_conversational )
 
 
 @app.route( '/delete-snapshot/<string:id_hash>', methods=[ 'GET' ] )
@@ -308,9 +313,10 @@ def upload_and_transcribe_mp3_file():
     
     load_model_once()
     
-    prefix = request.args.get( "prefix" )
-    prompt_key = request.args.get( "prompt_key", default="generic" )
+    prefix          = request.args.get( "prefix" )
+    prompt_key      = request.args.get( "prompt_key",     default="generic" )
     prompt_feedback = request.args.get( "prompt_verbose", default="verbose" )
+    
     print( "    prefix: [{}]".format( prefix ) )
     print( "prompt_key: [{}]".format( prompt_key ) )
     
@@ -323,8 +329,7 @@ def upload_and_transcribe_mp3_file():
         f.write( decoded_audio )
     print( " Done!" )
     
-    timer = sw.Stopwatch( f"Transcribing {path}..." )
-    # result = model.transcribe( path )
+    timer  = sw.Stopwatch( f"Transcribing {path}..." )
     result = whisper_pipeline( path )
     timer.print( "Done!", use_millis=True, end="\n\n" )
     
@@ -333,13 +338,14 @@ def upload_and_transcribe_mp3_file():
     print( "Result: [{}]".format( result ) )
     
     # Fetch last response processed... ¡OJO! This is pretty kludgey, but it works for now. TODO: Do better!
-    if os.path.isfile( du.get_project_root() + "/io/last_response.json" ):
-        with open( du.get_project_root() + "/io/last_response.json" ) as json_file:
+    last_response_path = "/io/last_response.json"
+    if os.path.isfile( du.get_project_root() + last_response_path ):
+        with open( du.get_project_root() + last_response_path ) as json_file:
             last_response = json.load( json_file )
     else:
         last_response = None
         
-    munger = mmm.MultiModalMunger( result, prefix=prefix, prompt_key=prompt_key, debug=True, verbose=False, last_response=last_response )
+    munger = mmm.MultiModalMunger( result, prefix=prefix, prompt_key=prompt_key, debug=app_debug, verbose=app_verbose, last_response=last_response )
     
     if munger.is_text_proofread():
         
@@ -372,7 +378,7 @@ def upload_and_transcribe_mp3_file():
         
     # Write JSON string to file system.
     last_response = munger.get_jsons()
-    du.write_string_to_file( du.get_project_root() + "/io/last_response.json", last_response )
+    du.write_string_to_file( du.get_project_root() + last_response_path, last_response )
 
     return last_response
 
@@ -429,7 +435,7 @@ def upload_and_transcribe_wav_file():
     os.remove( temp_file )
     print( " Done!" )
     
-    munger = mmm.MultiModalMunger( transcribed_text, prefix=prefix, debug=True, verbose=False )
+    munger = mmm.MultiModalMunger( transcribed_text, prefix=prefix, debug=app_debug, verbose=app_verbose )
     
     return munger.transcription
 
@@ -461,16 +467,16 @@ def upload_and_transcribe_wav_file():
 
 def load_model():
     
-    device      = "cuda:0"
-    torch_dtype = torch.bfloat16
-    model_id    = "distil-whisper/distil-large-v2"
+    torch_dtype   = torch.bfloat16
+    stt_device_id = config_mgr.get_config( "stt_device_id", default="cuda:0" )
+    stt_model_id  = config_mgr.get_config( "stt_model_id" )
     
     model = AutoModelForSpeechSeq2Seq.from_pretrained(
-        model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True, use_flash_attention_2=True
+        stt_model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True, use_flash_attention_2=True
     )
-    model.to( device )
+    model.to( stt_device_id )
     
-    processor = AutoProcessor.from_pretrained( model_id )
+    processor = AutoProcessor.from_pretrained( stt_model_id )
     
     pipe = pipeline(
         "automatic-speech-recognition",
@@ -479,7 +485,7 @@ def load_model():
         feature_extractor=processor.feature_extractor,
         max_new_tokens=128,
         torch_dtype=torch_dtype,
-        device=device,
+        device=stt_device_id,
     )
     return pipe
     
