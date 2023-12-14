@@ -68,6 +68,9 @@ def get_name_value_pairs( arg_list, debug=False, verbose=False ):
     
     name_value_pairs = { }
     
+    # add a little whitespace
+    if debug: print()
+    
     for i, arg in enumerate( arg_list ):
         
         if debug: print( "[{0}]th arg = [{1}]... ".format( i, arg_list[ i ] ), end="" )
