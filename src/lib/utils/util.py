@@ -386,12 +386,65 @@ def sanity_check_file_path( file_path, silent=False ):
 
     if not silent: print( "File [{0}] exists!".format( file_path ) )
     
+def get_name_value_pairs( arg_list ):
+
+    """
+    Parses a list of strings -- name=value -- into dictionary format { "name":"value" }
+
+    NOTE: Only the 1st element, the name of the class called, is exempt from parsing
+
+    :raises: ValueError if any but the 1st element is not of the format: 'name=value'
+
+    :param arg_list: Space delimited input from CLI
+
+    :return: dictionary of name=value pairs
+    """
+
+    name_value_pairs = { }
+
+    # Quick sanity check. Do we have anything to iterate?
+    if len( arg_list ) <= 1:
+        print( "No name=value pairs found in arg_list" )
+        return { }
+    
+    for i, arg in enumerate( arg_list ):
+
+        print( "[{0}]th arg = [{1}]... ".format( i, arg_list[ i ] ), end="" )
+
+        if "=" in arg:
+            pair = arg.split( "=" )
+            name_value_pairs[ pair[ 0 ] ] = pair[ 1 ]
+            print( "done!" )
+        else:
+            print( "SKIPPING, name=value format not found" )
+
+    print()
+    print( "Name value dictionary pairs:", end="\n\n" )
+
+    # get max width for right justification
+    max_len = max( [ len( key ) for key in name_value_pairs.keys() ] ) + 1
+
+    # iterate keys and print values w/ this format:
+    #       [foo] = [bar]
+    # [flibberty] = [jibbet]
+    names = list( name_value_pairs.keys() )
+    names.sort()
+
+    for name in names:
+        print( f"[{(name.rjust( max_len, ' ' ))}] = [{name_value_pairs[ name ]}]" )
+    print()
+
+    return name_value_pairs
+
 if __name__ == "__main__":
     
-    print( get_current_datetime() )
-    print( get_tgi_server_url())
-    print( get_api_key( "eleven11" ) )
-    print( get_api_key( "openai" ) )
+    init_dict = get_name_value_pairs( sys.argv )
+    
+    # print( get_current_datetime() )
+    # print( get_tgi_server_url())
+    # print( get_api_key( "eleven11" ) )
+    # print( get_api_key( "openai" ) )
+    
     # generate_domain_names( 10, debug=True )
     
     # search_terms = get_file_as_list( get_project_root() + "/src/conf/search-terms.txt", lower_case=True, clean=True, randomize=True )
