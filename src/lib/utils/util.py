@@ -386,8 +386,8 @@ def sanity_check_file_path( file_path, silent=False ):
 
     if not silent: print( "File [{0}] exists!".format( file_path ) )
     
-def get_name_value_pairs( arg_list ):
-
+def get_name_value_pairs( arg_list, decode_spaces=True ):
+    
     """
     Parses a list of strings -- name=value -- into dictionary format { "name":"value" }
 
@@ -396,6 +396,8 @@ def get_name_value_pairs( arg_list ):
     :raises: ValueError if any but the 1st element is not of the format: 'name=value'
 
     :param arg_list: Space delimited input from CLI
+    
+    :param decode_spaces: Decode spaces in value? Defaults to True
 
     :return: dictionary of name=value pairs
     """
@@ -412,8 +414,10 @@ def get_name_value_pairs( arg_list ):
         print( "[{0}]th arg = [{1}]... ".format( i, arg_list[ i ] ), end="" )
 
         if "=" in arg:
-            pair = arg.split( "=" )
-            name_value_pairs[ pair[ 0 ] ] = pair[ 1 ]
+            
+            pair  = arg.split( "=" )
+            value = pair[ 1 ].replace( "+", " " ) if decode_spaces else pair[ 1 ]
+            name_value_pairs[ pair[ 0 ] ] = value
             print( "done!" )
         else:
             print( "SKIPPING, name=value format not found" )
