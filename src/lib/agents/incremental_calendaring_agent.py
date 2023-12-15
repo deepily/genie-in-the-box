@@ -27,7 +27,7 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
         self.prompt_response_dict = None
         # Initialization of prompt components pushed to run_prompt
         # self.prompt_components = self._initialize_prompt_components( self.df, self.question )
-        self.do_not_serialize     = [ "df" ]
+        self.do_not_serialize     = [ "df", "config_mgr" ]
     
     def serialize_to_json( self, question, current_step, total_steps, now ):
         
@@ -361,10 +361,10 @@ if __name__ == "__main__":
     # question        = "What birthdays do I have on my calendar this week?"
     # question        = "What's today's date?"
     # question        = "What time is it?"
-    agent           = IncrementalCalendaringAgent( path_to_df, question=question, debug=True, verbose=False )
+    agent           = IncrementalCalendaringAgent( path_to_df, question=question, debug=False, verbose=False )
     prompt_response = agent.run_prompt()
-    code_response   = agent.run_code( auto_debug=True, inject_bugs=False )
-    du.print_banner( f"code_response[ 'return_code' ] = [{code_response[ 'return_code' ]}]", prepend_nl=False )
+    code_response   = agent.run_code( auto_debug=True, inject_bugs=True )
+    # du.print_banner( f"code_response[ 'return_code' ] = [{code_response[ 'return_code' ]}]", prepend_nl=False )
     for line in code_response[ "output" ].split( "\n" ):
         print( line )
         
