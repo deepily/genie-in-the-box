@@ -37,7 +37,8 @@ from lib.app.configuration_manager    import ConfigurationManager
 Instantiate configuration manager
 """
 # grab the results of runtime environment export like this one:
-# export GIB_FLASK_CLI_ARGS="config_path=/src/conf/gib-app.ini splainer_path=/src/conf/gib-app-splainer.ini config_block_id=Genie+in+the+Box:+Development"
+# export GIB_FLASK_CLI_ARGS="config_path=/src/conf/gib-app.ini splainer_path=/src/conf/gib-app-splainer.ini config_block_id=Genie+in+the+Box:+Development" ...
+# ...and convert it from a string to a list and finally, a dictionary
 cli_args         = os.environ[ "GIB_CONFIG_MGR_CLI_ARGS" ].split( " " )
 cli_args         = du.get_name_value_pairs( cli_args )
 
@@ -67,7 +68,7 @@ def init_configuration():
     config_mgr.print_configuration( brackets=True )
     
     # Running flask version 2.1.3
-    print( f"Running flask version {flask.__version__}" )
+    print( f"Running flask version {flask.__version__}", end="\n\n" )
     
     global app_config_server_name
     global path_to_events_df_wo_root
