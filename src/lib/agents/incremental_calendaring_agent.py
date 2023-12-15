@@ -80,6 +80,7 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
                 print( f"Skipping key [{k}], it's already been set" )
         
         return restored_agent
+    
     def _initialize_prompt_components( self, df ):
         
         head, event_value_counts = self._get_df_metadata( df )
@@ -110,7 +111,7 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
         
         In order to successfully write a function that answers the question above, you must follow my instructions step by step. As you complete each step I will recount your progress on the previous steps and provide you with the next step's instructions.
         
-        Step one) Think: think out loud about what you are being asked, including what are the steps that you will need to take in your code to solve this problem. Be critical of your thought process! And make sure to consider what you will call the entry point to your python solution, such as `def get_events_for_today( df )`, or `def get_events_for_tomorrow( df )`, or `def get_events_for_this_week( df )` or even `def get_birthday_for( df, name )`.
+        Step one) Think: think out loud about what the question means in technical terms, in addition to what are the steps that you will need to take in your code to solve this problem. Be critical of your thought process! And make sure to consider what you will call the entry point to your python solution, such as `def get_events_for_today( df )`, or `def get_events_for_tomorrow( df )`, `def count_appointments_this_month( df )`, or `def get_events_for_this_week( df )` or even `def get_birthday_for( df, name )`.
         """
         xml_formatting_instructions_step_1 = """
         You must respond to the step one directive using the following XML format:
@@ -171,9 +172,6 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
         In response to the instructions that you received for step three, you replied:
         
         {response}
-        
-        Congratulations! We're finished 😀
-        
         """
         
         steps = [ step_1, step_2, step_3, step_4 ]
@@ -358,7 +356,8 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
 if __name__ == "__main__":
     
     path_to_df      = "/src/conf/long-term-memory/events.csv"
-    question        = "How many birthdays do I have on my calendar this month?"
+    question        = "How many birthdays are on my calendar this month?"
+    # question        = "How many birthdays do I have on my calendar this month?"
     # question        = "What birthdays do I have on my calendar this week?"
     # question        = "What's today's date?"
     # question        = "What time is it?"
