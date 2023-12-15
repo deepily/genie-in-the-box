@@ -265,7 +265,7 @@ def get_tgi_server_url():
     if "GENIE_IN_THE_BOX_TGI_SERVER" in os.environ:
         return os.environ[ "GENIE_IN_THE_BOX_TGI_SERVER" ]
     else:
-        return "http://172.17.0.2:3000"
+        return "http://172.17.0.3:3000"
 
 # get api key
 def get_api_key( key_name ):
