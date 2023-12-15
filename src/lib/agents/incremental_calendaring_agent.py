@@ -254,7 +254,11 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
     
         timer = sw.Stopwatch( msg=f"Asking LLM [{model}]..." )
         
-        client         = InferenceClient( du.get_tgi_server_url() )
+        # Get the TGI server URL for this context
+        default_url    = self.config_mgr.get( "tgi_server_url_phind", default=None )
+        tgi_server_url = du.get_tgi_server_url_for_this_context( default_url=default_url )
+        
+        client         = InferenceClient( tgi_server_url )
         token_list     = [ ]
         
         prompt = f"{preamble}{instructions}\n"

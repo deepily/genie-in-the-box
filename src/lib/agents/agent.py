@@ -94,8 +94,11 @@ class Agent( RunnableCode, abc.ABC ):
         
         timer = sw.Stopwatch( msg=f"Asking LLM [{model}]...".format( model ) )
         
-        tgi_server_url = self.config_mgr.get( "tgi_server_url_phind" )
-        client         = InferenceClient( model=tgi_server_url )
+        # Get the TGI server URL for this context
+        default_url    = self.config_mgr.get( "tgi_server_url_phind", default=None )
+        tgi_server_url = du.get_tgi_server_url_for_this_context( default_url=default_url )
+        
+        client         = InferenceClient( tgi_server_url )
         token_list     = [ ]
         ellipsis_count = 0
         
