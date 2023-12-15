@@ -38,7 +38,7 @@ Instantiate configuration manager
 """
 # grab the results of runtime environment export like this one:
 # export GIB_FLASK_CLI_ARGS="config_path=/src/conf/gib-app.ini splainer_path=/src/conf/gib-app-splainer.ini config_block_id=Genie+in+the+Box:+Development"
-cli_args         = os.environ[ "GIB_FLASK_CLI_ARGS" ].split( " " )
+cli_args         = os.environ[ "GIB_CONFIG_MGR_CLI_ARGS" ].split( " " )
 cli_args         = du.get_name_value_pairs( cli_args )
 
 app_debug        = cli_args.get( "debug",   "False" ) == "True"
@@ -63,7 +63,7 @@ def init_configuration():
     global config_mgr
     global config_block_id
     
-    config_mgr = ConfigurationManager( config_path, splainer_path, config_block_id=config_block_id, debug=app_debug, verbose=app_verbose, silent=app_silent )
+    config_mgr = ConfigurationManager( config_path=config_path, splainer_path=splainer_path, config_block_id=config_block_id, debug=app_debug, verbose=app_verbose, silent=app_silent )
     config_mgr.print_configuration( brackets=True )
     
     # Running flask version 2.1.3
