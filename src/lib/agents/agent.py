@@ -3,12 +3,11 @@ import re
 import json
 import abc
 
-import lib.utils.util as du
+import lib.utils.util           as du
 import lib.utils.util_stopwatch as sw
 
-from lib.agents.runnable_code import RunnableCode
-
-# from lib.memory.solution_snapshot import SolutionSnapshot
+from lib.agents.runnable_code      import RunnableCode
+from lib.app.configuration_manager import ConfigurationManager
 
 import openai
 import tiktoken
@@ -26,16 +25,18 @@ class Agent( RunnableCode, abc.ABC ):
         
         super().__init__( debug=debug, verbose=verbose )
         
-        self.debug         = debug
-        self.verbose       = verbose
+        self.debug                  = debug
+        self.verbose                = verbose
         
-        self.question              = None
-        self.answer_conversational = None
+        self.question               = None
+        self.answer_conversational  = None
         
-        # self.code_response_dict    = None
-        # self.prompt_response = None
+        self.config_mgr             = ConfigurationManager( env_var_name="GIB_CONFIG_MGR_CLI_ARGS" )
+        
+        # self.code_response_dict   = None
+        # self.prompt_response      = None
         # self.prompt_response_dict = None
-        self.phind_tgi_url = du.get_tgi_server_url()
+        # self.tgi_server_url_phind = self.config_mgr.get( "tgi_server_url_phind" )
     
     @staticmethod
     def _get_token_count( to_be_tokenized, model=DEFAULT_MODEL ):
@@ -89,11 +90,12 @@ class Agent( RunnableCode, abc.ABC ):
         
         return response.choices[ 0 ].message.content.strip()
     
-    def _query_llm_phind( self, prompt, model=PHIND_34B_v2, max_new_tokens=1024, temperature=0.5, top_k=100, top_p=0.9, debug=False ):
+    def _query_llm_phind( self, prompt, model=PHIND_34B_v2, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, debug=False ):
         
         timer = sw.Stopwatch( msg=f"Asking LLM [{model}]...".format( model ) )
         
-        client         = InferenceClient( model=self.phind_tgi_url )
+        tgi_server_url = self.config_mgr.get( "tgi_server_url_phind" )
+        client         = InferenceClient( model=tgi_server_url )
         token_list     = [ ]
         ellipsis_count = 0
         
