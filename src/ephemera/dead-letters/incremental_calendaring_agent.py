@@ -84,35 +84,60 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
         
         head, event_value_counts = self._get_df_metadata( df )
         
-        # The only Python libraries that you may use: You must only use the datetime and Pandas libraries, which have been imported in the following manner: `import pandas as pd` and`import datetime as dt`.
         step_1 = f"""
+        ---
+        {"who are you?".upper()}
+        
         You are a cheerfully and helpful assistant, with proven expertise using Python to query pandas dataframes.
+        
+        ---
+        {"What's your job?".upper()}
         
         Your job is to translate human questions about calendars, dates, and events into a self-contained Python functions that can be used to answer the question now and reused in the future.
         
-        About the Pandas dataframe: The name of the events dataframe is `df` and is already loaded in memory ready to be queried.
+        ---
+        {"helpful pandas hints".upper()}
         
         Here are some hints to keep in mind and guide you as you craft your solution:
+        About the Pandas dataframe: The name of the events dataframe is `df` and is already loaded in memory ready to be queried.
         Start and end dates: An event that I have today may have started before today and may end tomorrow or next week, so be careful how you filter on dates.
         Filtering: When filtering by dates, use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
         Return values: You should always return a dataframe, and it must always include all columns in the dataframe, and never a subset.
         
+        ---
+        {"Event dataframe sample".upper()}
+        
         This is the ouput from `print(df.head().to_xml())`, in XML format:
         {head}
+        
+        ---
+        {"Type of events".upper()}
         
         This is the output from `print(self.df.event_type.value_counts())`:
         
         {event_value_counts}
         
+        ---
+        {"Question for you to answer".upper()}
+        
         Given the context I have provided above, I want you to write a Python function to answer the following question:
         
         Question: `{self.question}`
         
+        ---
+        {"Instructions".upper()}
+        
         In order to successfully write a function that answers the question above, you must follow my instructions step by step. As you complete each step I will recount your progress on the previous steps and provide you with the next step's instructions.
         
-        Step one) Think: think out loud about what you are being asked, including what are the steps that you will need to take in your code to solve this problem. Be critical of your thought process! And make sure to consider what you will call the entry point to your python solution, such as `def get_events_for_today( df )`, or `def get_events_for_tomorrow( df )`, or `def get_events_for_this_week( df )` or even `def get_birthday_for( df, name )`.
+        ---
+        {"Step one".upper()}
+        
+        Think: think out loud about what you are being asked, including what is the question asking and, what are the steps that you will need to take in your code to solve this problem. Be critical of your thought process! And make sure to consider what you will call the entry point to your python solution, such as `def get_events_for_today( df )`, or `def get_events_for_tomorrow( df )`, or `def get_events_for_this_week( df )` or even `def get_birthday_for( df, name )`.
         """
-        xml_formatting_instructions_step_1 = """
+        xml_formatting_instructions_step_1 = f"""
+        ---
+        {"Response format Step one: XML".upper()}
+        
         You must respond to the step one directive using the following XML format:
         <response>
             <thoughts>Your thoughts</thoughts>
@@ -121,14 +146,23 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
         Begin!
         """
         
-        step_2 = """
+        step_2 = f"""
+        ---
+        {"Your response to step one".upper()}
+        
         In response to the instructions that you received for step one you replied:
         
-        {response}
+        {{response}}
         
-        Step two) Code: Now that you have thought about how you are going to solve the problem, it's time to generate the Python code that you will use to arrive at your answer. The code must be complete, syntactically correct, and capable of running to completion. The last line of your function code must be `return solution`.  Remember: You must never return a subset of a dataframe's columns.
+        ---
+        {"Step two".upper()}
+        
+        Code: Now that you have thought about how you are going to solve the problem, it's time to generate the Python code that you will use to arrive at your answer. The code must be complete, syntactically correct, and capable of running to completion. The last line of your function code must be `return solution`.  Remember: You must never return a subset of a dataframe's columns.
         """
-        xml_formatting_instructions_step_2 = """
+        xml_formatting_instructions_step_2 = f"""
+        ---
+        {"Response format Step two: XML".upper()}
+        
         You must respond to the step 2 directive using the following XML format:
         <response>
             <code>
@@ -142,10 +176,13 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
         Begin!
         """
         
-        step_3 = """
+        step_3 = f"""
+        ---
+        {"Your response to step two".upper()}
+        
         In response to the instructions that you received for step two, you replied:
         
-        {response}
+        {{response}}
         
         Now that you have generated the code, you will need to perform the following three steps:
         
@@ -155,7 +192,10 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
         
         Step five) Explain: Explain how your code works, including any assumptions that you have made.
         """
-        xml_formatting_instructions_step_3 = """
+        xml_formatting_instructions_step_3 = f"""
+        ---
+        {"Response format Step three, four, and five: XML".upper()}
+        
         You must respond to the directives in steps three, four and five using the following XML format:
         
         <response>
@@ -167,13 +207,12 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
         Begin!
         """
         
-        step_4 = """
+        step_4 = f"""
+        ---
+        {"Your response to step three, four, and five".upper()}
         In response to the instructions that you received for step three, you replied:
         
-        {response}
-        
-        Congratulations! We're finished 😀
-        
+        {{response}}
         """
         
         steps = [ step_1, step_2, step_3, step_4 ]
@@ -359,10 +398,10 @@ if __name__ == "__main__":
     
     path_to_df      = "/src/conf/long-term-memory/events.csv"
     question        = "How many birthdays do I have on my calendar this month?"
-    # question        = "What birthdays do I have on my calendar this week?"
+    # question      = "What birthdays do I have on my calendar this week?"
     # question        = "What's today's date?"
     # question        = "What time is it?"
-    agent           = IncrementalCalendaringAgent( path_to_df, question=question, debug=True, verbose=False )
+    agent           = IncrementalCalendaringAgent( path_to_df, question=question, debug=True, verbose=True )
     prompt_response = agent.run_prompt()
     code_response   = agent.run_code( auto_debug=True, inject_bugs=False )
     du.print_banner( f"code_response[ 'return_code' ] = [{code_response[ 'return_code' ]}]", prepend_nl=False )
