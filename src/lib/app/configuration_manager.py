@@ -72,8 +72,8 @@ class ConfigurationManager():
             del cli_args[ "config_block_id" ]
         
         else:
-            self.config_path     = du.get_project_root() + config_path
-            self.splainer_path   = du.get_project_root() + splainer_path
+            self.config_path     = config_path
+            self.splainer_path   = splainer_path
             self.config_block_id = config_block_id
 
         # set by call below
