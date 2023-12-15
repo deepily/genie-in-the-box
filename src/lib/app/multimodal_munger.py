@@ -126,8 +126,8 @@ class MultiModalMunger:
         transcription = regex.sub( '', raw_transcription ).replace( "-", " " ).lower()
         
         # First and foremost: Are we in multi-modal editor/command mode?
-        print( "  self.prefix:", self.prefix )
-        print( "transcription:", transcription )
+        # print( "  self.prefix:", self.prefix )
+        # print( "transcription:", transcription )
         
         if self.prefix == trans_mode_vox_cmd_browser or transcription.startswith( trans_mode_vox_cmd_browser ):
             
