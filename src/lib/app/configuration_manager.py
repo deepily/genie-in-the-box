@@ -8,12 +8,32 @@ if lib_path not in sys.path:
 
 import lib.utils.util as du
 
-class ConfigurationManager():
+# Idea for the "singleton" decorator: https://stackabuse.com/creating-a-singleton-in-python/
+def singleton( cls ):
+    
+    instances = { }
+    
+    def wrapper( *args, **kwargs ):
+        
+        if cls not in instances:
+            print( "Instantiating ConfigurationManager() singleton...", end="\n\n" )
+            instances[ cls ] = cls( *args, **kwargs )
+        else:
+            print( "Reusing ConfigurationManager() singleton..." )
+            
+        return instances[ cls ]
+    
+    return wrapper
 
-    def __init__( self, config_path, splainer_path, config_block_id="default", debug=False, verbose=False, silent=False, cli_args=None ):
+@singleton
+class ConfigurationManager():
+    
+    def __init__( self, env_var_name=None, config_path=None, splainer_path=None, config_block_id="default", debug=False, verbose=False, silent=False, cli_args=None ):
 
         """
         Instantiates configuration manager object
+        
+        :param env_var_name: If set, then the configuration manager will look for three environment variables: config_path, splainer_path and config_block_id
 
         :param config_path: Fully qualified path to configuration file
         
@@ -30,16 +50,38 @@ class ConfigurationManager():
         self.debug           = debug
         self.verbose         = verbose
         self.silent          = silent
-        self.config_path     = config_path
-        self.splainer_path   = splainer_path
-        self.config_block_id = config_block_id
+        
+        if env_var_name is not None:
+            
+            print( f"Using environment variables to instantiate configuration manager" )
+            
+            if env_var_name not in os.environ: raise ValueError( f"[{env_var_name}] is NOT set" )
+            
+            # Three arguments need to be set when using env_var_name variables
+            cli_args = os.environ[ env_var_name ].split( " " )
+            cli_args = du.get_name_value_pairs( cli_args )
+            
+            self.config_path     = du.get_project_root() + cli_args[ "config_path" ]
+            self.splainer_path   = du.get_project_root() + cli_args[ "splainer_path" ]
+            
+            self.config_block_id = cli_args[ "config_block_id" ]
+            
+            # Now delete those three keys from cli_args
+            del cli_args[ "config_path" ]
+            del cli_args[ "splainer_path" ]
+            del cli_args[ "config_block_id" ]
+        
+        else:
+            self.config_path     = du.get_project_root() + config_path
+            self.splainer_path   = du.get_project_root() + splainer_path
+            self.config_block_id = config_block_id
 
         # set by call below
         self.config          = None
         self.splainer        = None
-
+        
         self.init(
-            config_block_id=config_block_id, config_path=config_path, splainer_path=splainer_path, debug=debug, verbose=verbose, silent=silent, cli_args=cli_args
+            config_block_id=self.config_block_id, config_path=self.config_path, splainer_path=self.splainer_path, debug=debug, verbose=verbose, silent=silent, cli_args=cli_args
         )
 
     def init( self, config_block_id=None, config_path=None, splainer_path=None, silent=False, debug=False, verbose=False, cli_args=None ):
@@ -54,8 +96,8 @@ class ConfigurationManager():
         du.sanity_check_file_path( self.splainer_path, silent=silent )
         
         if not self.silent:
-            du.print_banner( f"Initializing configuration_manager [{self.config_path}]", prepend_nl=True )
-            print( f"Splainer path [{self.splainer_path}]" )
+            du.print_banner( f"Initializing configuration_manager [{self.config_path}]", prepend_nl=True, end="\n" )
+            print( f"Splainer path [{self.splainer_path}]", end="\n\n" )
 
         self.silent          = silent
         self.config          = configparser.ConfigParser()
@@ -625,9 +667,21 @@ class ConfigurationManager():
     
 if __name__ == "__main__":
 
-    config_path     = du.get_project_root() + "/src/conf/gib-app.ini"
-    config_block_id = "Genie in the Box: Development"
-    config_manager  = ConfigurationManager( config_path, config_block_id=config_block_id, debug=False, verbose=False, silent=False )
+    # for key, value in os.environ.items():
+    #     print( f"{key} = {value}" )
+    # print()
+    # print( "GIB_CONFIG_MGR_CLI_ARGS" in os.environ )
+    
+    # config_path     = du.get_project_root() + "/src/conf/gib-app.ini"
+    # splainer_path   = du.get_project_root() + "/src/conf/gib-app-splainer.ini"
+    # config_block_id = "Genie in the Box: Development"
+    # config_manager  = ConfigurationManager( config_path, splainer_path, config_block_id=config_block_id, debug=False, verbose=False, silent=False )
+    
+    config_manager  = ConfigurationManager( env_var_name="GIB_CONFIG_MGR_CLI_ARGS" )
+
+    foo_mgr         = ConfigurationManager( env_var_name="GIB_CONFIG_MGR_CLI_ARGS" )
+    
+    # foo_mgr         = ConfigurationManager( config_path, splainer_path, config_block_id=config_block_id, debug=False, verbose=False, silent=False )
     
     # config_manager.print_configuration( brackets=True )
     #
