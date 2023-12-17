@@ -323,19 +323,19 @@ def generate_domain_names( count=10, remove_dots=False, debug=False ):
 
     return domain_names
 
-def get_search_terms( requested_length ):
-    
-    # Load search terms file
-    search_terms = get_file_as_list( get_project_root() + "/src/conf/search-terms.txt", lower_case=False, clean=True, randomize=True )
-    
-    # If we don't have enough search terms, append copies of the search term list until we do
-    while requested_length > len( search_terms ):
-        search_terms += search_terms
-        
-    # Truncate the search terms list to equal the requested len
-    search_terms = search_terms[ :requested_length ]
-    
-    return search_terms
+# def get_search_terms( requested_length ):
+#
+#     # Load search terms file
+#     search_terms = get_file_as_list( get_project_root() + "/src/ephemera/prompts/data/search-terms.txt", lower_case=False, clean=True, randomize=True )
+#
+#     # If we don't have enough search terms, append copies of the search term list until we do
+#     while requested_length > len( search_terms ):
+#         search_terms += search_terms
+#
+#     # Truncate the search terms list to equal the requested len
+#     search_terms = search_terms[ :requested_length ]
+#
+#     return search_terms
 
 def is_jsonl( string ):
     
@@ -464,7 +464,7 @@ if __name__ == "__main__":
     init_dict = get_name_value_pairs( sys.argv )
     
     # print( get_current_datetime() )
-    # print( get_tgi_server_url_for_this_context())
+    print( get_tgi_server_url_for_this_context())
     # print( get_api_key( "eleven11" ) )
     # print( get_api_key( "openai" ) )
     
