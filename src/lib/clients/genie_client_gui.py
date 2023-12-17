@@ -102,42 +102,43 @@ class GenieGui:
     def key_event( self, event ):
         
         if self.debug: print( "key_event [{}] keysym [{}]".format( event, event.keysym ) )
-
-        if self.last_key == "Up" and event.keysym == "Meta_L":
-            print( "Meta + Up" )
-            self.font_size += 1
-            print( "font_size:", self.font_size )
-        elif self.last_key == "Down" and event.keysym == "Meta_L":
-            print( "Meta + Down" )
-            self.font_size -= 1
-            print( "font_size:", self.font_size )
-        elif self.last_key == "p" and event.keysym == "Control_L":
-
-            print( "Control + P" )
-            self.txt_prompt.focus_set()
-
-        elif self.last_key == "i" and event.keysym == "Control_L":
-
-            print( "Control + I" )
-            self.txt_content.focus_set()
-
-        elif self.last_key == "r" and event.keysym == "Control_L":
-
-            print( "Control + R" )
-            self.txt_response.focus_set()
-
-        elif self.last_key == "t" and event.keysym == "Control_L":
-
-            print( "Control + T" )
-            self._do_conditional_transcription_toggle()
-
-        elif ( event.keysym == "Escape" ) and (
+        
+        # if self.last_key == "Up" and event.keysym == "Meta_L":
+        #     print( "Meta + Up" )
+        #     self.font_size += 1
+        #     print( "font_size:", self.font_size )
+        # elif self.last_key == "Down" and event.keysym == "Meta_L":
+        #     print( "Meta + Down" )
+        #     self.font_size -= 1
+        #     print( "font_size:", self.font_size )
+        # elif self.last_key == "p" and event.keysym == "Control_L":
+        #
+        #     print( "Control + P" )
+        #     self.txt_prompt.focus_set()
+        #
+        # elif self.last_key == "i" and event.keysym == "Control_L":
+        #
+        #     print( "Control + I" )
+        #     self.txt_content.focus_set()
+        #
+        # elif self.last_key == "r" and event.keysym == "Control_L":
+        #
+        #     print( "Control + R" )
+        #     self.txt_response.focus_set()
+        #
+        # elif self.last_key == "t" and event.keysym == "Control_L":
+        #
+        #     print( "Control + T" )
+        #     self._do_conditional_transcription_toggle()
+        #
+        # el
+        if ( event.keysym == "Escape" or event.keysym == "BackSpace" ) and (
             self.genie_client.is_recording() or
             self.genie_client.is_playing() ):
 
             self.stop_processing()
 
-        elif ( event.keysym == "Escape" ) and not (
+        elif ( event.keysym == "Escape" or event.keysym == "BackSpace" ) and not (
             self.genie_client.is_recording() or
             self.genie_client.is_playing() ):
 
@@ -268,7 +269,7 @@ if __name__ == "__main__":
     startup_mode             = cli_args.get( "startup_mode", "transcribe" )
     # startup_mode           = cli_args.get( "startup_mode", "transcribe_and_clean_python" )
     recording_timeout      = int( cli_args.get( "recording_timeout", 30 ) )
-    record_once_on_startup = cli_args.get( "record_once_on_startup", "True" ) == "True"
+    record_once_on_startup = cli_args.get( "record_once_on_startup", "False" ) == "True"
 
     # and now for something completely different !
     gg = GenieGui(
