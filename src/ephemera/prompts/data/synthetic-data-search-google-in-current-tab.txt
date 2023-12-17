@@ -1,4 +1,4 @@
-Search SEARCH_TERMS in this tab
+Search google SEARCH_TERMS in this tab
 Present google results of SEARCH_TERMS on current tab
 Execute a Google search for SEARCH_TERMS
 Use Google to search SEARCH_TERMS in this tab
