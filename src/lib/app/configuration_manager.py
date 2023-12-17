@@ -57,13 +57,13 @@ class ConfigurationManager():
             
             if env_var_name not in os.environ: raise ValueError( f"[{env_var_name}] is NOT set" )
             
-            # Three arguments need to be set when using env_var_name variables
+            # take the environment string, split it into a list and then convert that list into a dictionary
             cli_args = os.environ[ env_var_name ].split( " " )
             cli_args = du.get_name_value_pairs( cli_args )
             
+            # Three arguments need to be set when using env_var_name variables
             self.config_path     = du.get_project_root() + cli_args[ "config_path" ]
             self.splainer_path   = du.get_project_root() + cli_args[ "splainer_path" ]
-            
             self.config_block_id = cli_args[ "config_block_id" ]
             
             # Now delete those three keys from cli_args
