@@ -114,7 +114,7 @@ class Agent( RunnableCode, abc.ABC ):
             else:
                 print( ".", end="" )
                 ellipsis_count += 1
-                if ellipsis_count == 100:
+                if ellipsis_count == 120:
                     ellipsis_count = 0
                     print()
                 
@@ -281,22 +281,3 @@ class Agent( RunnableCode, abc.ABC ):
         """
         return preamble
     
-    # def serialize_to_json( self, question, current_step, total_steps, now ):
-    #
-    #     # Convert object's state to a dictionary
-    #     state_dict = self.__dict__
-    #
-    #     # Remove any private attributes
-    #     # Convert object's state to a dictionary, omitting specified fields
-    #     state_dict = { k: v for k, v in self.__dict__.items() if k not in self.do_not_serialize }
-    #
-    #     # Constructing the filename
-    #     # Format: "question_year-month-day-hour-minute-step-N-of-M.json"
-    #     fn_question = SolutionSnapshot.clean_question( question ).replace( " ", "-" )
-    #     filename = f"{du.get_project_root()}/io/log/{fn_question}-{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-step-{(current_step + 1)}-of-{total_steps}.json"
-    #
-    #     # Serialize and save to file
-    #     with open( filename, 'w' ) as file:
-    #         json.dump( state_dict, file, indent=4 )
-    #
-    #     print( f"Serialized to {filename}" )
