@@ -2,10 +2,12 @@ import datetime as dt
 
 class Stopwatch:
     
-    def __init__( self, msg=None  ):
+    def __init__( self, msg=None, silent=False  ):
         
-        if msg: print( msg )
+        if msg and not silent: print( msg )
+        
         self.init_msg   = msg
+        self.silent     = silent
         self.start_time = dt.datetime.now()
         
     def __enter__( self ):
@@ -52,7 +54,7 @@ class Stopwatch:
             msg = self.init_msg + " " + msg
         
         # preformat output
-        if prepend_nl: print()
+        if prepend_nl and not self.silent: print()
         
         if use_millis:
             
@@ -60,16 +62,16 @@ class Stopwatch:
             delta = dt.datetime.now() - self.start_time
             millis = int( delta.total_seconds() * 1000 )
             
-            print( "{0} in {1:,} ms".format( msg, millis ), end=end )
+            if not self.silent: print( "{0} in {1:,} ms".format( msg, millis ), end=end )
         
         elif seconds > 59:
             
             # From: https://stackoverflow.com/questions/775049/how-do-i-convert-seconds-to-hours-minutes-and-seconds
             minutes, seconds = divmod( seconds, 60 )
-            print( "{0} in {1:02d}:{2:02d}".format( msg, minutes, seconds ), end=end )
+            if not self.silent: print( "{0} in {1:02d}:{2:02d}".format( msg, minutes, seconds ), end=end )
         
         else:
-            print( "{0} in {1:,} seconds".format( msg, seconds ), end=end )
+            if not self.silent: print( "{0} in {1:,} seconds".format( msg, seconds ), end=end )
     
     def get_delta_ms( self ):
     
