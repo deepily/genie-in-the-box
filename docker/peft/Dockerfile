@@ -23,5 +23,7 @@ RUN pip install flash-attn --no-build-isolation
 RUN pip install trl
 RUN pip install wandb
 RUN pip install xmltodict
+RUN pip install xmlschema
+RUN pip install scikit-learn
 
 CMD [ "/bin/bash" ]

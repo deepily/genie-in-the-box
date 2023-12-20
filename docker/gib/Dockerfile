@@ -89,6 +89,10 @@ RUN pip3.11 --version
 
 RUN python3.11 -c "from huggingface_hub import snapshot_download; snapshot_download( repo_id='distil-whisper/distil-large-v2' )"
 
+RUN pip install xmlschema
+
+RUN pip install scikit-learn
+
 WORKDIR /var/genie-in-the-box
 RUN mkdir -p /var/io
 
