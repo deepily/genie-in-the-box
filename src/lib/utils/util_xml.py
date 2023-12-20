@@ -4,6 +4,7 @@ import lib.utils.util as du
 
 def get_value_by_xml_tag_name( xml_string, name, default_value=None ):
     
+    """Returns the value enclosed by the tag open/close brackets, e.g. <name>value</name>"""
     if f"<{name}>" not in xml_string or f"</{name}>" not in xml_string:
         if default_value is None:
             return f"Error: `{name}` not found in xml_string"
@@ -12,6 +13,20 @@ def get_value_by_xml_tag_name( xml_string, name, default_value=None ):
     
     return xml_string.split( f"<{name}>" )[ 1 ].split( f"</{name}>" )[ 0 ]
     
+    
+# Get the tag and values from the xml_string
+def get_xml_tag_and_value_by_name( xml_string, name, default_value=None ):
+    
+    """
+    Returns the xml tag and value contained w/in the xml_string by wrapping get_value_by_xml_tag_name() w/ the xml tag
+    open/close, e.g. <name>value</name>
+    """
+    
+    value = get_value_by_xml_tag_name( xml_string, name, default_value=default_value )
+    name_and_value = f"<{name}>{value}</{name}>"
+    
+    return name_and_value
+
 def get_code_list( xml_string, debug=False ):
     
     skip_list = [ ]  # [ "import pandas", "import datetime" ]
