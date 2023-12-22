@@ -3,11 +3,11 @@ import re
 
 import pandas as pd
 
-from xmlschema               import XMLSchema
-from sklearn.model_selection import train_test_split
+from xmlschema                import XMLSchema
+from sklearn.model_selection  import train_test_split
 
-import lib.utils.util     as du
-import lib.utils.util_xml as dux
+import lib.utils.util         as du
+import lib.utils.util_xml     as dux
 
 from huggingface_hub          import InferenceClient
 from lib.utils.util_stopwatch import Stopwatch
@@ -284,12 +284,20 @@ class XmlFineTuningPromptGenerator:
         
         return self._query_llm_phind( prompt, debug=self.debug, silent=self.silent )
 
-    def validate_prompts_and_responses( self, df ):
+    def generate_responses( self, df ):
         
         self.reset_call_counter()
         rows = df.shape[ 0 ]
         
         df[ "response" ]                    = df[ "prompt" ].apply( lambda cell: self.get_response_to_prompt( cell, rows ) )
+        
+        return df
+    def validate_prompts_and_responses( self, df ):
+        
+        # self.reset_call_counter()
+        # rows = df.shape[ 0 ]
+        #
+        # df[ "response" ]                    = df[ "prompt" ].apply( lambda cell: self.get_response_to_prompt( cell, rows ) )
         
         # Validate the structure and content of the xml response
         df[ "response_xml_is_valid" ]       = df[ "response" ].apply( lambda cell: self.is_valid_xml( cell ) )
@@ -344,15 +352,16 @@ class XmlFineTuningPromptGenerator:
         
 if __name__ == "__main__":
     
-    print( os.getcwd() )
-    os.chdir( du.get_project_root() + "/src" )
-    print( os.getcwd() )
-    
-    xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=True )
-    qna_df            = xml_ftp_generator.build_training_prompts()
-    
-    # train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( qna_df, sample_size=1000, test_size=0.2, test_validate_size=0.5 )
+    print( "Running XmlFineTuningPromptGenerator..." )
+    # print( os.getcwd() )
+    # os.chdir( "/var/model/genie-in-the-box/src" )
+    # print( os.getcwd() )
+    # #
+    # xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=True )
+    # qna_df            = xml_ftp_generator.build_training_prompts()
     #
+    # train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( qna_df, sample_size=10000, test_size=0.2, test_validate_size=0.5 )
+    # #
     # xml_ftp_generator.write_ttv_split_to_jsonl( train_df, test_df, validate_df )
     
     # prompt = qna_df[ "prompt" ].iloc[ 0 ]
