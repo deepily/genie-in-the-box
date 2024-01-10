@@ -4,7 +4,7 @@ import time
 
 from threading         import Lock
 
-from duckduckgo_search import ddg
+# from duckduckgo_search import ddg
 
 import torch
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
@@ -383,10 +383,45 @@ def upload_and_transcribe_mp3_file():
     
     elif munger.is_ddg_search():
         
-        print( "Fetching AI data for [{}]...".format( munger.transcription ) )
-        results = ddg( munger.transcription, region="wt-wt", safesearch="Off", time="y", max_results=20 )
-        print( results )
-        munger.results = results
+        du.print_banner( "DDG search detected & ABORTED", prepend_nl=True, expletive=True, chunk="b0rk3d! " )
+        print( "Investigate why DGG Throws the following Stacktrace:" )
+        print( """File "/usr/local/lib/python3.11/site-packages/flask/cli.py", line 214, in locate_app
+    __import__(module_name)
+  File "/var/genie-in-the-box/src/app.py", line 7, in <module>
+    from duckduckgo_search import ddg
+  File "/usr/local/lib/python3.11/site-packages/duckduckgo_search/__init__.py", line 11, in <module>
+    from .compat import (
+  File "/usr/local/lib/python3.11/site-packages/duckduckgo_search/compat.py", line 4, in <module>
+    from .duckduckgo_search import DDGS
+  File "/usr/local/lib/python3.11/site-packages/duckduckgo_search/duckduckgo_search.py", line 9, in <module>
+    from curl_cffi import requests
+  File "/usr/local/lib/python3.11/site-packages/curl_cffi/requests/__init__.py", line 29, in <module>
+    from .session import AsyncSession, BrowserType, Session
+  File "/usr/local/lib/python3.11/site-packages/curl_cffi/requests/session.py", line 30, in <module>
+    import eventlet.tpool
+  File "/usr/local/lib/python3.11/site-packages/eventlet/__init__.py", line 17, in <module>
+    from eventlet import convenience
+  File "/usr/local/lib/python3.11/site-packages/eventlet/convenience.py", line 7, in <module>
+    from eventlet.green import socket
+  File "/usr/local/lib/python3.11/site-packages/eventlet/green/socket.py", line 4, in <module>
+    __import__('eventlet.green._socket_nodns')
+  File "/usr/local/lib/python3.11/site-packages/eventlet/green/_socket_nodns.py", line 11, in <module>
+    from eventlet import greenio
+  File "/usr/local/lib/python3.11/site-packages/eventlet/greenio/__init__.py", line 3, in <module>
+    from eventlet.greenio.base import *  # noqa
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/eventlet/greenio/base.py", line 32, in <module>
+    socket_timeout = eventlet.timeout.wrap_is_timeout(socket.timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/eventlet/timeout.py", line 166, in wrap_is_timeout
+    base.is_timeout = property(lambda _: True)
+    ^^^^^^^^^^^^^^^
+TypeError: cannot set 'is_timeout' attribute of immutable type 'TimeoutError'""" )
+        munger.results = "DDG search detected & ABORTED"
+    #     print( "Fetching AI data for [{}]...".format( munger.transcription ) )
+    #     results = ddg( munger.transcription, region="wt-wt", safesearch="Off", time="y", max_results=20 )
+    #     print( results )
+    #     munger.results = results
         
     elif munger.is_agent():
         
