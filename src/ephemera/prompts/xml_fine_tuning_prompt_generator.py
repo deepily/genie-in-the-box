@@ -313,7 +313,7 @@ class XmlFineTuningPromptGenerator:
     
     def print_validation_stats( self, df ):
         
-        du.print_banner( "Validation Stats" )
+        du.print_banner( "Validation Stats", prepend_nl=True )
         print( f"               Is valid xml {df.response_xml_is_valid.mean() * 100:.1f}%" )
         print( f"          Contains response {df.contains_response.mean() * 100:.1f}%" )
         print( f"   Contains browser command {df.contains_browser_command.mean() * 100:.1f}%" )
@@ -352,12 +352,30 @@ class XmlFineTuningPromptGenerator:
         
 if __name__ == "__main__":
     
+    # ------------------------------------------------------------------------------------------------------------------------
+    # - Validation Stats
+    # ------------------------------------------------------------------------------------------------------------------------
+    #
+    #                Is valid xml 100.0%
+    #           Contains response 100.0%
+    #    Contains browser command 100.0%
+    #               Contains args 100.0%
+    #           Response is exact 46.6%
+    # Response has correct values 46.6%
+    #  Browser command is correct 55.3%
+    #             Args is correct 75.5%
+    #
+    # Validating 1,000 responses... Done! in 22:18
+    # Items per second [0.7]
+    # Seconds per item [1.3]
+    
     print( "Running XmlFineTuningPromptGenerator..." )
-    # print( os.getcwd() )
+    print( os.getcwd() )
     # os.chdir( "/var/model/genie-in-the-box/src" )
     # print( os.getcwd() )
     # #
-    # xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=True )
+    xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=True )
+    # xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:8080", debug=True )
     # qna_df            = xml_ftp_generator.build_training_prompts()
     #
     # train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( qna_df, sample_size=10000, test_size=0.2, test_validate_size=0.5 )
@@ -369,9 +387,20 @@ if __name__ == "__main__":
     #     print( line )
     #
     # sampled_qna_df    = qna_df.sample( 25 ).copy()
-    # sampled_qna_df    = xml_ftp_generator.validate_prompts_and_responses( sampled_qna_df )
-    #
-    # xml_ftp_generator.print_validation_stats( sampled_qna_df )
+    validation_qna_df    = pd.read_json( xml_ftp_generator.path_prefix + "/src/ephemera/prompts/data/voice-commands-xml-validate.jsonl", lines=True ).sample( 1000, random_state=42 )
+    timer                = Stopwatch( msg=f"Validating {validation_qna_df.shape[ 0 ]:,} responses...", silent=False )
+    
+    validation_qna_df    = xml_ftp_generator.generate_responses( validation_qna_df )
+    validation_qna_df    = xml_ftp_generator.validate_prompts_and_responses( validation_qna_df )
+
+    xml_ftp_generator.print_validation_stats( validation_qna_df )
+    timer.print( msg="Done!", use_millis=False, prepend_nl=True, end="\n" )
+    delta_ms         = timer.get_delta_ms()
+    items_per_second = validation_qna_df.shape[ 0 ] / ( delta_ms / 1000.0 )
+    seconds_per_item = ( delta_ms / 1000.0 ) / validation_qna_df.shape[ 0 ]
+    
+    print( f"Items per second [{round( items_per_second, 1 )}]" )
+    print( f"Seconds per item [{round( seconds_per_item, 1 )}]" )
     
     # xml_ftp_generator.reset_call_counter()
 #     prompt = """
