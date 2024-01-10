@@ -1,4 +1,7 @@
-FROM nvidia/cuda:12.2.0-base-ubuntu22.04
+# v0.1.0 was:
+# FROM nvidia/cuda:12.2.0-base-ubuntu22.04
+# v0.2.0 is:
+FROM nvidia/cuda:12.2.2-base-ubuntu22.04
 
 RUN apt-get update && apt-get install -y \
     && apt-get install git wget nano rsync python3-enchant pip -y \

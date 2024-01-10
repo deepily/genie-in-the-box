@@ -1,6 +1,6 @@
 # FOR gib:0.4.0
 #FROM python:3.10.12
-FROM nvidia/cuda:12.2.0-base-ubuntu22.04
+FROM nvidia/cuda:12.2.2-base-ubuntu22.04
 
 # install python 3.11.6
 RUN apt-get update && apt-get install -y \
