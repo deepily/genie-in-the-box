@@ -42,3 +42,6 @@ nohup.out
 
 # skip anything contained within a directory called foo
 **/foo/**
+
+# Skip your voice come in training data, it's too big!
+src/ephemera/prompts/data/voice-commands-xml*.jsonl
