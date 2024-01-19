@@ -16,7 +16,7 @@ from huggingface_hub import InferenceClient
 class Agent( RunnableCode, abc.ABC ):
     
     GPT_4         = "gpt-4-0613"
-    GPT_3_5       = "gpt-3.5-turbo-instruct"
+    GPT_3_5       = "gpt-3.5-turbo-1106"
     PHIND_34B_v2  = "Phind/Phind-CodeLlama-34B-v2"
     
     DEFAULT_MODEL = PHIND_34B_v2
