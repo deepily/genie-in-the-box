@@ -284,9 +284,9 @@ def get_tgi_server_url_for_this_context( default_url=None ):
         return default_url
 
 # get api key
-def get_api_key( key_name ):
+def get_api_key( key_name, project_root=get_project_root() ):
     
-    path = get_project_root() + f"/src/conf/keys/{key_name}"
+    path = project_root + f"/src/conf/keys/{key_name}"
     if debug: print( f"Fetching [{key_name}] from [{path}]..." )
     
     # test path to see if key exists
@@ -461,12 +461,14 @@ def get_name_value_pairs( arg_list, decode_spaces=True ):
 
 if __name__ == "__main__":
     
+    print( os.getcwd() )
     init_dict = get_name_value_pairs( sys.argv )
     
     # print( get_current_datetime() )
-    print( get_tgi_server_url_for_this_context())
+    # print( get_tgi_server_url_for_this_context())
     # print( get_api_key( "eleven11" ) )
-    # print( get_api_key( "openai" ) )
+    print( get_api_key( "openai" ) )
+    # print( get_api_key( "openai", project_root="/Users/rruiz/Projects/projects-sshfs/genie-in-the-box" ) )
     
     # generate_domain_names( 10, debug=True )
     
