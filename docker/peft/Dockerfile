@@ -28,5 +28,8 @@ RUN pip install wandb
 RUN pip install xmltodict
 RUN pip install xmlschema
 RUN pip install scikit-learn
+RUN pip install tiktoken
+
+RUN pip install openai
 
 CMD [ "/bin/bash" ]
