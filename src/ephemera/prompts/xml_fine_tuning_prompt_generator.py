@@ -134,7 +134,8 @@ class XmlFineTuningPromptGenerator:
     ### Task:
     {instruction}
     
-    ### Input:{input}
+    ### Input:
+    {input}
     
     ### Response:
     """
@@ -178,9 +179,7 @@ class XmlFineTuningPromptGenerator:
                         "messages": [
                             { "role": "system", "content": gpt_instruction },
                             { "role": "user", "content": voice_command },
-                            { "role"     : "assistant",
-                                "content": self.output_template.format( browser_command=browser_command, args=search )
-                            }
+                            { "role": "assistant", "content": self.output_template.format( browser_command=browser_command, args=search ) }
                         ]
                     }
                     )
@@ -437,8 +436,8 @@ class XmlFineTuningPromptGenerator:
         du.print_banner( title, prepend_nl=True )
         print( f"               Is valid xml {df.response_xml_is_valid.mean() * 100:.1f}%" )
         print( f"          Contains response {df.contains_response.mean() * 100:.1f}%" )
-        print( f"   Contains browser command {df.contains_browser_command.mean() * 100:.1f}%" )
-        print( f"              Contains args {df.contains_args.mean() * 100:.1f}%" )
+        print( f" Contains <browser-command> {df.contains_browser_command.mean() * 100:.1f}%" )
+        print( f"            Contains <args> {df.contains_args.mean() * 100:.1f}%" )
         print( f"          Response is exact {df.response_is_exact.mean() * 100:.1f}%" )
         print( f"Response has correct values {df.response_has_correct_values.mean() * 100:.1f}%" )
         print( f" Browser command is correct {df.browser_command_is_correct.mean() * 100:.1f}%" )
@@ -538,23 +537,19 @@ if __name__ == "__main__":
     # Validating 100 responses... Done! in 01:03
     # Items per second [1.6]
     # Seconds per item [0.6]
-    
-    # -----------------------------------------------------------------------------------------------------------------------
-    # - Validation Stats
+    #
+    # ------------------------------------------------------------------------------------------------------------------------
+    # - Validation Stats for `mistralai/Mistral-7B-Instruct-v0.2-AWQ`
     # ------------------------------------------------------------------------------------------------------------------------
     #
     #                Is valid xml 100.0%
     #           Contains response 100.0%
     #    Contains browser command 100.0%
     #               Contains args 100.0%
-    #           Response is exact 100.0%
-    # Response has correct values 100.0%
-    #  Browser command is correct 100.0%
-    #             Args is correct 100.0%
-    #
-    # Validating 100 responses... Done! in 01:16
-    # Items per second [1.3]
-    # Seconds per item [0.8]
+    #           Response is exact 92.0%
+    # Response has correct values 92.0%
+    #  Browser command is correct 93.0%
+    #             Args is correct 99.0%`
     
     print( "Running XmlFineTuningPromptGenerator..." )
     print( os.getcwd() )
@@ -564,24 +559,30 @@ if __name__ == "__main__":
     xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=True )
     # xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:8080", debug=True )
     qna_df            = xml_ftp_generator.build_training_prompts()
+    for line in qna_df.prompt[ 0 ].split( "\n" ): print( line )
     
-    train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( qna_df, sample_size=1000, test_size=0.2, test_validate_size=0.5 )
+    # train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( qna_df, sample_size=10000, test_size=0.2, test_validate_size=0.5 )
     # xml_ftp_generator.write_ttv_split_to_jsonl( train_df, test_df, validate_df )
-    
+
     # validation block
     # validate_df    = pd.read_json( xml_ftp_generator.path_prefix + "/src/ephemera/prompts/data/voice-commands-xml-validate.jsonl", lines=True ).sample( 100, random_state=42 )
-    timer          = Stopwatch( msg=f"Validating {validate_df.shape[ 0 ]:,} responses...", silent=False )
-
-    validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="tgi", model_name="mistralai/Mistral-7B-Instruct-v0.2" )
-    # validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="openai", model_name="gpt-3.5-turbo-1106" )
-    validate_df    = xml_ftp_generator.validate_responses( validate_df )
-
-    xml_ftp_generator.print_validation_stats( validate_df, title="Validation Stats for mistralai/Mistral-7B-Instruct-v0.2, loaded w/ bfloat16" )
-    timer.print( msg="Done!", use_millis=False, prepend_nl=True, end="\n" )
-    delta_ms         = timer.get_delta_ms()
-    items_per_second = validate_df.shape[ 0 ] / ( delta_ms / 1000.0 )
-    seconds_per_item = ( delta_ms / 1000.0 ) / validate_df.shape[ 0 ]
-
-    print( f"Items per second [{round( items_per_second, 1 )}]" )
-    print( f"Seconds per item [{round( seconds_per_item, 1 )}]" )
+    # timer          = Stopwatch( msg=f"Validating {validate_df.shape[ 0 ]:,} responses...", silent=False )
+    #
+    # model_name     = "mistralai/Mistral-7B-Instruct-v0.2-AWQ"
+    # validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="tgi", model_name=model_name )
+    # validate_df    = xml_ftp_generator.validate_responses( validate_df )
+    #
+    # # model_name     = "gpt-3.5-turbo-1106"
+    # # validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="openai", model_name= )
+    # # validate_df    = xml_ftp_generator.validate_responses( validate_df )
+    #
+    # xml_ftp_generator.print_validation_stats( validate_df, title=f"Validation Stats for `{model_name}`" )
+    
+    # timer.print( msg="Done!", use_millis=False, prepend_nl=True, end="\n" )
+    # delta_ms         = timer.get_delta_ms()
+    # items_per_second = validate_df.shape[ 0 ] / ( delta_ms / 1000.0 )
+    # seconds_per_item = ( delta_ms / 1000.0 ) / validate_df.shape[ 0 ]
+    #
+    # print( f"Items per second [{round( items_per_second, 1 )}]" )
+    # print( f"Seconds per item [{round( seconds_per_item, 1 )}]" )
     
