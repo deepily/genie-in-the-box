@@ -9,6 +9,9 @@
 
 **/.ipynb_checkpoints/**
 
+# No LLM's, please
+models/**
+
 # Skip OSX console script + icon based launcher experiment
 genie.app/**
 .app**
