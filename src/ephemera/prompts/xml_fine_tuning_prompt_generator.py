@@ -19,16 +19,19 @@ class XmlFineTuningPromptGenerator:
     
     def __init__( self, path_prefix=du.get_project_root(), tgi_url="http://172.17.0.5:3000", debug=False, verbose=False, silent=False ):
         
-        self.debug            = debug
-        self.verbose          = verbose
-        self.silent           = silent
+        self.debug              = debug
+        self.verbose            = verbose
+        self.silent             = silent
         
-        self.path_prefix      = path_prefix
-        self.tgi_url          = tgi_url
-        self.browser_commands = self._get_browser_command()
-        self.command_choices  = "'" + "', '".join( self.browser_commands.keys() ) + "' and 'none'"
+        self.path_prefix        = path_prefix
+        self.tgi_url            = tgi_url
         
-        # All six, well-formed XML templates are set by the call to self._set_templates()
+        # Build up lists of command categories
+        self.compound_commands  = self._get_compound_commands()
+        self.simple_commands    = self._get_simple_commands()
+        self.command_categories = self._compile_command_categories()
+        
+        # All six, well-formed XML templates, are set by the call to self._set_templates()
         self.gpt_instruction_template = None
         self.instruction_template     = None
         self.input_template           = None
@@ -38,25 +41,67 @@ class XmlFineTuningPromptGenerator:
         
         self._set_templates()
         
-        self.qna_df               = None
+        self.compound_qna_df          = pd.DataFrame()
+        self.simple_command_qna_df    = pd.DataFrame()
+        self.all_qna_df               = pd.DataFrame()
+        
         self._call_counter        = 0
         self._xml_schema          = self._get_xml_schema()
     
-    def _get_browser_command( self ):
+    def _get_compound_commands( self ):
         
-        browser_commands = {
-            "search new tab"                   : "/src/ephemera/prompts/data/synthetic-data-search-in-new-tab.txt",
-            "search current tab"               : "/src/ephemera/prompts/data/synthetic-data-search-in-current-tab.txt",
-            "search google new tab"            : "/src/ephemera/prompts/data/synthetic-data-search-google-in-new-tab.txt",
+        compound_commands = {
+            "go to current tab"                : "/src/ephemera/prompts/data/synthetic-data-load-url-current-tab.txt",
+            "go to new tab"                    : "/src/ephemera/prompts/data/synthetic-data-load-url-new-tab.txt",
             "search google current tab"        : "/src/ephemera/prompts/data/synthetic-data-search-google-in-current-tab.txt",
-            "search google scholar new tab"    : "/src/ephemera/prompts/data/synthetic-data-search-google-scholar-in-new-tab.txt",
+            "search google new tab"            : "/src/ephemera/prompts/data/synthetic-data-search-google-in-new-tab.txt",
             "search google scholar current tab": "/src/ephemera/prompts/data/synthetic-data-search-google-scholar-in-current-tab.txt",
+            "search google scholar new tab"    : "/src/ephemera/prompts/data/synthetic-data-search-google-scholar-in-new-tab.txt",
+            "search current tab"               : "/src/ephemera/prompts/data/synthetic-data-search-in-current-tab.txt",
+            "search new tab"                   : "/src/ephemera/prompts/data/synthetic-data-search-in-new-tab.txt",
+            "search perplexity current tab"    : "/src/ephemera/prompts/data/synthetic-data-search-perplexity-in-current-tab.txt",
+            "search perplexity new tab"        : "/src/ephemera/prompts/data/synthetic-data-search-perplexity-in-new-tab.txt",
+            "search phind current tab"         : "/src/ephemera/prompts/data/synthetic-data-search-phind-in-current-tab.txt",
+            "search phind new tab"             : "/src/ephemera/prompts/data/synthetic-data-search-phind-in-new-tab.txt",
         }
-        for command in browser_commands.keys():
-            print( f"Commands file for [{command}] exists: { os.path.exists( self.path_prefix + browser_commands[ command ] ) }" )
+        self._test_command_paths( compound_commands )
+        
+        return compound_commands
+    
+    def _test_command_paths( self, commands ):
+        
+        for command in commands.keys():
+            path_exists = os.path.exists( self.path_prefix + commands[ command ] )
+            print( f"Commands file for command [{command}] exists: {path_exists}" )
+            if not path_exists:
+                raise Exception( f"Commands file for command [{command}] [{self.path_prefix + commands[ command ]}] doesn't exist!" )
         print()
-            
-        return browser_commands
+        
+    def _get_simple_commands( self ):
+        
+        simple_commands = {
+            "search using clipboard current tab"               : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-in-current-tab.txt",
+            "search using clipboard new tab"                   : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-in-new-tab.txt",
+            "search google using clipboard current tab"        : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-google-in-current-tab.txt",
+            "search google using clipboard new tab"            : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-google-in-new-tab.txt",
+            "search google scholar using clipboard current tab": "/src/ephemera/prompts/data/synthetic-data-search-clipboard-google-scholar-in-current-tab.txt",
+            "search google scholar using clipboard new tab"    : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-google-scholar-in-new-tab.txt",
+            "search perplexity using clipboard current tab"    : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-perplexity-in-current-tab.txt",
+            "search perplexity using clipboard new tab"        : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-perplexity-in-new-tab.txt",
+            "search phind using clipboard current tab"         : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-phind-in-current-tab.txt",
+            "search phind using clipboard new tab"             : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-phind-in-new-tab.txt",
+            "none"                                             : "/src/ephemera/prompts/data/synthetic-data-none-of-the-above.txt",
+        }
+        self._test_command_paths( simple_commands)
+        
+        return simple_commands
+    
+    def _compile_command_categories( self ):
+    
+        compound_categories = "".join( [ "        <command>" + command + "</command>\n" for command in self.compound_commands.keys() ] )
+        simple_categories   = "".join( [ "        <command>" + command + "</command>\n" for command in self.simple_commands.keys() ] )
+        
+        return ( compound_categories + simple_categories ).strip()
     
     def _get_search_terms( self, requested_length ):
         
@@ -75,14 +120,22 @@ class XmlFineTuningPromptGenerator:
         search_terms = search_terms[ :requested_length ]
         
         return search_terms
+    
+    def _get_goto_urls( self, requested_length ):
+        
+        return du.generate_domain_names( requested_length )
 
     def _set_templates( self ):
         
         self.gpt_instruction_template = """INSTRUCTIONS:
         Your job is to discern the intent of a human voice command transcription and translate it into a standardized command that a browser on your computer would understand.
 
-        You will be given a human voice command as INPUT as well as a list of possible standardized commands. You must choose the correct standardized command from the following list: `{command_choices}`.
-
+        You will be given a human voice command as INPUT as well as a list of possible standardized commands. You must choose the correct standardized command from the following list:
+        
+        <browser-commands>
+            {command_choices}
+        </browser-commands>
+        
         RESPONSE FORMAT: MUST be returned wrapped in simple, well-formed XML
         <response>
             <browser-command></browser-command>
@@ -92,10 +145,14 @@ class XmlFineTuningPromptGenerator:
         
         self.instruction_template = """Your job is to discern the intent of a human voice command transcription and translate it into a standardized command that a browser on your computer would understand.
 
-        You will be given a human voice command and a list of possible standardized commands. You must choose the correct standardized command from the following list: `{command_choices}`.
+        You will be given a human voice command and a list of possible standardized commands. You must choose the correct standardized command from the following list:
+        <browser-commands>
+        {command_choices}
+        </browser-commands>
 
         Requirement: You MUST NOT use python code to answer this question.
         Requirement: You MUST use your linguistic knowledge and intuition to answer this question.
+        Requirement: The first word of your response MUST be `<response>`
         Hint: Anything that isn't a part of the command itself should be treated as arguments related to the command."""
         
         self.input_template = """
@@ -114,9 +171,8 @@ class XmlFineTuningPromptGenerator:
         <response>
             <browser-command></browser-command>
             <args></args>
-        </response>
-
-        Requirement: The first word of your response MUST be `<response>`"""
+        </response>"""
+        # Requirement: The first word of your response MUST be `<response>`"""
         
         self.output_template = """
         <response>
@@ -140,68 +196,153 @@ class XmlFineTuningPromptGenerator:
     ### Response:
     """
     
-    def build_training_prompts( self ):
+    def build_compound_training_prompts( self, sample_size_per_command=1000 ):
         
         instructions = [ ]
         inputs       = [ ]
         outputs      = [ ]
         prompts      = [ ]
         gpt_messages = [ ]
+        commands     = [ ]
         
-        gpt_instruction = self.gpt_instruction_template.format( command_choices=self.command_choices )
+        gpt_instruction = self.gpt_instruction_template.format( command_choices=self.command_categories )
         
         # For each browser command, load the corresponding file and generate prompts
-        for browser_command in self.browser_commands.keys():
+        for compound_command in self.compound_commands.keys():
             
-            du.print_banner( browser_command, prepend_nl=True, end="\n" )
+            du.print_banner( f"Building prompts for compound command [{compound_command}]", prepend_nl=True, end="\n" )
             counter = 0
             
-            raw_lines = du.get_file_as_list( self.path_prefix + self.browser_commands[ browser_command ], clean=True )
-            for line in raw_lines[ 0:100 ]:  # [ 0:2 ]:#
+            raw_lines = du.get_file_as_list( self.path_prefix + self.compound_commands[ compound_command ], clean=True )
+            # First 100 lines are properly spelled
+            for raw_line in raw_lines[ 0:100 ]:  # [ 0:2 ]:#
                 
-                # get newly randomized search terms on every iteration
-                for search in self._get_search_terms( len( raw_lines ) ):  # [ 0:10 ]: #[ 0:2]:#:
+                # Determine which kind of compound synthetically created lines we need to build prompts for
+                if compound_command.startswith( "search " ):
+                    arguments   = self._get_search_terms( len( raw_lines ) )
+                    placeholder = "SEARCH_TERMS"
+                elif compound_command.startswith( "go to " ):
+                    arguments   = self._get_goto_urls( len( raw_lines ) )
+                    placeholder = "DOMAIN_NAME"
+                else:
+                    raise Exception( f"Unknown browser command [{compound_command}]" )
                     
-                    voice_command = line.replace( "SEARCH_TERMS", search )
-                    # print( voice_command )
-                    instruction = self.instruction_template.format( command_choices=self.command_choices )
+                for args in arguments:  # [ 0:10 ]: #[ 0:2]:#:
+                    
+                    voice_command = raw_line.replace( placeholder, args )
+                    
+                    instruction = self.instruction_template.format( command_choices=self.command_categories )
                     human_says  = self.human_says_template.format( voice_command=voice_command )
                     input       = self.input_template.format( human_says=human_says, response_format=self.response_format )
-                    output      = self.output_template.format( browser_command=browser_command, args=search )
+                    output      = self.output_template.format( browser_command=compound_command, args=args )
                     prompt      = self._get_prompt_instruction_format( instruction, input )
                     
                     instructions.append( instruction )
                     inputs.append( input )
                     outputs.append( output )
                     prompts.append( prompt )
+                    commands.append( compound_command )
                     
                     gpt_messages.append( {
                         "messages": [
                             { "role": "system", "content": gpt_instruction },
                             { "role": "user", "content": voice_command },
-                            { "role": "assistant", "content": self.output_template.format( browser_command=browser_command, args=search ) }
+                            { "role": "assistant", "content": self.output_template.format( browser_command=compound_command, args=args ) }
                         ]
-                    }
-                    )
+                    } )
                     
                     if counter % 10 == 0:
-                        print( ".", end="" )
+                        if self.debug:
+                            print( voice_command )
+                        else:
+                           print( ".", end="" )
                     counter += 1
-                    if counter == 1200:
-                        print()
-                        counter = 0
+                    # if counter == 1200:
+                    #     print()
+                    #     counter = 0
             
             print()
         
-        qna_df = pd.DataFrame( { "instruction": instructions, "input": inputs, "output": outputs, "prompt": prompts, "gpt_message": gpt_messages } )
-        qna_df = self._prune_duplicates( qna_df )
+        compound_qna_df = pd.DataFrame( { "command": commands, "instruction": instructions, "input": inputs, "output": outputs, "prompt": prompts, "gpt_message": gpt_messages } )
+        compound_qna_df = self._prune_duplicates_and_sample( compound_qna_df, sample_size=( sample_size_per_command * len( self.compound_commands ) ) )
         
-        self.qna_df = qna_df
+        self.compound_qna_df = compound_qna_df
         
-        return self.qna_df
-    def _prune_duplicates( self, df ):
+        return self.compound_qna_df
+    
+    def build_simple_training_prompts( self, sample_size_per_command=200 ):
         
-        du.print_banner( "Pruning duplicates...", prepend_nl=True )
+        instructions = [ ]
+        inputs       = [ ]
+        outputs      = [ ]
+        prompts      = [ ]
+        gpt_messages = [ ]
+        commands     = [ ]
+        
+        gpt_instruction = self.gpt_instruction_template.format( command_choices=self.command_categories )
+        
+        for simple_command in self.simple_commands.keys():
+            
+            du.print_banner( f"Building prompts for simple command [{simple_command}]", prepend_nl=True, end="\n" )
+            counter = 0
+            
+            raw_lines = du.get_file_as_list( self.path_prefix + self.simple_commands[ simple_command ], clean=True )
+            
+            for raw_line in raw_lines:
+                
+                instruction = self.instruction_template.format( command_choices=self.command_categories )
+                human_says  = self.human_says_template.format( voice_command=raw_line )
+                input       = self.input_template.format( human_says=human_says, response_format=self.response_format )
+                output      = self.output_template.format( browser_command=simple_command, args="" )
+                prompt      = self._get_prompt_instruction_format( instruction, input )
+                
+                instructions.append( instruction )
+                inputs.append( input )
+                outputs.append( output )
+                prompts.append( prompt )
+                commands.append( simple_command )
+                
+                gpt_messages.append( {
+                    "messages": [
+                        { "role": "system",    "content": gpt_instruction },
+                        { "role": "user",      "content": raw_line },
+                        { "role": "assistant", "content": self.output_template.format( browser_command=simple_command, args="" ) }
+                    ]
+                } )
+                
+                if counter % 10 == 0:
+                    print( ".", end="" )
+                    if self.debug: print( raw_line )
+                counter += 1
+            
+        simple_command_qna_df = pd.DataFrame( { "command": commands, "instruction": instructions, "input": inputs, "output": outputs, "prompt": prompts, "gpt_message": gpt_messages } )
+        simple_command_qna_df = self._prune_duplicates_and_sample( simple_command_qna_df, sample_size=( sample_size_per_command * len( self.simple_commands ) ) )
+        
+        self.simple_command_qna_df = simple_command_qna_df
+        
+        return self.simple_command_qna_df
+    
+    def build_all_training_prompts( self, sample_size_per_compound_command=1000, sample_size_per_simple_command=200 ):
+        
+        compound_qna_df       = self.build_compound_training_prompts( sample_size_per_command=sample_size_per_compound_command )
+        simple_command_qna_df = self.build_simple_training_prompts( sample_size_per_command=sample_size_per_simple_command )
+        
+        # Stack both dataframes vertically
+        self.all_qna_df = pd.concat( [ compound_qna_df, simple_command_qna_df ], ignore_index=True )
+        
+        # Group by command and count the number of rows per command
+        command_counts = self.all_qna_df.groupby( "command" ).count().reset_index()[ [ "command", "input" ] ]
+        # sort by command ascending
+        command_counts = command_counts.sort_values( "command", ascending=True )
+        du.print_banner( f"Command counts for all {self.all_qna_df.shape[ 0 ]:,} training prompts", prepend_nl=True)
+        print( command_counts )
+        
+        return self.all_qna_df
+    
+    def _prune_duplicates_and_sample( self, df, sample_size=1000 ):
+        
+        du.print_banner( "Pruning potential duplicates by 'input' values...", prepend_nl=True )
+        
         rows_pre = df.shape[ 0 ]
         print( f" PRE {rows_pre:,} training inputs..." )
         df.drop_duplicates( subset=[ "input" ], inplace=True )
@@ -210,7 +351,11 @@ class XmlFineTuningPromptGenerator:
         dupes_pct  = dupes_rows / rows_pre * 100.0
         print( f"POST {rows_post:,} training inputs. Deleted {dupes_rows:,} rows = {dupes_pct:.1f}% duplicate questions" )
         
-        return df
+        if rows_post < sample_size:
+            print( f"WARNING: Sample size [{sample_size:,}] > rows_post [{rows_post:,}]. Returning all [{rows_post:,}] rows.")
+            return df
+        else:
+            return df.sample( sample_size, random_state=42 )
     
     def _get_xml_schema( self ):
         
@@ -227,12 +372,12 @@ class XmlFineTuningPromptGenerator:
         </xs:schema>
         """
         
-        self.schema = XMLSchema( xsd_string )
+        return XMLSchema( xsd_string )
     
     def is_valid_xml( self, xml_str ):
         
         try:
-            return self.schema.is_valid( xml_str )
+            return self._xml_schema.is_valid( xml_str )
         except Exception as e:
             return False
     
@@ -445,7 +590,7 @@ class XmlFineTuningPromptGenerator:
     
     def get_train_test_validate_split( self, df, sample_size=1000, test_size=0.2, test_validate_size=0.5 ):
         
-        sampled_df = df[ [ "instruction", "input", "output", "prompt", "gpt_message" ] ].sample( sample_size, random_state=42 ).copy()
+        sampled_df = df[ [ "command", "instruction", "input", "output", "prompt", "gpt_message" ] ].sample( sample_size, random_state=42 ).copy()
         
         # Split the dataframe into train and (test+validate)
         train_df, test_validate_df = train_test_split( sampled_df, test_size=test_size, random_state=42 )
@@ -475,13 +620,16 @@ class XmlFineTuningPromptGenerator:
         os.chmod( path, 0o666 )
         
         # GPT Training set
-        
         path = self.path_prefix + "/src/ephemera/prompts/data/voice-commands-xml-train-gpt.jsonl"
         train_df.gpt_message.to_json( path, orient="records", lines=True )
         os.chmod( path, 0o666 )
         
         path = self.path_prefix + "/src/ephemera/prompts/data/voice-commands-xml-test-gpt.jsonl"
         test_df.gpt_message.to_json( path, orient="records", lines=True )
+        os.chmod( path, 0o666 )
+        
+        path = self.path_prefix + "/src/ephemera/prompts/data/voice-commands-xml-validate-gpt.jsonl"
+        validate_df.to_json( path, orient="records", lines=True )
         os.chmod( path, 0o666 )
         
         
@@ -556,27 +704,32 @@ if __name__ == "__main__":
     # os.chdir( "/var/model/genie-in-the-box/src" )
     # print( os.getcwd() )
     # #
-    xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=True )
-    # xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:8080", debug=True )
-    qna_df            = xml_ftp_generator.build_training_prompts()
-    for line in qna_df.prompt[ 0 ].split( "\n" ): print( line )
+    xml_ftp_generator     = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=True )
+    # xml_ftp_generator     = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:8080", debug=True )
+    # compound_qna_df       = xml_ftp_generator.build_compound_training_prompts()
+    # simple_command_qna_df = xml_ftp_generator.build_simple_training_prompts()
+    all_qna_df            = xml_ftp_generator.build_all_training_prompts()
     
-    # train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( qna_df, sample_size=10000, test_size=0.2, test_validate_size=0.5 )
-    # xml_ftp_generator.write_ttv_split_to_jsonl( train_df, test_df, validate_df )
+    # for line in compound_qna_df.prompt[ 0 ].split( "\n" ): print( line )
+    # for line in simple_command_qna_df.prompt[ 0 ].split( "\n" ): print( line )
+    # for line in all_qna_df.prompt[ 0 ].split( "\n" ): print( line )
+    
+    train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( all_qna_df, sample_size=all_qna_df.shape[ 0 ], test_size=0.2, test_validate_size=0.5 )
+    xml_ftp_generator.write_ttv_split_to_jsonl( train_df, test_df, validate_df )
 
     # validation block
     # validate_df    = pd.read_json( xml_ftp_generator.path_prefix + "/src/ephemera/prompts/data/voice-commands-xml-validate.jsonl", lines=True ).sample( 100, random_state=42 )
     # timer          = Stopwatch( msg=f"Validating {validate_df.shape[ 0 ]:,} responses...", silent=False )
     #
-    # model_name     = "mistralai/Mistral-7B-Instruct-v0.2-AWQ"
-    # validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="tgi", model_name=model_name )
-    # validate_df    = xml_ftp_generator.validate_responses( validate_df )
+    model_name     = "mistralai/Mistral-7B-Instruct-v0.2-AWQ"
+    validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="tgi", model_name=model_name )
+    validate_df    = xml_ftp_generator.validate_responses( validate_df )
     #
     # # model_name     = "gpt-3.5-turbo-1106"
     # # validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="openai", model_name= )
     # # validate_df    = xml_ftp_generator.validate_responses( validate_df )
     #
-    # xml_ftp_generator.print_validation_stats( validate_df, title=f"Validation Stats for `{model_name}`" )
+    xml_ftp_generator.print_validation_stats( validate_df, title=f"Validation Stats for `{model_name}`" )
     
     # timer.print( msg="Done!", use_millis=False, prepend_nl=True, end="\n" )
     # delta_ms         = timer.get_delta_ms()
