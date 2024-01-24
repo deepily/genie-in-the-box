@@ -173,8 +173,11 @@ def get_file_as_dictionary( path, lower_case=False, omit_comments=True, debug=Fa
     
     return lines_as_dict
 
-def write_lines_to_file( path, lines, world_read_write=False ):
+def write_lines_to_file( path, lines, strip_blank_lines=False, world_read_write=False ):
 
+    if strip_blank_lines:
+        lines = [ line for line in lines if line.strip() != "" ]
+    
     with open( path, "w" ) as outfile:
         outfile.write( "\n".join( lines ) )
         
