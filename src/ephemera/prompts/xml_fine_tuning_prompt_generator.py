@@ -8,8 +8,9 @@ import openai
 from xmlschema                import XMLSchema
 from sklearn.model_selection  import train_test_split
 
-import lib.utils.util         as du
-import lib.utils.util_xml     as dux
+import lib.utils.util          as du
+import lib.utils.util_xml      as dux
+import lib.app.util_llm_client as du_llm_client
 
 from huggingface_hub          import InferenceClient
 from lib.utils.util_stopwatch import Stopwatch
@@ -337,6 +338,34 @@ class XmlFineTuningPromptGenerator:
         du.print_banner( f"Command counts for all {self.all_qna_df.shape[ 0 ]:,} training prompts", prepend_nl=True)
         print( command_counts )
         
+        # Calculate Max, min, and mean prompt lengths
+        self.all_qna_df[ "prompt_length" ] = self.all_qna_df[ "prompt" ].apply( lambda cell: len( cell ) )
+        max_prompt_length  = self.all_qna_df[ "prompt_length" ].max()
+        min_prompt_length  = self.all_qna_df[ "prompt_length" ].min()
+        mean_prompt_length = self.all_qna_df[ "prompt_length" ].mean()
+        
+        # Delete the prompt_length column
+        self.all_qna_df.drop( columns=[ "prompt_length" ], inplace=True )
+        
+        du.print_banner( f"Max, min, and mean prompt CHARACTER counts for all {self.all_qna_df.shape[ 0 ]:,} training prompts", prepend_nl=True)
+        print( f"Max  prompt length [{max_prompt_length:,}] characters" )
+        print( f"Min  prompt length [{min_prompt_length:,}] characters" )
+        print( f"Mean prompt length [{round( mean_prompt_length, 1 ):,}] characters" )
+        
+        # Now calculate max min and mean word counts in the prompt column
+        self.all_qna_df[ "prompt_word_count" ] = self.all_qna_df[ "prompt" ].apply( lambda cell: len( cell.split( " " ) ) )
+        max_prompt_word_count  = self.all_qna_df[ "prompt_word_count" ].max()
+        min_prompt_word_count  = self.all_qna_df[ "prompt_word_count" ].min()
+        mean_prompt_word_count = self.all_qna_df[ "prompt_word_count" ].mean()
+        
+        # Delete the prompt_word_count column
+        self.all_qna_df.drop( columns=[ "prompt_word_count" ], inplace=True )
+        
+        du.print_banner( f"Max, min, and mean prompt WORD counts for all {self.all_qna_df.shape[ 0 ]:,} training prompts", prepend_nl=True )
+        print( f"Max  prompt length [{max_prompt_word_count:,}] words" )
+        print( f"Min  prompt length [{min_prompt_word_count:,}] words" )
+        print( f"Mean prompt length [{round( mean_prompt_word_count, 1 ):,}] words" )
+        
         return self.all_qna_df
     
     def _prune_duplicates_and_sample( self, df, sample_size=1000 ):
@@ -419,38 +448,42 @@ class XmlFineTuningPromptGenerator:
         
         return command_response != "broken" and command_answer != "broken" and command_response == command_answer
     
-    def _query_llm_in_memory( self, tokenizer, model, prompt, max_new_tokens=1024, model_name=Agent.PHIND_34B_v2, device = "cuda:0", silent=False ):
+    def _query_llm_in_memory( self, tokenizer, model, prompt, max_new_tokens=1024, model_name="ACME LLMs, Inc.", device="cuda:0", silent=False ):
         
-        timer = Stopwatch( msg=f"Asking LLM [{model_name}]...".format( model_name ), silent=silent )
+        # timer = Stopwatch( msg=f"Asking LLM [{model_name}]...".format( model_name ), silent=silent )
+        #
+        # inputs = tokenizer( prompt, return_tensors="pt" ).to( device )
+        #
+        # stop_token_id = tokenizer.encode( "</response>" )[ 0 ]
+        #
+        # generation_output = model.generate(
+        #     input_ids=inputs[ "input_ids" ],
+        #     attention_mask=inputs[ "attention_mask" ],
+        #     max_new_tokens=max_new_tokens,
+        #     eos_token_id=stop_token_id,
+        #     pad_token_id=stop_token_id
+        # )
+        #
+        # # if self.debug:
+        # #     print( "generation_output[ 0 ]:", generation_output[ 0 ], end="\n\n" )
+        # #     print( "generation_output[ 0 ].shape:", generation_output[ 0 ].shape, end="\n\n" )
+        #
+        # # Skip decoding the prompt part of the output
+        # input_length = inputs[ "input_ids" ].size( 1 )
+        # raw_output = tokenizer.decode( generation_output[ 0 ][ input_length: ] )
+        #
+        # timer.print( msg="Done!", use_millis=True, end="\n" )
+        # tokens_per_second = len( raw_output ) / ( timer.get_delta_ms() / 1000.0 )
+        # print( f"Tokens per second [{round( tokens_per_second, 1 )}]" )
+        #
+        # # response   = raw_output.split( "### Response:" )[ 1 ]
+        #
+        # # Remove the <s> and </s> tags
+        # response = raw_output.replace( "</s><s>", "" ).strip()
+        # # Remove white space outside XML tags
+        # response = re.sub( r'>\s+<', '><', response )
+        response = du_llm_client.query_llm_in_memory( model, tokenizer, prompt, device=device, model_name=model_name, max_new_tokens=max_new_tokens, silent=silent )
         
-        inputs = tokenizer( prompt, return_tensors="pt" ).to( device )
-        
-        stop_token_id = tokenizer.encode( "</response>" )[ 0 ]
-        
-        generation_output = model.generate(
-            input_ids=inputs[ "input_ids" ],
-            attention_mask=inputs[ "attention_mask" ],
-            max_new_tokens=max_new_tokens,
-            eos_token_id=stop_token_id,
-            pad_token_id=stop_token_id
-        )
-        
-        # if self.debug:
-        #     print( "generation_output[ 0 ]:", generation_output[ 0 ], end="\n\n" )
-        #     print( "generation_output[ 0 ].shape:", generation_output[ 0 ].shape, end="\n\n" )
-        
-        # Skip decoding the prompt part of the output
-        input_length = inputs[ "input_ids" ].size( 1 )
-        raw_output = tokenizer.decode( generation_output[ 0 ][ input_length: ] )
-        
-        timer.print( msg="Done!", use_millis=True, end="\n" )
-        tokens_per_second = len( raw_output ) / ( timer.get_delta_ms() / 1000.0 )
-        print( f"Tokens per second [{round( tokens_per_second, 1 )}]" )
-        
-        # response   = raw_output.split( "### Response:" )[ 1 ]
-        
-        response = raw_output.replace( "</s><s>", "" ).strip()
-        response = re.sub( r'>\s+<', '><', response )
         if self.debug:
             print( f"Response: [{response}]", end="\n\n" )
             
@@ -559,7 +592,7 @@ class XmlFineTuningPromptGenerator:
         
         timer.print( msg="Done!", use_millis=False, prepend_nl=True, end="\n" )
         ms_per_item = timer.get_delta_ms() / ( rows * 1.0 )
-        print( f"[{round( ms_per_item, 1 )}] ms per item" )
+        print( f"[{round( ms_per_item, 1 ):,}] ms per item" )
         
         return df
     def validate_responses( self, df ):
@@ -704,7 +737,7 @@ if __name__ == "__main__":
     # os.chdir( "/var/model/genie-in-the-box/src" )
     # print( os.getcwd() )
     # #
-    xml_ftp_generator     = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=True )
+    xml_ftp_generator     = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False )
     # xml_ftp_generator     = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:8080", debug=True )
     # compound_qna_df       = xml_ftp_generator.build_compound_training_prompts()
     # simple_command_qna_df = xml_ftp_generator.build_simple_training_prompts()
@@ -721,15 +754,15 @@ if __name__ == "__main__":
     # validate_df    = pd.read_json( xml_ftp_generator.path_prefix + "/src/ephemera/prompts/data/voice-commands-xml-validate.jsonl", lines=True ).sample( 100, random_state=42 )
     # timer          = Stopwatch( msg=f"Validating {validate_df.shape[ 0 ]:,} responses...", silent=False )
     #
-    model_name     = "mistralai/Mistral-7B-Instruct-v0.2-AWQ"
-    validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="tgi", model_name=model_name )
-    validate_df    = xml_ftp_generator.validate_responses( validate_df )
+    # model_name     = "mistralai/Mistral-7B-Instruct-v0.2-AWQ"
+    # validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="tgi", model_name=model_name )
+    # validate_df    = xml_ftp_generator.validate_responses( validate_df )
     #
     # # model_name     = "gpt-3.5-turbo-1106"
     # # validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="openai", model_name= )
     # # validate_df    = xml_ftp_generator.validate_responses( validate_df )
     #
-    xml_ftp_generator.print_validation_stats( validate_df, title=f"Validation Stats for `{model_name}`" )
+    # xml_ftp_generator.print_validation_stats( validate_df, title=f"Validation Stats for `{model_name}`" )
     
     # timer.print( msg="Done!", use_millis=False, prepend_nl=True, end="\n" )
     # delta_ms         = timer.get_delta_ms()
