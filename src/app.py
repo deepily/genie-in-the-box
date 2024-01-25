@@ -542,8 +542,8 @@ def load_stt_model_once():
         
 def load_commands_llm():
 
-    path_to_llms = du.get_project_root() + config_mgr.get( "path_to_llms_wo_root" )
-    device_map   = config_mgr.get( "llm_device_map", default="cuda:0" )
+    path_to_llms = du.get_project_root() + config_mgr.get( "command_llm_path_wo_root" )
+    device_map   = config_mgr.get( "command_llm_device_map", default="cuda:0" )
 
     print( f"Current working directory [{os.getcwd()}]" )
     print( f"Loading commands model from [{path_to_llms}]..." )
