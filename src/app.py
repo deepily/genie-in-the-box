@@ -10,7 +10,6 @@ import torch
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 
 import base64
-
 import flask
 
 from flask_cors import CORS
@@ -19,13 +18,16 @@ import requests
 from flask          import Flask, request, make_response, send_file
 from flask_socketio import SocketIO
 from openai         import OpenAI
+from awq            import AutoAWQForCausalLM
+from transformers   import AutoTokenizer
 
 from lib.clients import genie_client as gc
 from lib.app import multimodal_munger as mmm
 
-import lib.utils.util as du
-import lib.utils.util_stopwatch as sw
-import lib.utils.util_code_runner as ulc
+import lib.utils.util              as du
+import lib.utils.util_stopwatch    as sw
+import lib.utils.util_code_runner  as ulc
+import lib.app.util_llm_client     as du_llm_client
 
 from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
 from lib.app.fifo_queue               import FifoQueue
@@ -86,6 +88,8 @@ def init_configuration():
     
 init_configuration()
 
+model_aqw        = None
+tokenizer_awq    = None
 whisper_pipeline = None
 clock_thread     = None
 run_thread       = None
@@ -328,7 +332,7 @@ def upload_and_transcribe_mp3_file():
     
     print( "upload_and_transcribe_mp3_file() called" )
     
-    load_model_once()
+    load_stt_model_once()
     
     prefix          = request.args.get( "prefix" )
     prompt_key      = request.args.get( "prompt_key",     default="generic" )
@@ -457,12 +461,23 @@ def run_raw_prompt_text():
     
     return response
 
+@app.route( "/api/get-transcription-to-command" )
+def get_transcription_to_command():
+    
+    transcription = request.args.get( "transcription" )
+    
+    print( f"Fetching command for [{transcription}]..." )
+    timer    = sw.Stopwatch()
+    response = genie_client.get_command_for_transcription( transcription ).strip()
+    timer.print( "Done!" )
+    
+    return response
 
 @app.route( "/api/upload-and-transcribe-wav", methods=[ "POST" ] )
 def upload_and_transcribe_wav_file():
     
     print( "upload_and_transcribe_wav_file() called" )
-    load_model_once()
+    load_stt_model_once()
     
     # Get prefix for multimodal munger
     prefix = request.args.get( "prefix" )
@@ -491,7 +506,7 @@ def upload_and_transcribe_wav_file():
     
     return munger.transcription
 
-def load_model():
+def load_stt_model():
     
     torch_dtype   = torch.bfloat16
     stt_device_id = config_mgr.get( "stt_device_id", default="cuda:0" )
@@ -515,17 +530,42 @@ def load_model():
     )
     return pipe
     
-def load_model_once():
+def load_stt_model_once():
 
     global whisper_pipeline
     if whisper_pipeline is None:
         print( "Loading distill whisper engine... ", end="" )
-        whisper_pipeline = load_model()
+        whisper_pipeline = load_stt_model()
         print( "Done!" )
     else:
-        print( "Distill whisper engine already loaded" )
+        if app_debug: print( "Distill whisper engine already loaded" )
         
-print( os.getenv( "FALSE_POSITIVE_API_KEY" ) )
+def load_commands_llm():
+
+    path_to_llms = du.get_project_root() + config_mgr.get( "path_to_llms_wo_root" )
+    device_map   = config_mgr.get( "llm_device_map", default="cuda:0" )
+
+    print( f"Current working directory [{os.getcwd()}]" )
+    print( f"Loading commands model from [{path_to_llms}]..." )
+
+    model_aqw     = AutoAWQForCausalLM.from_pretrained( path_to_llms, device_map=device_map, safetensors=True )
+    tokenizer_awq = AutoTokenizer.from_pretrained( path_to_llms, use_fast=True )
+
+    return model_aqw, tokenizer_awq
+
+@app.route( "/api/load-commands-llm" )
+def load_commands_llm_once():
+
+    global model_aqw
+    global tokenizer_awq
+
+    if model_aqw is None:
+        model_aqw, tokenizer_awq = load_commands_llm()
+        return "Commands LLM loaded"
+    else:
+        print( "Commands LLM ALREADY loaded" )
+        return "Commands LLM ALREADY loaded"
+
 genie_client = gc.GenieClient()
 
 if __name__ == "__main__":
