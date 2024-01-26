@@ -73,7 +73,7 @@ class XmlFineTuningPromptGenerator:
         
         for command in commands.keys():
             path_exists = os.path.exists( self.path_prefix + commands[ command ] )
-            print( f"Commands file for command [{command}] exists: {path_exists}" )
+            if not self.silent: print( f"Commands file for command [{command}] exists: {path_exists}" )
             if not path_exists:
                 raise Exception( f"Commands file for command [{command}] [{self.path_prefix + commands[ command ]}] doesn't exist!" )
         print()
@@ -173,7 +173,6 @@ class XmlFineTuningPromptGenerator:
             <browser-command></browser-command>
             <args></args>
         </response>"""
-        # Requirement: The first word of your response MUST be `<response>`"""
         
         self.output_template = """
         <response>
@@ -186,9 +185,11 @@ class XmlFineTuningPromptGenerator:
     def _get_prompt_instruction_format( self, instruction, input ):
 
         return f"""### Instruction:
+        
     Use the Task and Input given below to write a Response that can solve the following Task.
     
     ### Task:
+    
     {instruction}
     
     ### Input:
@@ -271,6 +272,43 @@ class XmlFineTuningPromptGenerator:
         
         return self.compound_qna_df
     
+    def get_prompt_template( self ):
+        
+        instruction = self.instruction_template.format( command_choices=self.command_categories )
+        human_says  = self.human_says_template.format( voice_command="{voice_command}" )
+        input       = self.input_template.format( human_says=human_says, response_format=self.response_format )
+        prompt      = self._get_prompt_instruction_format( instruction, input )
+        
+        reformatted_prompt = [ ]
+        
+        # Splitting on '\n will consume some of the lines
+        for line in prompt.split( "\n" ):
+            
+            # Remove the first 4/8 leading space characters if they exist
+            if line.startswith( "        " ):
+                line = line[ 8: ]
+            elif line.startswith( "    " ):
+                line = line[ 4: ]
+            # else:
+            #     line = line + "\n"
+                
+            # Adhoc insertion of space before command items
+            if line.startswith( "<command>" ):
+                line = "    " + line
+                
+            reformatted_prompt.append( line )
+
+        prompt = "\n".join( reformatted_prompt )
+        
+        return prompt
+    
+    def serialize_prompt( self, prompt ):
+        
+        path = self.path_prefix + "/src/conf/prompts/vox_command_template.txt"
+        
+        du.print_banner( f"Serializing prompt to [{path}]", prepend_nl=True )
+        du.write_string_to_file( path, prompt )
+        
     def build_simple_training_prompts( self, sample_size_per_command=200 ):
         
         instructions = [ ]
@@ -737,18 +775,25 @@ if __name__ == "__main__":
     # os.chdir( "/var/model/genie-in-the-box/src" )
     # print( os.getcwd() )
     # #
-    xml_ftp_generator     = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False )
+    xml_ftp_generator     = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=True )
+    prompt_template       = xml_ftp_generator.get_prompt_template()
+    
+    xml_ftp_generator.serialize_prompt( prompt_template )
+    
+    # print( prompt_template.format( voice_command="hello..." ) )
+    # print( prompt_template.format( voice_command="whirled?" ) )
+    
     # xml_ftp_generator     = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:8080", debug=True )
     # compound_qna_df       = xml_ftp_generator.build_compound_training_prompts()
     # simple_command_qna_df = xml_ftp_generator.build_simple_training_prompts()
-    all_qna_df            = xml_ftp_generator.build_all_training_prompts()
+    # all_qna_df            = xml_ftp_generator.build_all_training_prompts()
     
     # for line in compound_qna_df.prompt[ 0 ].split( "\n" ): print( line )
     # for line in simple_command_qna_df.prompt[ 0 ].split( "\n" ): print( line )
     # for line in all_qna_df.prompt[ 0 ].split( "\n" ): print( line )
     
-    train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( all_qna_df, sample_size=all_qna_df.shape[ 0 ], test_size=0.2, test_validate_size=0.5 )
-    xml_ftp_generator.write_ttv_split_to_jsonl( train_df, test_df, validate_df )
+    # train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( all_qna_df, sample_size=all_qna_df.shape[ 0 ], test_size=0.2, test_validate_size=0.5 )
+    # xml_ftp_generator.write_ttv_split_to_jsonl( train_df, test_df, validate_df )
 
     # validation block
     # validate_df    = pd.read_json( xml_ftp_generator.path_prefix + "/src/ephemera/prompts/data/voice-commands-xml-validate.jsonl", lines=True ).sample( 100, random_state=42 )
