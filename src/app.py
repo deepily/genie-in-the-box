@@ -27,7 +27,6 @@ from lib.app import multimodal_munger as mmm
 import lib.utils.util              as du
 import lib.utils.util_stopwatch    as sw
 import lib.utils.util_code_runner  as ulc
-import lib.app.util_llm_client     as du_llm_client
 
 from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
 from lib.app.fifo_queue               import FifoQueue
@@ -88,12 +87,13 @@ def init_configuration():
     
 init_configuration()
 
-model_aqw        = None
-tokenizer_awq    = None
-whisper_pipeline = None
-clock_thread     = None
-run_thread       = None
-thread_lock      = Lock()
+cmd_prompt_template = None
+cmd_model           = None
+cmd_tokenizer       = None
+whisper_pipeline    = None
+clock_thread        = None
+run_thread          = None
+thread_lock         = Lock()
 
 # Track the number of jobs we've pushed into the queue
 push_count       = 1
@@ -333,6 +333,7 @@ def upload_and_transcribe_mp3_file():
     print( "upload_and_transcribe_mp3_file() called" )
     
     load_stt_model_once()
+    load_commands_llm_once()
     
     prefix          = request.args.get( "prefix" )
     prompt_key      = request.args.get( "prompt_key",     default="generic" )
@@ -366,7 +367,14 @@ def upload_and_transcribe_mp3_file():
     else:
         last_response = None
         
-    munger = mmm.MultiModalMunger( result, prefix=prefix, prompt_key=prompt_key, debug=app_debug, verbose=app_verbose, last_response=last_response )
+    munger = mmm.MultiModalMunger(
+        result, prefix=prefix, prompt_key=prompt_key, debug=app_debug, verbose=app_verbose, last_response=last_response,
+        cmd_llm_in_memory=cmd_model,
+        cmd_llm_tokenizer=cmd_tokenizer,
+        cmd_prompt_template=cmd_prompt_template,
+        cmd_llm_name=config_mgr.get( "vox_command_llm_name" ),
+        cmd_llm_device=config_mgr.get( "vox_command_llm_device_map", default="cuda:0" )
+    )
     
     if munger.is_text_proofread():
         
@@ -385,47 +393,46 @@ def upload_and_transcribe_mp3_file():
         munger.transcription = response
         munger.results = response
     
-    elif munger.is_ddg_search():
-        
-        du.print_banner( "DDG search detected & ABORTED", prepend_nl=True, expletive=True, chunk="b0rk3d! " )
-        print( "Investigate why DGG Throws the following Stacktrace:" )
-        print( """File "/usr/local/lib/python3.11/site-packages/flask/cli.py", line 214, in locate_app
-    __import__(module_name)
-  File "/var/genie-in-the-box/src/app.py", line 7, in <module>
-    from duckduckgo_search import ddg
-  File "/usr/local/lib/python3.11/site-packages/duckduckgo_search/__init__.py", line 11, in <module>
-    from .compat import (
-  File "/usr/local/lib/python3.11/site-packages/duckduckgo_search/compat.py", line 4, in <module>
-    from .duckduckgo_search import DDGS
-  File "/usr/local/lib/python3.11/site-packages/duckduckgo_search/duckduckgo_search.py", line 9, in <module>
-    from curl_cffi import requests
-  File "/usr/local/lib/python3.11/site-packages/curl_cffi/requests/__init__.py", line 29, in <module>
-    from .session import AsyncSession, BrowserType, Session
-  File "/usr/local/lib/python3.11/site-packages/curl_cffi/requests/session.py", line 30, in <module>
-    import eventlet.tpool
-  File "/usr/local/lib/python3.11/site-packages/eventlet/__init__.py", line 17, in <module>
-    from eventlet import convenience
-  File "/usr/local/lib/python3.11/site-packages/eventlet/convenience.py", line 7, in <module>
-    from eventlet.green import socket
-  File "/usr/local/lib/python3.11/site-packages/eventlet/green/socket.py", line 4, in <module>
-    __import__('eventlet.green._socket_nodns')
-  File "/usr/local/lib/python3.11/site-packages/eventlet/green/_socket_nodns.py", line 11, in <module>
-    from eventlet import greenio
-  File "/usr/local/lib/python3.11/site-packages/eventlet/greenio/__init__.py", line 3, in <module>
-    from eventlet.greenio.base import *  # noqa
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/eventlet/greenio/base.py", line 32, in <module>
-    socket_timeout = eventlet.timeout.wrap_is_timeout(socket.timeout)
-                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/eventlet/timeout.py", line 166, in wrap_is_timeout
-    base.is_timeout = property(lambda _: True)
-    ^^^^^^^^^^^^^^^
-TypeError: cannot set 'is_timeout' attribute of immutable type 'TimeoutError'""" )
-        munger.results = "DDG search detected & ABORTED"
-    #     print( "Fetching AI data for [{}]...".format( munger.transcription ) )
-    #     results = ddg( munger.transcription, region="wt-wt", safesearch="Off", time="y", max_results=20 )
-    #     print( results )
-    #     munger.results = results
+    # elif munger.is_ddg_search():
+#         du.print_banner( "DDG search detected & ABORTED", prepend_nl=True, expletive=True, chunk="b0rk3d! " )
+#         print( "Investigate why DGG Throws the following Stacktrace:" )
+#         print( """File "/usr/local/lib/python3.11/site-packages/flask/cli.py", line 214, in locate_app
+#     __import__(module_name)
+#   File "/var/genie-in-the-box/src/app.py", line 7, in <module>
+#     from duckduckgo_search import ddg
+#   File "/usr/local/lib/python3.11/site-packages/duckduckgo_search/__init__.py", line 11, in <module>
+#     from .compat import (
+#   File "/usr/local/lib/python3.11/site-packages/duckduckgo_search/compat.py", line 4, in <module>
+#     from .duckduckgo_search import DDGS
+#   File "/usr/local/lib/python3.11/site-packages/duckduckgo_search/duckduckgo_search.py", line 9, in <module>
+#     from curl_cffi import requests
+#   File "/usr/local/lib/python3.11/site-packages/curl_cffi/requests/__init__.py", line 29, in <module>
+#     from .session import AsyncSession, BrowserType, Session
+#   File "/usr/local/lib/python3.11/site-packages/curl_cffi/requests/session.py", line 30, in <module>
+#     import eventlet.tpool
+#   File "/usr/local/lib/python3.11/site-packages/eventlet/__init__.py", line 17, in <module>
+#     from eventlet import convenience
+#   File "/usr/local/lib/python3.11/site-packages/eventlet/convenience.py", line 7, in <module>
+#     from eventlet.green import socket
+#   File "/usr/local/lib/python3.11/site-packages/eventlet/green/socket.py", line 4, in <module>
+#     __import__('eventlet.green._socket_nodns')
+#   File "/usr/local/lib/python3.11/site-packages/eventlet/green/_socket_nodns.py", line 11, in <module>
+#     from eventlet import greenio
+#   File "/usr/local/lib/python3.11/site-packages/eventlet/greenio/__init__.py", line 3, in <module>
+#     from eventlet.greenio.base import *  # noqa
+#     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#   File "/usr/local/lib/python3.11/site-packages/eventlet/greenio/base.py", line 32, in <module>
+#     socket_timeout = eventlet.timeout.wrap_is_timeout(socket.timeout)
+#                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#   File "/usr/local/lib/python3.11/site-packages/eventlet/timeout.py", line 166, in wrap_is_timeout
+#     base.is_timeout = property(lambda _: True)
+#     ^^^^^^^^^^^^^^^
+# TypeError: cannot set 'is_timeout' attribute of immutable type 'TimeoutError'""" )
+#         munger.results = "DDG search detected & ABORTED"
+#         print( "Fetching AI data for [{}]...".format( munger.transcription ) )
+#         results = ddg( munger.transcription, region="wt-wt", safesearch="Off", time="y", max_results=20 )
+#         print( results )
+#         munger.results = results
         
     elif munger.is_agent():
         
@@ -542,29 +549,33 @@ def load_stt_model_once():
         
 def load_commands_llm():
 
-    path_to_llms = du.get_project_root() + config_mgr.get( "command_llm_path_wo_root" )
-    device_map   = config_mgr.get( "command_llm_device_map", default="cuda:0" )
+    path_to_llm = du.get_project_root() + config_mgr.get( "vox_command_llm_path_wo_root" )
+    device_map  = config_mgr.get( "vox_command_llm_device_map", default="cuda:0" )
 
     print( f"Current working directory [{os.getcwd()}]" )
-    print( f"Loading commands model from [{path_to_llms}]..." )
+    print( f"Loading commands model from [{path_to_llm}]..." )
 
-    model_aqw     = AutoAWQForCausalLM.from_pretrained( path_to_llms, device_map=device_map, safetensors=True )
-    tokenizer_awq = AutoTokenizer.from_pretrained( path_to_llms, use_fast=True )
+    model_aqw     = AutoAWQForCausalLM.from_pretrained( path_to_llm, device_map=device_map, safetensors=True )
+    tokenizer_awq = AutoTokenizer.from_pretrained( path_to_llm, use_fast=True )
 
     return model_aqw, tokenizer_awq
 
 @app.route( "/api/load-commands-llm" )
 def load_commands_llm_once():
 
-    global model_aqw
-    global tokenizer_awq
+    global cmd_model
+    global cmd_tokenizer
+    global cmd_prompt_template
 
-    if model_aqw is None:
-        model_aqw, tokenizer_awq = load_commands_llm()
-        return "Commands LLM loaded"
+    if cmd_model is None:
+        cmd_model, cmd_tokenizer = load_commands_llm()
+        prompt_path              = du.get_project_root() + config_mgr.get( "vox_command_prompt_path_wo_root" )
+        cmd_prompt_template      = du.get_file_as_string( prompt_path )
+        return "Commands LLM and prompt loaded"
     else:
-        print( "Commands LLM ALREADY loaded" )
-        return "Commands LLM ALREADY loaded"
+        msg = "Commands LLM and prompt ALREADY loaded"
+        print( msg )
+        return msg
 
 genie_client = gc.GenieClient()
 
