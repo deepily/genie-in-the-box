@@ -43,26 +43,35 @@ export const PROMPT_MODE_VERBOSE      = "verbose";
 export const PROMPT_MODE_QUIET        = "quiet";
 export const PROMPT_MODE_DEFAULT      = PROMPT_MODE_VERBOSE;
 
-export const VOX_CMD_SEARCH_DDG                = "search new tab";
-export const VOX_CMD_SEARCH_DDG_CURRENT_TAB    = "search current tab";
-export const VOX_CMD_SEARCH_GOOGLE             = "search google new tab";
-export const VOX_CMD_SEARCH_GOOGLE_CURRENT_TAB = "search google current tab";
-export const VOX_CMD_SEARCH_PHIND              = "search phind new tab";
-export const VOX_CMD_SEARCH_PHIND_CURRENT_TAB  = "search phind current tab";
-export const VOX_CMD_SEARCH_GOOGLE_SCHOLAR     = "search google scholar new tab";
+export const VOX_CMD_SEARCH_DDG_NEW_TAB                          = "search new tab";
+export const VOX_CMD_SEARCH_DDG_CURRENT_TAB                      = "search current tab";
+export const VOX_CMD_SEARCH_GOOGLE_NEW_TAB                       = "search google new tab";
+export const VOX_CMD_SEARCH_GOOGLE_CURRENT_TAB                   = "search google current tab";
+export const VOX_CMD_SEARCH_PHIND_NEW_TAB                        = "search phind new tab";
+export const VOX_CMD_SEARCH_PHIND_CURRENT_TAB                    = "search phind current tab";
+export const VOX_CMD_SEARCH_PERPLEXITY_NEW_TAB                   = "search perplexity new tab";
+export const VOX_CMD_SEARCH_PERPLEXITY_CURRENT_TAB               = "search perplexity current tab";
+export const VOX_CMD_SEARCH_GOOGLE_SCHOLAR_NEW_TAB               = "search google scholar new tab";
 export const VOX_CMD_SEARCH_GOOGLE_SCHOLAR_CURRENT_TAB           = "search google scholar current tab";
-export const VOX_CMD_SEARCH_CLIPBOARD_DDG                        = "search using clipboard new tab";
+
+export const VOX_CMD_SEARCH_CLIPBOARD_DDG_NEW_TAB                = "search using clipboard new tab";
 export const VOX_CMD_SEARCH_CLIPBOARD_DDG_CURRENT_TAB            = "search using clipboard current tab";
-export const VOX_CMD_SEARCH_CLIPBOARD_GOOGLE                     = "search google using clipboard new tab";
+export const VOX_CMD_SEARCH_CLIPBOARD_GOOGLE_NEW_TAB             = "search google using clipboard new tab";
 export const VOX_CMD_SEARCH_CLIPBOARD_GOOGLE_CURRENT_TAB         = "search google using clipboard current tab";
-export const VOX_CMD_SEARCH_CLIPBOARD_GOOGLE_SCHOLAR             = "search google scholar using clipboard new tab";
+export const VOX_CMD_SEARCH_CLIPBOARD_PHIND_NEW_TAB              = "search phind using clipboard new tab";
+export const VOX_CMD_SEARCH_CLIPBOARD_PHIND_CURRENT_TAB          = "search phind using clipboard current tab";
+export const VOX_CMD_SEARCH_CLIPBOARD_PERPLEXITY_NEW_TAB         = "search perplexity using clipboard new tab";
+export const VOX_CMD_SEARCH_CLIPBOARD_PERPLEXITY_CURRENT_TAB     = "search perplexity using clipboard current tab";
+export const VOX_CMD_SEARCH_CLIPBOARD_GOOGLE_SCHOLAR_NEW_TAB     = "search google scholar using clipboard new tab";
 export const VOX_CMD_SEARCH_CLIPBOARD_GOOGLE_SCHOLAR_CURRENT_TAB = "search google scholar using clipboard current tab";
+
+
 
 export const MULTIMODAL_CONTACT_INFO  = "multimodal contact information";
 export const MULTIMODAL_TEXT_PYTHON   = "multimodal python punctuation";
 export const MULTIMODAL_TEXT_EMAIL    = "multimodal text email";
-export const STEM_MULTIMODAL_BROWSER   = "multimodal browser";
-export const STEM_MULTIMODAL_AGENT     = "multimodal agent";
+export const STEM_MULTIMODAL_BROWSER  = "multimodal browser";
+export const STEM_MULTIMODAL_AGENT    = "multimodal agent";
 export const STEM_MULTIMODAL_SERVER_SEARCH = "multimodal server search"
 
 export const VOX_CMD_RUN_PROMPT           = "run prompt";
@@ -72,7 +81,8 @@ export const VOX_CMD_SUFFIX_FROM_CLIPBOARD= "from clipboard";
 export const VOX_CMD_SAVE_FROM_CLIPBOARD= "save from clipboard";
 
 export const MODE_TRANSCRIPTION       = "transcription mode";
-export const MODE_COMMAND             = "command mode";
+export const MODE_COMMAND             = "command-mode";
+export const MODE_AGENT               = "agent mode";
 
 export const TTS_SERVER_ADDRESS        = "http://127.0.0.1:5002";
 export const GIB_SERVER_ADDRESS        = "http://127.0.0.1:7999";
@@ -83,6 +93,8 @@ export const CONSTANTS_URL             = "http://127.0.0.1:8080/genie-plugin-fir
 export const SEARCH_URL_GOOGLE         = "https://www.google.com/search";
 export const SEARCH_URL_GOOGLE_SCHOLAR = "https://scholar.google.com/scholar";
 export const SEARCH_URL_DDG            = "https://www.duckduckgo.com/";
+export const SEARCH_URL_PHIND          = "https://www.phind.com/search";
+export const SEARCH_URL_PERPLEXITY     = "https://www.perplexity.ai/search";
 
 export const ZOOM_INCREMENT = 0.075;
 export const ZOOM_MAX       = 5;
