@@ -259,9 +259,6 @@ class XmlFineTuningPromptGenerator:
                         else:
                            print( ".", end="" )
                     counter += 1
-                    # if counter == 1200:
-                    #     print()
-                    #     counter = 0
             
             print()
         
@@ -284,7 +281,7 @@ class XmlFineTuningPromptGenerator:
         # Splitting on '\n will consume some of the lines
         for line in prompt.split( "\n" ):
             
-            # Remove the first 4/8 leading space characters if they exist
+            # Remove the first 8 and then 4 leading space characters if they exist
             if line.startswith( "        " ):
                 line = line[ 8: ]
             elif line.startswith( "    " ):
@@ -488,38 +485,7 @@ class XmlFineTuningPromptGenerator:
     
     def _query_llm_in_memory( self, tokenizer, model, prompt, max_new_tokens=1024, model_name="ACME LLMs, Inc.", device="cuda:0", silent=False ):
         
-        # timer = Stopwatch( msg=f"Asking LLM [{model_name}]...".format( model_name ), silent=silent )
-        #
-        # inputs = tokenizer( prompt, return_tensors="pt" ).to( device )
-        #
-        # stop_token_id = tokenizer.encode( "</response>" )[ 0 ]
-        #
-        # generation_output = model.generate(
-        #     input_ids=inputs[ "input_ids" ],
-        #     attention_mask=inputs[ "attention_mask" ],
-        #     max_new_tokens=max_new_tokens,
-        #     eos_token_id=stop_token_id,
-        #     pad_token_id=stop_token_id
-        # )
-        #
-        # # if self.debug:
-        # #     print( "generation_output[ 0 ]:", generation_output[ 0 ], end="\n\n" )
-        # #     print( "generation_output[ 0 ].shape:", generation_output[ 0 ].shape, end="\n\n" )
-        #
-        # # Skip decoding the prompt part of the output
-        # input_length = inputs[ "input_ids" ].size( 1 )
-        # raw_output = tokenizer.decode( generation_output[ 0 ][ input_length: ] )
-        #
-        # timer.print( msg="Done!", use_millis=True, end="\n" )
-        # tokens_per_second = len( raw_output ) / ( timer.get_delta_ms() / 1000.0 )
-        # print( f"Tokens per second [{round( tokens_per_second, 1 )}]" )
-        #
-        # # response   = raw_output.split( "### Response:" )[ 1 ]
-        #
-        # # Remove the <s> and </s> tags
-        # response = raw_output.replace( "</s><s>", "" ).strip()
-        # # Remove white space outside XML tags
-        # response = re.sub( r'>\s+<', '><', response )
+        # We need this exact method in another place, so do the simplest extraction and reuse here
         response = du_llm_client.query_llm_in_memory( model, tokenizer, prompt, device=device, model_name=model_name, max_new_tokens=max_new_tokens, silent=silent )
         
         if self.debug:
@@ -658,6 +624,20 @@ class XmlFineTuningPromptGenerator:
         print( f"Response has correct values {df.response_has_correct_values.mean() * 100:.1f}%" )
         print( f" Browser command is correct {df.browser_command_is_correct.mean() * 100:.1f}%" )
         print( f"            Args is correct {df.args_is_correct.mean() * 100:.1f}%" )
+        
+        # Calculate accuracy per command
+        cols = [ "command", "response_is_exact" ]
+        stats_df           = df[ cols ].copy()
+        stats_df           = stats_df.groupby( "command" )[ "response_is_exact" ].agg( [ "mean", "sum", "count" ] ).reset_index()
+        # Format the percentages
+        stats_df[ "mean" ] = stats_df[ "mean" ].apply( lambda cell: f"{cell * 100:.2f}%" )
+        # Sorts by mean ascending: Remember it's now a string we're sorting
+        stats_df           = stats_df.sort_values( "mean", ascending=False )
+        
+        du.print_banner( f"{title}: Accuracy per command", prepend_nl=True )
+        print( stats_df )
+        
+        return stats_df
     
     def get_train_test_validate_split( self, df, sample_size=1000, test_size=0.2, test_validate_size=0.5 ):
         
