@@ -17,16 +17,14 @@ def query_llm_in_memory( model, tokenizer, prompt, device="cuda:0", model_name="
         pad_token_id=stop_token_id
     )
     
-    # if self.debug:
-    #     print( "generation_output[ 0 ]:", generation_output[ 0 ], end="\n\n" )
-    #     print( "generation_output[ 0 ].shape:", generation_output[ 0 ].shape, end="\n\n" )
-    
     # Skip decoding the prompt part of the output
     input_length = inputs[ "input_ids" ].size( 1 )
     raw_output   = tokenizer.decode( generation_output[ 0 ][ input_length: ] )
     
     timer.print( msg="Done!", use_millis=True, end="\n" )
-    tokens_per_second = len( raw_output ) / ( timer.get_delta_ms() / 1000.0 )
+    # If we don't include the length of the input tokens then we get an artificially inflated TPS value (Relative to the TPS value calculated by hugging faces TGI),
+    # so add it back in here
+    tokens_per_second = ( len( raw_output ) + input_length ) / ( timer.get_delta_ms() / 1000.0 )
     print( f"Tokens per second [{round( tokens_per_second, 1 )}]" )
     
     # response   = raw_output.split( "### Response:" )[ 1 ]
