@@ -629,11 +629,14 @@ class XmlFineTuningPromptGenerator:
         cols = [ "command", "response_is_exact" ]
         stats_df           = df[ cols ].copy()
         stats_df           = stats_df.groupby( "command" )[ "response_is_exact" ].agg( [ "mean", "sum", "count" ] ).reset_index()
+        
         # Format the percentages
         stats_df[ "mean" ] = stats_df[ "mean" ].apply( lambda cell: f"{cell * 100:.2f}%" )
         # Sorts by mean ascending: Remember it's now a string we're sorting
         stats_df           = stats_df.sort_values( "mean", ascending=False )
-        
+        # Since I can't delete the index and not affect the other values, I'll just set the index to an empty string
+        stats_df.index     = [ "" ] * stats_df.shape[ 0 ]
+
         du.print_banner( f"{title}: Accuracy per command", prepend_nl=True )
         print( stats_df )
         
