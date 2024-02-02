@@ -27,29 +27,45 @@ class XmlFineTuningPromptGenerator:
         self.path_prefix        = path_prefix
         self.tgi_url            = tgi_url
         
-        # Build up lists of command categories
-        self.compound_commands  = self._get_compound_commands()
-        self.simple_commands    = self._get_simple_commands()
-        self.command_categories = self._compile_command_categories()
+        # Build up lists of browser command categories
+        self.vox_cmd_compound_commands       = self._get_compound_vox_commands()
+        self.vox_cmd_simple_commands         = self._get_simple_vox_commands()
+        self.vox_cmd_commands                = self._compile_vox_cmd_commands()
         
-        # All six, well-formed XML templates, are set by the call to self._set_templates()
-        self.gpt_instruction_template = None
-        self.instruction_template     = None
-        self.input_template           = None
-        self.human_says_template      = None
-        self.response_format          = None
-        self.output_template          = None
+        # These are set by self._init_common_templates()
+        self.common_input_template           = None
+        self.common_human_says_template      = None
+        self.common_response_format          = None
+        self.common_output_template          = None
+        self._init_common_templates()
         
-        self._set_templates()
+        # These two are set by the call to self._init_vox_cmd_templates()
+        self.vox_cmd_instruction_template_gpt = None
+        self.vox_cmd_instruction_template     = None
+        self._init_vox_cmd_templates()
         
-        self.compound_qna_df          = pd.DataFrame()
-        self.simple_command_qna_df    = pd.DataFrame()
-        self.all_qna_df               = pd.DataFrame()
+        # Build up lists of agent routing command categories
+        self.agent_router_compound_commands = self._get_compound_agent_router_commands()
+        self.agent_router_simple_commands   = self._get_simple_agent_router_commands()
+        self.agent_router_commands          = self._compile_agent_router_commands()
+        
+        # These two are set by the call to self._init_agent_router_templates()
+        self.agent_router_instruction_template_gpt = None
+        self.agent_router_instruction_template     = None
+        self._init_agent_router_templates()
+        
+        # These hold intermediate results
+        self.compound_vox_cmd_qna_df       = pd.DataFrame()
+        self.simple_vox_cmd_qna_df         = pd.DataFrame()
+        self.compound_agent_router_qna_df  = pd.DataFrame()
+        self.simple_agent_router_qna_df    = pd.DataFrame()
+        # This holds the final results
+        self.all_qna_df                    = pd.DataFrame()
         
         self._call_counter        = 0
         self._xml_schema          = self._get_xml_schema()
     
-    def _get_compound_commands( self ):
+    def _get_compound_vox_commands( self ):
         
         compound_commands = {
             "go to current tab"                : "/src/ephemera/prompts/data/synthetic-data-load-url-current-tab.txt",
@@ -69,16 +85,18 @@ class XmlFineTuningPromptGenerator:
         
         return compound_commands
     
-    def _test_command_paths( self, commands ):
+    def _get_compound_agent_router_commands( self ):
         
-        for command in commands.keys():
-            path_exists = os.path.exists( self.path_prefix + commands[ command ] )
-            if not self.silent: print( f"Commands file for command [{command}] exists: {path_exists}" )
-            if not path_exists:
-                raise Exception( f"Commands file for command [{command}] [{self.path_prefix + commands[ command ]}] doesn't exist!" )
-        print()
+        agent_routing_compound_commands = {
+            "agent router go to date and time": "/src/ephemera/prompts/data/synthetic-data-agent-routing-date-and-time.txt",
+            "agent router go to weather"      : "/src/ephemera/prompts/data/synthetic-data-agent-routing-weather.txt",
+            "agent router go to receptionist" : "/src/ephemera/prompts/data/synthetic-data-agent-routing-receptionist.txt"
+        }
+        self._test_command_paths( agent_routing_compound_commands )
         
-    def _get_simple_commands( self ):
+        return agent_routing_compound_commands
+    
+    def _get_simple_vox_commands( self ):
         
         simple_commands = {
             "search using clipboard current tab"               : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-in-current-tab.txt",
@@ -97,38 +115,133 @@ class XmlFineTuningPromptGenerator:
         
         return simple_commands
     
-    def _compile_command_categories( self ):
+    def _get_simple_agent_router_commands( self ):
+        
+        simple_commands = {
+            "agent router go to todo list": "/src/ephemera/prompts/data/synthetic-data-agent-routing-todo-lists.txt",
+            "none": "/src/ephemera/prompts/data/synthetic-data-none-of-the-above.txt",
+        }
+        self._test_command_paths( simple_commands )
+        
+        return simple_commands
     
-        compound_categories = "".join( [ "        <command>" + command + "</command>\n" for command in self.compound_commands.keys() ] )
-        simple_categories   = "".join( [ "        <command>" + command + "</command>\n" for command in self.simple_commands.keys() ] )
+    def _test_command_paths( self, commands ):
+        
+        for command in commands.keys():
+            path_exists = os.path.exists( self.path_prefix + commands[ command ] )
+            if not self.silent: print( f"Commands file for command [{command}] exists: {path_exists}" )
+            if not path_exists:
+                raise Exception( f"Commands file for command [{command}] [{self.path_prefix + commands[ command ]}] doesn't exist!" )
+        print()
+        
+    def _compile_vox_cmd_commands( self ):
+    
+        compound_categories = "".join( [ "        <command>" + command + "</command>\n" for command in self.vox_cmd_compound_commands.keys() ] )
+        simple_categories   = "".join( [ "        <command>" + command + "</command>\n" for command in self.vox_cmd_simple_commands.keys() ] )
         
         return ( compound_categories + simple_categories ).strip()
     
-    def _get_search_terms( self, requested_length ):
+    def _compile_agent_router_commands( self ):
+    
+        compound_categories = "".join( [ "        <command>" + command + "</command>\n" for command in self.agent_router_compound_commands.keys() ] )
+        simple_categories   = "".join( [ "        <command>" + command + "</command>\n" for command in self.agent_router_simple_commands.keys() ] )
         
-        # Load search terms file
-        search_terms = du.get_file_as_list(
-            self.path_prefix + "/src/ephemera/prompts/data/search-terms.txt", lower_case=False, clean=True, randomize=True
-        )
+        return ( compound_categories + simple_categories ).strip()
+    
+    # TODO: These two methods can be re-factored!
+    def _get_search_terms( self, requested_length=100 ):
+        
+        return self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-search-terms.txt", requested_length=requested_length )
+        # # Load search terms file
+        # search_terms = du.get_file_as_list(
+        #     self.path_prefix + "/src/ephemera/prompts/data/placeholders-search-terms.txt", lower_case=False, clean=True, randomize=True
+        # )
+        #
+        # # If we don't have enough search terms, append copies of the search term list until we do
+        # while requested_length > len( search_terms ):
+        #     # advise that we're inserting duplicate search terms into the search term list
+        #     print( f"Inserting duplicate search terms into the search term list. Requested length [{requested_length}] > search term list length [{len( search_terms )}]" )
+        #     search_terms += search_terms
+        #
+        # # Truncate the search terms list to equal the requested len
+        # search_terms = search_terms[ :requested_length ]
+        #
+        # return search_terms
+    
+    # Get a list of placeholders for cities and countries
+    def _get_cities_and_countries( self, requested_length=100 ):
+       
+        return self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-cities-and-countries.txt", requested_length=requested_length )
+        # cities_and_countries = du.get_file_as_list(
+        #     self.path_prefix + "/src/ephemera/prompts/data/placeholders-cities-and-countries.txt", lower_case=False, clean=True, randomize=True
+        # )[ :requested_length ]
+        #
+        # # If we don't have enough search terms, append copies of the search term list until we do
+        # while requested_length > len( cities_and_countries ):
+        #     # advise that we're inserting duplicate search terms into the search term list
+        #     print( f"Inserting duplicate cities and countries into the list. Requested length [{requested_length}] > list length [{len( cities_and_countries )}]" )
+        #     cities_and_countries += cities_and_countries
+        #
+        # # Truncate the search terms list to equal the requested len
+        # cities_and_countries = cities_and_countries[ :requested_length ]
+        #
+        # return cities_and_countries
+    
+    # Get a list of placeholders for The receptionist agent
+    def _get_receptionist_titles( self, requested_length=10 ):
+        
+        return self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-receptionist-titles.txt", requested_length=requested_length )
+    
+    def _get_placeholder_values( self, placeholder_file, requested_length=100 ):
+        
+        placeholders = du.get_file_as_list(
+            self.path_prefix + placeholder_file, lower_case=False, clean=True, randomize=True
+        )[ :requested_length ]
         
         # If we don't have enough search terms, append copies of the search term list until we do
-        while requested_length > len( search_terms ):
+        while requested_length > len( placeholders ):
             # advise that we're inserting duplicate search terms into the search term list
-            print( f"Inserting duplicate search terms into the search term list. Requested length [{requested_length}] > search term list length [{len( search_terms )}]" )
-            search_terms += search_terms
-        
+            print( f"Inserting DUPLICATE placeholders into the list. Requested length [{requested_length}] > list length [{len( placeholders )}]" )
+            placeholders += placeholders
+            
         # Truncate the search terms list to equal the requested len
-        search_terms = search_terms[ :requested_length ]
+        placeholders = placeholders[ :requested_length ]
         
-        return search_terms
+        return placeholders
     
     def _get_goto_urls( self, requested_length ):
         
         return du.generate_domain_names( requested_length )
 
-    def _set_templates( self ):
+    def _init_common_templates( self ):
         
-        self.gpt_instruction_template = """INSTRUCTIONS:
+        self.common_input_template = """
+        Below is the raw human voice command transcription formatted using simple XML:
+        {human_says}
+
+        The standardized command that you translate MUST be returned wrapped in simple, well-formed XML:
+        {response_format}"""
+        
+        self.common_human_says_template = """
+        <human>
+            <voice-command>{voice_command}</voice-command>
+        </human>"""
+        
+        self.common_response_format = """
+        <response>
+            <command></command>
+            <args></args>
+        </response>"""
+        
+        self.common_output_template = """
+        <response>
+            <command>{command}</command>
+            <args>{args}</args>
+        </response>"""
+    
+    def _init_vox_cmd_templates( self ):
+        
+        self.vox_cmd_instruction_template_gpt = """INSTRUCTIONS:
         Your job is to discern the intent of a human voice command transcription and translate it into a standardized command that a browser on your computer would understand.
 
         You will be given a human voice command as INPUT as well as a list of possible standardized commands. You must choose the correct standardized command from the following list:
@@ -139,12 +252,12 @@ class XmlFineTuningPromptGenerator:
         
         RESPONSE FORMAT: MUST be returned wrapped in simple, well-formed XML
         <response>
-            <browser-command></browser-command>
+            <command></command>
             <args></args>
         </response>
         """
         
-        self.instruction_template = """Your job is to discern the intent of a human voice command transcription and translate it into a standardized command that a browser on your computer would understand.
+        self.vox_cmd_instruction_template = """Your job is to discern the intent of a human voice command transcription and translate it into a standardized command that a browser on your computer would understand.
 
         You will be given a human voice command and a list of possible standardized commands. You must choose the correct standardized command from the following list:
         <browser-commands>
@@ -156,29 +269,85 @@ class XmlFineTuningPromptGenerator:
         Requirement: The first word of your response MUST be `<response>`
         Hint: Anything that isn't a part of the command itself should be treated as arguments related to the command."""
         
-        self.input_template = """
-        Below is the raw human voice command transcription formatted using simple XML:
-        {human_says}
+        # self.command_input_template = """
+        # Below is the raw human voice command transcription formatted using simple XML:
+        # {human_says}
+        #
+        # The standardized command that you translate MUST be returned wrapped in simple, well-formed XML:
+        # {response_format}"""
+        #
+        # self.common_human_says_template = """
+        # <human>
+        #     <voice-command>{voice_command}</voice-command>
+        # </human>"""
+        #
+        # self.common_response_format = """
+        # <response>
+        #     <command></command>
+        #     <args></args>
+        # </response>"""
+        #
+        # self.common_output_template = """
+        # <response>
+        #     <command>{command}</command>
+        #     <args>{args}</args>
+        # </response>"""
         
-        The standardized command that you translate MUST be returned wrapped in simple, well-formed XML:
-        {response_format}"""
+        return
+    
+    def _init_agent_router_templates( self ):
         
-        self.human_says_template = """
-        <human>
-            <voice-command>{voice_command}</voice-command>
-        </human>"""
-        
-        self.response_format = """
+        self.agent_router_instruction_template_gpt = """INSTRUCTIONS:
+        Your job is to discern the intent of a human voice command transcription and translate it into a standardized agent routing command that another LLM would understand.
+
+        You will be given a human voice command as INPUT as well as a list of possible standardized commands. You must choose the correct standardized command from the following list:
+
+        <agent-routing-commands>
+            {command_choices}
+        </agent-routing-commands>
+
+        RESPONSE FORMAT: MUST be returned wrapped in simple, well-formed XML
         <response>
-            <browser-command></browser-command>
+            <command></command>
             <args></args>
-        </response>"""
+        </response>
+        """
         
-        self.output_template = """
-        <response>
-            <browser-command>{browser_command}</browser-command>
-            <args>{args}</args>
-        </response>"""
+        self.agent_router_instruction_template = """Your job is to discern the intent of a human voice command transcription and translate it into a standardized agent routing command that another LLM would understand..
+
+        You will be given a human voice command as INPUT as well as a list of possible standardized commands. You must choose the correct standardized command from the following list:
+        <agent-routing-commands>
+            {command_choices}
+        </agent-routing-commands>
+
+        Requirement: You MUST NOT use python code to answer this question.
+        Requirement: You MUST use your linguistic knowledge and intuition to answer this question.
+        Requirement: The first word of your response MUST be `<response>`
+        Hint: Anything that isn't a part of the command itself should be treated as arguments related to the command."""
+        
+        # self.agent_routing_input_template = """
+        # Below is the raw human voice command transcription formatted using simple XML:
+        # {human_says}
+        #
+        # The standardized command that you translate MUST be returned wrapped in simple, well-formed XML:
+        # {response_format}"""
+        #
+        # self.common_human_says_template = """
+        # <human>
+        #     <voice-command>{voice_command}</voice-command>
+        # </human>"""
+        #
+        # self.common_response_format = """
+        # <response>
+        #     <command></command>
+        #     <args></args>
+        # </response>"""
+        #
+        # self.common_output_template = """
+        # <response>
+        #     <command>{command}</command>
+        #     <args>{args}</args>
+        # </response>"""
         
         return
     
@@ -198,45 +367,50 @@ class XmlFineTuningPromptGenerator:
     ### Response:
     """
     
-    def build_compound_training_prompts( self, sample_size_per_command=1000 ):
+    def build_compound_vox_cmd_training_prompts( self, sample_size_per_command=2000 ):
         
-        instructions = [ ]
-        inputs       = [ ]
-        outputs      = [ ]
-        prompts      = [ ]
-        gpt_messages = [ ]
-        commands     = [ ]
+        instructions, inputs, outputs, prompts, gpt_messages, commands = self._get_6_empty_lists()
         
-        gpt_instruction = self.gpt_instruction_template.format( command_choices=self.command_categories )
+        gpt_instruction = self.vox_cmd_instruction_template_gpt.format( command_choices=self.vox_cmd_commands )
         
         # For each browser command, load the corresponding file and generate prompts
-        for compound_command in self.compound_commands.keys():
+        for compound_command in self.vox_cmd_compound_commands.keys():
             
-            du.print_banner( f"Building prompts for compound command [{compound_command}]", prepend_nl=True, end="\n" )
-            counter = 0
-            
-            raw_lines = du.get_file_as_list( self.path_prefix + self.compound_commands[ compound_command ], clean=True )
+            du.print_banner( f"Building prompts for compound VOX command [{compound_command}]", prepend_nl=True, end="\n" )
+            counter = 1
             # First 100 lines are properly spelled
-            for raw_line in raw_lines[ 0:100 ]:  # [ 0:2 ]:#
+            raw_lines = du.get_file_as_list( self.path_prefix + self.vox_cmd_compound_commands[ compound_command ], clean=True )[ 0:100 ]
+            
+            # Determine which kind of compound synthetically created lines we need to build prompts for
+            if compound_command.startswith( "search " ):
+                arguments   = self._get_search_terms( len( raw_lines ) )
+                placeholder = "SEARCH_TERMS"
+            elif compound_command.startswith( "go to " ):
+                arguments   = self._get_goto_urls( len( raw_lines ) )
+                placeholder = "DOMAIN_NAME"
+            else:
+                raise Exception( f"Unknown voice command [{compound_command}]" )
+            
+            for raw_line in raw_lines:
                 
                 # Determine which kind of compound synthetically created lines we need to build prompts for
-                if compound_command.startswith( "search " ):
-                    arguments   = self._get_search_terms( len( raw_lines ) )
-                    placeholder = "SEARCH_TERMS"
-                elif compound_command.startswith( "go to " ):
-                    arguments   = self._get_goto_urls( len( raw_lines ) )
-                    placeholder = "DOMAIN_NAME"
-                else:
-                    raise Exception( f"Unknown browser command [{compound_command}]" )
+                # if compound_command.startswith( "search " ):
+                #     arguments   = self._get_search_terms( len( raw_lines ) )
+                #     placeholder = "SEARCH_TERMS"
+                # elif compound_command.startswith( "go to " ):
+                #     arguments   = self._get_goto_urls( len( raw_lines ) )
+                #     placeholder = "DOMAIN_NAME"
+                # else:
+                #     raise Exception( f"Unknown voice command [{compound_command}]" )
                     
-                for args in arguments:  # [ 0:10 ]: #[ 0:2]:#:
+                for args in arguments:
                     
                     voice_command = raw_line.replace( placeholder, args )
                     
-                    instruction = self.instruction_template.format( command_choices=self.command_categories )
-                    human_says  = self.human_says_template.format( voice_command=voice_command )
-                    input       = self.input_template.format( human_says=human_says, response_format=self.response_format )
-                    output      = self.output_template.format( browser_command=compound_command, args=args )
+                    instruction = self.vox_cmd_instruction_template.format( command_choices=self.vox_cmd_commands )
+                    human_says  = self.common_human_says_template.format( voice_command=voice_command )
+                    input       = self.common_input_template.format( human_says=human_says, response_format=self.common_response_format )
+                    output      = self.common_output_template.format( command=compound_command, args=args )
                     prompt      = self._get_prompt_instruction_format( instruction, input )
                     
                     instructions.append( instruction )
@@ -245,35 +419,135 @@ class XmlFineTuningPromptGenerator:
                     prompts.append( prompt )
                     commands.append( compound_command )
                     
-                    gpt_messages.append( {
-                        "messages": [
-                            { "role": "system", "content": gpt_instruction },
-                            { "role": "user", "content": voice_command },
-                            { "role": "assistant", "content": self.output_template.format( browser_command=compound_command, args=args ) }
-                        ]
-                    } )
+                    gpt_messages.append( self._get_gpt_messages_dict( gpt_instruction, voice_command, compound_command, args ) )
+                    # gpt_messages.append( {
+                    #     "messages": [
+                    #         { "role": "system", "content": gpt_instruction },
+                    #         { "role": "user", "content": voice_command },
+                    #         { "role": "assistant", "content": self.common_output_template.format( command=compound_command, args=args ) }
+                    #     ]
+                    # } )
                     
-                    if counter % 10 == 0:
-                        if self.debug:
-                            print( voice_command )
-                        else:
-                           print( ".", end="" )
+                    self._do_conditional_print( counter, voice_command )
+                    # if counter % 10 == 0:
+                    #     if self.debug:
+                    #         print( voice_command )
+                    #     else:
+                    #        print( ".", end="" )
                     counter += 1
             
             print()
         
         compound_qna_df = pd.DataFrame( { "command": commands, "instruction": instructions, "input": inputs, "output": outputs, "prompt": prompts, "gpt_message": gpt_messages } )
-        compound_qna_df = self._prune_duplicates_and_sample( compound_qna_df, sample_size=( sample_size_per_command * len( self.compound_commands ) ) )
+        compound_qna_df = self._prune_duplicates_and_sample( compound_qna_df, sample_size=( sample_size_per_command * len( self.vox_cmd_compound_commands ) ), sample_size_per_command=sample_size_per_command )
         
-        self.compound_qna_df = compound_qna_df
+        self.compound_vox_cmd_qna_df = compound_qna_df
         
-        return self.compound_qna_df
+        return self.compound_vox_cmd_qna_df
     
-    def get_prompt_template( self ):
+    def _get_6_empty_lists( self ):
         
-        instruction = self.instruction_template.format( command_choices=self.command_categories )
-        human_says  = self.human_says_template.format( voice_command="{voice_command}" )
-        input       = self.input_template.format( human_says=human_says, response_format=self.response_format )
+        return [], [], [], [], [], []
+    
+    def _get_gpt_messages_dict( self, gpt_instruction, voice_command, compound_command, args ):
+        
+        return {
+            "messages": [
+                { "role": "system", "content": gpt_instruction },
+                { "role": "user", "content": voice_command },
+                { "role": "assistant", "content": self.common_output_template.format( command=compound_command, args=args ) }
+            ]
+        }
+    
+    def _do_conditional_print( self, counter, voice_command, interval=10 ):
+        
+        if counter % interval == 0:
+            if self.debug:
+                print( voice_command )
+            else:
+                print( ".", end="" )
+                if counter % ( interval * 100 ) == 0:
+                    print()
+                
+    def build_compound_agent_router_training_prompts( self, sample_size_per_command=2000 ):
+        
+        instructions, inputs, outputs, prompts, gpt_messages, commands = self._get_6_empty_lists()
+    
+        gpt_instruction = self.agent_router_instruction_template_gpt.format( command_choices=self.agent_router_commands )
+        
+        # For each browser command, load the corresponding file and generate prompts
+        for compound_command in self.agent_router_compound_commands.keys():
+            
+            du.print_banner( f"Building prompts for compound AGENT ROUTER command [{compound_command}]", prepend_nl=True, end="\n" )
+            counter = 1
+            
+            raw_lines = du.get_file_as_list( self.path_prefix + self.agent_router_compound_commands[ compound_command ], clean=True, randomize=True )[ 0:100]
+            
+            if compound_command in [ "agent router go to weather", "agent router go to date and time" ]:
+                arguments   = self._get_cities_and_countries( len( raw_lines ) )
+                placeholder = "GEOGRAPHIC_LOCATION"
+            elif compound_command == "agent router go to receptionist":
+                arguments   = self._get_receptionist_titles( len( raw_lines ) )
+                placeholder = "RECEPTIONIST_TITLE"
+            else:
+                raise Exception( f"Unknown voice command [{compound_command}]" )
+            
+            for raw_line in raw_lines:
+                    
+                for args in arguments:
+                    
+                    voice_command = raw_line.replace( placeholder, args )
+                    
+                    instruction = self.agent_router_instruction_template.format( command_choices=self.agent_router_commands )
+                    human_says  = self.common_human_says_template.format( voice_command=voice_command )
+                    input       = self.common_input_template.format( human_says=human_says, response_format=self.common_response_format )
+                    output      = self.common_output_template.format( command=compound_command, args=args )
+                    prompt      = self._get_prompt_instruction_format( instruction, input )
+                    
+                    instructions.append( instruction )
+                    inputs.append( input )
+                    outputs.append( output )
+                    prompts.append( prompt )
+                    commands.append( compound_command )
+                    
+                    gpt_messages.append( self._get_gpt_messages_dict( gpt_instruction, voice_command, compound_command, args ) )
+                    
+                    self._do_conditional_print( counter, voice_command )
+                    # gpt_messages.append( {
+                    #     "messages": [
+                    #         { "role": "system", "content": gpt_instruction },
+                    #         { "role": "user", "content": voice_command },
+                    #         { "role": "assistant", "content": self.common_output_template.format( command=compound_command, args=args ) }
+                    #     ]
+                    # } )
+                    #
+                    # if counter % 10 == 0:
+                    #     if self.debug:
+                    #         print( voice_command )
+                    #     else:
+                    #         print( ".", end="" )
+                    counter += 1
+            
+            print()
+        
+        compound_agent_router_qna_df = pd.DataFrame( { "command": commands, "instruction": instructions, "input": inputs, "output": outputs, "prompt": prompts, "gpt_message": gpt_messages } )
+        compound_agent_router_qna_df = self._prune_duplicates_and_sample( compound_agent_router_qna_df, sample_size=( sample_size_per_command * len( self.vox_cmd_compound_commands ) ), sample_size_per_command=sample_size_per_command )
+        
+        self.compound_agent_router_qna_df = compound_agent_router_qna_df
+        
+        return self.compound_agent_router_qna_df
+        
+    def get_prompt_template( self, name ):
+        
+        if name == "vox command":
+                instruction = self.vox_cmd_instruction_template.format( command_choices=self.vox_cmd_commands )
+        elif name == "agent router":
+                instruction = self.agent_router_instruction_template.format( command_choices=self.agent_router_commands )
+        else:
+            raise ValueError( f"Unknown prompt template name [{name}] Please use one of ['vox command', 'agent router']" )
+        
+        human_says  = self.common_human_says_template.format( voice_command="{voice_command}" )
+        input       = self.common_input_template.format( human_says=human_says, response_format=self.common_response_format )
         prompt      = self._get_prompt_instruction_format( instruction, input )
         
         reformatted_prompt = [ ]
@@ -286,9 +560,7 @@ class XmlFineTuningPromptGenerator:
                 line = line[ 8: ]
             elif line.startswith( "    " ):
                 line = line[ 4: ]
-            # else:
-            #     line = line + "\n"
-                
+            
             # Adhoc insertion of space before command items
             if line.startswith( "<command>" ):
                 line = "    " + line
@@ -299,37 +571,37 @@ class XmlFineTuningPromptGenerator:
         
         return prompt
     
-    def serialize_prompt( self, prompt ):
+    def serialize_prompt( self, prompt, prompt_path ):
         
-        path = self.path_prefix + "/src/conf/prompts/vox_command_template.txt"
+        path = self.path_prefix + prompt_path
         
         du.print_banner( f"Serializing prompt to [{path}]", prepend_nl=True )
         du.write_string_to_file( path, prompt )
         
-    def build_simple_training_prompts( self, sample_size_per_command=200 ):
+    def serialize_prompts( self, prompt_path_prefix ):
         
-        instructions = [ ]
-        inputs       = [ ]
-        outputs      = [ ]
-        prompts      = [ ]
-        gpt_messages = [ ]
-        commands     = [ ]
+        self.serialize_prompt( self.get_prompt_template( "vox command" ),  prompt_path_prefix + "vox-command-template.txt" )
+        self.serialize_prompt( self.get_prompt_template( "agent router" ), prompt_path_prefix + "agent-router-template.txt" )
         
-        gpt_instruction = self.gpt_instruction_template.format( command_choices=self.command_categories )
+    def build_simple_vox_cmd_training_prompts( self, sample_size_per_command=400 ):
         
-        for simple_command in self.simple_commands.keys():
+        instructions, inputs, outputs, prompts, gpt_messages, commands = self._get_6_empty_lists()
+        
+        gpt_instruction = self.vox_cmd_instruction_template_gpt.format( command_choices=self.vox_cmd_commands )
+        
+        for simple_command in self.vox_cmd_simple_commands.keys():
             
-            du.print_banner( f"Building prompts for simple command [{simple_command}]", prepend_nl=True, end="\n" )
-            counter = 0
+            du.print_banner( f"Building prompts for simple VOX command [{simple_command}]", prepend_nl=True, end="\n" )
+            counter = 1
             
-            raw_lines = du.get_file_as_list( self.path_prefix + self.simple_commands[ simple_command ], clean=True )
+            raw_lines = du.get_file_as_list( self.path_prefix + self.vox_cmd_simple_commands[ simple_command ], clean=True )
             
             for raw_line in raw_lines:
                 
-                instruction = self.instruction_template.format( command_choices=self.command_categories )
-                human_says  = self.human_says_template.format( voice_command=raw_line )
-                input       = self.input_template.format( human_says=human_says, response_format=self.response_format )
-                output      = self.output_template.format( browser_command=simple_command, args="" )
+                instruction = self.vox_cmd_instruction_template.format( command_choices=self.vox_cmd_commands )
+                human_says  = self.common_human_says_template.format( voice_command=raw_line )
+                input       = self.common_input_template.format( human_says=human_says, response_format=self.common_response_format )
+                output      = self.common_output_template.format( command=simple_command, args="" )
                 prompt      = self._get_prompt_instruction_format( instruction, input )
                 
                 instructions.append( instruction )
@@ -338,33 +610,88 @@ class XmlFineTuningPromptGenerator:
                 prompts.append( prompt )
                 commands.append( simple_command )
                 
-                gpt_messages.append( {
-                    "messages": [
-                        { "role": "system",    "content": gpt_instruction },
-                        { "role": "user",      "content": raw_line },
-                        { "role": "assistant", "content": self.output_template.format( browser_command=simple_command, args="" ) }
-                    ]
-                } )
+                gpt_messages.append( self._get_gpt_messages_dict( gpt_instruction, raw_line, simple_command, "" ) )
                 
-                if counter % 10 == 0:
-                    print( ".", end="" )
-                    if self.debug: print( raw_line )
+                self._do_conditional_print( counter, raw_line )
+                # gpt_messages.append( {
+                #     "messages": [
+                #         { "role": "system",    "content": gpt_instruction },
+                #         { "role": "user",      "content": raw_line },
+                #         { "role": "assistant", "content": self.common_output_template.format( command=simple_command, args="" ) }
+                #     ]
+                # } )
+                #
+                # if counter % 10 == 0:
+                #     print( ".", end="" )
+                #     if self.debug: print( raw_line )
                 counter += 1
             
         simple_command_qna_df = pd.DataFrame( { "command": commands, "instruction": instructions, "input": inputs, "output": outputs, "prompt": prompts, "gpt_message": gpt_messages } )
-        simple_command_qna_df = self._prune_duplicates_and_sample( simple_command_qna_df, sample_size=( sample_size_per_command * len( self.simple_commands ) ) )
+        simple_command_qna_df = self._prune_duplicates_and_sample( simple_command_qna_df, sample_size=( sample_size_per_command * len( self.vox_cmd_simple_commands ) ), sample_size_per_command=sample_size_per_command )
         
-        self.simple_command_qna_df = simple_command_qna_df
+        self.simple_vox_cmd_qna_df = simple_command_qna_df
         
-        return self.simple_command_qna_df
+        return self.simple_vox_cmd_qna_df
     
-    def build_all_training_prompts( self, sample_size_per_compound_command=1000, sample_size_per_simple_command=200 ):
+    def build_simple_agent_router_training_prompts( self, sample_size_per_command=400 ):
         
-        compound_qna_df       = self.build_compound_training_prompts( sample_size_per_command=sample_size_per_compound_command )
-        simple_command_qna_df = self.build_simple_training_prompts( sample_size_per_command=sample_size_per_simple_command )
+        instructions, inputs, outputs, prompts, gpt_messages, commands = self._get_6_empty_lists()
+        
+        gpt_instruction = self.agent_router_instruction_template_gpt.format( command_choices=self.agent_router_commands )
+        
+        for simple_command in self.agent_router_simple_commands.keys():
+            
+            du.print_banner( f"Building prompts for simple AGENT ROUTER command [{simple_command}]", prepend_nl=True, end="\n" )
+            counter = 1
+            
+            raw_lines = du.get_file_as_list( self.path_prefix + self.agent_router_simple_commands[ simple_command ], clean=True )
+            
+            for raw_line in raw_lines:
+                
+                instruction = self.vox_cmd_instruction_template.format( command_choices=self.agent_router_commands )
+                human_says  = self.common_human_says_template.format( voice_command=raw_line )
+                input       = self.common_input_template.format( human_says=human_says, response_format=self.common_response_format )
+                output      = self.common_output_template.format( command=simple_command, args="" )
+                prompt      = self._get_prompt_instruction_format( instruction, input )
+                
+                instructions.append( instruction )
+                inputs.append( input )
+                outputs.append( output )
+                prompts.append( prompt )
+                commands.append( simple_command )
+                
+                gpt_messages.append( self._get_gpt_messages_dict( gpt_instruction, raw_line, simple_command, "" ) )
+                
+                self._do_conditional_print( counter, raw_line )
+                # gpt_messages.append( {
+                #     "messages": [
+                #         { "role": "system",    "content": gpt_instruction },
+                #         { "role": "user",      "content": raw_line },
+                #         { "role": "assistant", "content": self.common_output_template.format( command=simple_command, args="" ) }
+                #     ]
+                # } )
+                #
+                # if counter % 10 == 0:
+                #     print( ".", end="" )
+                #     if self.debug: print( raw_line )
+                counter += 1
+            
+        simple_agent_router_qna_df = pd.DataFrame( { "command": commands, "instruction": instructions, "input": inputs, "output": outputs, "prompt": prompts, "gpt_message": gpt_messages } )
+        simple_agent_router_qna_df = self._prune_duplicates_and_sample( simple_agent_router_qna_df, sample_size=( sample_size_per_command * len( self.vox_cmd_simple_commands ) ), sample_size_per_command=sample_size_per_command )
+        
+        self.simple_agent_router_qna_df = simple_agent_router_qna_df
+        
+        return self.simple_agent_router_qna_df
+    def build_all_training_prompts( self, sample_size_per_compound_command=2000, sample_size_per_simple_command=400 ):
+        
+        compound_vox_cmd_qna_df       = self.build_compound_vox_cmd_training_prompts( sample_size_per_command=sample_size_per_compound_command )
+        simple_vox_cmd_qna_df         = self.build_simple_vox_cmd_training_prompts( sample_size_per_command=sample_size_per_simple_command )
+        
+        compound_router_qna_df        = self.build_compound_agent_router_training_prompts( sample_size_per_command=sample_size_per_compound_command )
+        simple_router_qna_df          = self.build_simple_agent_router_training_prompts( sample_size_per_command=sample_size_per_simple_command )
         
         # Stack both dataframes vertically
-        self.all_qna_df = pd.concat( [ compound_qna_df, simple_command_qna_df ], ignore_index=True )
+        self.all_qna_df = pd.concat( [ compound_vox_cmd_qna_df, simple_vox_cmd_qna_df, compound_router_qna_df, simple_router_qna_df ], ignore_index=True )
         
         # Group by command and count the number of rows per command
         command_counts = self.all_qna_df.groupby( "command" ).count().reset_index()[ [ "command", "input" ] ]
@@ -403,7 +730,7 @@ class XmlFineTuningPromptGenerator:
         
         return self.all_qna_df
     
-    def _prune_duplicates_and_sample( self, df, sample_size=1000 ):
+    def _prune_duplicates_and_sample( self, df, sample_size=1000, sample_size_per_command=-1 ):
         
         du.print_banner( "Pruning potential duplicates by 'input' values...", prepend_nl=True )
         
@@ -419,7 +746,15 @@ class XmlFineTuningPromptGenerator:
             print( f"WARNING: Sample size [{sample_size:,}] > rows_post [{rows_post:,}]. Returning all [{rows_post:,}] rows.")
             return df
         else:
-            return df.sample( sample_size, random_state=42 )
+            # Sample the dataframe Using proportional distributions represented by the weights value
+            du.print_banner( f"Sampling {sample_size:,} rows/command from the pruned dataframe using the following weights:", prepend_nl=True )
+            weights = df[ "command" ].value_counts( normalize=True )
+            print( weights )
+            weights = df[ "command" ].value_counts( normalize=False )
+            print( weights )
+            
+            # https://www.phind.com/search?cache=herzljuhqqc7qt9uuf84ng8v
+            return df.groupby( "command" ).sample( sample_size_per_command, random_state=42 )
     
     def _get_xml_schema( self ):
         
@@ -428,7 +763,7 @@ class XmlFineTuningPromptGenerator:
           <xs:element name="response">
             <xs:complexType>
               <xs:sequence>
-                <xs:element name="browser-command" type="xs:string"/>
+                <xs:element name="command" type="xs:string"/>
                 <xs:element name="args" type="xs:string"/>
               </xs:sequence>
             </xs:complexType>
@@ -476,7 +811,7 @@ class XmlFineTuningPromptGenerator:
         
         return self.is_response_exact_match( response, answer )
     
-    def tag_values_are_equal( self, response, answer, tag_name="browser-command" ):
+    def tag_values_are_equal( self, response, answer, tag_name="command" ):
     
         command_response = dux.get_value_by_xml_tag_name( response, tag_name, default_value="broken" )
         command_answer   = dux.get_value_by_xml_tag_name(   answer, tag_name, default_value="broken" )
@@ -604,11 +939,11 @@ class XmlFineTuningPromptGenerator:
         # Validate the structure and content of the xml response
         df[ "response_xml_is_valid" ]       = df[ "response" ].apply( lambda cell: self.is_valid_xml( cell ) )
         df[ "contains_response" ]           = df[ "response" ].apply( lambda cell: self.contains_valid_xml_tag( cell, "response" ) )
-        df[ "contains_browser_command" ]    = df[ "response" ].apply( lambda cell: self.contains_valid_xml_tag( cell, "browser-command" ) )
+        df[ "contains_command" ]            = df[ "response" ].apply( lambda cell: self.contains_valid_xml_tag( cell, "command" ) )
         df[ "contains_args" ]               = df[ "response" ].apply( lambda cell: self.contains_valid_xml_tag( cell, "args" ) )
         df[ "response_is_exact" ]           = df.apply( lambda row: self.is_response_exact_match( row[ "response" ], row[ "output" ] ), axis=1 )
         df[ "response_has_correct_values" ] = df.apply( lambda row: self.contains_correct_response_values( row[ "response" ], row[ "output" ] ), axis=1 )
-        df[ "browser_command_is_correct" ]  = df.apply( lambda row: self.tag_values_are_equal( row[ "response" ], row[ "output" ], tag_name="browser-command" ), axis=1 )
+        df[ "command_is_correct" ]          = df.apply( lambda row: self.tag_values_are_equal( row[ "response" ], row[ "output" ], tag_name="command" ), axis=1 )
         df[ "args_is_correct" ]             = df.apply( lambda row: self.tag_values_are_equal( row[ "response" ], row[ "output" ], tag_name="args" ), axis=1 )
         
         return df
@@ -617,12 +952,12 @@ class XmlFineTuningPromptGenerator:
         
         du.print_banner( title, prepend_nl=True )
         print( f"               Is valid xml {df.response_xml_is_valid.mean() * 100:.1f}%" )
-        print( f"          Contains response {df.contains_response.mean() * 100:.1f}%" )
-        print( f" Contains <browser-command> {df.contains_browser_command.mean() * 100:.1f}%" )
+        print( f"        Contains <response> {df.contains_response.mean() * 100:.1f}%" )
+        print( f"         Contains <command> {df.contains_command.mean() * 100:.1f}%" )
         print( f"            Contains <args> {df.contains_args.mean() * 100:.1f}%" )
         print( f"          Response is exact {df.response_is_exact.mean() * 100:.1f}%" )
         print( f"Response has correct values {df.response_has_correct_values.mean() * 100:.1f}%" )
-        print( f" Browser command is correct {df.browser_command_is_correct.mean() * 100:.1f}%" )
+        print( f" Browser command is correct {df.command_is_correct.mean() * 100:.1f}%" )
         print( f"            Args is correct {df.args_is_correct.mean() * 100:.1f}%" )
         
         # Calculate accuracy per command
@@ -642,15 +977,15 @@ class XmlFineTuningPromptGenerator:
         
         return stats_df
     
-    def get_train_test_validate_split( self, df, sample_size=1000, test_size=0.2, test_validate_size=0.5 ):
+    def get_train_test_validate_split( self, df, sample_size=1000, test_size=0.2, test_validate_size=0.5, stratify="command" ):
         
         sampled_df = df[ [ "command", "instruction", "input", "output", "prompt", "gpt_message" ] ].sample( sample_size, random_state=42 ).copy()
         
         # Split the dataframe into train and (test+validate)
-        train_df, test_validate_df = train_test_split( sampled_df, test_size=test_size, random_state=42 )
+        train_df, test_validate_df = train_test_split( sampled_df, test_size=test_size, random_state=42, stratify=sampled_df[ stratify ] )
         
         # Then split (test+validate) into test and validate
-        test_df, validate_df = train_test_split( test_validate_df, test_size=test_validate_size, random_state=42 )
+        test_df, validate_df = train_test_split( test_validate_df, test_size=test_validate_size, random_state=42, stratify=test_validate_df[ stratify ] )
         
         return train_df, test_df, validate_df
     
@@ -758,25 +1093,39 @@ if __name__ == "__main__":
     # os.chdir( "/var/model/genie-in-the-box/src" )
     # print( os.getcwd() )
     # #
-    xml_ftp_generator     = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=True )
-    prompt_template       = xml_ftp_generator.get_prompt_template()
+    xml_ftp_generator       = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=False )
     
-    xml_ftp_generator.serialize_prompt( prompt_template )
+    # vox_cmd_prompt_template = xml_ftp_generator.get_prompt_template( "vox command" )
+    # print( vox_cmd_prompt_template )
+    # xml_ftp_generator.serialize_prompt( vox_cmd_prompt_template, "/src/conf/prompts/vox-command-template.txt" )
     
-    # print( prompt_template.format( voice_command="hello..." ) )
-    # print( prompt_template.format( voice_command="whirled?" ) )
+    # agent_prompt_template   = xml_ftp_generator.get_prompt_template( "agent router" )
+    # print( agent_prompt_template )
+    # xml_ftp_generator.serialize_prompt( agent_prompt_template,   "/src/conf/prompts/agent-router-template.txt" )
+    
+    xml_ftp_generator.serialize_prompts( "/src/conf/prompts/" )
     
     # xml_ftp_generator     = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:8080", debug=True )
-    # compound_qna_df       = xml_ftp_generator.build_compound_training_prompts()
-    # simple_command_qna_df = xml_ftp_generator.build_simple_training_prompts()
-    # all_qna_df            = xml_ftp_generator.build_all_training_prompts()
+    # compound_qna_df       = xml_ftp_generator.build_compound_vox_cmd_training_prompts()
+    # simple_command_qna_df = xml_ftp_generator.build_simple_vox_cmd_training_prompts()
+    
+    # compound_agent_router_qna_df   = xml_ftp_generator.build_compound_agent_router_training_prompts()
+    # simple_agent_router_qna_df     = xml_ftp_generator.build_simple_agent_router_training_prompts()
+    #
+    # print( compound_agent_router_qna_df.shape )
+    # print( compound_agent_router_qna_df.head( 10 ) )
+    #
+    # print( simple_agent_router_qna_df.shape )
+    # print( simple_agent_router_qna_df.head( 10 ) )
+    
+    all_qna_df            = xml_ftp_generator.build_all_training_prompts()
     
     # for line in compound_qna_df.prompt[ 0 ].split( "\n" ): print( line )
     # for line in simple_command_qna_df.prompt[ 0 ].split( "\n" ): print( line )
     # for line in all_qna_df.prompt[ 0 ].split( "\n" ): print( line )
     
-    # train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( all_qna_df, sample_size=all_qna_df.shape[ 0 ], test_size=0.2, test_validate_size=0.5 )
-    # xml_ftp_generator.write_ttv_split_to_jsonl( train_df, test_df, validate_df )
+    train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( all_qna_df, sample_size=all_qna_df.shape[ 0 ], test_size=0.2, test_validate_size=0.5 )
+    xml_ftp_generator.write_ttv_split_to_jsonl( train_df, test_df, validate_df )
 
     # validation block
     # validate_df    = pd.read_json( xml_ftp_generator.path_prefix + "/src/ephemera/prompts/data/voice-commands-xml-validate.jsonl", lines=True ).sample( 100, random_state=42 )
