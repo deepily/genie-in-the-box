@@ -1,0 +1,403 @@
+Prioritize 'Apples' in the Grocery Shopping List.
+Delete 'Attend yoga class' in Health and Fitness Goals.
+Delete 'Pay electricity bill' in Daily Tasks/Errands.
+Delete 'Pay electricity bill' in the Daily Tasks/Errands List.
+Update 'Spaghetti Bolognese' in the Meal Planning List.
+Create New 'Vacuum living room' in the Household Chores List.
+Mark as Done 'Drink 8 glasses of water' in Health and Fitness Goals.
+Create New 'Book flights' in the Travel Planning List.
+Prioritize 'Math assignment' in Study or Homework.
+Remind 'Book flights' in the Travel Planning List.
+Delete 'Pick up dry cleaning' in Daily Tasks/Errands.
+Mark as Done 'Grilled chicken dinner' in the Meal Planning List.
+Remind 'History quiz study' in Study or Homework.
+Prioritize 'Prepare presentation' in my Work-related Tasks.
+Delete 'Wash dishes' in the Household Chores List.
+Delete 'Read 30 minutes daily' in Personal Goals/Projects.
+Create New 'Call the dentist' in the Daily Tasks/Errands List.
+Update 'Read 30 minutes daily' in the Personal Goals/Projects List.
+Create New 'Milk' in the Grocery Shopping List.
+Mark as Done 'Send out invitations' in Event Planning.
+Delete 'Drink 8 glasses of water' in Health and Fitness Goals.
+Prioritize 'Wash dishes' in the Household Chores List.
+Create New 'Complete budget review' in the Work-related Tasks List.
+Create New 'Clean bathrooms' in the Household Chores List.
+Remind 'Biology chapter reading' in Study or Homework.
+Prioritize 'Drink 8 glasses of water' in Health and Fitness Goals.
+Delete 'Bread' in the Grocery Shopping List.
+Create New 'Drink 8 glasses of water' in Health and Fitness Goals.
+Prioritize 'Pay electricity bill' in Daily Tasks/Errands.
+Update 'Save $200 monthly' in Personal Goals/Projects.
+Update 'Pick up dry cleaning' in the Daily Tasks/Errands List.
+Prioritize 'Wash dishes' in the Household Chores List.
+Remind 'Drink 8 glasses of water' in Health and Fitness Goals.
+Prioritize 'Finalize guest list' in Event Planning.
+Remind 'Math assignment' in Study or Homework.
+Create New 'Pick up dry cleaning' in Daily Tasks/Errands.
+Create New 'Grilled chicken dinner' in the Meal Planning List.
+Prioritize 'Math assignment' in Study or Homework.
+Create New 'Pay electricity bill' in the Daily Tasks/Errands List.
+Create New 'Spaghetti Bolognese' in the Meal Planning List.
+Remind 'Call the dentist' in Daily Tasks/Errands.
+Prioritize 'Email project report' in my Work-related Tasks.
+Remind 'Biology chapter reading' in Study or Homework.
+Remind 'Attend yoga class' in Health and Fitness Goals.
+Prioritize 'Prepare presentation' in Work-related Tasks.
+Create New 'Book venue' in Event Planning.
+Prioritize 'Math assignment' in Study or Homework.
+Create New 'Chicken Breast' in the Grocery Shopping List.
+Create New 'Email project report' in my Work-related Tasks.
+Remind 'Finalize guest list' in the Event Planning List.
+Prioritize 'Spaghetti Bolognese' in the Meal Planning List.
+Prioritize 'Book venue' in Event Planning.
+Update 'Book flights' in the Travel Planning List.
+Create New 'Book venue' in Event Planning.
+Remind 'Send out invitations' in Event Planning.
+Delete 'Send out invitations' in the Event Planning List.
+Remind 'Grilled chicken dinner' in the Meal Planning List.
+Update 'Apples' in the Grocery Shopping List.
+Mark as Done 'Pick up dry cleaning' in the Daily Tasks/Errands List.
+Mark as Done 'History quiz study' in Study or Homework.
+Mark as Done 'Pick up dry cleaning' in Daily Tasks/Errands.
+Update 'Grilled chicken dinner' in the Meal Planning List.
+Prioritize 'Taco night' in the Meal Planning List.
+Create New 'Bread' in the Grocery Shopping List.
+Mark as Done 'Reserve accommodations' in the Travel Planning List.
+Remind 'Grilled chicken dinner' in the Meal Planning List.
+Update 'Learn basic Spanish' in the Personal Goals/Projects List.
+Update 'Vacuum living room' in the Household Chores List.
+Prioritize 'Taco night' in the Meal Planning List.
+Delete 'Save $200 monthly' in Personal Goals/Projects.
+Delete 'Learn basic Spanish' in the Personal Goals/Projects List.
+Remind 'Spaghetti Bolognese' in the Meal Planning List.
+Delete 'Spaghetti Bolognese' in the Meal Planning List.
+Create New 'Save $200 monthly' in Personal Goals/Projects.
+Update 'Grilled chicken dinner' in the Meal Planning List.
+Create New 'Email project report' in the Work-related Tasks List.
+Remind 'Pay electricity bill' in the Daily Tasks/Errands List.
+Mark as Done 'Clean bathrooms' in the Household Chores List.
+Remind 'Bread' in the Grocery Shopping List.
+Create New 'Jog for 30 minutes' in Health and Fitness Goals.
+Remind 'Pay electricity bill' in Daily Tasks/Errands.
+Update 'Save $200 monthly' in the Personal Goals/Projects List.
+Update 'Save $200 monthly' in Personal Goals/Projects.
+Mark as Done 'Reserve accommodations' in the Travel Planning List.
+Remind 'Attend yoga class' in Health and Fitness Goals.
+Mark as Done 'Save $200 monthly' in the Personal Goals/Projects List.
+Update 'Complete budget review' in my Work-related Tasks.
+Mark as Done 'Book flights' in the Travel Planning List.
+Update 'Pay electricity bill' in the Daily Tasks/Errands List and.
+Create New 'Pay electricity bill' in Daily Tasks/Errands.
+Delete 'Book flights' in the Travel Planning List.
+Prioritize 'Drink 8 glasses of water' in the Health and Fitness Goals List.
+Prioritize 'Pay electricity bill' in the Daily Tasks/Errands List.
+Prioritize 'Prepare presentation' in Work-related Tasks.
+Remind 'Grilled chicken dinner' in the Meal Planning List.
+Prioritize 'Grilled chicken dinner' in the Meal Planning List.
+Update 'Read 30 minutes daily' in Personal Goals/Projects.
+Remind 'Chicken Breast' in the Grocery Shopping List.
+Mark as Done 'Send out invitations' in Event Planning.
+Create New 'Jog for 30 minutes' in Health and Fitness Goals.
+Delete 'Taco night' in the Meal Planning List.
+Create New 'Attend yoga class' in Health and Fitness Goals.
+Create New 'Learn basic Spanish' in the Personal Goals/Projects List.
+Create New 'Read 30 minutes daily' in Personal Goals/Projects.
+What groceries are yet to be bought as listed in my Grocery Shopping List?
+Can you tell me what's left to do on Daily Tasks/Errands for this afternoon?
+What are the pending items on my Work-related Tasks List for the end of this week?
+Which tasks from my Household Chores List are scheduled for tomorrow?
+Can you confirm the meals planned for the weekend in my Meal Planning List?
+Are there any assignments I haven't started yet in my Study or Homework List?
+What activities are due today in my Health and Fitness Goals List?
+Can you list the pending tasks in my Event Planning List for the upcoming conference?
+What are the remaining travel arrangements in my Travel Planning List for the holiday?
+Can you review the completed tasks in my Personal Goals/Projects List?
+Do I need to update anything in my Grocery Shopping List for tonight's dinner?
+What's the first task on my Daily Tasks/Errands List for tomorrow morning?
+Are there any meetings noted in my Work-related Tasks List for next Tuesday?
+Which chores have I not yet started according to my Household Chores List?
+What's on my Meal Planning List for Monday's lunch?
+Have I finished the research paper task in my Study or Homework List?
+What exercises are planned for tomorrow in my Health and Fitness Goals List?
+Who is yet to RSVP as per my Event Planning List?
+Can you check if all hotels are booked as listed in my Travel Planning List?
+What are the new additions to my Personal Goals/Projects List?
+Which items from my Grocery Shopping List should I buy first?
+Can you remind me of the errands listed in Daily Tasks/Errands for next weekend?
+What project milestones are coming up in my Work-related Tasks List?
+What is the next chore in my Household Chores List to complete?
+Can you list the dinner plans for this week from my Meal Planning List?
+What's the next chapter to read as per my Study or Homework List?
+Are there any upcoming gym sessions in my Health and Fitness Goals List?
+What decorations need to be bought as per my Event Planning List?
+Is there any unfinished business in my Travel Planning List for the business tour?
+What tasks have been recently completed in my Personal Goals/Projects List?
+Which items are most urgent on my Grocery Shopping List?
+What's the last task on my Daily Tasks/Errands List for today?
+Are there any urgent deadlines in my Work-related Tasks List?
+What laundry tasks are listed in my Household Chores List for the weekend?
+What are the breakfast options on my Meal Planning List for next week?
+Have all the essays been written as listed in my Study or Homework List?
+What diet goals are set for this week in my Health and Fitness Goals List?
+What's the status of the venue booking in my Event Planning List?
+Are all flights confirmed as per my Travel Planning List for the overseas trip?
+Which projects in my Personal Goals/Projects List need attention this month?
+How many items are left to purchase on my Grocery Shopping List?
+Can you display the errands for next Monday from Daily Tasks/Errands?
+What's the progress on the current projects in my Work-related Tasks List?
+Which cleaning activities are scheduled in my Household Chores List for next Friday?
+Can you update the Meal Planning List with low-calorie dinners?
+Is there any homework due tomorrow according to my Study or Homework List?
+What weight training exercises are in my Health and Fitness Goals List for today?
+How many guests are confirmed as per my Event Planning List?
+What travel essentials are listed in my Travel Planning List for the hiking trip?
+Can you list the unfinished goals in my Personal Goals/Projects List for this year?
+What items from my Grocery Shopping List have I not bought yet?
+Can you check the next errand on my Daily Tasks/Errands List?
+What's the next deadline on my Work-related Tasks List?
+Which task should I do next from my Household Chores List?
+What is scheduled for Friday's dinner in my Meal Planning List?
+Are there any upcoming tests noted in my Study or Homework List?
+What workouts are scheduled for this weekend in my Health and Fitness Goals List?
+Which tasks are incomplete in my Event Planning List for the bridal shower?
+Can you confirm the return flight details in my Travel Planning List?
+What's the latest task I've added to my Personal Goals/Projects List?
+How many items are left in my Grocery Shopping List for the barbecue?
+What's the last errand for today in Daily Tasks/Errands?
+Are there any pending client interactions in my Work-related Tasks List?
+Which cleaning task is overdue in my Household Chores List?
+What are the lunch plans next Tuesday according to my Meal Planning List?
+Have I completed all the readings for this week in my Study or Homework List?
+What are my fitness targets for this month in my Health and Fitness Goals List?
+What's the status of the guest list in my Event Planning List?
+Is there any packing left according to my Travel Planning List?
+Which personal development task should I focus on next in my Personal Goals/Projects List?
+Can you list the remaining fresh produce to buy from my Grocery Shopping List?
+What appointments are set for the end of the week in my Daily Tasks/Errands List?
+What project updates are due next in my Work-related Tasks List?
+What's the most urgent chore in my Household Chores List right now?
+Can you update the Meal Planning List with vegan options?
+What chapters are left to study in my Study or Homework List for the finals?
+What are the remaining yoga sessions this week in my Health and Fitness Goals List?
+Who hasn't responded to the invitation as per my Event Planning List?
+What are the last-minute changes in my Travel Planning List?
+Can you list the completed tasks in my Personal Goals/Projects List?
+Which dairy items need to be bought as per my Grocery Shopping List?
+What's the first task on tomorrow's Daily Tasks/Errands List?
+Are there any meetings I need to prepare for in my Work-related Tasks List?
+Which laundry tasks are pending in my Household Chores List?
+What's on the Meal Planning List for Wednesday's breakfast?
+Are there any assignments I haven't submitted yet in my Study or Homework List?
+What cardio exercises are in my Health and Fitness Goals List for today?
+How many decorations are left to buy as per my Event Planning List?
+What documents do I need to gather for my Travel Planning List?
+Which goal in my Personal Goals/Projects List is the highest priority right now?
+How many canned goods are on my Grocery Shopping List?
+Can you list the tasks I postponed from today's Daily Tasks/Errands List?
+What is the current status of my weekly goals in my Work-related Tasks List?
+What gardening tasks are due this weekend in my Household Chores List?
+Can you add a new recipe to next Monday's Meal Planning List?
+What topics do I need to revise as per my Study or Homework List?
+What strength training sessions are planned in my Health and Fitness Goals List?
+Are there any accommodations not yet confirmed in my Travel Planning List?
+Can you list the personal projects I've been working on from my Personal Goals/Projects List?
+Move 'Apples' to the top of the Grocery Shopping List.
+Make 'Apples' the most important item on the Grocery Shopping List.
+Remove 'Attend yoga class' from the Health and Fitness Goals List.
+Erase 'Attend yoga class' from my Health and Fitness Goals List.
+Eliminate 'Pay electricity bill' from Daily Tasks/Errands.
+Take out 'Pay electricity bill' from Daily Tasks/Errands.
+Scratch off 'Pay electricity bill' from the Daily Tasks/Errands List.
+Expunge 'Pay electricity bill' from Daily Tasks/Errands.
+Modify 'Spaghetti Bolognese' on the Meal Planning List.
+Change 'Spaghetti Bolognese' in the Meal Planning List.
+Add 'Vacuum living room' to the Household Chores List.
+Insert 'Vacuum living room' into the Household Chores List.
+Complete 'Drink 8 glasses of water' on the Health and Fitness Goals List.
+Check off 'Drink 8 glasses of water' in Health and Fitness Goals.
+Schedule 'Book flights' on the Travel Planning List.
+Plan to 'Book flights' in the Travel Planning List.
+Make 'Math assignment' a priority in Study or Homework.
+Elevate 'Math assignment' in Study or Homework.
+Set a reminder for 'Book flights' in the Travel Planning List.
+Alert me to 'Book flights' from the Travel Planning List.
+Remove 'Pick up dry cleaning' from the Daily Tasks/Errands List.
+Take 'Pick up dry cleaning' off Daily Tasks/Errands.
+Finish 'Grilled chicken dinner' on the Meal Planning List.
+Tick off 'Grilled chicken dinner' from the Meal Planning List.
+Set a reminder for 'History quiz study' in Study or Homework.
+Alert me about 'History quiz study' from the Study or Homework List.
+Make 'Prepare presentation' a priority in my Work-related Tasks.
+Elevate 'Prepare presentation' on the Work-related Tasks List.
+Eliminate 'Wash dishes' from the Household Chores List.
+Remove 'Wash dishes' in the Household Chores List.
+Erase 'Read 30 minutes daily' from the Personal Goals/Projects List.
+Remove 'Read 30 minutes daily' from my Personal Goals/Projects List.
+Add 'Call the dentist' to the Daily Tasks/Errands List.
+Put 'Call the dentist' on Daily Tasks/Errands.
+Modify 'Read 30 minutes daily' in the Personal Goals/Projects List.
+Change 'Read 30 minutes daily' on the Personal Goals/Projects List.
+Add 'Milk' to the Grocery Shopping List.
+Put 'Milk' on the Grocery Shopping List.
+Tick off 'Send out invitations' in Event Planning.
+Complete 'Send out invitations' on the Event Planning List.
+Remove 'Drink 8 glasses of water' from the Health and Fitness Goals List.
+Erase 'Drink 8 glasses of water' in Health and Fitness Goals.
+Make 'Wash dishes' a top task in the Household Chores List.
+Elevate 'Wash dishes' on the Household Chores List.
+Add 'Complete budget review' to Work-related Tasks.
+Insert 'Complete budget review' into Work-related Tasks.
+Add 'Clean bathrooms' to the Household Chores List.
+Insert 'Clean bathrooms' into the Household Chores List.
+Set a reminder for 'Biology chapter reading' in Study or Homework.
+Alert me about 'Biology chapter reading' from the Study or Homework List.
+Make 'Drink 8 glasses of water' a priority in Health and Fitness Goals.
+Elevate 'Drink 8 glasses of water' on the Health and Fitness Goals List.
+Remove 'Bread' from the Grocery Shopping List.
+Erase 'Bread' in the Grocery Shopping List.
+Add 'Drink 8 glasses of water' to the Health and Fitness Goals List.
+Put 'Drink 8 glasses of water' on the Health and Fitness Goals List.
+Make 'Pay electricity bill' a priority in the Daily Tasks/Errands List.
+Elevate 'Pay electricity bill' on Daily Tasks/Errands.
+Modify 'Save $200 monthly' in Personal Goals/Projects.
+Change 'Save $200 monthly' on the Personal Goals/Projects List.
+Update 'Pick up dry cleaning' in the Daily Tasks/Errands List.
+Revise 'Pick up dry cleaning' on Daily Tasks/Errands.
+Elevate 'Wash dishes' in priority on the Household Chores List.
+Raise 'Wash dishes' to a higher priority in the Household Chores List.
+Set a reminder for 'Drink 8 glasses of water' in Health and Fitness Goals.
+Alert me about 'Drink 8 glasses of water' from the Health and Fitness Goals List.
+Make 'Finalize guest list' a priority in Event Planning.
+Elevate 'Finalize guest list' on Event Planning.
+Set a reminder for 'Math assignment' in Study or Homework.
+Alert me about 'Math assignment' from the Study or Homework List.
+Add 'Pick up dry cleaning' to the Daily Tasks/Errands List.
+Insert 'Pick up dry cleaning' into Daily Tasks/Errands.
+Add 'Grilled chicken dinner' to the Meal Planning List.
+Put 'Grilled chicken dinner' on the Meal Planning List.
+Elevate 'Math assignment' in priority in Study or Homework.
+Raise 'Math assignment' to a higher priority in Study or Homework.
+Add 'Pay electricity bill' to the Daily Tasks/Errands List.
+Insert 'Pay electricity bill' into Daily Tasks/Errands.
+Add 'Spaghetti Bolognese' to the Meal Planning List.
+Put 'Spaghetti Bolognese' on the Meal Planning List.
+Set a reminder for 'Call the dentist' in the Daily Tasks/Errands List.
+Alert me about 'Call the dentist' from Daily Tasks/Errands.
+Make 'Email project report' a priority in the Work-related Tasks List.
+Elevate 'Email project report' on Work-related Tasks.
+Set a reminder for 'Biology chapter reading' in Study or Homework.
+Alert me about 'Biology chapter reading' from the Study or Homework List.
+Set a reminder for 'Attend yoga class' in Health and Fitness Goals.
+Alert me about 'Attend yoga class' from the Health and Fitness Goals List.
+Elevate 'Prepare presentation' in priority in my Work-related Tasks.
+Raise 'Prepare presentation' to a higher priority in my Work-related Tasks.
+Add 'Book venue' to the Event Planning List.
+Insert 'Book venue' into Event Planning.
+Make 'Math assignment' a top task in Study or Homework.
+Prioritize 'Math assignment' in Study or Homework.
+Add 'Chicken Breast' to Grocery Shopping.
+Put 'Chicken Breast' on the Grocery Shopping List.
+Add 'Email project report' to Work-related Tasks.
+Insert 'Email project report' into Work-related Tasks.
+Set a reminder for 'Finalize guest list' in the Event Planning List.
+Alert me about 'Finalize guest list' from Event Planning.
+Shift 'Spaghetti Bolognese' to high priority on the Meal Planning List.
+Reorder the Meal Planning List to prioritize 'Spaghetti Bolognese' first.
+Focus on 'Book venue' first in Event Planning.
+Highlight 'Book venue' as the top item in the Event Planning List.
+Revise 'Book flights' details in the Travel Planning List.
+Alter the 'Book flights' entry on the Travel Planning List.
+Plan to secure 'Book venue' as a top priority in Event Planning.
+Arrange for 'Book venue' to be the primary focus on Event Planning.
+Set up a notification for 'Send out invitations' in the Event Planning List.
+Arrange a prompt for completing 'Send out invitations' in Event Planning.
+Excise 'Send out invitations' from Event Planning.
+Scrap 'Send out invitations' from the current Event Planning List.
+Confirm completion of 'Grilled chicken dinner' in the Meal Planning List.
+Verify that 'Grilled chicken dinner' is finished on the Meal Planning List.
+Revamp 'Apples' details in the Grocery Shopping List.
+Reconfigure the entry for 'Apples' in the Grocery Shopping List.
+Confirm 'Pick up dry cleaning' as completed in the Daily Tasks/Errands List.
+Verify that 'Pick up dry cleaning' is done on Daily Tasks/Errands.
+Ensure 'History quiz study' is marked off in Study or Homework.
+Check off 'History quiz study' as finished in Study or Homework.
+Reaffirm completion of 'Pick up dry cleaning' on the Daily Tasks/Errands List.
+Validate that 'Pick up dry cleaning' is checked off in Daily Tasks/Errands.
+Revise 'Grilled chicken dinner' in Meal Planning.
+Adjust 'Grilled chicken dinner' details in Meal Planning.
+Elevate 'Taco night' to top priority in Meal Planning.
+Raise 'Taco night' as a key item in Meal Planning.
+Include 'Bread' in the Grocery Shopping.
+Add 'Bread' to Grocery Shopping items.
+Acknowledge 'Reserve accommodations' as completed in Travel Planning.
+Confirm 'Reserve accommodations' as done in Travel Planning.
+Notify me about 'Grilled chicken dinner' in Meal Planning.
+Alert for 'Grilled chicken dinner' completion in Meal Planning.
+Update 'Learn basic Spanish' in Personal Goals/Projects.
+Revise 'Learn basic Spanish' progress in Personal Goals/Projects.
+Refresh 'Vacuum living room' status in Household Chores.
+Modify 'Vacuum living room' task in Household Chores.
+Promote 'Taco night' to a high-priority spot in Meal Planning.
+Focus on 'Taco night' as a primary item in Meal Planning.
+Exclude 'Save $200 monthly' from Personal Goals/Projects.
+Remove 'Save $200 monthly' from Personal Goals/Projects.
+Erase 'Learn basic Spanish' from Personal Goals/Projects.
+Eliminate 'Learn basic Spanish' in Personal Goals/Projects.
+Prompt me about 'Spaghetti Bolognese' in Meal Planning.
+Set a reminder for 'Spaghetti Bolognese' in Meal Planning.
+Dismiss 'Spaghetti Bolognese' from Meal Planning.
+Clear 'Spaghetti Bolognese' off Meal Planning.
+Start 'Save $200 monthly' in Personal Goals/Projects.
+Initiate 'Save $200 monthly' in Personal Goals/Projects.
+Revamp 'Grilled chicken dinner' in Meal Planning.
+Overhaul 'Grilled chicken dinner' in Meal Planning.
+Begin 'Email project report' in Work-related Tasks.
+Initiate 'Email project report' for Work-related Tasks.
+Alert me to 'Pay electricity bill' in Daily Tasks/Errands.
+Set a reminder for 'Pay electricity bill' in Daily Tasks/Errands.
+Acknowledge 'Clean bathrooms' as done in Household Chores.
+Mark 'Clean bathrooms' as completed in Household Chores.
+Notify me about 'Bread' in Grocery Shopping.
+Set a reminder for 'Bread' purchase in Grocery Shopping.
+Commence 'Jog for 30 minutes' in Health and Fitness Goals.
+Start 'Jog for 30 minutes' routine in Health and Fitness Goals.
+Alert me to 'Pay electricity bill' in Daily Tasks/Errands.
+Set a reminder for 'Pay electricity bill' in Daily Tasks/Errands.
+Refresh 'Save $200 monthly' in Personal Goals/Projects.
+Update 'Save $200 monthly' status in Personal Goals/Projects.
+Adjust 'Save $200 monthly' in Personal Goals/Projects.
+Modify 'Save $200 monthly' in Personal Goals/Projects.
+Confirm 'Reserve accommodations' as done in Travel Planning.
+Verify 'Reserve accommodations' completion in Travel Planning.
+Set a reminder for 'Attend yoga class' in Health and Fitness Goals.
+Alert me about 'Attend yoga class' in Health and Fitness Goals.
+Mark 'Save $200 monthly' as completed in Personal Goals/Projects.
+Check off 'Save $200 monthly' in Personal Goals/Projects.
+Revise 'Complete budget review' in Work-related Tasks.
+Update 'Complete budget review' in Work-related Tasks.
+Confirm 'Book flights' as completed in Travel Planning.
+Verify 'Book flights' as done in Travel Planning.
+Amend 'Pay electricity bill' in Daily Tasks/Errands.
+Change 'Pay electricity bill' details in Daily Tasks/Errands.
+Initiate 'Pay electricity bill' in Daily Tasks/Errands.
+Start 'Pay electricity bill' task in Daily Tasks/Errands.
+Cancel 'Book flights' in Travel Planning.
+Remove 'Book flights' from Travel Planning.
+Elevate 'Drink 8 glasses of water' in Health and Fitness Goals.
+Prioritize 'Drink 8 glasses of water' in Health and Fitness Goals.
+Focus on 'Pay electricity bill' in Daily Tasks/Errands.
+Prioritize 'Pay electricity bill' in Daily Tasks/Errands.
+Advance 'Prepare presentation' in Work-related Tasks.
+Prioritize 'Prepare presentation' in Work-related Tasks.
+Notify me about 'Grilled chicken dinner' in Meal Planning.
+Remind me to check 'Grilled chicken dinner' in Meal Planning.
+Raise 'Grilled chicken dinner' as a key item in Meal Planning.
+Put 'Grilled chicken dinner' as a top priority in Meal Planning.
+Adjust 'Read 30 minutes daily' in Personal Goals/Projects.
+Change 'Read 30 minutes daily' status in Personal Goals/Projects.
+Set a reminder for 'Chicken Breast' in Grocery Shopping.
+Notify me to buy 'Chicken Breast' in Grocery Shopping.
+Check off 'Send out invitations' as completed in Event Planning.
+Mark 'Send out invitations' as done in Event Planning.
+Launch 'Jog for 30 minutes' routine in Health and Fitness Goals.
+Begin 'Jog for 30 minutes' activity in Health and Fitness Goals.

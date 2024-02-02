@@ -1,0 +1,100 @@
+What time is it in GEOGRAPHIC_LOCATION?
+Can you tell me today's date in GEOGRAPHIC_LOCATION?
+Is it morning or evening now in GEOGRAPHIC_LOCATION?
+What's the day today in GEOGRAPHIC_LOCATION?
+Could you provide the current time in GEOGRAPHIC_LOCATION?
+Is it past midnight in GEOGRAPHIC_LOCATION?
+What is the exact date and time now in GEOGRAPHIC_LOCATION?
+Can you check if it's afternoon in GEOGRAPHIC_LOCATION?
+How many hours to noon in GEOGRAPHIC_LOCATION?
+What weekday is it today in GEOGRAPHIC_LOCATION?
+Could you inform me about the time with AM or PM in GEOGRAPHIC_LOCATION?
+Is it a weekend or a weekday today in GEOGRAPHIC_LOCATION?
+What's the time difference between here and GEOGRAPHIC_LOCATION?
+Can you tell me the date and month right now in GEOGRAPHIC_LOCATION?
+Are we close to the end of the month in GEOGRAPHIC_LOCATION?
+Could you tell me if it's the start of a new week in GEOGRAPHIC_LOCATION?
+What's the first day of the next month in GEOGRAPHIC_LOCATION?
+Is today a public holiday in GEOGRAPHIC_LOCATION?
+Could you tell me the time in GEOGRAPHIC_LOCATION in a 24-hour format?
+Are we in daylight saving time currently in GEOGRAPHIC_LOCATION?
+Is it a new year already in GEOGRAPHIC_LOCATION?
+What season is it currently in GEOGRAPHIC_LOCATION?
+Can you inform me of the sunrise time today in GEOGRAPHIC_LOCATION?
+What is the lunar phase tonight in GEOGRAPHIC_LOCATION?
+Could you check if we are in the first half of the year in GEOGRAPHIC_LOCATION?
+Is it closer to morning or evening now in GEOGRAPHIC_LOCATION?
+Can you let me know if the clocks will change soon in GEOGRAPHIC_LOCATION?
+What is the longest day of the year in GEOGRAPHIC_LOCATION?
+Could you tell me the exact minute and hour now in GEOGRAPHIC_LOCATION?
+Is GEOGRAPHIC_LOCATION currently observing standard time or daylight saving time?
+Can you inform me about the next public holiday date in GEOGRAPHIC_LOCATION?
+What's the current week number of the year in GEOGRAPHIC_LOCATION?
+Is it a leap year this year in GEOGRAPHIC_LOCATION?
+Could you tell me how many days are left in this month in GEOGRAPHIC_LOCATION?
+Is it the beginning of a new quarter in the year in GEOGRAPHIC_LOCATION?
+What is the exact second in the current minute in GEOGRAPHIC_LOCATION?
+Can you tell me if GEOGRAPHIC_LOCATION is in a different year than mine?
+What are the daylight hours today in GEOGRAPHIC_LOCATION?
+Is it the equinox today in GEOGRAPHIC_LOCATION?
+Could you inform me about the sunset time today in GEOGRAPHIC_LOCATION?
+What is the current time zone in GEOGRAPHIC_LOCATION?
+Can you tell me if it's a full moon tonight in GEOGRAPHIC_LOCATION?
+Is GEOGRAPHIC_LOCATION ahead or behind my time zone?
+What's the date of the next solstice in GEOGRAPHIC_LOCATION?
+Could you inform me of the number of days until the next major holiday in GEOGRAPHIC_LOCATION?
+Is it the fiscal year-end today in GEOGRAPHIC_LOCATION?
+Can you tell me the phase of the moon on this date in GEOGRAPHIC_LOCATION?
+What are the typical working hours today in GEOGRAPHIC_LOCATION?
+Is it a special cultural or religious day today in GEOGRAPHIC_LOCATION?
+Could you provide the exact time including seconds in GEOGRAPHIC_LOCATION?
+What's the time over in GEOGRAPHIC_LOCATION?
+Hey, what day is it in GEOGRAPHIC_LOCATION?
+It's morning there in GEOGRAPHIC_LOCATION, right?
+Any idea if it's past noon in GEOGRAPHIC_LOCATION?
+Hey, what's the date today in GEOGRAPHIC_LOCATION?
+Is it already evening in GEOGRAPHIC_LOCATION?
+Got the time in GEOGRAPHIC_LOCATION?
+What month are we in over in GEOGRAPHIC_LOCATION?
+Is it the weekend yet in GEOGRAPHIC_LOCATION?
+What's the hour there in GEOGRAPHIC_LOCATION?
+Know if it's a holiday today in GEOGRAPHIC_LOCATION?
+Is it super late in GEOGRAPHIC_LOCATION now?
+Hey, what's the weekday in GEOGRAPHIC_LOCATION?
+Is GEOGRAPHIC_LOCATION ahead of us in time?
+What year is it in GEOGRAPHIC_LOCATION? Just kidding!
+Morning or night now in GEOGRAPHIC_LOCATION?
+Are they in daylight savings now in GEOGRAPHIC_LOCATION?
+What's the first day next month in GEOGRAPHIC_LOCATION?
+Is it a special day today in GEOGRAPHIC_LOCATION?
+What season is it right now in GEOGRAPHIC_LOCATION?
+Got the exact minute in GEOGRAPHIC_LOCATION?
+Hey, is it already tomorrow in GEOGRAPHIC_LOCATION?
+Is it the same year in GEOGRAPHIC_LOCATION as here?
+What phase is the moon in tonight in GEOGRAPHIC_LOCATION?
+Is GEOGRAPHIC_LOCATION still in today or already in tomorrow?
+What's the time zone in GEOGRAPHIC_LOCATION?
+Know the sunrise time in GEOGRAPHIC_LOCATION?
+Is it getting dark in GEOGRAPHIC_LOCATION?
+Hey, what's the longest day in GEOGRAPHIC_LOCATION?
+What's the sunset time today in GEOGRAPHIC_LOCATION?
+Is it leap year in GEOGRAPHIC_LOCATION?
+Know the next public holiday in GEOGRAPHIC_LOCATION?
+Is it a workday today in GEOGRAPHIC_LOCATION?
+What week number is it in GEOGRAPHIC_LOCATION?
+Is it close to midnight in GEOGRAPHIC_LOCATION?
+Know if it's the equinox today in GEOGRAPHIC_LOCATION?
+Got the current week's day in GEOGRAPHIC_LOCATION?
+Is it cold season now in GEOGRAPHIC_LOCATION?
+What's the day after tomorrow in GEOGRAPHIC_LOCATION?
+Is it a full moon night in GEOGRAPHIC_LOCATION?
+Know the exact second right now in GEOGRAPHIC_LOCATION?
+Is it the end of the month in GEOGRAPHIC_LOCATION?
+What's the next big holiday in GEOGRAPHIC_LOCATION?
+Is it a festive day today in GEOGRAPHIC_LOCATION?
+Hey, is it already next year in GEOGRAPHIC_LOCATION?
+What's the typical lunchtime in GEOGRAPHIC_LOCATION?
+Got the day before yesterday in GEOGRAPHIC_LOCATION?
+Is it a cultural event today in GEOGRAPHIC_LOCATION?
+What's the local time difference with GEOGRAPHIC_LOCATION?
+Hey, is it the same weekday there in GEOGRAPHIC_LOCATION as here?

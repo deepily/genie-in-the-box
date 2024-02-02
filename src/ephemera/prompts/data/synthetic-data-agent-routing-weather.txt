@@ -1,0 +1,200 @@
+What will the temperature peak be today in GEOGRAPHIC_LOCATION?
+Is GEOGRAPHIC_LOCATION expecting any hurricanes soon?
+Forecast for this weekend in GEOGRAPHIC_LOCATION?
+How high will the humidity be in GEOGRAPHIC_LOCATION tomorrow?
+Will GEOGRAPHIC_LOCATION experience a cold wave this month?
+Any severe weather alerts for GEOGRAPHIC_LOCATION?
+What's the chance of precipitation in GEOGRAPHIC_LOCATION tonight?
+Is air pollution a concern today in GEOGRAPHIC_LOCATION?
+Could GEOGRAPHIC_LOCATION see tornadoes this season?
+Are there any flood warnings in GEOGRAPHIC_LOCATION currently?
+What is the sunrise time tomorrow in GEOGRAPHIC_LOCATION?
+Is it safe to travel to GEOGRAPHIC_LOCATION given the current weather?
+How is climate change affecting weather patterns in GEOGRAPHIC_LOCATION?
+Are snowstorms expected in GEOGRAPHIC_LOCATION this winter?
+What's the long-range summer forecast for GEOGRAPHIC_LOCATION?
+Is GEOGRAPHIC_LOCATION experiencing an unusual dry spell?
+What are the chances of a heatwave in GEOGRAPHIC_LOCATION?
+Any advice on dealing with the high UV index in GEOGRAPHIC_LOCATION?
+Will the upcoming week in GEOGRAPHIC_LOCATION be mostly sunny?
+How often does GEOGRAPHIC_LOCATION get thunderstorms in spring?
+Does GEOGRAPHIC_LOCATION have many foggy mornings?
+What's the average rainfall this time of year in GEOGRAPHIC_LOCATION?
+Can we expect early snowfall in GEOGRAPHIC_LOCATION?
+Is GEOGRAPHIC_LOCATION likely to experience hailstorms?
+What are the prevailing wind conditions in GEOGRAPHIC_LOCATION?
+It's unexpectedly warm today in GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION is facing extreme drought conditions.
+A beautiful, sunny day in GEOGRAPHIC_LOCATION!
+Heavy snowfall has been disrupting transport in GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION is enjoying a mild, pleasant autumn this year.
+Surprisingly, GEOGRAPHIC_LOCATION hasn’t had any rain this week.
+Experiencing frequent thunderstorms in GEOGRAPHIC_LOCATION lately.
+GEOGRAPHIC_LOCATION’s winter has been harsher than usual.
+A sudden drop in temperature was felt today in GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION is witnessing a record-breaking heatwave.
+Clear and starry nights have been a delight in GEOGRAPHIC_LOCATION.
+Persistent fog is affecting visibility in GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION has had a consistent gentle breeze this week.
+The spring blossoms in GEOGRAPHIC_LOCATION are early due to mild weather.
+GEOGRAPHIC_LOCATION is experiencing unusually high tides.
+A rare hailstorm hit GEOGRAPHIC_LOCATION yesterday.
+GEOGRAPHIC_LOCATION’s air quality is poor due to recent fires.
+A colorful rainbow appeared after the rain in GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION is facing challenges with flash floods.
+There's a noticeable change in wildlife behavior due to weather in GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION’s autumn leaves are exceptionally vibrant this year.
+An unexpected cold snap has hit GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION is enjoying longer days as summer approaches.
+The weather in GEOGRAPHIC_LOCATION is ideal for outdoor activities.
+GEOGRAPHIC_LOCATION had a serene and foggy morning today.
+Raining in GEOGRAPHIC_LOCATION?
+Frost tonight in GEOGRAPHIC_LOCATION?
+Sunrise time in GEOGRAPHIC_LOCATION?
+UV index in GEOGRAPHIC_LOCATION?
+Weekend weather in GEOGRAPHIC_LOCATION?
+Any fog in GEOGRAPHIC_LOCATION?
+Wind speeds in GEOGRAPHIC_LOCATION?
+Air quality in GEOGRAPHIC_LOCATION?
+Snowfall expected in GEOGRAPHIC_LOCATION?
+Heat in GEOGRAPHIC_LOCATION today?
+Storms in GEOGRAPHIC_LOCATION soon?
+Chance of hail in GEOGRAPHIC_LOCATION?
+Temperature drop in GEOGRAPHIC_LOCATION?
+Humidity levels in GEOGRAPHIC_LOCATION?
+Severe weather in GEOGRAPHIC_LOCATION?
+GEOGRAPHIC_LOCATION's weather tomorrow?
+Cloud cover in GEOGRAPHIC_LOCATION?
+Is GEOGRAPHIC_LOCATION windy today?
+Barometric pressure in GEOGRAPHIC_LOCATION?
+GEOGRAPHIC_LOCATION's sunset time?
+Cold wave in GEOGRAPHIC_LOCATION?
+Drought conditions in GEOGRAPHIC_LOCATION?
+Wet season start in GEOGRAPHIC_LOCATION?
+Is GEOGRAPHIC_LOCATION getting cooler?
+Thunder likelihood in GEOGRAPHIC_LOCATION?
+Hot in GEOGRAPHIC_LOCATION.
+Chilly in GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION: Foggy.
+Sunny day in GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION's clear night.
+Windy here in GEOGRAPHIC_LOCATION.
+Rainy evening in GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION: humid.
+Cool morning in GEOGRAPHIC_LOCATION.
+Stormy in GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION: dry spell.
+Mild in GEOGRAPHIC_LOCATION now.
+GEOGRAPHIC_LOCATION: overcast.
+Bright in GEOGRAPHIC_LOCATION today.
+GEOGRAPHIC_LOCATION: frosty.
+GEOGRAPHIC_LOCATION's calm weather.
+Wet in GEOGRAPHIC_LOCATION lately.
+GEOGRAPHIC_LOCATION: heatwave.
+GEOGRAPHIC_LOCATION: snowing.
+Cloudy skies in GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION: breezy.
+GEOGRAPHIC_LOCATION: icy roads.
+GEOGRAPHIC_LOCATION's starry sky.
+GEOGRAPHIC_LOCATION: sudden rain.
+GEOGRAPHIC_LOCATION: warm evening.
+What's the expected high temperature today in GEOGRAPHIC_LOCATION?
+Is there a chance of thunderstorms this evening in GEOGRAPHIC_LOCATION?
+What is the weekend forecast for GEOGRAPHIC_LOCATION?
+Are any weather advisories in effect for GEOGRAPHIC_LOCATION?
+How much rainfall is predicted for GEOGRAPHIC_LOCATION tomorrow?
+Is a heat advisory likely for GEOGRAPHIC_LOCATION next week?
+Can we expect frost in GEOGRAPHIC_LOCATION tonight?
+What's the air quality index in GEOGRAPHIC_LOCATION today?
+Are there any signs of an approaching storm in GEOGRAPHIC_LOCATION?
+What are the current wind conditions in GEOGRAPHIC_LOCATION?
+Is GEOGRAPHIC_LOCATION facing a risk of flooding this season?
+How has the weather been affecting traffic in GEOGRAPHIC_LOCATION?
+What's the humidity trend for this week in GEOGRAPHIC_LOCATION?
+Are there any unusual weather patterns in GEOGRAPHIC_LOCATION lately?
+Is GEOGRAPHIC_LOCATION experiencing seasonal allergies due to weather?
+What is the visibility range in GEOGRAPHIC_LOCATION today?
+Is GEOGRAPHIC_LOCATION expecting a cold front soon?
+What's the snow depth currently in GEOGRAPHIC_LOCATION?
+Are there any warnings for high UV levels in GEOGRAPHIC_LOCATION?
+How is the current weather affecting local events in GEOGRAPHIC_LOCATION?
+What's the likelihood of hail in GEOGRAPHIC_LOCATION this month?
+Is GEOGRAPHIC_LOCATION experiencing early signs of spring?
+What are the peak wind gusts forecasted for GEOGRAPHIC_LOCATION?
+How long will the current heatwave in GEOGRAPHIC_LOCATION last?
+What are the sunset and sunrise times for GEOGRAPHIC_LOCATION this week?
+GEOGRAPHIC_LOCATION is seeing a steady rise in temperatures.
+The morning in GEOGRAPHIC_LOCATION started with dense fog.
+GEOGRAPHIC_LOCATION experienced a brief, intense rain shower.
+It's a particularly windy day in GEOGRAPHIC_LOCATION.
+A beautiful, clear evening is unfolding in GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION's weather is perfect for outdoor sports.
+Recent rains in GEOGRAPHIC_LOCATION have eased the dry conditions.
+A cold snap in GEOGRAPHIC_LOCATION brought unexpected frost.
+The afternoon heat in GEOGRAPHIC_LOCATION is quite intense.
+GEOGRAPHIC_LOCATION has been enjoying a series of sunny days.
+There's a notable chill in the air this morning in GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION's nights are getting noticeably longer.
+A mild, pleasant breeze is cooling GEOGRAPHIC_LOCATION.
+Unexpected thunderstorms hit GEOGRAPHIC_LOCATION last night.
+GEOGRAPHIC_LOCATION is experiencing lower than average humidity.
+The weekend in GEOGRAPHIC_LOCATION was surprisingly warm.
+GEOGRAPHIC_LOCATION's skies are unusually clear this month.
+A gradual warming trend is noticeable in GEOGRAPHIC_LOCATION.
+Heavy cloud cover dominated the day in GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION is witnessing a decrease in daylight hours.
+Recent weather in GEOGRAPHIC_LOCATION is ideal for gardening.
+GEOGRAPHIC_LOCATION had a stunning sunset yesterday.
+Early morning dew is a common sight now in GEOGRAPHIC_LOCATION.
+The air feels drier than usual today in GEOGRAPHIC_LOCATION.
+GEOGRAPHIC_LOCATION is facing a week of fluctuating temperatures.
+Do I Need an umbrella in GEOGRAPHIC_LOCATION today?
+Should I wear a jacket in GEOGRAPHIC_LOCATION?
+Is sunscreen necessary in GEOGRAPHIC_LOCATION?
+GEOGRAPHIC_LOCATION: Wear boots?
+Carry water in GEOGRAPHIC_LOCATION?
+Is it a hat day in GEOGRAPHIC_LOCATION?
+GEOGRAPHIC_LOCATION: Ice on roads?
+Windy in GEOGRAPHIC_LOCATION. Secure items.
+GEOGRAPHIC_LOCATION: Sandals or shoes?
+GEOGRAPHIC_LOCATION: Sunglasses needed?
+Layer up in GEOGRAPHIC_LOCATION?
+GEOGRAPHIC_LOCATION: Allergy meds today?
+Check tire pressure in GEOGRAPHIC_LOCATION?
+GEOGRAPHIC_LOCATION: Leave early for fog?
+GEOGRAPHIC_LOCATION: Pack a picnic?
+GEOGRAPHIC_LOCATION: Close windows for rain?
+Wear gloves in GEOGRAPHIC_LOCATION?
+Lighting candles in GEOGRAPHIC_LOCATION tonight.
+GEOGRAPHIC_LOCATION: Carry a scarf?
+Turn on AC in GEOGRAPHIC_LOCATION?
+Considering the forecast, should I plan indoor activities in GEOGRAPHIC_LOCATION?
+Is it safe to go hiking in GEOGRAPHIC_LOCATION with the current weather?
+Should I expect flight delays in GEOGRAPHIC_LOCATION due to fog?
+Is it a good day to wash the car in GEOGRAPHIC_LOCATION?
+Are the roads safe for cycling in GEOGRAPHIC_LOCATION today?
+Do I need to water the plants in GEOGRAPHIC_LOCATION or will it rain?
+Is it wise to plan a beach day in GEOGRAPHIC_LOCATION this weekend?
+Should we expect disruptions in public transport in GEOGRAPHIC_LOCATION due to snow?
+Is it a good evening for a barbecue in GEOGRAPHIC_LOCATION?
+Do I need to insulate pipes in GEOGRAPHIC_LOCATION for the cold snap?
+Are outdoor sports advisable in GEOGRAPHIC_LOCATION with the windy conditions?
+Should I adjust my home's thermostat in GEOGRAPHIC_LOCATION today?
+Is it necessary to apply mosquito repellent in GEOGRAPHIC_LOCATION tonight?
+Is GEOGRAPHIC_LOCATION's weather suitable for a long drive?
+Should pets be kept indoors in GEOGRAPHIC_LOCATION due to the heat?
+Is it a good day for gardening in GEOGRAPHIC_LOCATION?
+Considering the humidity, should I use a dehumidifier in GEOGRAPHIC_LOCATION?
+Is it advisable to go fishing in GEOGRAPHIC_LOCATION with the current weather?
+Should I expect power outages in GEOGRAPHIC_LOCATION due to the storm?
+Is it safe to use outdoor electronic equipment in GEOGRAPHIC_LOCATION today?
+Is it a good day to go skiing in GEOGRAPHIC_LOCATION?
+Is it a good day to go birdwatching in GEOGRAPHIC_LOCATION?
+Is it a good day to go camping in GEOGRAPHIC_LOCATION?
+Is it a good day to go hiking in GEOGRAPHIC_LOCATION?
+Is it a good day to go fishing in GEOGRAPHIC_LOCATION?
+Is it a good day to go cycling in GEOGRAPHIC_LOCATION?
+Is it a good day to go swimming in GEOGRAPHIC_LOCATION?
+Is it a good day to go boating in GEOGRAPHIC_LOCATION?
+Is it a good day to go golfing in GEOGRAPHIC_LOCATION?
+Is it a good day to go surfing in GEOGRAPHIC_LOCATION?
