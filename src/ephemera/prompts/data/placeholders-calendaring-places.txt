@@ -1,0 +1,203 @@
+Home
+Office
+Workspace
+Convention Center
+Coffee Shop
+Local Park
+Restaurant
+Gym
+Fitness Center
+Hotel
+School
+Hospital
+Clinic
+Library
+Movie Theater
+Art Gallery
+Concert Hall
+Beach
+Shopping Mall
+Sports Arena/Stadium
+Community Center
+Museum
+University Campus
+Airport
+Bar/Pub
+Church
+Temple
+Zoo/Aquarium
+Friend's House
+Lakeside Cottage on Oakwood Lane
+The Greenhouse Loft in Downtown Arts District
+Maplewood Family Estate near Crescent Park
+Summit Tech Headquarters on Innovation Blvd.
+Riverside Legal Complex near City Courthouse
+Skyline Marketing Suites at Central Tower
+The Hive Collaborative Workspace on 5th Avenue
+The Creator's Hub in Midtown
+The Workshop Co-working Space by the Riverside
+Oceanview Convention Center at Marina Bay
+Grand Central Expo Hall in the City Center
+Mountain View Conference Facility near the National Park
+Java Junction on 3rd and Pine
+The Daily Grind near University Campus
+Brewtopia Coffee House in Historic Downtown
+Serenity Park by the Lakeside
+Central Town Green near the Library
+Whispering Pines Public Park next to the Museum
+Bella's Italian Bistro on Vine Street
+The Seaside Grill near Marina Bay
+Mountain View Diner on Maple Street
+Gold's Gym on Main Street
+Elite Fitness Center near Riverside Park
+Downtown Athletic Club on Elm Avenue
+Peak Performance Fitness Hub on Oak Street
+Urban Wellness Gym near Central Station
+Bodyworks Training Center in Greenfield District
+Grandview Hotel on Ocean Avenue
+The Heritage Inn near Central Plaza
+Summit Suites Hotel adjacent to the Convention Center
+Maplewood Elementary on 4th Avenue
+Riverdale High School near Community Park
+Green Valley Academy in the Suburbs
+Saint Agnes Hospital of the Perpetual Grace
+Riverside General Hospital on Maple Drive
+Eastwood Medical Center near Willow Park
+Downtown Health Clinic on Main St.
+Oak Leaf Medical Center near the University
+Riverbend Family Practice by the Shopping District
+The Public Library on 15th St.
+Westside Community Library near Oakwood Mall
+Riverfront Library adjacent to City Hall
+Starlight Cinema on Broadway
+The Majestic Theater in Old Town
+Sunset Drive-In near the Airport
+Downtown Art Gallery on Elm Street
+The Modern Art Space in Midtown
+Seaside Art Collective near the Marina
+Harmony Concert Hall in the City Center
+Riverside Philharmonic Arena in Eastside
+The Metropolitan Opera House near Central Park
+Sunnyside Beach near Coastal Town
+Crystal Cove Beach alongside Cliffside Park
+Marina Beachfront by the Boardwalk
+Valley View Mall at the Crossroads
+Skyline Shopping Center in Downtown
+Green Meadows Outdoor Mall near the Suburbs
+King's Arena in Metro City
+Eagle Stadium near the Riverside
+Falcon Sports Complex in Westwood
+Willow Community Center in the Suburbs
+Oakwood Village Hall near the Park
+Riverside Cultural Center in Downtown
+City Museum of Natural History on State Street
+Modern Art Museum in the Arts District
+Heritage Museum of Culture near the Capitol
+State University Main Campus in the City
+River City College Campus near Downtown
+Green Valley University Grounds in the Suburbs
+Sky Harbor International Airport
+Greenfield Regional Airport near the Business Park
+Coastal City Airport by the Seaside
+The Rusty Anchor Bar on Dock Street
+The Night Owl Pub in the City Center
+The Tipsy Tavern in the Historic District
+St. Michael's Church in Midtown
+Grace Cathedral on Hill Street
+Trinity Lutheran Church near the Park
+Lotus Temple on Harmony Road
+Old Town Shalom Synagogue near Heritage Museum
+Sunrise Hindu Temple by Lakeview Gardens
+City Zoo and Botanical Gardens
+Wild Wonders Aquarium by the Harbor
+Safari Park Adventure near the Forest
+John's Lakeside Retreat
+Sarah's Urban Townhouse in the City
+Emily's Country Farmhouse in the Valley
+Lakeside Cottage
+Greenhouse Loft
+Maplewood Estate
+Summit Tech Headquarters
+Riverside Legal Complex
+Skyline Marketing Suites
+The Hive Collaborative
+The Creator's Hub
+The Workshop Co-working Space
+Oceanview Convention Center
+Grand Central Expo Hall
+Mountain View Conference Facility
+Java Junction
+Daily Grind
+Brewtopia
+Serenity Park
+Central Town Green
+Whispering Pines Park
+Bella's Italian Bistro
+Seaside Grill
+Mountain View Diner
+Gold's Gym
+Elite Fitness Center
+Downtown Athletic Club
+Peak Performance Hub
+Urban Wellness Gym
+Bodyworks Training Center
+Grandview Hotel
+Heritage Inn
+Summit Suites Hotel
+Maplewood Elementary
+Riverdale High
+Green Valley Academy
+Saint Agnes Hospital
+Riverside General
+Eastwood Medical Center
+Downtown Health Clinic
+Oak Leaf Medical Center
+Riverbend Family Practice
+City Library
+Westside Community Library
+Riverfront Library
+Starlight Cinema
+Majestic Theater
+Sunset Drive-In
+Downtown Art Gallery
+Modern Art Space
+Seaside Art Collective
+Harmony Concert Hall
+Riverside Philharmonic Arena
+Metropolitan Opera House
+Sunnyside Beach
+Crystal Cove Beach
+Marina Beachfront
+Valley View Mall
+Skyline Shopping Center
+Green Meadows Outdoor Mall
+King's Arena
+Eagle Stadium
+Falcon Sports Complex
+Willow Community Center
+Oakwood Village Hall
+Riverside Cultural Center
+Natural History Museum
+Modern Art Museum
+Heritage Museum of Culture
+Main University Campus
+River City College
+Green Valley University Grounds
+Sky Harbor International
+Greenfield Regional
+Coastal City Airport
+Rusty Anchor Bar
+Night Owl Pub
+Tipsy Tavern
+St. Michael's Church
+Grace Cathedral
+Trinity Lutheran
+Lotus Temple
+Old Town Synagogue
+Sunrise Hindu Temple
+City Zoo
+Wild Wonders Aquarium
+Safari Park Adventure
+Lakeside Retreat
+Urban Townhouse
+Country Farmhouse

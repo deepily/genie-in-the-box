@@ -1,0 +1,200 @@
+New York, USA
+London, UK
+Tokyo, Japan
+Sydney, Australia
+Paris, France
+Dubai, UAE
+Moscow, Russia
+Rio de Janeiro, Brazil
+Toronto, Canada
+Beijing, China
+Mumbai, India
+Singapore
+Los Angeles, USA
+Cape Town, South Africa
+Madrid, Spain
+Rome, Italy
+Bangkok, Thailand
+Istanbul, Turkey
+Buenos Aires, Argentina
+Seoul, South Korea
+Mexico City, Mexico
+Cairo, Egypt
+Lagos, Nigeria
+Nairobi, Kenya
+Johannesburg, South Africa
+Santiago, Chile
+Lima, Peru
+Jakarta, Indonesia
+Kuala Lumpur, Malaysia
+Manila, Philippines
+Vancouver, Canada
+Berlin, Germany
+Helsinki, Finland
+Oslo, Norway
+Stockholm, Sweden
+Copenhagen, Denmark
+Amsterdam, Netherlands
+Brussels, Belgium
+Vienna, Austria
+Zurich, Switzerland
+Athens, Greece
+Lisbon, Portugal
+Dublin, Ireland
+Prague, Czech Republic
+Warsaw, Poland
+Budapest, Hungary
+Auckland, New Zealand
+Honolulu, USA
+Alaska, USA
+Greenland
+Reykjavik, Iceland
+Havana, Cuba
+Montreal, Canada
+San Francisco, USA
+Seattle, USA
+Boston, USA
+Chicago, USA
+Houston, USA
+Miami, USA
+Las Vegas, USA
+Atlanta, USA
+New Orleans, USA
+San Juan, Puerto Rico
+Caracas, Venezuela
+Quito, Ecuador
+Bogota, Colombia
+Montevideo, Uruguay
+Casablanca, Morocco
+Accra, Ghana
+Dakar, Senegal
+Tel Aviv, Israel
+Tehran, Iran
+Karachi, Pakistan
+Dhaka, Bangladesh
+Hanoi, Vietnam
+Ho Chi Minh City, Vietnam
+Taipei, Taiwan
+Hong Kong
+Macau
+Ulaanbaatar, Mongolia
+Kathmandu, Nepal
+Colombo, Sri Lanka
+Male, Maldives
+Tashkent, Uzbekistan
+Almaty, Kazakhstan
+Baku, Azerbaijan
+Yerevan, Armenia
+Tbilisi, Georgia
+Beirut, Lebanon
+Amman, Jordan
+Kuwait City, Kuwait
+Doha, Qatar
+Bahrain
+Muscat, Oman
+Sana'a, Yemen
+Addis Ababa, Ethiopia
+Antananarivo, Madagascar
+Port Louis, Mauritius
+Canberra, Australia
+Perth, Australia
+New York City, New York
+Los Angeles, California
+Chicago, Illinois
+Houston, Texas
+Phoenix, Arizona
+Philadelphia, Pennsylvania
+San Antonio, Texas
+San Diego, California
+Dallas, Texas
+San Jose, California
+Austin, Texas
+Jacksonville, Florida
+Fort Worth, Texas
+Columbus, Ohio
+Charlotte, North Carolina
+San Francisco, California
+Indianapolis, Indiana
+Seattle, Washington
+Denver, Colorado
+Washington D.C.
+Boston, Massachusetts
+El Paso, Texas
+Nashville, Tennessee
+Detroit, Michigan
+Oklahoma City, Oklahoma
+Portland, Oregon
+Las Vegas, Nevada
+Memphis, Tennessee
+Louisville, Kentucky
+Baltimore, Maryland
+Milwaukee, Wisconsin
+Albuquerque, New Mexico
+Tucson, Arizona
+Fresno, California
+Sacramento, California
+Kansas City, Missouri
+Long Beach, California
+Mesa, Arizona
+Atlanta, Georgia
+Miami, Florida
+Colorado Springs, Colorado
+Raleigh, North Carolina
+Omaha, Nebraska
+Minneapolis, Minnesota
+Tulsa, Oklahoma
+Wichita, Kansas
+New Orleans, Louisiana
+Arlington, Texas
+Cleveland, Ohio
+Bakersfield, California
+Tampa, Florida
+Aurora, Colorado
+Honolulu, Hawaii
+Anaheim, California
+Santa Ana, California
+Corpus Christi, Texas
+Riverside, California
+St. Louis, Missouri
+Lexington, Kentucky
+Stockton, California
+Pittsburgh, Pennsylvania
+Saint Paul, Minnesota
+Cincinnati, Ohio
+Anchorage, Alaska
+Henderson, Nevada
+Greensboro, North Carolina
+Plano, Texas
+Newark, New Jersey
+Lincoln, Nebraska
+Orlando, Florida
+Irvine, California
+Toledo, Ohio
+Jersey City, New Jersey
+Chula Vista, California
+Durham, North Carolina
+Fort Wayne, Indiana
+St. Petersburg, Florida
+Laredo, Texas
+Buffalo, New York
+Madison, Wisconsin
+Lubbock, Texas
+Chandler, Arizona
+Scottsdale, Arizona
+Glendale, Arizona
+Reno, Nevada
+Norfolk, Virginia
+Winston–Salem, North Carolina
+North Las Vegas, Nevada
+Gilbert, Arizona
+Chesapeake, Virginia
+Irving, Texas
+Hialeah, Florida
+Garland, Texas
+Fremont, California
+Baton Rouge, Louisiana
+Richmond, Virginia
+Boise, Idaho
+San Bernardino, California
+Birmingham, Alabama
+Spokane, Washington
