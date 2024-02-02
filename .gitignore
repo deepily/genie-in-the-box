@@ -48,7 +48,7 @@ nohup.out
 
 # Skip your voice come in training data, it's too big!
 # Why isn't this exclusion working?!?
-src/ephemera/prompts/data/voice-commands-xml-*.jsonl
-src/ephemera/prompts/data/voice-commands-xml-text.jsonl
-src/ephemera/prompts/data/voice-commands-xml-train.jsonl
-src/ephemera/prompts/data/voice-commands-xml-validate.jsonl
+**/voice-commands-xml-*.jsonl
+#src/ephemera/prompts/data/voice-commands-xml-test.jsonl
+#src/ephemera/prompts/data/voice-commands-xml-train.jsonl
+#src/ephemera/prompts/data/voice-commands-xml-validate.jsonl
