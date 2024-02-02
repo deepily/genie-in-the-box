@@ -1,25 +1,25 @@
-Search clipboard with p find, open another tab.
-Clipboard to p find search, in fresh tab.
+Search clipboard with p-find, open another tab.
+Clipboard to p-find search, in fresh tab.
 Lookup clipboard with phind, different tab.
-Clipboard content, in new window using p find.
-Do search with clipboard via p find, new tab.
-Please use clipboard for p find search in another tab.
+Clipboard content, in new window using p-find.
+Do search with clipboard via p-find, new tab.
+Please use clipboard for p-find search in another tab.
 Can you perform a clipboard search with pea find in a separate tab?
 Open new tab with clipboard search results from phind.
 Use clipboard, display results in a new window with p-find.
 Clipboard contents, search and show in new tab via p-find.
-Search using clipboard with p find, open in another tab.
+Search using clipboard with p-find, open in another tab.
 Clipboard data, p-find in another window using pea find.
 Execute search from clipboard in a distinct tab with pea find.
-Clipboard search with p find, result in separate tab.
-Conduct a search with clipboard using p find, new tab.
+Clipboard search with p-find, result in separate tab.
+Conduct a search with clipboard using p-find, new tab.
 Clipboard data, search and open in new window with pea find.
 Can you use clipboard contents for a pea find search in a new tab?
-Please look up what's on my clipboard in a different tab using p find.
+Please look up what's on my clipboard in a different tab using p-find.
 Search this clipboard content with pea find, open results in fresh tab.
 Clipboard, p-find in new tab, please, using p-find.
 Perform a web search with clipboard using pea find, open in separate tab.
-Clipboard text, search and display in new window with p find.
+Clipboard text, search and display in new window with p-find.
 Use clipboard for p-find search, show in another tab.
 Clipboard, conduct a search with pea find, another tab.
 Search with clipboard using phind, result in different tab.
@@ -96,48 +96,48 @@ Clipboard, search in new window, please, with pea find.
 Can you search this window with clipboard using p-find, open new tab?
 Search with clipboard text in separate window with phind.
 Clipboard contents to phind search, open in fresh tab.
-Do a search with clipboard in new window using p find.
+Do a search with clipboard in new window using p-find.
 Clipboard, lookup in distinct tab with p-find.
-Please use what's on my clipboard to search in a new tab with p find.
+Please use what's on my clipboard to search in a new tab with p-find.
 Can you perform a search with the clipboard contents in another window using p-find?
-Use the clipboard data for a quick search in a new tab with p find, please.
+Use the clipboard data for a quick search in a new tab with p-find, please.
 Could you conduct a search using the clipboard text in another tab with p-find?
-I'd like a search with the clipboard contents in a new window, please, using p find.
-Can you take the text from my clipboard and use it to perform a search in a new tab with p find?
-Please execute a web search using the information I've just copied with p find, displaying the results in another tab.
+I'd like a search with the clipboard contents in a new window, please, using p-find.
+Can you take the text from my clipboard and use it to perform a search in a new tab with p-find?
+Please execute a web search using the information I've just copied with p-find, displaying the results in another tab.
 Use the data I've copied to the clipboard for a search with p-find, and show the results in a new window.
 Could you search the internet with the contents of my clipboard using phind and present the findings in some other tab?
-Take the clipboard contents and conduct a search with p find, making sure to display the results here in a new browser tab.
-Utilize the clipboard contents for a p find search and open the results in a separate tab.
-I need a web search with the data on my clipboard using p find, please open the results in a new window.
+Take the clipboard contents and conduct a search with p-find, making sure to display the results here in a new browser tab.
+Utilize the clipboard contents for a p-find search and open the results in a separate tab.
+I need a web search with the data on my clipboard using p-find, please open the results in a new window.
 Search using the clipboard text with phind and show the results in a different tab, if you could.
 Would you mind using the clipboard contents for a pea find search in a new tab?
 Perform an internet search with what I've copied using pea find and display it in another browser tab.
 Can you do a quick lookup with my clipboard data in a new window using p-find?
-Please p-find the information on my clipboard in a new tab with p find.
-Use the clipboard data to perform a search with p find, and kindly open the results in a separate window.
-I'd appreciate if you could search using the clipboard with p find and show the findings in a new tab.
+Please p-find the information on my clipboard in a new tab with p-find.
+Use the clipboard data to perform a search with p-find, and kindly open the results in a separate window.
+I'd appreciate if you could search using the clipboard with p-find and show the findings in a new tab.
 Search the web with my clipboard contents using pea find and please display the results in another tab.
-p find search clipboard, new tab.
+p-find search clipboard, new tab.
 Use p-find, clipboard to new tab.
 Clipboard, p-find look up, other tab.
 p-find, p-find clipboard data, open tab.
 Clipboard contents to p-find, in fresh window.
 Execute pea find search with clipboard, separate tab.
 Open new tab, pea find clipboard search.
-Clipboard data, p find new window search.
+Clipboard data, p-find new window search.
 pea find, display clipboard results, new tab.
 Use clipboard on p-find, different tab.
-p find search, clipboard data, other window.
+p-find search, clipboard data, other window.
 Clipboard to pea find, results in fresh tab.
-p find, execute clipboard search, new window.
-Clipboard contents, p find, separate tab.
+p-find, execute clipboard search, new window.
+Clipboard contents, p-find, separate tab.
 p-find, new tab with clipboard query.
 phind, lookup clipboard, different window.
 Clipboard, pea find search in new tab.
 Perform p-find clipboard search, distinct window.
 Clipboard contents, use p-find, new tab.
-p find, search clipboard, open in another window.
+p-find, search clipboard, open in another window.
 Clipboard data, pea find, open new tab.
 pea find query, clipboard, in fresh window.
 New tab, clipboard contents to pea find.
@@ -147,40 +147,40 @@ p p-find, clipboard data, fresh window.
 phind search from clipboard, separate tab.
 Clipboard text, p p-find, new window.
 p-find, clipboard in other tab.
-Clipboard, p find, new window.
-p find, search with clipboard, another tab.
+Clipboard, p-find, new window.
+p-find, search with clipboard, another tab.
 Clipboard contents, open new tab via pea find.
 pea find, clipboard lookup, fresh tab.
 New window, phind with clipboard.
 Clipboard, pea find, distinct window.
-p find search clipboard, open different tab.
-Clipboard data, p find, another window.
+p-find search clipboard, open different tab.
+Clipboard data, p-find, another window.
 p-find, clipboard new tab.
-Clipboard to p find, new window.
-p find, clipboard search, fresh tab.
+Clipboard to p-find, new window.
+p-find, clipboard search, fresh tab.
 Clipboard data, new tab with pea find.
 p-find, open new window, clipboard.
-Clipboard contents, p find, separate window.
-p find, clipboard in fresh tab.
+Clipboard contents, p-find, separate window.
+p-find, clipboard in fresh tab.
 Clipboard, open in new window with pea g.
-p find, clipboard to new window.
-Clipboard data, p find in other tab.
+p-find, clipboard to new window.
+Clipboard data, p-find in other tab.
 p-find search, new tab, clipboard.
 Clipboard, pea find, open distinct tab.
 phind, new window, clipboard data.
 Clipboard, pea find other tab.
-p find, clipboard p-find in new tab.
-Clipboard data, fresh window via p find.
+p-find, clipboard p-find in new tab.
+Clipboard data, fresh window via p-find.
 phind, search clipboard in different window.
-Clipboard, p find, fresh tab.
+Clipboard, p-find, fresh tab.
 pea find, new tab clipboard search.
 Clipboard to pea find, distinct window.
 pea find, clipboard in another window.
-Clipboard, p find, new tab open.
+Clipboard, p-find, new tab open.
 p-find, clipboard, open fresh window.
-Clipboard, new tab via p find.
+Clipboard, new tab via p-find.
 p-find, clipboard to separate tab.
-Clipboard, p find, different tab.
+Clipboard, p-find, different tab.
 pea find, clipboard data, new tab.
 Clipboard, open with pea find, new window.
 pea find, p-find clipboard in fresh tab.
@@ -188,8 +188,8 @@ Clipboard to pea find, open new tab.
 p-find, clipboard, distinct window.
 Clipboard, new window with phind.
 phind, clipboard query, separate tab.
-Clipboard, p find, another tab.
-p find, new tab, clipboard data.
+Clipboard, p-find, another tab.
+p-find, new tab, clipboard data.
 Clipboard to p-find, different window.
 pea find, clipboard, new tab search.
 Clipboard, pfind in fresh window.

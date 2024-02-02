@@ -1,9 +1,9 @@
-Execute a find search for SEARCH_TERMS in a new tab
+Execute a p-find search for SEARCH_TERMS in a new tab
 In a new tab, perform a phind search of SEARCH_TERMS
 SEARCH_TERMS p find search in a fresh tab
 New tab, p find, SEARCH_TERMS
 p find SEARCH_TERMS, display results in a new window
-In a new tab, find search for SEARCH_TERMS
+In a new tab, p-find search for SEARCH_TERMS
 SEARCH_TERMS, p find it, new tab
 Launch a new tab, search pea find for SEARCH_TERMS
 pea find search for SEARCH_TERMS, reveal results in a new tab
@@ -15,7 +15,7 @@ SEARCH_TERMS, p find search, fresh tab
 New tab, search find for SEARCH_TERMS
 Start a pea find search for SEARCH_TERMS in a new tab
 Conduct a pea find search on SEARCH_TERMS in a new tab
-New tab, find SEARCH_TERMS
+New tab, p-find SEARCH_TERMS
 Open p find, search SEARCH_TERMS, show results in new tab
 Show p find search results for SEARCH_TERMS in a new tab
 Perform a pea find search on SEARCH_TERMS, results in new tab
@@ -25,13 +25,13 @@ In a new tab, execute a p find search for SEARCH_TERMS
 phind search in a new tab, keywords: SEARCH_TERMS
 Do a pea find lookup for SEARCH_TERMS, results in a new tab
 Run a new tab, pea find search SEARCH_TERMS
-Carry out a find search for SEARCH_TERMS in a new tab
+Carry out a p-find search for SEARCH_TERMS in a new tab
 pea find SEARCH_TERMS, open results in a new tab
 New tab, perform p find search on SEARCH_TERMS
 Make a p find search for SEARCH_TERMS, open in new tab
-Execute a search on find for SEARCH_TERMS, display in a new tab
+Execute a search on p-find for SEARCH_TERMS, display in a new tab
 Initiate a new tab, then p find search SEARCH_TERMS
-In a fresh tab, find search for SEARCH_TERMS
+In a fresh tab, p-find search for SEARCH_TERMS
 SEARCH_TERMS, perform p find search in a new tab
 Carry out a search on pea find for SEARCH_TERMS in a new tab
 Launch a new tab, perform a p find search for SEARCH_TERMS
@@ -50,17 +50,17 @@ Please conduct a p find search for SEARCH_TERMS in a new tab
 In a new tab, carry out a pea find search for SEARCH_TERMS
 Open new tab, p find SEARCH_TERMS
 Execute pea find search for SEARCH_TERMS, results in new tab
-SEARCH_TERMS, find it, open in new tab
+SEARCH_TERMS, p-find it, open in new tab
 Start a p find lookup for SEARCH_TERMS in a fresh tab
 Launch a p find search for SEARCH_TERMS in a new tab
 Initiate a pea find search in a new tab for SEARCH_TERMS
 p find SEARCH_TERMS, show in new tab
-Do a find search in a new tab, keywords: SEARCH_TERMS
+Do a p-find search in a new tab, keywords: SEARCH_TERMS
 Open a new tab and do a phind search for SEARCH_TERMS
 Search p find for SEARCH_TERMS in a fresh tab
 Perform a p find lookup for SEARCH_TERMS, results in a new tab
 Begin a new tab, then p find search SEARCH_TERMS
-Run a find search on SEARCH_TERMS, results in new tab
+Run a p-find search on SEARCH_TERMS, results in new tab
 In a new window, pea find search for SEARCH_TERMS
 Please initiate a p find search for SEARCH_TERMS in a new tab
 Conduct a p find lookup for SEARCH_TERMS in a fresh tab
@@ -68,7 +68,7 @@ Open p find, search SEARCH_TERMS, results in new tab
 Carry out a pea find lookup for SEARCH_TERMS, results in new tab
 p find search for SEARCH_TERMS, show results in a fresh tab
 Please begin a pea find search for SEARCH_TERMS in a new tab
-New tab, conduct find search on SEARCH_TERMS
+New tab, conduct p-find search on SEARCH_TERMS
 Start a new tab, do a pea find search for SEARCH_TERMS
 New tab, initiate a p find search for SEARCH_TERMS
 Open a fresh tab, phind search SEARCH_TERMS
@@ -77,23 +77,23 @@ Run a pea find lookup for SEARCH_TERMS in a new tab
 New tab, begin a pea find search for SEARCH_TERMS
 Initiate a phind lookup in a new tab for SEARCH_TERMS
 In a fresh tab, initiate a p find search for SEARCH_TERMS
-New tab, carry out find search on SEARCH_TERMS
+New tab, carry out p-find search on SEARCH_TERMS
 Please start a pea find search for SEARCH_TERMS in a new tab
 Carry out a pea find search in a new tab for SEARCH_TERMS
 New tab, pea find SEARCH_TERMS, display results
 In a fresh tab, begin a phind search for SEARCH_TERMS
 Launch a phind lookup for SEARCH_TERMS in a new tab
-Please carry out a find search for SEARCH_TERMS in a new tab
-In a new tab, run a find search for SEARCH_TERMS
+Please carry out a p-find search for SEARCH_TERMS in a new tab
+In a new tab, run a p-find search for SEARCH_TERMS
 Start a p find search on SEARCH_TERMS in a new tab
-Please perform a find search for SEARCH_TERMS in a new tab
-In a fresh tab, start a find search for SEARCH_TERMS
+Please perform a p-find search for SEARCH_TERMS in a new tab
+In a fresh tab, start a p-find search for SEARCH_TERMS
 In a new tab, carry out a search on phind for SEARCH_TERMS
-New tab, find SEARCH_TERMS, reveal results
+New tab, p-find SEARCH_TERMS, reveal results
 In a fresh tab, launch a pea find search for SEARCH_TERMS
-Initiate a find search on SEARCH_TERMS in a new tab
+Initiate a p-find search on SEARCH_TERMS in a new tab
 New tab, conduct phind lookup on SEARCH_TERMS
-In a new tab, start a find lookup for SEARCH_TERMS
+In a new tab, start a p-find lookup for SEARCH_TERMS
 Begin a p find lookup for SEARCH_TERMS in a new tab
 Please run a p find search for SEARCH_TERMS in a new tab
 In a fresh tab, conduct a pea find search on SEARCH_TERMS

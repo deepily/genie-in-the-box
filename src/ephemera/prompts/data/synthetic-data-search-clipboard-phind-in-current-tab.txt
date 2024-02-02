@@ -1,29 +1,29 @@
-Clipboard, p find search this tab.
-Run p find with clipboard data here.
+Clipboard, p-find search this tab.
+Run p-find with clipboard data here.
 find, search from clipboard in current window.
 Clipboard text to phind search, this tab.
-p find, find clipboard content here.
+p-find, use clipboard content here.
 Use pea find with clipboard, in this window.
 Clipboard data, search here using pea find.
 pea find lookup with clipboard, in this tab.
 Clipboard content search in tab, via find.
-p find, conduct search from clipboard here.
+p-find, conduct search from clipboard here.
 Clipboard info to pea find, search this window.
 find, use clipboard contents in current tab.
 Can phind search clipboard data in this window?
-p find, execute search with clipboard here.
-Clipboard search in this tab, through p find.
-p find, look up using clipboard in tab.
+p-find, execute search with clipboard here.
+Clipboard search in this tab, through p-find.
+p-find, look up using clipboard in tab.
 Clipboard contents, find, search in window.
 phind, process clipboard search here.
-Clipboard to p find lookup, current window.
+Clipboard to p-find lookup, current window.
 phind, analyze clipboard in this tab.
-Clipboard data, p find lookup in this window.
+Clipboard data, p-find lookup in this window.
 find, clipboard content search here.
 Clipboard, phind web search in tab.
-p find, clipboard search in current window.
+p-find, clipboard search in current window.
 Clipboard to find, search in this tab.
-p find, apply clipboard in current search.
+p-find, apply clipboard in current search.
 phind, scan clipboard contents here.
 Clipboard data, use phind in this tab.
 phind, clipboard lookup in current window.
@@ -32,33 +32,33 @@ phind, clipboard content find in window.
 phind, deploy clipboard search in tab.
 Clipboard data, find search here.
 find, clipboard tab search.
-Clipboard, p find find in this window.
+Clipboard, p-find find in this window.
 find, investigate clipboard in tab.
-p find, apply clipboard data in current search.
+p-find, apply clipboard data in current search.
 Clipboard contents to find, this window.
 find, conduct clipboard analysis in tab.
 Clipboard data, find search in window.
 find, utilize clipboard in this tab.
-Clipboard, p find window search.
+Clipboard, p-find window search.
 phind, clipboard data use in tab.
 phind, current tab clipboard lookup.
-Clipboard to p find, current window search.
+Clipboard to p-find, current window search.
 find, perform clipboard search here.
-Clipboard, use p find in this window.
+Clipboard, use p-find in this window.
 phind, clipboard search in this tab now.
 Clipboard data, find quick search in window.
 phind, process clipboard data in tab.
 Clipboard, find analysis in current window.
 phind, execute clipboard search in tab.
-Clipboard to p find, find in this window.
+Clipboard to p-find, find in this window.
 phind, clipboard content analysis in tab.
 Clipboard, phind search in this window.
 phind, use clipboard for search in current tab.
 Clipboard data, phind, search in tab.
 phind, current window clipboard search.
-Clipboard, p find lookup here.
-p find, find using clipboard in this tab.
-Clipboard to p find, search now in window.
+Clipboard, p-find lookup here.
+p-find, find using clipboard in this tab.
+Clipboard to p-find, search now in window.
 phind, clipboard search in tab.
 Clipboard, phind quick lookup in window.
 pea find, use clipboard data in this search.
@@ -105,18 +105,18 @@ Clipboard data, lookup in this window with find.
 Can you do a search with my clipboard contents in this tab on phind?
 Search here using clipboard text with phind.
 Clipboard, search in current window with phind, please.
-Perform a clipboard-based search in this tab with p find.
-Clipboard contents to find, in this tab with p find.
+Perform a clipboard-based search in this tab with p-find.
+Clipboard contents to find, in this tab with p-find.
 Use clipboard for search in this window with phind.
 Search using clipboard in current tab with pea find.
 Clipboard, conduct a search here with find.
 Clipboard data, quick search with find, this window.
-Can you find using clipboard in this tab with p find?
+Can you find using clipboard in this tab with p-find?
 Search this window with clipboard using find.
 Clipboard text, lookup in current tab with phind.
 Clipboard contents, use for search here with find.
 Execute search with clipboard in this tab using pea find.
-Clipboard, find in this window with p find.
+Clipboard, find in this window with p-find.
 Search with what's on clipboard in tab using find.
 Clipboard data to phind web lookup, in this window.
 Can you search this tab with clipboard contents on phind?
@@ -124,70 +124,70 @@ Clipboard to find, in current tab with find.
 Use clipboard, search in this window with pea find.
 Clipboard contents, quick find here with pea find.
 Search using clipboard, show in this tab with pea find.
-Clipboard, use for search in this window with p find.
-Perform a search with my clipboard in this tab using p find.
+Clipboard, use for search in this window with p-find.
+Perform a search with my clipboard in this tab using p-find.
 Clipboard data, lookup here with pea find, please.
 Can you search with clipboard in current window on pea find?
-Search here, clipboard contents with p find.
+Search here, clipboard contents with p-find.
 Clipboard to find web search, in this tab.
-Clipboard contents, use for quick search here with p find.
+Clipboard contents, use for quick search here with p-find.
 Do a search with clipboard in this window using find.
 Clipboard, search in this tab with find.
-Can you look up the clipboard contents in this window with p find?
+Can you look up the clipboard contents in this window with p-find?
 Use clipboard for quick search in this tab with find.
 Clipboard text, search here with find.
 Perform a search using clipboard in current window with pea find.
 Search with clipboard data in this tab on pea find.
-Clipboard, lookup in this window with p find.
+Clipboard, lookup in this window with p-find.
 Can you use clipboard for search in this tab with phind?
 Search this window, clipboard contents with pea find.
-Clipboard to p find search, show results in tab.
+Clipboard to p-find search, show results in tab.
 Use clipboard, search now in this window with find.
-Clipboard contents, find in this tab with p find.
+Clipboard contents, find in this tab with p-find.
 Do a quick search with clipboard here using pea find.
 Clipboard data, search in this tab with pea find.
-Can you find using clipboard in current window with p find?
+Can you find using clipboard in current window with p-find?
 Search here, clipboard with pea find.
-Clipboard to p find lookup, in this window.
+Clipboard to p-find lookup, in this window.
 Use clipboard for search, show in tab with pea find.
-Clipboard, do a search in this window with p find.
+Clipboard, do a search in this window with p-find.
 Can you search using clipboard in this tab with pea find?
 Search with clipboard, display here with pea find.
 Clipboard contents, lookup in this tab with pea find.
-Perform a web search with clipboard here using p find.
+Perform a web search with clipboard here using p-find.
 Clipboard data, find now in this window with pea find.
-Can you look up with clipboard in this tab using p find?
+Can you look up with clipboard in this tab using p-find?
 Search here using clipboard with find.
 Clipboard to phind web lookup, in tab.
 Use clipboard, find in this window with pea find.
 Clipboard, search in this tab, please, with find.
 Can you search this window with clipboard on pea find?
-Search with clipboard text here using p find.
-Clipboard contents to p find search, in this tab.
+Search with clipboard text here using p-find.
+Clipboard contents to p-find search, in this tab.
 Do a search with clipboard in this window using phind.
 Clipboard, lookup here with phind.
 Can you use clipboard contents for search in tab with pea find?
 Search this tab, clipboard data with pea find.
 Clipboard to find, show in window with pea find.
 Use clipboard, search in tab with pea find.
-Clipboard, do a quick search here with p find.
+Clipboard, do a quick search here with p-find.
 Can you find with clipboard in this window using find?
 Search here, clipboard contents with pea find.
-Clipboard to p find web search, show in this tab.
+Clipboard to p-find web search, show in this tab.
 Use clipboard for quick lookup in this window with pea find.
 Can you take the text from my clipboard and use it to perform a search in this tab with pea find?
 Please execute a web search using the information I've just copied with pea find, displaying the results in this tab.
 Use the data I've copied to the clipboard for a phind search, and show the results in the current window.
 Could you search the internet with the contents of my clipboard using pea find and present the findings in this same tab?
-Take the clipboard contents and conduct a search with p find, making sure to display the results here in this browser tab.
-Please perform a search using the clipboard text with p find and display the results in the current tab.
+Take the clipboard contents and conduct a search with p-find, making sure to display the results here in this browser tab.
+Please perform a search using the clipboard text with p-find and display the results in the current tab.
 Can you use the contents I've just copied for a pea find web search and show the findings in this window?
-Execute a search with the data from my clipboard using p find and present it right here in this tab.
+Execute a search with the data from my clipboard using p-find and present it right here in this tab.
 I'd like you to search the web using what's on my clipboard with phind and keep the results in this browser window.
-Use what I've copied to the clipboard for a p find search and display the results in this same tab, please.
-Could you perform an internet search with the clipboard contents on p find and show the results in the current window?
-Please use the text I've copied for a search with p find and display the findings here in this tab.
-Conduct a web search using the clipboard data with p find and ensure the results appear in this window.
+Use what I've copied to the clipboard for a p-find search and display the results in this same tab, please.
+Could you perform an internet search with the clipboard contents on p-find and show the results in the current window?
+Please use the text I've copied for a search with p-find and display the findings here in this tab.
+Conduct a web search using the clipboard data with p-find and ensure the results appear in this window.
 Search the internet with my clipboard contents on pea find and present the findings in this tab, please.
 I need a search done with what's on the clipboard with find, showing the results in this browser tab.
 Can you do a web lookup with the clipboard text on phind and display the results in this current window?
@@ -195,6 +195,6 @@ Please perform an online search with the contents of my clipboard using phind an
 Take the data I've copied and use it for a find search, displaying the findings in the same tab.
 Execute a search using the clipboard contents on pea find and show the results here, in this browser window.
 Use the clipboard data for a phind web search and display the results in this tab, if you could.
-Could you look up the information on my clipboard using p find and present the search results in the current window?
+Could you look up the information on my clipboard using p-find and present the search results in the current window?
 Please conduct a search with what I've copied to the clipboard on find and display the findings in this tab.
-I'd like a web search with the clipboard contents on p find and keep the results in this browser window.
+I'd like a web search with the clipboard contents on p-find and keep the results in this browser window.
