@@ -90,6 +90,7 @@ class XmlFineTuningPromptGenerator:
         agent_routing_compound_commands = {
             "agent router go to date and time": "/src/ephemera/prompts/data/synthetic-data-agent-routing-date-and-time.txt",
             "agent router go to weather"      : "/src/ephemera/prompts/data/synthetic-data-agent-routing-weather.txt",
+            "agent router go to calendar"     : "/src/ephemera/prompts/data/synthetic-data-agent-routing-calendaring.txt",
             "agent router go to receptionist" : "/src/ephemera/prompts/data/synthetic-data-agent-routing-receptionist.txt"
         }
         self._test_command_paths( agent_routing_compound_commands )
@@ -191,6 +192,15 @@ class XmlFineTuningPromptGenerator:
     def _get_receptionist_titles( self, requested_length=10 ):
         
         return self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-receptionist-titles.txt", requested_length=requested_length )
+    
+    def _get_events_values( self, requested_length=10 ):
+        
+        return {
+            "EVENT_TYPE": self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-calendaring-events.txt", requested_length=requested_length ),
+            "LOCATION"  : self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-calendaring-locations.txt", requested_length=requested_length ),
+            "START_TIME": self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-calendaring-dates-and-times.txt", requested_length=requested_length ),
+            "PEOPLE"    : self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-calendaring-people.txt", requested_length=requested_length )
+        }
     
     def _get_placeholder_values( self, placeholder_file, requested_length=100 ):
         
@@ -489,6 +499,10 @@ class XmlFineTuningPromptGenerator:
             elif compound_command == "agent router go to receptionist":
                 arguments   = self._get_receptionist_titles( len( raw_lines ) )
                 placeholder = "RECEPTIONIST_TITLE"
+            elif compound_command == "agent router go to calendar":
+                # EVENT_TYPE, LOCATION, START_TIME, PEOPLE, PLACE
+                arguments_dict = self._get_events_values( len( raw_lines ) )
+                placeholders =  [ "EVENT_TYPE", "LOCATION", "START_TIME", "PEOPLE" ]
             else:
                 raise Exception( f"Unknown voice command [{compound_command}]" )
             
@@ -957,7 +971,7 @@ class XmlFineTuningPromptGenerator:
         print( f"            Contains <args> {df.contains_args.mean() * 100:.1f}%" )
         print( f"          Response is exact {df.response_is_exact.mean() * 100:.1f}%" )
         print( f"Response has correct values {df.response_has_correct_values.mean() * 100:.1f}%" )
-        print( f" Browser command is correct {df.command_is_correct.mean() * 100:.1f}%" )
+        print( f"         Command is correct {df.command_is_correct.mean() * 100:.1f}%" )
         print( f"            Args is correct {df.args_is_correct.mean() * 100:.1f}%" )
         
         # Calculate accuracy per command
@@ -1093,7 +1107,7 @@ if __name__ == "__main__":
     # os.chdir( "/var/model/genie-in-the-box/src" )
     # print( os.getcwd() )
     # #
-    xml_ftp_generator       = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=False )
+    xml_ftp_generator       = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=True )
     
     # vox_cmd_prompt_template = xml_ftp_generator.get_prompt_template( "vox command" )
     # print( vox_cmd_prompt_template )
@@ -1103,7 +1117,7 @@ if __name__ == "__main__":
     # print( agent_prompt_template )
     # xml_ftp_generator.serialize_prompt( agent_prompt_template,   "/src/conf/prompts/agent-router-template.txt" )
     
-    xml_ftp_generator.serialize_prompts( "/src/conf/prompts/" )
+    # xml_ftp_generator.serialize_prompts( "/src/conf/prompts/" )
     
     # xml_ftp_generator     = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:8080", debug=True )
     # compound_qna_df       = xml_ftp_generator.build_compound_vox_cmd_training_prompts()
@@ -1118,30 +1132,31 @@ if __name__ == "__main__":
     # print( simple_agent_router_qna_df.shape )
     # print( simple_agent_router_qna_df.head( 10 ) )
     
-    all_qna_df            = xml_ftp_generator.build_all_training_prompts()
+    # all_qna_df            = xml_ftp_generator.build_all_training_prompts()
     
     # for line in compound_qna_df.prompt[ 0 ].split( "\n" ): print( line )
     # for line in simple_command_qna_df.prompt[ 0 ].split( "\n" ): print( line )
     # for line in all_qna_df.prompt[ 0 ].split( "\n" ): print( line )
     
-    train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( all_qna_df, sample_size=all_qna_df.shape[ 0 ], test_size=0.2, test_validate_size=0.5 )
-    xml_ftp_generator.write_ttv_split_to_jsonl( train_df, test_df, validate_df )
+    # train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( all_qna_df, sample_size=all_qna_df.shape[ 0 ], test_size=0.2, test_validate_size=0.5 )
+    # xml_ftp_generator.write_ttv_split_to_jsonl( train_df, test_df, validate_df )
 
     # validation block
-    # validate_df    = pd.read_json( xml_ftp_generator.path_prefix + "/src/ephemera/prompts/data/voice-commands-xml-validate.jsonl", lines=True ).sample( 100, random_state=42 )
-    # timer          = Stopwatch( msg=f"Validating {validate_df.shape[ 0 ]:,} responses...", silent=False )
+    validate_df    = pd.read_json( xml_ftp_generator.path_prefix + "/src/ephemera/prompts/data/voice-commands-xml-validate.jsonl", lines=True ).sample( 1000, random_state=42 )
+    timer          = Stopwatch( msg=f"Validating {validate_df.shape[ 0 ]:,} responses...", silent=False )
     #
-    # model_name     = "mistralai/Mistral-7B-Instruct-v0.2-AWQ"
-    # validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="tgi", model_name=model_name )
-    # validate_df    = xml_ftp_generator.validate_responses( validate_df )
+    model_name     = "mistralai/Mistral-7B-Instruct-v0.2-AWQ"
+    validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="tgi", model_name=model_name )
+    validate_df    = xml_ftp_generator.validate_responses( validate_df )
     #
     # # model_name     = "gpt-3.5-turbo-1106"
     # # validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="openai", model_name= )
     # # validate_df    = xml_ftp_generator.validate_responses( validate_df )
     #
-    # xml_ftp_generator.print_validation_stats( validate_df, title=f"Validation Stats for `{model_name}`" )
+    xml_ftp_generator.print_validation_stats( validate_df, title=f"Validation Stats for `{model_name}`" )
     
-    # timer.print( msg="Done!", use_millis=False, prepend_nl=True, end="\n" )
+    timer.print( msg="Done!", use_millis=False, prepend_nl=True, end="\n" )
+    
     # delta_ms         = timer.get_delta_ms()
     # items_per_second = validate_df.shape[ 0 ] / ( delta_ms / 1000.0 )
     # seconds_per_item = ( delta_ms / 1000.0 ) / validate_df.shape[ 0 ]
