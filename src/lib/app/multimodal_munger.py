@@ -572,6 +572,7 @@ class MultiModalMunger:
     
     def _get_ai_command( self, transcription ):
         
+        # Add runtime switch or configuration to allow for TGI service to be used also.
         command_dict = self._get_command_dict( match_type="ai_matching", confidence=-1.0 )
         
         response = llm_client.query_llm_in_memory(
@@ -583,83 +584,32 @@ class MultiModalMunger:
         )
         print( f"LLM response: [{response}]" )
         # Parse results
-        command_dict[ "command" ] = du_xml.get_value_by_xml_tag_name( response, "browser-command" )
+        command_dict[ "command" ] = du_xml.get_value_by_xml_tag_name( response, "command" )
         command_dict[ "args"    ] = [ du_xml.get_value_by_xml_tag_name( response, "args" ) ]
         
         return command_dict
-        
-        # # cmd_llm_in_memory
-        # command_dict = self._get_best_guess( transcription )
-        #
-        # # Setting a threshold allows us to return a raw transcription when an utterance represents a command that's doesn't currently
-        # # an associated command within the fine-tuned model.
-        # if command_dict[ "confidence" ] >= self.vox_command_threshold:
-        #
-        #     print( "Best guess is GREATER than threshold [{}]".format( self.vox_command_threshold ) )
-        #
-        #     # Extract domain names & search terms
-        #     if command_dict[ "command" ] in [ "go to new tab", "go to current tab" ]:
-        #
-        #         command_dict[ "args" ] = self.extract_args( transcription, model=self.domain_name_model )
-        #         return command_dict
-        #
-        #     elif command_dict[ "command" ].startswith( "search" ):
-        #
-        #         command_dict[ "args" ] = self.extract_args( transcription, model=self.search_terms_model )
-        #         return command_dict
-        #
-        # else:
-        #
-        #     print( "Best guess is LESS than threshold [{}]".format( self.vox_command_threshold ) )
-        #
-        # return command_dict
     
-    def _log_odds_to_probabilities( self, log_odds ):
-        
-        # Convert dictionary to a sorted list of tuples ( class_name, log_odds_value )
-        log_odds = sorted( log_odds.items(), key=lambda tup: tup[ 1 ], reverse=True )
-        
-        # Create list comprehension & get the length of the longest class name allows us to right-justify the class names when printing.
-        max_class_len = max( [ len( self.class_dictionary[ item[ 0 ].strip() ] ) for item in log_odds ] )
-        
-        probabilities = [ ]
-        
-        for item in log_odds:
-            
-            class_name = self.class_dictionary[ item[ 0 ].strip() ]
-            percent    = np.exp( float( item[ 1 ] ) ) * 100.0
-            probabilities.append( ( class_name, percent ) )
-            
-            print( "{}: {:2.4f}%".format( class_name.rjust( max_class_len, ' ' ), percent ) )
-            
-        return probabilities
+    # def _log_odds_to_probabilities( self, log_odds ):
+    #
+    #     # Convert dictionary to a sorted list of tuples ( class_name, log_odds_value )
+    #     log_odds = sorted( log_odds.items(), key=lambda tup: tup[ 1 ], reverse=True )
+    #
+    #     # Create list comprehension & get the length of the longest class name allows us to right-justify the class names when printing.
+    #     max_class_len = max( [ len( self.class_dictionary[ item[ 0 ].strip() ] ) for item in log_odds ] )
+    #
+    #     probabilities = [ ]
+    #
+    #     for item in log_odds:
+    #
+    #         class_name = self.class_dictionary[ item[ 0 ].strip() ]
+    #         percent    = np.exp( float( item[ 1 ] ) ) * 100.0
+    #         probabilities.append( ( class_name, percent ) )
+    #
+    #         print( "{}: {:2.4f}%".format( class_name.rjust( max_class_len, ' ' ), percent ) )
+    #
+    #     return probabilities
     
-    # def _get_best_guess( self, command_str ):
-    #
-    #     openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
-    #
-    #     timer = sw.Stopwatch()
-    #     print( "Calling [{}]...".format( self.vox_command_model ), end="" )
-    #     response = openai.completions.create(
-    #         model=self.vox_command_model,
-    #         prompt=command_str + "\n\n###\n\n",
-    #         max_tokens=1,
-    #         temperature=0,
-    #         logprobs=len( self.class_dictionary.keys() ),
-    #         stop="\n"
-    #     )
-    #     timer.print( "Calling [{}]... Done!".format( self.vox_command_model ), use_millis=True, end="\n" )
-    #
-    #     # convert OPENAI object into a native Python dictionary... ugly!
-    #     log_odds = ast.literal_eval( str( response[ "choices" ][ 0 ][ "logprobs" ][ "top_logprobs" ][ 0 ] ) )
-    #
-    #     best_guesses = self._log_odds_to_probabilities( log_odds )
-    #
-    #     # Return the first tuple in the sorted list of tuples.
-    #     command_dict = self._get_command_dict( command=best_guesses[ 0 ][ 0 ], confidence=best_guesses[ 0 ][ 1 ], match_type="ai_matching" )
-    #
-    #     return command_dict
-
+    
     def extract_args( self, raw_text, model="NO_MODEL_SPECIFIED" ):
         
         openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
