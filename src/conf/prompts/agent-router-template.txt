@@ -10,7 +10,9 @@ You will be given a human voice command as INPUT as well as a list of possible s
 <agent-routing-commands>
     <command>agent router go to date and time</command>
     <command>agent router go to weather</command>
+    <command>agent router go to receptionist</command>
     <command>agent router go to todo list</command>
+    <command>none</command>
 </agent-routing-commands>
 
 Requirement: You MUST NOT use python code to answer this question.

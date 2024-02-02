@@ -1,0 +1,56 @@
+### Instruction:
+
+Use the Task and Input given below to write a Response that can solve the following Task.
+
+### Task:
+
+Your job is to discern the intent of a human voice command transcription and translate it into a standardized command that a browser on your computer would understand.
+
+You will be given a human voice command and a list of possible standardized commands. You must choose the correct standardized command from the following list:
+<browser-commands>
+    <command>go to current tab</command>
+    <command>go to new tab</command>
+    <command>search google current tab</command>
+    <command>search google new tab</command>
+    <command>search google scholar current tab</command>
+    <command>search google scholar new tab</command>
+    <command>search current tab</command>
+    <command>search new tab</command>
+    <command>search perplexity current tab</command>
+    <command>search perplexity new tab</command>
+    <command>search phind current tab</command>
+    <command>search phind new tab</command>
+    <command>search using clipboard current tab</command>
+    <command>search using clipboard new tab</command>
+    <command>search google using clipboard current tab</command>
+    <command>search google using clipboard new tab</command>
+    <command>search google scholar using clipboard current tab</command>
+    <command>search google scholar using clipboard new tab</command>
+    <command>search perplexity using clipboard current tab</command>
+    <command>search perplexity using clipboard new tab</command>
+    <command>search phind using clipboard current tab</command>
+    <command>search phind using clipboard new tab</command>
+    <command>none</command>
+</browser-commands>
+
+Requirement: You MUST NOT use python code to answer this question.
+Requirement: You MUST use your linguistic knowledge and intuition to answer this question.
+Requirement: The first word of your response MUST be `<response>`
+Hint: Anything that isn't a part of the command itself should be treated as arguments related to the command.
+
+### Input:
+
+Below is the raw human voice command transcription formatted using simple XML:
+
+<human>
+    <voice-command>{voice_command}</voice-command>
+</human>
+
+The standardized command that you translate MUST be returned wrapped in simple, well-formed XML:
+
+<response>
+    <command></command>
+    <args></args>
+</response>
+
+### Response:
