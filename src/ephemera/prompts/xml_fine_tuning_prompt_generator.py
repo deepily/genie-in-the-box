@@ -153,41 +153,12 @@ class XmlFineTuningPromptGenerator:
     def _get_search_terms( self, requested_length=100 ):
         
         return self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-search-terms.txt", requested_length=requested_length )
-        # # Load search terms file
-        # search_terms = du.get_file_as_list(
-        #     self.path_prefix + "/src/ephemera/prompts/data/placeholders-search-terms.txt", lower_case=False, clean=True, randomize=True
-        # )
-        #
-        # # If we don't have enough search terms, append copies of the search term list until we do
-        # while requested_length > len( search_terms ):
-        #     # advise that we're inserting duplicate search terms into the search term list
-        #     print( f"Inserting duplicate search terms into the search term list. Requested length [{requested_length}] > search term list length [{len( search_terms )}]" )
-        #     search_terms += search_terms
-        #
-        # # Truncate the search terms list to equal the requested len
-        # search_terms = search_terms[ :requested_length ]
-        #
-        # return search_terms
     
     # Get a list of placeholders for cities and countries
     def _get_cities_and_countries( self, requested_length=100 ):
        
         return self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-cities-and-countries.txt", requested_length=requested_length )
-        # cities_and_countries = du.get_file_as_list(
-        #     self.path_prefix + "/src/ephemera/prompts/data/placeholders-cities-and-countries.txt", lower_case=False, clean=True, randomize=True
-        # )[ :requested_length ]
-        #
-        # # If we don't have enough search terms, append copies of the search term list until we do
-        # while requested_length > len( cities_and_countries ):
-        #     # advise that we're inserting duplicate search terms into the search term list
-        #     print( f"Inserting duplicate cities and countries into the list. Requested length [{requested_length}] > list length [{len( cities_and_countries )}]" )
-        #     cities_and_countries += cities_and_countries
-        #
-        # # Truncate the search terms list to equal the requested len
-        # cities_and_countries = cities_and_countries[ :requested_length ]
-        #
-        # return cities_and_countries
-    
+       
     # Get a list of placeholders for The receptionist agent
     def _get_receptionist_titles( self, requested_length=10 ):
         
