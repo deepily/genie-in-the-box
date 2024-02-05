@@ -1,5 +1,6 @@
 import os
 import re
+import random
 
 import pandas as pd
 import json
@@ -164,23 +165,34 @@ class XmlFineTuningPromptGenerator:
         
         return self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-receptionist-titles.txt", requested_length=requested_length )
     
-    def _get_events_values( self, requested_length=10 ):
+    def _get_events_values( self, requested_length=100 ):
         
-        return {
-            "EVENT_TYPE": self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-calendaring-events.txt", requested_length=requested_length ),
-            "LOCATION"  : self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-calendaring-locations.txt", requested_length=requested_length ),
-            "START_TIME": self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-calendaring-dates-and-times.txt", requested_length=requested_length ),
-            "PEOPLE"    : self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-calendaring-people.txt", requested_length=requested_length )
-        }
+        events      = self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-calendaring-events.txt", requested_length=None )
+        locations   = self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-calendaring-locations.txt", requested_length=None )
+        start_times = self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-calendaring-dates-and-times.txt", requested_length=None )
+        people      = self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-calendaring-people.txt", requested_length=None )
+        
+        events_values = []
+        
+        for i in range( requested_length ):
+            events_values.append( {
+                "EVENT_TYPE": random.choice( events ),
+                "LOCATION"  : random.choice( locations ),
+                "START_TIME": random.choice( start_times ),
+                "PEOPLE"    : random.choice( people ),
+                "PLACE"     : ""
+            } )
+        return events_values
     
-    def _get_placeholder_values( self, placeholder_file, requested_length=100 ):
+    def _get_placeholder_values( self, placeholder_file, requested_length=None ):
         
+        # A requested_length of None used as the second value in a list slice returns all of the list
         placeholders = du.get_file_as_list(
             self.path_prefix + placeholder_file, lower_case=False, clean=True, randomize=True
         )[ :requested_length ]
         
         # If we don't have enough search terms, append copies of the search term list until we do
-        while requested_length > len( placeholders ):
+        while requested_length is not None and requested_length > len( placeholders ):
             # advise that we're inserting duplicate search terms into the search term list
             print( f"Inserting DUPLICATE placeholders into the list. Requested length [{requested_length}] > list length [{len( placeholders )}]" )
             placeholders += placeholders
@@ -374,16 +386,6 @@ class XmlFineTuningPromptGenerator:
             
             for raw_line in raw_lines:
                 
-                # Determine which kind of compound synthetically created lines we need to build prompts for
-                # if compound_command.startswith( "search " ):
-                #     arguments   = self._get_search_terms( len( raw_lines ) )
-                #     placeholder = "SEARCH_TERMS"
-                # elif compound_command.startswith( "go to " ):
-                #     arguments   = self._get_goto_urls( len( raw_lines ) )
-                #     placeholder = "DOMAIN_NAME"
-                # else:
-                #     raise Exception( f"Unknown voice command [{compound_command}]" )
-                    
                 for args in arguments:
                     
                     voice_command = raw_line.replace( placeholder, args )
@@ -401,20 +403,8 @@ class XmlFineTuningPromptGenerator:
                     commands.append( compound_command )
                     
                     gpt_messages.append( self._get_gpt_messages_dict( gpt_instruction, voice_command, compound_command, args ) )
-                    # gpt_messages.append( {
-                    #     "messages": [
-                    #         { "role": "system", "content": gpt_instruction },
-                    #         { "role": "user", "content": voice_command },
-                    #         { "role": "assistant", "content": self.common_output_template.format( command=compound_command, args=args ) }
-                    #     ]
-                    # } )
                     
                     self._do_conditional_print( counter, voice_command )
-                    # if counter % 10 == 0:
-                    #     if self.debug:
-                    #         print( voice_command )
-                    #     else:
-                    #        print( ".", end="" )
                     counter += 1
             
             print()
@@ -471,9 +461,8 @@ class XmlFineTuningPromptGenerator:
                 arguments   = self._get_receptionist_titles( len( raw_lines ) )
                 placeholder = "RECEPTIONIST_TITLE"
             elif compound_command == "agent router go to calendar":
-                # EVENT_TYPE, LOCATION, START_TIME, PEOPLE, PLACE
-                arguments_dict = self._get_events_values( len( raw_lines ) )
-                placeholders =  [ "EVENT_TYPE", "LOCATION", "START_TIME", "PEOPLE" ]
+                arguments   = self._get_events_values( len( raw_lines ) )
+                placeholder = ""
             else:
                 raise Exception( f"Unknown voice command [{compound_command}]" )
             
@@ -481,7 +470,14 @@ class XmlFineTuningPromptGenerator:
                     
                 for args in arguments:
                     
-                    voice_command = raw_line.replace( placeholder, args )
+                    if compound_command == "agent router go to calendar":
+                        voice_command = raw_line.replace( "PLACE", "" )
+                        for key in args.keys():
+                            voice_command = voice_command.replace( key, args[ key ] )
+                        # Reset args to an empty string, NOT a dictionary
+                        args = ""
+                    else:
+                        voice_command = raw_line.replace( placeholder, args )
                     
                     instruction = self.agent_router_instruction_template.format( command_choices=self.agent_router_commands )
                     human_says  = self.common_human_says_template.format( voice_command=voice_command )
@@ -498,19 +494,6 @@ class XmlFineTuningPromptGenerator:
                     gpt_messages.append( self._get_gpt_messages_dict( gpt_instruction, voice_command, compound_command, args ) )
                     
                     self._do_conditional_print( counter, voice_command )
-                    # gpt_messages.append( {
-                    #     "messages": [
-                    #         { "role": "system", "content": gpt_instruction },
-                    #         { "role": "user", "content": voice_command },
-                    #         { "role": "assistant", "content": self.common_output_template.format( command=compound_command, args=args ) }
-                    #     ]
-                    # } )
-                    #
-                    # if counter % 10 == 0:
-                    #     if self.debug:
-                    #         print( voice_command )
-                    #     else:
-                    #         print( ".", end="" )
                     counter += 1
             
             print()
@@ -598,17 +581,6 @@ class XmlFineTuningPromptGenerator:
                 gpt_messages.append( self._get_gpt_messages_dict( gpt_instruction, raw_line, simple_command, "" ) )
                 
                 self._do_conditional_print( counter, raw_line )
-                # gpt_messages.append( {
-                #     "messages": [
-                #         { "role": "system",    "content": gpt_instruction },
-                #         { "role": "user",      "content": raw_line },
-                #         { "role": "assistant", "content": self.common_output_template.format( command=simple_command, args="" ) }
-                #     ]
-                # } )
-                #
-                # if counter % 10 == 0:
-                #     print( ".", end="" )
-                #     if self.debug: print( raw_line )
                 counter += 1
             
         simple_command_qna_df = pd.DataFrame( { "command": commands, "instruction": instructions, "input": inputs, "output": outputs, "prompt": prompts, "gpt_message": gpt_messages } )
@@ -648,17 +620,6 @@ class XmlFineTuningPromptGenerator:
                 gpt_messages.append( self._get_gpt_messages_dict( gpt_instruction, raw_line, simple_command, "" ) )
                 
                 self._do_conditional_print( counter, raw_line )
-                # gpt_messages.append( {
-                #     "messages": [
-                #         { "role": "system",    "content": gpt_instruction },
-                #         { "role": "user",      "content": raw_line },
-                #         { "role": "assistant", "content": self.common_output_template.format( command=simple_command, args="" ) }
-                #     ]
-                # } )
-                #
-                # if counter % 10 == 0:
-                #     print( ".", end="" )
-                #     if self.debug: print( raw_line )
                 counter += 1
             
         simple_agent_router_qna_df = pd.DataFrame( { "command": commands, "instruction": instructions, "input": inputs, "output": outputs, "prompt": prompts, "gpt_message": gpt_messages } )
@@ -1088,7 +1049,7 @@ if __name__ == "__main__":
     # print( agent_prompt_template )
     # xml_ftp_generator.serialize_prompt( agent_prompt_template,   "/src/conf/prompts/agent-router-template.txt" )
     
-    # xml_ftp_generator.serialize_prompts( "/src/conf/prompts/" )
+    xml_ftp_generator.serialize_prompts( "/src/conf/prompts/" )
     
     # xml_ftp_generator     = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:8080", debug=True )
     # compound_qna_df       = xml_ftp_generator.build_compound_vox_cmd_training_prompts()
@@ -1103,14 +1064,14 @@ if __name__ == "__main__":
     # print( simple_agent_router_qna_df.shape )
     # print( simple_agent_router_qna_df.head( 10 ) )
     
-    # all_qna_df            = xml_ftp_generator.build_all_training_prompts()
+    all_qna_df            = xml_ftp_generator.build_all_training_prompts()
     
     # for line in compound_qna_df.prompt[ 0 ].split( "\n" ): print( line )
     # for line in simple_command_qna_df.prompt[ 0 ].split( "\n" ): print( line )
     # for line in all_qna_df.prompt[ 0 ].split( "\n" ): print( line )
     
-    # train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( all_qna_df, sample_size=all_qna_df.shape[ 0 ], test_size=0.2, test_validate_size=0.5 )
-    # xml_ftp_generator.write_ttv_split_to_jsonl( train_df, test_df, validate_df )
+    train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( all_qna_df, sample_size=all_qna_df.shape[ 0 ], test_size=0.2, test_validate_size=0.5 )
+    xml_ftp_generator.write_ttv_split_to_jsonl( train_df, test_df, validate_df )
 
     # validation block
     validate_df    = pd.read_json( xml_ftp_generator.path_prefix + "/src/ephemera/prompts/data/voice-commands-xml-validate.jsonl", lines=True ).sample( 1000, random_state=42 )
@@ -1119,19 +1080,7 @@ if __name__ == "__main__":
     model_name     = "mistralai/Mistral-7B-Instruct-v0.2-AWQ"
     validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="tgi", model_name=model_name )
     validate_df    = xml_ftp_generator.validate_responses( validate_df )
-    #
-    # # model_name     = "gpt-3.5-turbo-1106"
-    # # validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="openai", model_name= )
-    # # validate_df    = xml_ftp_generator.validate_responses( validate_df )
-    #
+
     xml_ftp_generator.print_validation_stats( validate_df, title=f"Validation Stats for `{model_name}`" )
-    
+
     timer.print( msg="Done!", use_millis=False, prepend_nl=True, end="\n" )
-    
-    # delta_ms         = timer.get_delta_ms()
-    # items_per_second = validate_df.shape[ 0 ] / ( delta_ms / 1000.0 )
-    # seconds_per_item = ( delta_ms / 1000.0 ) / validate_df.shape[ 0 ]
-    #
-    # print( f"Items per second [{round( items_per_second, 1 )}]" )
-    # print( f"Seconds per item [{round( seconds_per_item, 1 )}]" )
-    
