@@ -515,7 +515,7 @@ def upload_and_transcribe_wav_file():
 
 def load_stt_model():
     
-    torch_dtype   = torch.bfloat16
+    torch_dtype   = torch.float16 if torch.cuda.is_available() else torch.float32
     stt_device_id = config_mgr.get( "stt_device_id", default="cuda:0" )
     stt_model_id  = config_mgr.get( "stt_model_id" )
     
