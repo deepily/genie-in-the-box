@@ -93,3 +93,8 @@ def rescue_code_using_tick_tick_tick_syntax( raw_response_text, debug=False ):
             print( "¡Boo!, no ```python found, either!" )
             
         return ""
+
+def strip_all_white_space( raw_xlm ):
+    
+    # Remove white space outside XML tags
+    return re.sub( r'>\s+<', '><', raw_xlm.strip() )
