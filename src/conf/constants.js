@@ -20,6 +20,9 @@ export const VOX_CMD_OPEN_EDITOR    = "open editor";
 
 export const VOX_CMD_OPEN_FILE      = "open file";
 export const VOX_CMD_OPEN_URL_BUCKET= "open url bucket";
+gc export const VOX_CMD_PROOFREAD_SQL  = "translate to sequel";
+
+export const VOX_CMD_PROOFREAD_PYTHON = "translate to python";
 export const VOX_CMD_PROOFREAD      = "proofread";
 export const VOX_CMD_PROOFREAD_STEM = "proof";
 export const VOX_CMD_VIEW_CONSTANTS = "view constan";
@@ -68,7 +71,9 @@ export const VOX_CMD_SEARCH_CLIPBOARD_GOOGLE_SCHOLAR_CURRENT_TAB = "search googl
 
 
 export const MULTIMODAL_CONTACT_INFO  = "multimodal contact information";
-export const MULTIMODAL_TEXT_PYTHON   = "multimodal python punctuation";
+export const MULTIMODAL_PYTHON_PUNCTUATION = "multimodal python punctuation";
+
+export const MULTIMODAL_PYTHON_PROOFREAD = "multimodal python proofread";
 export const MULTIMODAL_TEXT_EMAIL    = "multimodal text email";
 export const STEM_MULTIMODAL_BROWSER  = "multimodal browser";
 export const STEM_MULTIMODAL_AGENT    = "multimodal agent";
