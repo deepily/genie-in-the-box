@@ -27,12 +27,15 @@ from lib.app import multimodal_munger as mmm
 import lib.utils.util              as du
 import lib.utils.util_stopwatch    as sw
 import lib.utils.util_code_runner  as ulc
+import lib.utils.util_xml          as dux
 
 from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
 from lib.app.fifo_queue               import FifoQueue
 from lib.app.running_fifo_queue       import RunningFifoQueue
 from lib.app.todo_fifo_queue          import TodoFifoQueue
 from lib.app.configuration_manager    import ConfigurationManager
+
+from ephemera.prompts.xml_fine_tuning_prompt_generator import XmlFineTuningPromptGenerator
 
 """
 Instantiate configuration manager
@@ -112,7 +115,7 @@ snapshot_mgr = SolutionSnapshotManager( path_to_snapshots, debug=app_debug, verb
 """
 Globally visible queue objects
 """
-jobs_todo_queue = TodoFifoQueue( socketio, snapshot_mgr, app, path_to_events_df_wo_root )
+jobs_todo_queue = TodoFifoQueue( socketio, snapshot_mgr, app, path_to_events_df_wo_root, config_mgr )
 jobs_done_queue = FifoQueue()
 jobs_dead_queue = FifoQueue()
 jobs_run_queue  = RunningFifoQueue( app, socketio, snapshot_mgr, jobs_todo_queue, jobs_done_queue, jobs_dead_queue )
@@ -327,6 +330,62 @@ def proofread():
     
     return response
 
+
+@app.route( "/api/proofread-sql" )
+def proofread_sql():
+    
+    question = request.args.get( "question" )
+    
+    # timer = sw.Stopwatch()
+    # # preamble = "You are an expert Database administrator, or DBA. You will receive two sentences, both of which are voice to text transcriptions. As such, they will contain numerous add spelling and word choices. Correct all syntactic and spelling errors to create a syntactically valid SQL command. Use the first sentence as the plain English context for the second sentence, which is the approximated SQL command."
+    # preamble = "You are a helpful expert Database administrator, or DBA."
+    # prompt_template = du.get_file_as_string( du.get_project_root() + "/src/conf/prompts/sql-proofreading-template.txt" )
+    # sql_prompt      = prompt_template.format( voice_command=question )
+    # result = genie_client.ask_chat_gpt_text( sql_prompt, preamble=preamble )
+    # print( result )
+    # timer.print( "Proofread SQL", use_millis=True )
+    prompt_template = du.get_file_as_string( du.get_project_root() + "/src/conf/prompts/sql-proofreading-template.txt" )
+    sql_prompt      = prompt_template.format( voice_command=question )
+    
+    for line in sql_prompt.split( "\n" ): print( line )
+
+    xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url="http://172.17.0.4:3000", debug=False, silent=True, init_prompt_templates=False )
+    response = xml_ftp_generator.query_llm_tgi( sql_prompt, model_name="Phind-CodeLlama-34B-v2", max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, silent=False )
+    print( response )
+    response = dux.strip_all_white_space( response )
+    print( response )
+    sql = dux.get_value_by_xml_tag_name( response, "sql" )
+    
+    response = make_response( sql )
+    # response = make_response( result )
+    response.headers.add( "Access-Control-Allow-Origin", "*" )
+    
+    return response
+
+@app.route( "/api/proofread-python" )
+def proofread_python():
+    
+    question = request.args.get( "question" )
+    
+    # timer = sw.Stopwatch()
+    # preamble = "You are an expert Database administrator, or DBA. You will receive two sentences, both of which are voice to text transcriptions. As such, they will contain numerous add spelling and word choices. Correct all syntactic and spelling errors to create a syntactically valid SQL command. Use the first sentence as the plain English context for the second sentence, which is the approximated SQL command."
+    # result = genie_client.ask_chat_gpt_text( question, preamble=preamble )
+    # print( result )
+    # timer.print( "Proofread SQL", use_millis=True )
+    prompt_template = du.get_file_as_string( du.get_project_root() + "/src/conf/prompts/python-proofreading-template.txt" )
+    sql_prompt      = prompt_template.format( voice_command=question )
+    
+    xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url="http://172.17.0.4:3000", debug=False, silent=True, init_prompt_templates=False )
+    response = xml_ftp_generator.query_llm_tgi( sql_prompt, model_name="Phind-CodeLlama-34B-v2", max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, silent=False )
+    print( response )
+    response = dux.strip_all_white_space( response )
+    print( response )
+    python = dux.get_value_by_xml_tag_name( response, "python" )
+    
+    response = make_response( python )
+    response.headers.add( "Access-Control-Allow-Origin", "*" )
+    
+    return response
 @app.route( "/api/upload-and-transcribe-mp3", methods=[ "POST" ] )
 def upload_and_transcribe_mp3_file():
     
@@ -375,7 +434,7 @@ def upload_and_transcribe_mp3_file():
         cmd_llm_name=config_mgr.get( "vox_command_llm_name" ),
         cmd_llm_device=config_mgr.get( "vox_command_llm_device_map", default="cuda:0" )
     )
-    
+
     if munger.is_text_proofread():
         
         print( "Proofreading text... ", end="" )
@@ -566,11 +625,14 @@ def load_commands_llm_once():
     global cmd_model
     global cmd_tokenizer
     global cmd_prompt_template
+    global jobs_todo_queue
 
     if cmd_model is None:
         cmd_model, cmd_tokenizer = load_commands_llm()
         prompt_path              = du.get_project_root() + config_mgr.get( "vox_command_prompt_path_wo_root" )
         cmd_prompt_template      = du.get_file_as_string( prompt_path )
+        jobs_todo_queue.set_llm( cmd_model, cmd_tokenizer)
+        
         return "Commands LLM and prompt loaded"
     else:
         msg = "Commands LLM and prompt ALREADY loaded"
