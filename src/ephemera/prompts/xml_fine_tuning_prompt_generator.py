@@ -19,7 +19,7 @@ from lib.agents.agent         import Agent
 
 class XmlFineTuningPromptGenerator:
     
-    def __init__( self, path_prefix=du.get_project_root(), tgi_url="http://172.17.0.5:3000", debug=False, verbose=False, silent=False ):
+    def __init__( self, path_prefix=du.get_project_root(), tgi_url="http://172.17.0.5:3000", debug=False, verbose=False, silent=False, init_prompt_templates=True ):
         
         self.debug              = debug
         self.verbose            = verbose
@@ -28,43 +28,47 @@ class XmlFineTuningPromptGenerator:
         self.path_prefix        = path_prefix
         self.tgi_url            = tgi_url
         
-        # Build up lists of browser command categories
-        self.vox_cmd_compound_commands       = self._get_compound_vox_commands()
-        self.vox_cmd_simple_commands         = self._get_simple_vox_commands()
-        self.vox_cmd_commands                = self._compile_vox_cmd_commands()
-        
-        # These are set by self._init_common_templates()
-        self.common_input_template           = None
-        self.common_human_says_template      = None
-        self.common_response_format          = None
-        self.common_output_template          = None
-        self._init_common_templates()
-        
-        # These two are set by the call to self._init_vox_cmd_templates()
-        self.vox_cmd_instruction_template_gpt = None
-        self.vox_cmd_instruction_template     = None
-        self._init_vox_cmd_templates()
-        
-        # Build up lists of agent routing command categories
-        self.agent_router_compound_commands = self._get_compound_agent_router_commands()
-        self.agent_router_simple_commands   = self._get_simple_agent_router_commands()
-        self.agent_router_commands          = self._compile_agent_router_commands()
-        
-        # These two are set by the call to self._init_agent_router_templates()
-        self.agent_router_instruction_template_gpt = None
-        self.agent_router_instruction_template     = None
-        self._init_agent_router_templates()
-        
-        # These hold intermediate results
-        self.compound_vox_cmd_qna_df       = pd.DataFrame()
-        self.simple_vox_cmd_qna_df         = pd.DataFrame()
-        self.compound_agent_router_qna_df  = pd.DataFrame()
-        self.simple_agent_router_qna_df    = pd.DataFrame()
-        # This holds the final results
-        self.all_qna_df                    = pd.DataFrame()
-        
-        self._call_counter        = 0
-        self._xml_schema          = self._get_xml_schema()
+        # ¡OJO! This is a giant KLUDGE
+        # TODO: re-factor this!
+        if init_prompt_templates:
+            
+            # Build up lists of browser command categories
+            self.vox_cmd_compound_commands       = self._get_compound_vox_commands()
+            self.vox_cmd_simple_commands         = self._get_simple_vox_commands()
+            self.vox_cmd_commands                = self._compile_vox_cmd_commands()
+            
+            # These are set by self._init_common_templates()
+            self.common_input_template           = None
+            self.common_human_says_template      = None
+            self.common_response_format          = None
+            self.common_output_template          = None
+            self._init_common_templates()
+            
+            # These two are set by the call to self._init_vox_cmd_templates()
+            self.vox_cmd_instruction_template_gpt = None
+            self.vox_cmd_instruction_template     = None
+            self._init_vox_cmd_templates()
+            
+            # Build up lists of agent routing command categories
+            self.agent_router_compound_commands = self._get_compound_agent_router_commands()
+            self.agent_router_simple_commands   = self._get_simple_agent_router_commands()
+            self.agent_router_commands          = self._compile_agent_router_commands()
+            
+            # These two are set by the call to self._init_agent_router_templates()
+            self.agent_router_instruction_template_gpt = None
+            self.agent_router_instruction_template     = None
+            self._init_agent_router_templates()
+            
+            # These hold intermediate results
+            self.compound_vox_cmd_qna_df       = pd.DataFrame()
+            self.simple_vox_cmd_qna_df         = pd.DataFrame()
+            self.compound_agent_router_qna_df  = pd.DataFrame()
+            self.simple_agent_router_qna_df    = pd.DataFrame()
+            # This holds the final results
+            self.all_qna_df                    = pd.DataFrame()
+            
+            self._call_counter        = 0
+            self._xml_schema          = self._get_xml_schema()
     
     def _get_compound_vox_commands( self ):
         
@@ -737,10 +741,12 @@ class XmlFineTuningPromptGenerator:
     def is_response_exact_match( self, response, answer ):
         
         # Remove white space outside XML tags
-        response = re.sub( r'>\s+<', '><', response.strip() )
+        # response = re.sub( r'>\s+<', '><', response.strip() )
+        response = dux.strip_all_white_space( response )
         
         # Remove white space outside XML tags
-        answer = re.sub( r'>\s+<', '><', answer.strip() )
+        # answer = re.sub( r'>\s+<', '><', answer.strip() )
+        answer = dux.strip_all_white_space( answer )
         
         if self.debug and self.verbose:
             print( f"response: [{response}]" )
@@ -766,7 +772,7 @@ class XmlFineTuningPromptGenerator:
     
     def _query_llm_in_memory( self, tokenizer, model, prompt, max_new_tokens=1024, model_name="ACME LLMs, Inc.", device="cuda:0", silent=False ):
         
-        # We need this exact method in another place, so do the simplest extraction and reuse here
+        # We need this exact method in other places too, so do the simplest extraction and reuse here
         response = du_llm_client.query_llm_in_memory( model, tokenizer, prompt, device=device, model_name=model_name, max_new_tokens=max_new_tokens, silent=silent )
         
         if self.debug:
@@ -774,8 +780,7 @@ class XmlFineTuningPromptGenerator:
             
         return response
 
-        
-    def _query_llm_tgi( self, prompt, model_name=Agent.PHIND_34B_v2, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, silent=False ):
+    def query_llm_tgi( self, prompt, model_name=Agent.PHIND_34B_v2, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, silent=False ):
     
         timer = Stopwatch( msg=f"Asking LLM [{model_name}]...".format( model_name ), silent=silent )
         
@@ -848,7 +853,7 @@ class XmlFineTuningPromptGenerator:
         print( f"Processing call [{self._call_counter:03d}] out of [{rows}] = [{round( self._call_counter / rows * 100.0, 1 )}%]... ")
         
         if switch == "tgi":
-            return self._query_llm_tgi( prompt, model_name=model_name, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, silent=silent )
+            return self.query_llm_tgi( prompt, model_name=model_name, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, silent=silent )
         elif switch == "openai":
             return self._query_llm_openai( prompt[ "messages" ], model_name=model_name )
         elif switch == "huggingface":
