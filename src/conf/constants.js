@@ -20,7 +20,7 @@ export const VOX_CMD_OPEN_EDITOR    = "open editor";
 
 export const VOX_CMD_OPEN_FILE      = "open file";
 export const VOX_CMD_OPEN_URL_BUCKET= "open url bucket";
-gc export const VOX_CMD_PROOFREAD_SQL  = "translate to sequel";
+export const VOX_CMD_PROOFREAD_SQL  = "translate to sequel";
 
 export const VOX_CMD_PROOFREAD_PYTHON = "translate to python";
 export const VOX_CMD_PROOFREAD      = "proofread";
