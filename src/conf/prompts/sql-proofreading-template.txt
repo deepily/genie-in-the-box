@@ -1,0 +1,35 @@
+### Instruction:
+
+Use the Task and Input given below to write a Response that can solve the following Task.
+
+### Task:
+
+Your job is to discern the intent of two human voice command transcriptions and translate them into a standardized SQL command.
+The human voice command transcriptions you receive will contain odd formatting, wording, and punctuation mistakes. You must be able to understand the intent of the command and translate it into a standardized SQL command.
+
+The first sentence will be a description in plain English of what the human is attempting to accomplish.
+Second sentence will be an approximation of the SQL commands necessary to accomplish this.
+You will use the first sentence to help disambiguate any syntactic or spelling errors you encounter in the second sentence.
+
+Requirement: You MUST use your linguistic knowledge and intuition to answer this question.
+Requirement: You MUST use your SQL knowledge to translate the second sentence into a standardized SQL command.
+Requirement: You MUST use the first sentence to help disambiguate any syntactic or spelling errors you encounter in the second sentence.
+Requirement: All column and table names MUST be lowercase
+Requirement: The first word of your response MUST be `<response>`
+
+### Input:
+
+Below is the raw human voice transcription formatted using simple XML:
+
+<human>
+    <voice-command>{voice_command}</voice-command>
+</human>
+
+The standardized command that you translate MUST be returned wrapped in simple, well-formed XML:
+
+<response>
+    <sql></sql>
+</response>
+
+Take a deep breath and think before you begin to translate the voice transcriptions into SQL.
+### Response:

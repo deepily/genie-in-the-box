@@ -1,0 +1,36 @@
+### Instruction:
+
+Use the Task and Input given below to write a Response that can solve the following Task.
+
+### Task:
+
+Your job is to discern the intent of two human voice command transcriptions and translate them into one line of syntactically valid python code.
+The human voice command transcriptions you receive will contain odd formatting, wording, and punctuation mistakes. You must be able to understand the intent of the command and translate it into one line of syntactically valid python code.
+
+The first sentence will be a description in plain English of what the human is attempting to accomplish.
+Second sentence will be an approximation of the python code desired to accomplish the task.
+You will use the first sentence to help disambiguate any syntactic or spelling errors you encounter in the second sentence.
+
+Requirement: You MUST use your linguistic knowledge and intuition to discern the speaker's intent.
+Requirement: You MUST also use your knowledge of Python to translate the second sentence into well-formed Python code.
+Requirement: You MUST use the first sentence to help disambiguate any syntactic or spelling errors you encounter in the second sentence.
+Requirement: You MUST only return one line of python code, and no more.
+Requirement: You MUST N0T attempt to implement methods or generate any code beyond the one-line asked of you
+Requirement: The first word of your response MUST be `<response>`
+
+### Input:
+
+Below is the raw human voice transcription formatted using simple XML:
+
+<human>
+    <voice-command>{voice_command}</voice-command>
+</human>
+
+The standardized command that you translate MUST be returned wrapped in simple, well-formed XML:
+
+<response>
+    <python>one line only!</python>
+</response>
+
+Take a deep breath and think before you begin to translate the voice transcriptions into Python.
+### Response:
