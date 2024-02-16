@@ -12,17 +12,14 @@ from lib.agents.agent import Agent
 
 import pandas as pd
 
-class CalendaringAgent( Agent ):
+class DataQueryingAgent( Agent ):
     
-    def __init__( self, path_to_df, question="", default_model=Agent.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False ):
+    def __init__( self, question="", df_path_key="path_to_events_df_wo_root", routing_command="", default_model=Agent.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False, auto_debug=False, inject_bugs=False  ):
         
-        super().__init__( debug=debug, verbose=verbose )
+        super().__init__( debug=debug, verbose=verbose, routing_command=routing_command, auto_debug=auto_debug, inject_bugs=inject_bugs )
         
-        # self.debug      = debug
-        # self.verbose    = verbose
-        
-        self.path_to_df = path_to_df
-        self.df         = pd.read_csv( du.get_project_root() + self.path_to_df )
+        # self.path_to_df = self.config_mgr.get( df_path_key )
+        self.df         = pd.read_csv( du.get_project_root() + self.config_mgr.get( df_path_key ) )
         self.df         = dup.cast_to_datetime( self.df )
         
         self.default_model         = default_model
@@ -184,53 +181,6 @@ class CalendaringAgent( Agent ):
         du.print_banner( "TODO: Implement is_code_runnable()", expletive=True )
         return True
     
-    # def validate_xml( self, xml_string ):
-    #
-    #     # ¡OJO! skip for now: parsing chokes on the <= and the >=. consider escaping contents?? or not??
-    #     # xml_string = """
-    #     # <response>
-    #     #     <question>got the time</question>
-    #     #     <thoughts>The question is asking for events that are happening today. I need to filter the dataframe by the start and end dates, and return the events that are happening today.</thoughts>
-    #     #     <code>
-    #     #         <line>import pandas as pd</line>
-    #     #         <line>def get_events_today(df):</line>
-    #     #         <line>    today = pd.Timestamp(pd.Timestamp.today())</line>
-    #     #         <line>    solution = df[(df['start_date'] <= today) & (df['end_date'] >= today)]</line>
-    #     #         <line>    return solution</line>
-    #     #     </code>
-    #     #     <returns>dataframe</returns>
-    #     #     <example>solution = get_events_today(df)</example>
-    #     #     <explanation>The function first gets the current date as a pandas timestamp. Then it filters the dataframe to include only the rows where the start date is less than or equal to today and the end date is greater than or equal to today. The filtered dataframe is then returned as the solution.</explanation>
-    #     #     <error>None</error>
-    #     # </response>"""
-    #
-    #     # TODO: This is a hacky way to validate XML. We should use a proper XML parser instead.
-    #     # From: https://www.phind.com/agent?cache=clplcnojm0004l2087q5mn10z
-    #     class MalformedXmlError( Exception ):
-    #         pass
-    #
-    #     def validate( xml_string ):
-    #         try:
-    #             root = et.fromstring( xml_string )
-    #         except et.ParseError:
-    #             raise MalformedXmlError( "The XML is malformed." )
-    #
-    #         expected_tags = [ "question", "thoughts", "code", "returns", "example", "explanation", "error" ]
-    #         for tag in expected_tags:
-    #             if root.find( tag ) is None:
-    #                 raise MalformedXmlError( f"The XML is missing the <{tag}> tag." )
-    #
-    #         code_tag = root.find( "code" )
-    #         if code_tag is None or len( code_tag.findall( "line" ) ) == 0:
-    #             raise MalformedXmlError( "The XML is missing the <line> tag inside the <code> tag." )
-    #
-    #     try:
-    #         validate( xml_string )
-    #     except MalformedXmlError as e:
-    #         du.print_banner( e, expletive=True )
-    #         print( xml_string )
-    #         raise ValueError( e )
-    
     def run_prompt( self, question="" ):
         
         prompt_model      = Agent.PHIND_34B_v2
@@ -297,10 +247,7 @@ class CalendaringAgent( Agent ):
     
 if __name__ == "__main__":
     
-    # import huggingface_hub as hf
-    # print( "hf.__version__", hf.__version__ )
-    
-    agent = CalendaringAgent( path_to_df="/src/conf/long-term-memory/events.csv", debug=True, verbose=True )
+    agent = DataQueryingAgent( debug=True, verbose=True )
 
     # question         = "What todo items do I have on my calendar for this week?"
     # question         = "What todo items do I have on my calendar for today?"
@@ -311,7 +258,8 @@ if __name__ == "__main__":
     # question           = "What is the date today?"
     # question           = "What time is it in Washington DC? I'm not interested in superfluous precision, so you can omit seconds and milliseconds"
     # question           = "What day of the week is today?"
-    question           = "What's today's date?"
+    # question           = "What's today's date?"
+    question         = "how many birthdays are on my calendar this month?"
     timer            = sw.Stopwatch( msg=f"Processing [{question}]..." )
     response_dict    = agent.run_prompt( question )
     
