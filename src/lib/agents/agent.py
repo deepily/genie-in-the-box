@@ -21,12 +21,15 @@ class Agent( RunnableCode, abc.ABC ):
     
     DEFAULT_MODEL = PHIND_34B_v2
     
-    def __init__( self, debug=False, verbose=False ):
+    def __init__( self, routing_command="", debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
         super().__init__( debug=debug, verbose=verbose )
         
         self.debug                  = debug
         self.verbose                = verbose
+        self.auto_debug             = auto_debug
+        self.inject_bugs            = inject_bugs
+        self.routing_command        = routing_command
         
         self.question               = None
         self.answer_conversational  = None
