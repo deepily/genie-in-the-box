@@ -62,7 +62,7 @@ class SolutionSnapshot( Agent ):
         }
     
     def __init__( self, push_counter=-1, question="", synonymous_questions=OrderedDict(), non_synonymous_questions=[],
-                  last_question_asked="", answer="", answer_short="", answer_conversational="", error="",
+                  last_question_asked="", answer="", answer_short="", answer_conversational="", error="", routing_command="",
                   created_date=get_timestamp(), updated_date=get_timestamp(), run_date=get_timestamp(),
                   runtime_stats=get_default_stats_dict(),
                   id_hash="", solution_summary="", code=[], code_returns="", code_example="", code_type="raw", thoughts="",
@@ -83,6 +83,7 @@ class SolutionSnapshot( Agent ):
         self.answer_short          = answer_short
         self.answer_conversational = answer_conversational
         self.error                 = error
+        self.routing_command       = routing_command
         
         # Is there is no synonymous questions to be found then just recycle the current question
         if len( synonymous_questions ) == 0:
@@ -239,7 +240,7 @@ class SolutionSnapshot( Agent ):
         
         # TODO: decide what we're going to exclude from serialization, and why or why not!
         # Right now I'm just doing this for the sake of expediency as I'm playing with class inheritance for agents
-        fields_to_exclude = [ "prompt_response", "prompt_response_dict", "code_response_dict", "phind_tgi_url" ]
+        fields_to_exclude = [ "prompt_response", "prompt_response_dict", "code_response_dict", "phind_tgi_url", "config_mgr" ]
         data = { field: value for field, value in self.__dict__.items() if field not in fields_to_exclude }
         return json.dumps( data )
         
