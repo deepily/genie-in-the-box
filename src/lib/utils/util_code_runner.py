@@ -184,7 +184,7 @@ def assemble_and_run_solution( solution_code, example_code, path=None, solution_
     if debug: print( "Code runner executing [{}]... ".format( code_path ), end="" )
     
     # ¡OJO! Hardcoded value of python run time... Make this runtime configurable
-    results = run( [ "python", code_path ], stdout=PIPE, stderr=PIPE, universal_newlines=True )
+    results = run( [ "python3", code_path ], stdout=PIPE, stderr=PIPE, universal_newlines=True )
     
     if debug: print( f"results.returncode = [{results.returncode}]...", end="" )
     
