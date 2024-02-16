@@ -3,6 +3,7 @@
   "verbose": false,
   "answer": "0",
   "error": "",
+  "routing_command": "agent router go to calendar",
   "question": "how many birthdays do i have this week",
   "answer_conversational": "You have 0 birthdays this week.",
   "push_counter": 1,
