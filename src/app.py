@@ -56,9 +56,9 @@ config_path      = du.get_project_root() + cli_args[ "config_path" ]
 splainer_path    = du.get_project_root() + cli_args[ "splainer_path" ]
 
 app_config_server_name        = None
-path_to_events_df_wo_root     = None
 path_to_snapshots_dir_wo_root = None
 tts_local_url_template        = None
+# path_to_events_df_wo_root     = None
 
 def init_configuration():
 
@@ -75,18 +75,18 @@ def init_configuration():
     print( f"Running flask version {flask.__version__}", end="\n\n" )
     
     global app_config_server_name
-    global path_to_events_df_wo_root
     global path_to_snapshots_dir_wo_root
     global tts_local_url_template
+    # global path_to_events_df_wo_root
     
     app_debug                          = config_mgr.get( "app_debug",   default=False, return_type="boolean" )
     app_verbose                        = config_mgr.get( "app_verbose", default=False, return_type="boolean" )
     app_silent                         = config_mgr.get( "app_silent",  default=False, return_type="boolean" )
     
     app_config_server_name             = config_mgr.get( "app_config_server_name" )
-    path_to_events_df_wo_root          = config_mgr.get( "path_to_events_df_wo_root" )
     path_to_snapshots_dir_wo_root      = config_mgr.get( "path_to_snapshots_dir_wo_root" )
     tts_local_url_template             = config_mgr.get( "tts_local_url_template" )
+    # path_to_events_df_wo_root          = config_mgr.get( "path_to_events_df_wo_root" )
     
 init_configuration()
 
@@ -115,7 +115,7 @@ snapshot_mgr = SolutionSnapshotManager( path_to_snapshots, debug=app_debug, verb
 """
 Globally visible queue objects
 """
-jobs_todo_queue = TodoFifoQueue( socketio, snapshot_mgr, app, path_to_events_df_wo_root, config_mgr )
+jobs_todo_queue = TodoFifoQueue( socketio, snapshot_mgr, app, config_mgr )
 jobs_done_queue = FifoQueue()
 jobs_dead_queue = FifoQueue()
 jobs_run_queue  = RunningFifoQueue( app, socketio, snapshot_mgr, jobs_todo_queue, jobs_done_queue, jobs_dead_queue )
