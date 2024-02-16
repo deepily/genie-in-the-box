@@ -3,7 +3,7 @@ import re
 import json
 import datetime
 
-from lib.agents.calendaring_agent         import CalendaringAgent
+from lib.agents.data_querying_agent         import DataQueryingAgent
 from lib.memory.solution_snapshot         import SolutionSnapshot
 from lib.agents.agent                     import Agent
 from lib.agents.iterative_debugging_agent import IterativeDebuggingAgent
@@ -14,14 +14,15 @@ import lib.utils.util_stopwatch as sw
 
 from huggingface_hub import InferenceClient
 
-class IncrementalCalendaringAgent( CalendaringAgent ):
+class IncrementalCalendaringAgent( DataQueryingAgent ):
     
-    def __init__( self, path_to_df, question="", default_model=Agent.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False ):
+    def __init__( self, df_path_key="path_to_events_df_wo_root", question="", default_model=Agent.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
-        super().__init__( path_to_df, question=question, default_model=default_model, push_counter=push_counter, debug=debug, verbose=verbose )
+        super().__init__( df_path_key=df_path_key, question=question, default_model=default_model, push_counter=push_counter, debug=debug, verbose=verbose, auto_debug=auto_debug, inject_bugs=inject_bugs )
         
         self.step_len             = -1
         self.token_count          = 0
+        self.path_to_prompts      = du.get_project_root() + self.config_mgr.get( "path_to_event_prompts_wo_root" )
         self.prompt_components    = None
         self.question             = SolutionSnapshot.clean_question( question )
         self.prompt_response_dict = None
@@ -81,98 +82,20 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
         
         return restored_agent
     
-    def _initialize_prompt_components( self, df ):
+    def _initialize_prompt_components( self ):
         
-        head, event_value_counts = self._get_df_metadata( df )
+        head, value_counts = self._get_df_metadata()
         
-        # The only Python libraries that you may use: You must only use the datetime and Pandas libraries, which have been imported in the following manner: `import pandas as pd` and`import datetime as dt`.
-        step_1 = f"""
-        You are a cheerfully and helpful assistant, with proven expertise using Python to query pandas dataframes.
+        step_1 = du.get_file_as_string( self.path_to_prompts + "calendaring-step-1.txt" ).format(
+            head=head, value_counts=value_counts, question=self.question
+        )
+        step_2 = du.get_file_as_string( self.path_to_prompts + "calendaring-step-2.txt" )
+        step_3 = du.get_file_as_string( self.path_to_prompts + "calendaring-step-3.txt" )
+        step_4 = du.get_file_as_string( self.path_to_prompts + "calendaring-step-4.txt" )
         
-        Your job is to translate human questions about calendars, dates, and events into a self-contained Python functions that can be used to answer the question now and reused in the future.
-        
-        About the Pandas dataframe: The name of the events dataframe is `df` and is already loaded in memory ready to be queried.
-        
-        Here are some hints to keep in mind and guide you as you craft your solution:
-        Start and end dates: An event that I have today may have started before today and may end tomorrow or next week, so be careful how you filter on dates.
-        Filtering: When filtering by dates, use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
-        Return values: You should always return a dataframe, and it must always include all columns in the dataframe, and never a subset.
-        
-        This is the ouput from `print(df.head().to_xml())`, in XML format:
-        {head}
-        
-        This is the output from `print(self.df.event_type.value_counts())`:
-        
-        {event_value_counts}
-        
-        Given the context I have provided above, I want you to write a Python function to answer the following question:
-        
-        Question: `{self.question}`
-        
-        In order to successfully write a function that answers the question above, you must follow my instructions step by step. As you complete each step I will recount your progress on the previous steps and provide you with the next step's instructions.
-        
-        Step one) Think: think out loud about what the question means in technical terms, in addition to what are the steps that you will need to take in your code to solve this problem. Be critical of your thought process! And make sure to consider what you will call the entry point to your python solution, such as `def get_events_for_today( df )`, or `def get_events_for_tomorrow( df )`, `def count_appointments_this_month( df )`, or `def get_events_for_this_week( df )` or even `def get_birthday_for( df, name )`.
-        """
-        xml_formatting_instructions_step_1 = """
-        You must respond to the step one directive using the following XML format:
-        <response>
-            <thoughts>Your thoughts</thoughts>
-        </response>
-        
-        Begin!
-        """
-        
-        step_2 = """
-        In response to the instructions that you received for step one you replied:
-        
-        {response}
-        
-        Step two) Code: Now that you have thought about how you are going to solve the problem, it's time to generate the Python code that you will use to arrive at your answer. The code must be complete, syntactically correct, and capable of running to completion. The last line of your function code must be `return solution`.  Remember: You must never return a subset of a dataframe's columns.
-        """
-        xml_formatting_instructions_step_2 = """
-        You must respond to the step 2 directive using the following XML format:
-        <response>
-            <code>
-                <line>def function_name_here( df, arg1, arg2 ):</line>
-                <line>    ...</line>
-                <line>    ...</line>
-                <line>    return solution</line>
-            </code>
-        </response>
-        
-        Begin!
-        """
-        
-        step_3 = """
-        In response to the instructions that you received for step two, you replied:
-        
-        {response}
-        
-        Now that you have generated the code, you will need to perform the following three steps:
-        
-        Step three) Return: Report on the object type of the variable `solution` returned in your last line of code. Use one word to represent the object type.
-        
-        Step four) Example: Create a one line example of how to call your code.
-        
-        Step five) Explain: Explain how your code works, including any assumptions that you have made.
-        """
-        xml_formatting_instructions_step_3 = """
-        You must respond to the directives in steps three, four and five using the following XML format:
-        
-        <response>
-            <returns>Object type of the variable `solution`</returns>
-            <example>One-line example of how to call your code: solution = function_name_here( arguments )</example>
-            <explanation>Explanation of how the code works</explanation>
-        </response>
-        
-        Begin!
-        """
-        
-        step_4 = """
-        In response to the instructions that you received for step three, you replied:
-        
-        {response}
-        """
+        xml_formatting_instructions_step_1 = du.get_file_as_string( self.path_to_prompts + "calendaring-xml-formatting-instructions-step-1.txt" )
+        xml_formatting_instructions_step_2 = du.get_file_as_string( self.path_to_prompts + "calendaring-xml-formatting-instructions-step-2.txt" )
+        xml_formatting_instructions_step_3 = du.get_file_as_string( self.path_to_prompts + "calendaring-xml-formatting-instructions-step-3.txt" )
         
         steps = [ step_1, step_2, step_3, step_4 ]
         self.step_len = len( steps )
@@ -189,19 +112,19 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
         
         return prompt_components
     
-    def _get_df_metadata( self, df ):
+    def _get_df_metadata( self ):
     
-        head = df.head( 3 ).to_xml( index=False )
-        head = head + df.tail( 3 ).to_xml( index=False )
+        head = self.df.head( 3 ).to_xml( index=False )
+        head = head + self.df.tail( 3 ).to_xml( index=False )
         head = head.replace( "data>", "events>" ).replace( "<?xml version='1.0' encoding='utf-8'?>", "" )
         
-        event_value_counts = df.event_type.value_counts()
+        value_counts = self.df.event_type.value_counts()
         
-        return head, event_value_counts
+        return head, value_counts
     
     def run_prompt( self ):
         
-        self.prompt_components      = self._initialize_prompt_components( self.df )
+        self.prompt_components      = self._initialize_prompt_components()
 
         self.token_count = 0
         timer = sw.Stopwatch( msg=f"Running iterative prompt with {len( self.prompt_components[ 'steps' ] )} steps..." )
@@ -242,9 +165,6 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
             
             self.serialize_to_json( self.question, step, self.step_len, now )
             
-        # self.prompt_components[ "running_history" ] = running_history
-        # self.prompt_response_dict = prompt_response_dict
-        
         tokens_per_second = self.token_count / ( timer.get_delta_ms() / 1000.0 )
         timer.print( f"Done! Tokens per second [{round( tokens_per_second, 1 )}]", use_millis=True, prepend_nl=True )
         
@@ -320,6 +240,7 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
                     
             if match:
                 line = match.group( 1 )
+                # replace the XML escape sequences with their actual characters
                 line = line.replace( "&gt;", ">" ).replace( "&lt;", "<" ).replace( "&amp;", "&" )
                 code_list.append( line )
                 if debug: print( line )
@@ -329,7 +250,11 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
     
         return code_list
     
-    def run_code( self, auto_debug=False, inject_bugs=False ):
+    def run_code( self, auto_debug=None, inject_bugs=None ):
+        
+        # Use this object's settings, if overriding values not provided
+        if auto_debug  is None: auto_debug  = self.auto_debug
+        if inject_bugs is None: inject_bugs = self.inject_bugs
         
         # TODO: figure out where this should live, i suspect it will be best located in util_code_runner.py
         print( f"Executing super().run_code() with inject_bugs [{inject_bugs}] and auto_debug [{auto_debug}]...")
@@ -359,15 +284,15 @@ class IncrementalCalendaringAgent( CalendaringAgent ):
                 
 if __name__ == "__main__":
     
-    path_to_df      = "/src/conf/long-term-memory/events.csv"
+    # path_to_df      = "/src/conf/long-term-memory/events.csv"
     question        = "How many birthdays are on my calendar this month?"
     # question        = "How many birthdays do I have on my calendar this month?"
     # question        = "What birthdays do I have on my calendar this week?"
     # question        = "What's today's date?"
     # question        = "What time is it?"
-    agent           = IncrementalCalendaringAgent( path_to_df, question=question, debug=False, verbose=False )
+    agent           = IncrementalCalendaringAgent( question=question, debug=False, verbose=False, auto_debug=True, inject_bugs=False )
     prompt_response = agent.run_prompt()
-    code_response   = agent.run_code( auto_debug=True, inject_bugs=True )
+    code_response   = agent.run_code( auto_debug=True, inject_bugs=False )
     # du.print_banner( f"code_response[ 'return_code' ] = [{code_response[ 'return_code' ]}]", prepend_nl=False )
     for line in code_response[ "output" ].split( "\n" ):
         print( line )
