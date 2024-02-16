@@ -1,0 +1,9 @@
+You must respond to the directives in steps three, four and five using the following XML format:
+
+<response>
+    <returns>Object type that you return in the variable `solution`</returns>
+    <example>One-line example of how to call your code: solution = function_name_here( arguments )</example>
+    <explanation>Explanation of how the code works</explanation>
+</response>
+
+Begin!

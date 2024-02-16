@@ -1,0 +1,11 @@
+In response to the instructions that you received for step two, you replied:
+
+{response}
+
+Now that you have generated the code, you will need to perform the following three steps:
+
+Step three) Return: Report on the object type of the variable `solution` returned in your last line of code. Use one word to represent the object type.
+
+Step four) Example: Create a one line example of how to call your code.
+
+Step five) Explain: Explain how your code works, including any assumptions that you have made.

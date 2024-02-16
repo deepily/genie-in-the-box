@@ -1,0 +1,5 @@
+In response to the instructions that you received for step one you replied:
+
+{response}
+
+Step two) Code: Now that you have thought about how you are going to solve the problem, it's time to generate the Python code that you will use to arrive at your answer. The code must be complete, syntactically correct, and capable of running to completion. The last line of your function code must be `return solution`.  Remember: You must never return a subset of a dataframe's columns.

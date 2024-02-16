@@ -1,0 +1,11 @@
+You must respond to the step 2 directive using the following XML format:
+<response>
+    <code>
+        <line>def function_name_here( df, arg1, arg2 ):</line>
+        <line>    ...</line>
+        <line>    ...</line>
+        <line>    return solution</line>
+    </code>
+</response>
+
+Begin!
