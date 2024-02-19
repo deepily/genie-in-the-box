@@ -51,13 +51,17 @@ class DataQueryingAgent( Agent ):
     
     def _get_system_message_phind( self ):
         
-        # head = self.df.head( 3 ).to_csv( header=True, index=False )
-        # head = head + self.df.tail( 3 ).to_csv( header=False, index=False )
-        
         head = self.df.head( 3 ).to_xml( index=False )
         head = head + self.df.tail( 3 ).to_xml( index=False )
+        head = head.replace( "data>", "events>" ).replace( "<?xml version='1.0' encoding='utf-8'?>", "" )
         
         pandas_system_prompt = f"""
+        ### Instruction:
+
+        Use the Task and Input given below to write a Response that can solve the following Task.
+        
+        ### Task:
+        
         You are a cheerfully helpful assistant, with proven expertise in Python using pandas dataframes.
         
         Your job is to translate human questions about calendars, dates, and events into working Python code that can be used to answer the question and return that code in a valid XML document defined below.
@@ -92,6 +96,8 @@ class DataQueryingAgent( Agent ):
         Hint: If you cannot answer the question, explain why in the `error` field
         Hint: Allow for the possibility that your query may return no results.
         
+        ### Input:
+        
         Question: {self.question}
 
         Format: You must return your response as a syntactically correct XML document containing the following fields:
@@ -110,6 +116,8 @@ class DataQueryingAgent( Agent ):
             <explanation>Explanation of how the code works</explanation>
             <error>Description of any issues or errors that you encountered while attempting to fulfill this request</error>
         </response>
+        
+        ### Response:
         """
         
         return pandas_system_prompt
