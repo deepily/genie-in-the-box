@@ -34,9 +34,9 @@ class Llm:
             )
         
         else:
-            # KLUDGE: Test for splitability
+            # KLUDGE: Test for divisibility
             if "### Input:" not in self.prompt:
-                print( "ERROR: No '### Input:' found in prompt!" )
+                print( "(KLUDGE) ERROR: Prompt isn't divisible, no '### Input:' found in prompt!" )
                 raise ValueError( "ERROR: No '### Input:' found in prompt!" )
             
             preamble = self.prompt.split( "### Input:" )[ 0 ]
