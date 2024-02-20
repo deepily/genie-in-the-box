@@ -11,8 +11,6 @@ from lib.utils import util_xml as dux
 import lib.app.util_llm_client  as llm_client
 
 from lib.memory.solution_snapshot import SolutionSnapshot
-from ephemera.prompts.xml_fine_tuning_prompt_generator import XmlFineTuningPromptGenerator
-
 
 class TodoFifoQueue( FifoQueue ):
     def __init__( self, socketio, snapshot_mgr, app, config_mgr=None ):
@@ -40,7 +38,8 @@ class TodoFifoQueue( FifoQueue ):
         self.push_counter += 1
         
         du.print_banner( f"push_job( '{question}' )", prepend_nl=True )
-        similar_snapshots = self.snapshot_mgr.get_snapshots_by_question( question, threshold=90.0 )
+        threshold = self.config_mgr.get( "snapshot_similiarity_threshold", default=90.0, return_type="float" )
+        similar_snapshots = self.snapshot_mgr.get_snapshots_by_question( question, threshold=threshold )
         print()
         
         # if we've got a similar snapshot then go ahead and push it onto the queue
