@@ -11,12 +11,14 @@ import lib.utils.util_stopwatch as sw
 import lib.utils.util_code_runner as ucr
 import lib.utils.util_xml as dux
 
-from lib.agents.agent    import Agent
+# from lib.agents.agent    import Agent
+from lib.agents.agent                import RunnableCode
+from lib.agents.raw_output_formatter import RawOutputFormatter
 
 import openai
 import numpy as np
 
-class SolutionSnapshot( Agent ):
+class SolutionSnapshot( RunnableCode ):
     
     @staticmethod
     def get_timestamp():
@@ -315,6 +317,7 @@ class SolutionSnapshot( Agent ):
     
     def run_code( self, debug=False, verbose=False ):
         
+        # TODO: Remove all references to the events.csv file
         self.code_response_dict = ucr.assemble_and_run_solution(
             self.code, self.code_example, solution_code_returns=self.code_returns, path="/src/conf/long-term-memory/events.csv", debug=debug
         )
@@ -327,52 +330,17 @@ class SolutionSnapshot( Agent ):
         
         return self.code_response_dict
     
-    def format_output( self, format_model=Agent.PHIND_34B_v2 ):
+    def format_output( self ):
         
-        preamble     = self._get_formatting_preamble()
-        instructions = self._get_formatting_instructions()
-        
-        self._print_token_count( preamble, message_name="formatting preamble", model=format_model )
-        self._print_token_count( instructions, message_name="formatting instructions", model=format_model )
-        
-        self.answer_conversational = self._query_llm( preamble, instructions, model=format_model, debug=True )
+        formatter                  = RawOutputFormatter( self.last_question_asked, self.answer, self.routing_command, debug=self.debug, verbose=self.verbose )
+        self.answer_conversational = formatter.format_output()
         
         # if we've just received an xml-esque string then pull `<rephrased_answer>` from it. Otherwise, just return the string
         self.answer_conversational = dux.get_value_by_xml_tag_name( self.answer_conversational, "rephrased-answer", default_value=self.answer_conversational )
-        print( f"self.answer_conversational: [{self.answer_conversational}]" )
+        # if self.debug: print( f"self.answer_conversational: [{self.answer_conversational}]" )
         
         return self.answer_conversational
     
-    def _get_user_message( self ):
-        
-        msg = "SolutionSnapshot._get_user_message() NOT IMPLEMENTED"
-        du.print_banner( msg, expletive=True )
-        raise NotImplementedError( msg )
-    
-    def _get_system_message( self ):
-        
-        msg = "SolutionSnapshot._get_system_message() NOT IMPLEMENTED"
-        du.print_banner( msg, expletive=True )
-        raise NotImplementedError( msg )
-    
-    def is_code_runnable( self ):
-        
-        if hasattr( self, 'code' ) and self.code != [ ]:
-            return True
-        else:
-            return False
-    
-    def run_prompt( self, question="" ):
-        
-        msg = "SolutionSnapshot.run_prompt() NOT IMPLEMENTED"
-        du.print_banner( msg, expletive=True )
-        raise NotImplementedError( msg )
-    
-    def is_prompt_executable( self ):
-        
-        return False
-
-
 # Add main method
 if __name__ == "__main__":
     
