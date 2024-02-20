@@ -115,7 +115,7 @@ snapshot_mgr = SolutionSnapshotManager( path_to_snapshots, debug=app_debug, verb
 """
 Globally visible queue objects
 """
-jobs_todo_queue = TodoFifoQueue( socketio, snapshot_mgr, app, config_mgr )
+jobs_todo_queue = TodoFifoQueue( socketio, snapshot_mgr, app, config_mgr, debug=app_debug, verbose=app_verbose, silent=app_silent )
 jobs_done_queue = FifoQueue()
 jobs_dead_queue = FifoQueue()
 jobs_run_queue  = RunningFifoQueue( app, socketio, snapshot_mgr, jobs_todo_queue, jobs_done_queue, jobs_dead_queue )

@@ -13,9 +13,12 @@ import lib.app.util_llm_client  as llm_client
 from lib.memory.solution_snapshot import SolutionSnapshot
 
 class TodoFifoQueue( FifoQueue ):
-    def __init__( self, socketio, snapshot_mgr, app, config_mgr=None ):
+    def __init__( self, socketio, snapshot_mgr, app, config_mgr=None, debug=False, verbose=False, silent=False ):
         
         super().__init__()
+        self.debug        = debug
+        self.verbose      = verbose
+        self.silent       = silent
         
         self.socketio     = socketio
         self.snapshot_mgr = snapshot_mgr
