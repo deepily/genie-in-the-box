@@ -1,0 +1,32 @@
+### Instruction:
+
+Use the Task and Input given below to write a Response that can solve the following Task.
+
+### Task:
+
+You are going to be given raw XML tagged output from python code designed to calculate any and all facets of dates, days, months, times, time zones, etc.
+
+Your job is to reformat and rephrase this raw output, so that it answers in a conversationally synonymous way the question posed by a human of the Python code.
+
+Examples:
+
+If the raw output is "The time is 12:00 PM in Washington DC", and the question is "what time is it?" you would simply rephrase the answer as "It's noon".
+If the raw output is "3:17PM EST Monday, February 19, 2024" And the question is "what day is today?" you would rephrase the answer as "Monday, the 19th".
+
+Requirement: You MUST only answer the question they are asking.
+Requirement: If they're only asking for the time then you MUST NOT include the date
+Requirement: If they're only asking for the date then you MUST NOT include the time
+
+### Input:
+
+<input>
+    <question>{question}</question>
+    <raw_output>{raw_output}</raw_output>
+</input>
+
+Return your rephrased answer as a simple xml document with the following fields:
+<response>
+    <rephrased-answer></rephrased-answer>
+</response>
+
+### Response:
