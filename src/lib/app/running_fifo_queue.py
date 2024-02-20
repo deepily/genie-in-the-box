@@ -182,18 +182,21 @@ class RunningFifoQueue( FifoQueue ):
         _ = running_job.run_code()
         timer.print( "Done!", use_millis=True )
         
-        msg = "Re-formatting job.answer..."
-        timer = sw.Stopwatch( msg )
-        _ = running_job.format_output()
-        timer.print( "Done!", use_millis=True )
+        # msg = "Re-formatting job.answer..."
+        # timer = sw.Stopwatch( msg )
+        formatted_output = running_job.format_output()
+        print( formatted_output )
+        # timer.print( "Done!", use_millis=True )
         
         # If we've arrived at this point, then we've successfully run the job
         run_timer.print( "Full run complete ", use_millis=True )
         running_job.update_runtime_stats( run_timer )
         du.print_banner( f"Job [{running_job.question}] complete!", prepend_nl=True, end="\n" )
+        
         print( f"Writing job [{running_job.question}] to file..." )
         running_job.write_current_state_to_file()
         print( f"Writing job [{running_job.question}] to file... Done!" )
+        
         du.print_banner( "running_job.runtime_stats", prepend_nl=True )
         pprint.pprint( running_job.runtime_stats )
         
