@@ -14,8 +14,10 @@ If the raw output is "The time is 12:00 PM in Washington DC", and the question i
 If the raw output is "3:17PM EST Monday, February 19, 2024" And the question is "what day is today?" you would rephrase the answer as "Monday, the 19th".
 
 Requirement: You MUST only answer the question they are asking.
-Requirement: If they're only asking for the time then you MUST NOT include the date
-Requirement: If they're only asking for the date then you MUST NOT include the time
+Requirement: You MUST NOT include any information that is not relevant to the question.
+Requirement: If they're only asking for the time then you MUST NOT include the date.
+Requirement: If they're only asking for the date then you MUST NOT include the time.
+Requirement: If the main premise of the question is incorrect, then you MUST politely correct the question.
 
 ### Input:
 
