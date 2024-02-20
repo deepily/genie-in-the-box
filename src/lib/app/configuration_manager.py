@@ -2,10 +2,6 @@ import configparser
 import os
 import sys
 
-lib_path = "/var/ampe/src/lib"
-if lib_path not in sys.path:
-    sys.path.append( lib_path )
-
 import lib.utils.util as du
 
 # Idea for the "singleton" decorator: https://stackabuse.com/creating-a-singleton-in-python/
@@ -28,7 +24,7 @@ def singleton( cls ):
 @singleton
 class ConfigurationManager():
     
-    def __init__( self, env_var_name=None, config_path=None, splainer_path=None, config_block_id="default", debug=False, verbose=False, silent=False, cli_args=None ):
+    def __init__( self, env_var_name=None, config_path=None, splainer_path=None, config_block_id="default", debug=False, verbose=False, silent=False, mute_splainer=False, cli_args=None ):
 
         """
         Instantiates configuration manager object
@@ -50,6 +46,7 @@ class ConfigurationManager():
         self.debug           = debug
         self.verbose         = verbose
         self.silent          = silent
+        self.mute_splainer   = mute_splainer
         
         if env_var_name is not None:
             
@@ -344,18 +341,12 @@ class ConfigurationManager():
         """
         Verifies that a config block ID exists
 
-        NOTE: Also detects if a block ID looks like a file path for a file that doesn't exist
-
         :param block_id: Block ID to be checked
 
         :return: None
 
-        :raises: FileNotFoundError or AssertionError when block ID doesn't exist in configuration
+        :raises: AssertionError when block ID doesn't exist in configuration
         """
-
-        if block_id.startswith( "/var/ampe/" ) and not os.path.isfile( block_id ):
-
-            raise FileNotFoundError( "File NOT found [{0}] Update & try again?".format( block_id ) )
 
         fail_msg = "Configuration block doesn't exist: [{0}] Check spelling?".format( block_id )
         assert block_id in self.config.sections(), fail_msg
@@ -425,30 +416,7 @@ class ConfigurationManager():
 
         Example:
         <pre><code>
-        %autoreload
-
-        # force silent configuration object update
-        ampe.init_configuration( config_block_id, silent=True )
-
-        # print out the goodies
-        ampe.print_configuration( brackets=False )
-
-        @_default_analysis_type          = retention
-        @_default_creds_db_path          = /var/ampe/src/creds/credentials-db-seu.json
-        @_default_creds_s3_path          = /var/ampe/src/creds/credentials-s3-seu.txt
-        @_default_model_type             = classification
-        @_default_pred_features_table    = iss_rruiz.retention_model_features
-        @_default_predictions_table      = iss_rruiz.retention_predictions
-        @_default_s3_bucket_name         = ste-stg
-        @_default_s3_to_redshift_sql     = /var/ampe/src/sql/load-s3-predictions-into-redshift.sql
-        @_default_s3_user_name           = rruiz
-        @_default_target_name            = enrolled_next_fall
-
-        clean_values_to_exclude          = Fall 2020
-
-        feature_new_target_name          = enrolled_next_fall
-
-        # Remaining configuration output truncated
+        Foo!  Bar!  Baz!
         </code></pre>
         """
 
@@ -629,17 +597,17 @@ class ConfigurationManager():
 
         Example:
         <pre><code>
-        ampe.splain_me( "42" )
+        config_mgr.splain_me( "42" )
 
         [42] = I'm sorry Dave, I'm afraid I can't tell you that.  You could ask Douglas Adams though.
 
-        ampe.splain_me( "flux_capacitor" )
+        config_mgr.splain_me( "flux_capacitor" )
 
         [flux_capacitor] = A Y-shaped electronic device that's essential to time travel
         </code></pre>
         """
 
-        if key in self.splainer.options( "default" ):
+        if key in self.splainer.sections():
 
             definition = self.splainer.get( "default", key )
             print()
@@ -648,7 +616,7 @@ class ConfigurationManager():
         else:
 
             print( "\n'Splainer says: ¿WUH? The key [{0}] NOT found in the 'splainer.ini file. "
-                   "Check spelling and/or contact the AMPE project maintainer?".format( key ), end=end )
+                   "Check spelling and/or contact the project maintainer?".format( key ), end=end )
 
     def _load_splainer_definitions( self ):
 
@@ -660,9 +628,13 @@ class ConfigurationManager():
         :return: None
         """
 
+        du.print_banner( f"Loading splainer file [{self.splainer_path}]..." )
         splainer = configparser.ConfigParser()
         splainer.read( du.get_project_root() + self.splainer_path )
-
+        # print( len( splainer ) )
+        # print( splainer.sections() )
+        # print( du.get_file_as_string( self.splainer_path ) )
+        
         self.splainer = splainer
     
 if __name__ == "__main__":
