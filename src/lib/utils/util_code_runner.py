@@ -41,10 +41,11 @@ def _append_example_and_print_code( code, code_return_type, example_code, debug=
     Returns:
         list: The updated code list with the example code appended.
     """
-    plain_print = "print( solution )"
-    json_print  = "print( solution.to_json( orient='records', lines=True ) )"
+    plain_print     = "print( solution )"
+    formatted_print = "print( solution.to_xml( index=False ) )"
+    # formatted_print = "print( solution.to_json( orient='records', lines=True ) )"
     
-    if code[ -2 ] != example_code and code[ -1 ] not in [ plain_print, json_print ]:
+    if code[ -2 ] != example_code and code[ -1 ] not in [ plain_print, formatted_print ]:
         
         code.append( example_code )
     
@@ -53,7 +54,7 @@ def _append_example_and_print_code( code, code_return_type, example_code, debug=
         if debug and verbose: print( "return_type [{}]".format( return_type ) )
         
         if return_type == "dataframe":
-            code.append( json_print )
+            code.append( formatted_print )
         else:
             code.append( plain_print )
     
@@ -126,10 +127,10 @@ def _remove_duplicate_lines( code_lines ):
 #
 #     return the_list
 
-def assemble_and_run_solution( solution_code, example_code, path=None, solution_code_returns="string", debug=True, verbose=False, inject_bugs=False ):
+def assemble_and_run_solution( solution_code, example_code, path_to_df=None, solution_code_returns="string", debug=True, verbose=False, inject_bugs=False ):
     
     # if there's no dataframe to open or prep, then skip it
-    if path is None:
+    if path_to_df is None:
         code_preamble = [
             "import datetime",
             "import pytz",
@@ -146,7 +147,7 @@ def assemble_and_run_solution( solution_code, example_code, path=None, solution_
             "debug = {}".format( debug ),
             "",
             # "if debug: print( sys.path )",
-            "df = pd.read_csv( du.get_project_root() + '{path}' )".format( path=path ),
+            "df = pd.read_csv( du.get_project_root() + '{path}' )".format( path=path_to_df ),
             "df = dup.cast_to_datetime( df, debug=debug )"
         ]
         # Remove duplicate imports if present
