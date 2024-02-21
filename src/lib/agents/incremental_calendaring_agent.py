@@ -3,10 +3,11 @@ import re
 import json
 import datetime
 
-from lib.agents.data_querying_agent         import DataQueryingAgent
+from lib.agents.data_querying_agent       import DataQueryingAgent
 from lib.memory.solution_snapshot         import SolutionSnapshot
 from lib.agents.agent                     import Agent
 from lib.agents.iterative_debugging_agent import IterativeDebuggingAgent
+from lib.agents.raw_output_formatter      import RawOutputFormatter
 
 import lib.utils.util as du
 import lib.utils.util_xml as dux
@@ -16,9 +17,9 @@ from huggingface_hub import InferenceClient
 
 class IncrementalCalendaringAgent( DataQueryingAgent ):
     
-    def __init__( self, df_path_key="path_to_events_df_wo_root", question="", default_model=Agent.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
+    def __init__( self, df_path_key="path_to_events_df_wo_root", routing_command="agent router go to calendar", question="", default_model=Agent.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
-        super().__init__( df_path_key=df_path_key, question=question, default_model=default_model, push_counter=push_counter, debug=debug, verbose=verbose, auto_debug=auto_debug, inject_bugs=inject_bugs )
+        super().__init__( df_path_key=df_path_key, routing_command=routing_command, question=question, default_model=default_model, push_counter=push_counter, debug=debug, verbose=verbose, auto_debug=auto_debug, inject_bugs=inject_bugs )
         
         self.step_len             = -1
         self.token_count          = 0
@@ -258,7 +259,8 @@ class IncrementalCalendaringAgent( DataQueryingAgent ):
         
         # TODO: figure out where this should live, i suspect it will be best located in util_code_runner.py
         print( f"Executing super().run_code() with inject_bugs [{inject_bugs}] and auto_debug [{auto_debug}]...")
-        code_response_dict = super().run_code(  inject_bugs=inject_bugs )
+        path_to_df = self.config_mgr.get( "path_to_events_df_wo_root" )
+        code_response_dict = super().run_code( path_to_df=path_to_df, inject_bugs=inject_bugs )
         if self.ran_to_completion():
             
             self.error  = None
@@ -281,18 +283,30 @@ class IncrementalCalendaringAgent( DataQueryingAgent ):
                 du.print_banner( "Debugging failed, returning original code, such as it is... 😢 sniff 😢" )
                 
         return self.code_response_dict
-                
+    
+    def format_output( self ):
+
+        formatter = RawOutputFormatter( self.last_question_asked, self.code_response_dict[ "output" ], self.routing_command )
+        self.answer_conversational = formatter.format_output()
+        
+        # if we've just received an xml-esque string then pull `<rephrased_answer>` from it. Otherwise, just return the string
+        if self.debug and self.verbose: print( f" PRE self.answer_conversational: [{self.answer_conversational}]" )
+        self.answer_conversational = dux.get_value_by_xml_tag_name( self.answer_conversational, "rephrased-answer", default_value=self.answer_conversational )
+        if self.debug and self.verbose: print( f"POST self.answer_conversational: [{self.answer_conversational}]" )
+        
+        return self.answer_conversational
+        
 if __name__ == "__main__":
     
-    # path_to_df      = "/src/conf/long-term-memory/events.csv"
-    question        = "How many birthdays are on my calendar this month?"
+    # question        = "How many birthdays are on my calendar this month?"
     # question        = "How many birthdays do I have on my calendar this month?"
     # question        = "What birthdays do I have on my calendar this week?"
-    # question        = "What's today's date?"
-    # question        = "What time is it?"
-    agent           = IncrementalCalendaringAgent( question=question, debug=False, verbose=False, auto_debug=True, inject_bugs=False )
-    prompt_response = agent.run_prompt()
-    code_response   = agent.run_code( auto_debug=True, inject_bugs=False )
+    # question        = "Who has birthdays this week?"
+    question         = "Do i have any concerts this week?"
+    agent            = IncrementalCalendaringAgent( question=question, debug=True, verbose=True, auto_debug=True, inject_bugs=False )
+    prompt_response  = agent.run_prompt()
+    code_response    = agent.run_code( auto_debug=True, inject_bugs=False )
+    formatted_output = agent.format_output()
     # du.print_banner( f"code_response[ 'return_code' ] = [{code_response[ 'return_code' ]}]", prepend_nl=False )
     for line in code_response[ "output" ].split( "\n" ):
         print( line )
