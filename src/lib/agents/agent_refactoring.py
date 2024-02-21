@@ -187,7 +187,7 @@ class RefactoringAgent( Agent ):
         for similar_snapshot in self.similar_snapshots:
             
             code_response = ucr.assemble_and_run_solution(
-                similar_snapshot[ 1 ].code, path="/src/conf/long-term-memory/events.csv", debug=self.debug
+                similar_snapshot[ 1 ].code, path_to_df="/src/conf/long-term-memory/events.csv", debug=self.debug
             )
             if self.debug and self.verbose:
                 du.print_banner( "Code output", prepend_nl=True )
