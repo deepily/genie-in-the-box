@@ -42,6 +42,7 @@ class TodoFifoQueue( FifoQueue ):
         
         du.print_banner( f"push_job( '{question}' )", prepend_nl=True )
         threshold = self.config_mgr.get( "snapshot_similiarity_threshold", default=90.0, return_type="float" )
+        print( f"push_job(): Using snapshot similarity threshold of [{threshold}]" )
         similar_snapshots = self.snapshot_mgr.get_snapshots_by_question( question, threshold=threshold )
         print()
         
@@ -63,6 +64,8 @@ class TodoFifoQueue( FifoQueue ):
             
             job = best_snapshot.get_copy()
             print( "Python object ID for copied job: " + str( id( job ) ) )
+            job.debug   = self.debug
+            job.verbose = self.verbose
             job.add_synonymous_question( question, best_score )
             
             job.run_date = du.get_current_datetime()
@@ -94,6 +97,10 @@ class TodoFifoQueue( FifoQueue ):
             
             if command == "none":
                 msg = "Hmm... I'm not certain what to do with that question, Could you rephrase and try again?"
+            elif command == "agent router go to calendar":
+                calendaring_agent = IncrementalCalendaringAgent( question=question, routing_command=command, push_counter=self.push_counter, debug=True, verbose=False )
+                self.push( calendaring_agent )
+                msg = f"Starting a new calendaring job, I'll be right back."
             else:
                 msg = "TO DO: Implement command " + command
             
@@ -104,12 +111,6 @@ class TodoFifoQueue( FifoQueue ):
             
             return msg
             
-            # calendaring_agent = IncrementalCalendaringAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False )
-            # self.push( calendaring_agent )
-            # msg = f"No similar snapshots found, adding NEW IncrementalCalendaringAgent to TODO queue. Queue size [{self.size()}]"
-            # print( msg )
-            # return msg
-            #
             # agent = FunctionMappingAgent( question=question, push_counter=self.push_counter, debug=True, verbose=True )
             # self.push( agent )
             # self.socketio.emit( 'todo_update', { 'value': self.size() } )
