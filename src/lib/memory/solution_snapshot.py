@@ -168,6 +168,7 @@ class SolutionSnapshot( RunnableCode ):
         return SolutionSnapshot(
                          question=agent.question,
               last_question_asked=agent.last_question_asked,
+                  routing_command=agent.routing_command,
              synonymous_questions=OrderedDict( { agent.question: 100.0 } ),
                             error=agent.prompt_response_dict.get( "error", "" ),
                  solution_summary=agent.prompt_response_dict.get( "explanation", "N/A" ),
@@ -319,7 +320,7 @@ class SolutionSnapshot( RunnableCode ):
         
         # TODO: Remove all references to the events.csv file
         self.code_response_dict = ucr.assemble_and_run_solution(
-            self.code, self.code_example, solution_code_returns=self.code_returns, path="/src/conf/long-term-memory/events.csv", debug=debug
+            self.code, self.code_example, solution_code_returns=self.code_returns, path_to_df="/src/conf/long-term-memory/events.csv", debug=debug
         )
         self.answer             = self.code_response_dict[ "output" ]
         
@@ -335,9 +336,9 @@ class SolutionSnapshot( RunnableCode ):
         formatter                  = RawOutputFormatter( self.last_question_asked, self.answer, self.routing_command, debug=self.debug, verbose=self.verbose )
         self.answer_conversational = formatter.format_output()
         
-        # if we've just received an xml-esque string then pull `<rephrased_answer>` from it. Otherwise, just return the string
+        if self.debug and self.verbose: print( f" PRE self.answer_conversational: [{self.answer_conversational}]" )
         self.answer_conversational = dux.get_value_by_xml_tag_name( self.answer_conversational, "rephrased-answer", default_value=self.answer_conversational )
-        # if self.debug: print( f"self.answer_conversational: [{self.answer_conversational}]" )
+        if self.debug and self.verbose: print( f"POST self.answer_conversational: [{self.answer_conversational}]" )
         
         return self.answer_conversational
     
