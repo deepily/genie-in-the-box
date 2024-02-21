@@ -24,12 +24,12 @@ class RunnableCode:
         du.print_banner( "Code", prepend_nl=True )
         du.print_list( self.prompt_response_dict[ "code" ] )
         
-    def run_code( self, inject_bugs=False ):
+    def run_code( self, path_to_df=None, inject_bugs=False ):
         
         self.code_response_dict = ucr.assemble_and_run_solution(
             self.prompt_response_dict[ "code" ],
             self.prompt_response_dict[ "example" ],
-            path="/src/conf/long-term-memory/events.csv",
+            path_to_df=path_to_df,
             solution_code_returns=self.prompt_response_dict.get( "returns", "" ),
             debug=self.debug, inject_bugs=inject_bugs
         )
