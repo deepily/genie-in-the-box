@@ -107,7 +107,7 @@ class RunningFifoQueue( FifoQueue ):
             
             print( f"Executing [{truncated_question}] as a open ended calendaring agent job instead..." )
             self.socketio.emit( 'notification_sound_update', { 'soundFile': '/static/gentle-gong.mp3' } )
-            running_job = IncrementalCalendaringAgent( "/src/conf/long-term-memory/events.csv", question=running_job.question, push_counter=running_job.push_counter, debug=True, verbose=True )
+            running_job = IncrementalCalendaringAgent( question=running_job.question, push_counter=running_job.push_counter, debug=True, verbose=True )
             
         return running_job
         
@@ -142,6 +142,8 @@ class RunningFifoQueue( FifoQueue ):
             response_dict    = running_job.run_prompt()
             code_response    = running_job.run_code( auto_debug=True, inject_bugs=False )
             formatted_output = running_job.format_output()
+            
+            running_job.answer_conversational = formatted_output
         
         except Exception as e:
             
@@ -167,7 +169,7 @@ class RunningFifoQueue( FifoQueue ):
             
             du.print_banner( "running_job.runtime_stats", prepend_nl=True )
             pprint.pprint( running_job.runtime_stats )
-        
+            
         else:
             
             running_job = self._handle_error_case( code_response, running_job, truncated_question )
