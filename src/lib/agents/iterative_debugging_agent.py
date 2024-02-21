@@ -24,7 +24,7 @@ class IterativeDebuggingAgent( Agent ):
         self.error_message         = error_message
         self.successfully_debugged = False
         
-        self.do_not_serialize     = []
+        self.do_not_serialize     = [ "config_mgr" ]
         
     def _inialize_available_llms( self ):
         
@@ -305,7 +305,7 @@ Source code:
         
     def format_output( self ):
         
-        print( " format_output NOT implemented" )
+        print( "format_output() NOT implemented" )
         
     def is_code_runnable( self ):
         
