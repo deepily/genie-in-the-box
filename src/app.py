@@ -60,8 +60,9 @@ path_to_snapshots_dir_wo_root = None
 tts_local_url_template        = None
 # path_to_events_df_wo_root     = None
 
-def init_configuration():
+def init_configuration( refresh=False ):
 
+    
     global app_debug
     global app_verbose
     global app_silent
@@ -69,6 +70,12 @@ def init_configuration():
     global config_block_id
     
     config_mgr = ConfigurationManager( config_path=config_path, splainer_path=splainer_path, config_block_id=config_block_id, debug=app_debug, verbose=app_verbose, silent=app_silent )
+    
+    # We need to force a refresh, otherwise the configuration mgr singleton will not be updated
+    if refresh:
+        du.print_banner( "Refreshing configuration manager..." )
+        config_mgr.init( config_path=config_path, splainer_path=splainer_path, config_block_id=config_block_id, debug=app_debug, verbose=app_verbose, silent=app_silent )
+    
     config_mgr.print_configuration( brackets=True )
     
     # Running flask version 2.1.3
@@ -261,7 +268,7 @@ def delete_snapshot( id_hash ):
 @app.route( '/api/init', methods=[ 'GET' ] )
 def init():
     
-    init_configuration()
+    init_configuration( refresh=True )
     snapshot_mgr.load_snapshots()
     
     return f"¡Success!"
