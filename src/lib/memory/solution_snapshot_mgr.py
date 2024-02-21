@@ -185,7 +185,7 @@ class SolutionSnapshotManager:
         
         question = ss.SolutionSnapshot.clean_question( question )
         
-        print( f"get_snapshots_by_question( '{question}' )..." )
+        print( f"get_snapshots_by_question( '{question}' with threshold [{threshold}] )..." )
         # print( "question in self.snapshots_by_synomymous_questions:", question in self.snapshots_by_synomymous_questions)
         
         if self.question_exists( question ):
@@ -193,12 +193,12 @@ class SolutionSnapshotManager:
             if debug: print( f"Exact match: Snapshot with question [{question}] exists!" )
             similar_snapshots = [ (100.0, self.snapshots_by_question[ question ]) ]
             
-        elif question in self.snapshots_by_synomymous_questions:
+        elif question in self.snapshots_by_synomymous_questions and self.snapshots_by_synomymous_questions[ question ][ 0 ] >= threshold:
             
             snapshot = self.snapshots_by_synomymous_questions[ question ][ 1 ]
             score    = self.snapshots_by_synomymous_questions[ question ][ 0 ]
             similar_snapshots = [ (score, snapshot) ]
-            print( f"Snapshot with synonymous question for [{question}] exists: [{snapshot.question}] similarity score [{score}]" )
+            print( f"Snapshot with synonymous question for [{question}] exists: [{snapshot.question}] similarity score [{score}] >= [{threshold}]" )
         
         else:
             print( "No exact match or synonymous question found, searching for similar questions..." )
