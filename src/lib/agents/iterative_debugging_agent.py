@@ -30,7 +30,7 @@ class IterativeDebuggingAgent( Agent ):
         
         # TODO: make run-time configurable, like AMPE's dynamic configuration
         prompt_run_llms = [
-            { "model": Agent.PHIND_34B_v2, "short_name": "phind34b", "temperature": 0.5, "top_k": 10, "top_p": 0.25, "max_new_tokens": 1024 },
+            { "model": Agent.PHIND_34B_v2, "short_name": "phind34b", "temperature": 0.25, "top_k": 10, "top_p": 0.25, "max_new_tokens": 1024 },
             { "model": Agent.GPT_3_5, "short_name": "gpt3.5" },
             { "model": Agent.GPT_4, "short_name": "gpt4" }
         ]
@@ -74,6 +74,11 @@ Source code:
         You must respond to the step 2 directive using the following XML format:
         <response>
             <code>
+                <line>import ...</line>
+                <line></line>
+                <line>df = pd.read_csv( ... )</line>
+                <line>df = dup.cast_to_datetime( ... )</line>
+                <line></line>
                 <line>def function_name_here( df, arg1 ):</line>
                 <line>    ...</line>
                 <line>    ...</line>
@@ -100,7 +105,7 @@ Source code:
         Step five) Explain: Explain how your code works, including any assumptions that you have made.
         """
         xml_formatting_instructions_step_3 = """
-        You must respond to the directives in steps three, four and five using the following XML format:
+        You MUST respond to the directives in steps three, four and five using the following XML format:
 
         <response>
             <returns>Object type of the variable `solution`</returns>
@@ -134,7 +139,9 @@ Source code:
         
         return prompt_components
     
-    def run_prompts( self ):
+    def run_prompts( self, debug=None ):
+        
+        if debug is not None: self.debug = debug
         
         idx = 1
         self.successfully_debugged = False
@@ -155,7 +162,7 @@ Source code:
             
             du.print_banner( f"{run_descriptor}: Executing debugging prompt using model [{model_name}] and short name [{short_name}]...", end="\n" )
             
-            prompt_response_dict = self.run_prompt( run_descriptor=run_descriptor, model=model_name, short_name=short_name, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens )
+            prompt_response_dict = self.run_prompt( run_descriptor=run_descriptor, model=model_name, short_name=short_name, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens, debug=self.debug )
             
             code_response_dict = ucr.initialize_code_response_dict()
             if self.is_code_runnable():
@@ -187,7 +194,9 @@ Source code:
         
         return self.successfully_debugged
     
-    def run_prompt( self, run_descriptor="Run 1 of 1", model=Agent.PHIND_34B_v2, short_name="phind34b", max_new_tokens=1024, temperature=0.5, top_p=0.25, top_k=10, debug=False ):
+    def run_prompt( self, run_descriptor="Run 1 of 1", model=Agent.PHIND_34B_v2, short_name="phind34b", max_new_tokens=1024, temperature=0.5, top_p=0.25, top_k=10, debug=None ):
+        
+        if debug is not None: self.debug = debug
         
         self.prompt_components      = self._initialize_prompt_components()
         
@@ -219,7 +228,7 @@ Source code:
             if step != len( steps ) - 1:
                 
                 response = self._query_llm(
-                    running_history, xml_formatting_instructions[ step ], model=model, max_new_tokens=max_new_tokens, temperature=temperature, top_p=top_p, top_k=top_k, debug=debug
+                    running_history, xml_formatting_instructions[ step ], model=model, max_new_tokens=max_new_tokens, temperature=temperature, top_p=top_p, top_k=top_k, debug=self.debug
                 )
                 responses.append( response )
                 
@@ -266,10 +275,6 @@ Source code:
                 # the get_code method expects enclosing tags
                 xml_string = "<code>" + xml_string + "</code>"
                 prompt_response_dict[ xml_tag ] = dux.get_code_list( xml_string, debug=debug )
-                
-                # # the get_code method expects enclosing tags
-                # xml_string = "<code>" + dux.get_value_by_xml_tag_name( response, xml_tag ) + "</code>"
-                # prompt_response_dict[ xml_tag ] = dux.get_code_list( xml_string, debug=debug )
             else:
                 prompt_response_dict[ xml_tag ] = dux.get_value_by_xml_tag_name( response, xml_tag ).strip()
 
@@ -321,19 +326,15 @@ Source code:
         
 if __name__ == "__main__":
     
-#     error_message = """
-# ERROR executing code:
-#
-# File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 12
-#     mask = (df['start_date'] <= today) && (df['end_date'] >= today)
-#                                         ^
-# SyntaxError: invalid syntax"""
-    
-    error_message = ""
+    error_message = """
+      File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 18
+    solution = df[(df['event_type'] == 'concert') && (df['start_date'].between(start_of_week, end_of_week))]
+                                                   ^
+    SyntaxError: invalid syntax"""
     
     debugging_agent = IterativeDebuggingAgent( error_message, du.get_project_root() + "/io/code.py", debug=False, verbose=False )
     
-    debugging_agent.run_prompts()
+    debugging_agent.run_prompts( debug=False )
     
     # du.print_banner( "This may fail to run the completion due to a library version conflict 😢", expletive=True )
     # print( f"Is promptable? {debugging_agent.is_prompt_executable()}, is runnable? {debugging_agent.is_code_runnable()}" )
