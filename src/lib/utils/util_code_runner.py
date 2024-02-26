@@ -59,9 +59,9 @@ def _append_example_and_print_code( code, code_return_type, example_code, debug=
             code.append( plain_print )
     
     # Remove redundant imports if present
-    code = remove_2nd_occurrence( code, "import pandas as pd" )
-    code = remove_2nd_occurrence( code, "import datetime" )
-    code = remove_2nd_occurrence( code, "import pytz" )
+    code = remove_repeated_lines( code, "import pandas as pd" )
+    code = remove_repeated_lines( code, "import datetime" )
+    code = remove_repeated_lines( code, "import pytz" )
     
     # duplicates_report, clean_code = _remove_duplicate_lines( code )
     #
@@ -77,7 +77,7 @@ def _append_example_and_print_code( code, code_return_type, example_code, debug=
 
 # def _remove_duplicate_lines( code_lines ):
 #
-#     """¡OJO! This method will only remove exact matches."""
+#     """¡OJO! This method Remove both of the repeated lines."""
 #
 #     # Count the occurrences of each line
 #     line_count = Counter( code_lines )
@@ -95,45 +95,28 @@ def _append_example_and_print_code( code, code_return_type, example_code, debug=
 #             seen_lines.add( line )
 #
 #     return duplicates_report, unique_lines
-
-
+#
 # Apply the method to the sample code
 # duplicates_report, unique_code_lines = remove_duplicate_lines( code_lines )
 
-# TODO: This may be overkill/superfluous
-# def swap_return_value_assignment( code ):
-#
-#     penultimate_line = code[ -2 ]
-#     last_line        = code[ -1 ]
-#
-#     # grab whatever comes after the return reserved word
-#     returned_var_name = last_line.split( "return" )[ 1 ].strip()
-#
-#     # swap in the proper assignment name: 'solution = '
-#     code[ -2 ] = penultimate_line.replace( returned_var_name + " = ", "solution = " )
-#
-#     # swap in the proper return statement: 'return solution'
-#     code[ -1 ] = last_line.replace( "return " + returned_var_name, "return solution" )
-#
-#     return code
 
-
-# TODO: This should generalize to include more than two instances of a string?
-def remove_2nd_occurrence( the_list, search_string ):
+def remove_repeated_lines( the_list, search_string ):
     
-    match_counter    = 0
-    last_match_index = -1
+    # From: https://chat.openai.com/c/db28026c-444d-4a4b-b24b-bbb88fa52521
+    match_indices = [ ]
     
     # Iterate through the list to find matches
     for i, item in enumerate( the_list ):
         item_trimmed = item.strip()
         if item_trimmed == search_string:
-            match_counter += 1
-            last_match_index = i
+            match_indices.append( i )
     
-    # If more than one match is found, remove the item at the last match index
-    if match_counter > 1:
-        the_list.pop( last_match_index )
+    # Remove the first occurrence from the match indices to keep it
+    if match_indices: match_indices.pop( 0 )
+    
+    # Sort the match indices in descending order to remove items starting from the end
+    for index in sorted( match_indices, reverse=True ):
+        the_list.pop( index )
     
     return the_list
 
@@ -161,11 +144,6 @@ def assemble_and_run_solution( solution_code, example_code, path_to_df=None, sol
             "df = dup.cast_to_datetime( df, debug=debug )"
         ]
         
-    # Remove duplicate imports if present
-    # code_preamble = remove_2nd_occurrence( code_preamble, "import pandas as pd" )
-    # code_preamble = remove_2nd_occurrence( code_preamble, "import datetime as dt" )
-    # code_preamble = remove_2nd_occurrence( code_preamble, "import pytz" )
-    
     if debug and verbose:
         du.print_banner( "Solution code BEFORE:", prepend_nl=True)
         du.print_list( solution_code)
@@ -246,6 +224,8 @@ def test_assemble_and_run_solution( debug=False, verbose=False):
         "df = pd.read_csv( du.get_project_root() + '/src/conf/long-term-memory/events.csv' )",
         "df = dup.cast_to_datetime( df, debug=debug )",
         "def get_events_for_this_week( df ):",
+        "    import pandas as pd",
+        "    import datetime",
         "    import pandas as pd",
         "    import datetime",
         "    today = datetime.date.today()",

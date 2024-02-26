@@ -26,7 +26,7 @@ class RunnableCode:
         
     def run_code( self, path_to_df=None, inject_bugs=False ):
         
-        if self.debug: du.print_banner( f"RunnableCode.run_code( path_to_df={path_to_df}, debug={self.debug}, verbose{self.verbose}", prepend_nl=True )
+        if self.debug: du.print_banner( f"RunnableCode.run_code( path_to_df={path_to_df}, debug={self.debug}, verbose{self.verbose})", prepend_nl=True )
         
         self.code_response_dict = ucr.assemble_and_run_solution(
             self.prompt_response_dict[ "code" ],
