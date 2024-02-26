@@ -18,7 +18,6 @@ class DataQueryingAgent( Agent ):
         
         super().__init__( debug=debug, verbose=verbose, routing_command=routing_command, auto_debug=auto_debug, inject_bugs=inject_bugs )
         
-        # self.path_to_df = self.config_mgr.get( df_path_key )
         self.df         = pd.read_csv( du.get_project_root() + self.config_mgr.get( df_path_key ) )
         self.df         = dup.cast_to_datetime( self.df )
         
