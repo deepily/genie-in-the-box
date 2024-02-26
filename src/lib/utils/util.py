@@ -474,6 +474,9 @@ if __name__ == "__main__":
     print( get_api_key( "openai" ) )
     # print( get_api_key( "openai", project_root="/Users/rruiz/Projects/projects-sshfs/genie-in-the-box" ) )
     
+    line = get_file_as_source_code_with_line_numbers( get_project_root() + "/io/code.py" )
+    print( line )
+    
     # generate_domain_names( 10, debug=True )
     
     # search_terms = get_file_as_list( get_project_root() + "/src/conf/search-terms.txt", lower_case=True, clean=True, randomize=True )
