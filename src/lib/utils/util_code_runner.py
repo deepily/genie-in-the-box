@@ -58,39 +58,43 @@ def _append_example_and_print_code( code, code_return_type, example_code, debug=
         else:
             code.append( plain_print )
     
-    # Remove duplicate imports if present
-    # code = remove_last_occurrence( code, "import pandas as pd" )
-    # code = remove_last_occurrence( code, "import datetime" )
+    # Remove redundant imports if present
+    code = remove_2nd_occurrence( code, "import pandas as pd" )
+    code = remove_2nd_occurrence( code, "import datetime" )
+    code = remove_2nd_occurrence( code, "import pytz" )
     
-    duplicates_report, clean_code = _remove_duplicate_lines( code )
-    
-    if len( duplicates_report ) > 0:
-        du.print_banner( "Code Runner: Duplicate lines removed:", prepend_nl=False, end="\n" )
-        for line, count in duplicates_report.items():
-            print( f"Count: [{count:02d}] Line [{line}]" )
-        print()
-    
-    return clean_code
+    # duplicates_report, clean_code = _remove_duplicate_lines( code )
+    #
+    # if len( duplicates_report ) > 0:
+    #     du.print_banner( "Code Runner: Duplicate lines removed:", prepend_nl=False, end="\n" )
+    #     for line, count in duplicates_report.items():
+    #         print( f"Count: [{count:02d}] Line [{line}]" )
+    #     print()
+    #
+    # return clean_code
+    return code
 
 
-def _remove_duplicate_lines( code_lines ):
-    
-    # Count the occurrences of each line
-    line_count = Counter( code_lines )
-    
-    # Report the duplicate lines and their frequencies
-    duplicates_report = { line: count for line, count in line_count.items() if count > 1 }
-    
-    # Remove duplicate lines, keeping only the first occurrence
-    unique_lines = [ ]
-    seen_lines   = set()
-    
-    for line in code_lines:
-        if line not in seen_lines:
-            unique_lines.append( line )
-            seen_lines.add( line )
-    
-    return duplicates_report, unique_lines
+# def _remove_duplicate_lines( code_lines ):
+#
+#     """¡OJO! This method will only remove exact matches."""
+#
+#     # Count the occurrences of each line
+#     line_count = Counter( code_lines )
+#
+#     # Report the duplicate lines and their frequencies
+#     duplicates_report = { line: count for line, count in line_count.items() if count > 1 }
+#
+#     # Remove duplicate lines, keeping only the first occurrence
+#     unique_lines = [ ]
+#     seen_lines   = set()
+#
+#     for line in code_lines:
+#         if line not in seen_lines:
+#             unique_lines.append( line )
+#             seen_lines.add( line )
+#
+#     return duplicates_report, unique_lines
 
 
 # Apply the method to the sample code
@@ -115,19 +119,25 @@ def _remove_duplicate_lines( code_lines ):
 
 
 # TODO: This should generalize to include more than two instances of a string?
-# def remove_last_occurrence( the_list, the_string ):
-#
-#     # ¡OJO! This has issues with white space that precedes any target strings. Not worth worrying about right now
-#     # Example: "    import datetime" will not be removed if the List contains "import datetime", and vice versa
-#     if the_list.count( the_string ) > 1:
-#
-#         the_list.reverse()
-#         the_list.remove( the_string )
-#         the_list.reverse()
-#
-#     return the_list
+def remove_2nd_occurrence( the_list, search_string ):
+    
+    match_counter    = 0
+    last_match_index = -1
+    
+    # Iterate through the list to find matches
+    for i, item in enumerate( the_list ):
+        item_trimmed = item.strip()
+        if item_trimmed == search_string:
+            match_counter += 1
+            last_match_index = i
+    
+    # If more than one match is found, remove the item at the last match index
+    if match_counter > 1:
+        the_list.pop( last_match_index )
+    
+    return the_list
 
-def assemble_and_run_solution( solution_code, example_code, path_to_df=None, solution_code_returns="string", debug=True, verbose=False, inject_bugs=False ):
+def assemble_and_run_solution( solution_code, example_code, path_to_df=None, solution_code_returns="string", debug=False, verbose=False, inject_bugs=False ):
     
     # if there's no dataframe to open or prep, then skip it
     if path_to_df is None:
@@ -150,9 +160,11 @@ def assemble_and_run_solution( solution_code, example_code, path_to_df=None, sol
             "df = pd.read_csv( du.get_project_root() + '{path}' )".format( path=path_to_df ),
             "df = dup.cast_to_datetime( df, debug=debug )"
         ]
-        # Remove duplicate imports if present
-        # code_preamble = remove_last_occurrence( code_preamble, "import pandas as pd" )
-        # code_preamble = remove_last_occurrence( code_preamble, "import datetime as dt" )
+        
+    # Remove duplicate imports if present
+    # code_preamble = remove_2nd_occurrence( code_preamble, "import pandas as pd" )
+    # code_preamble = remove_2nd_occurrence( code_preamble, "import datetime as dt" )
+    # code_preamble = remove_2nd_occurrence( code_preamble, "import pytz" )
     
     if debug and verbose:
         du.print_banner( "Solution code BEFORE:", prepend_nl=True)
@@ -212,7 +224,7 @@ def assemble_and_run_solution( solution_code, example_code, path_to_df=None, sol
     
     return results_dict
 
-def test_assemble_and_run_solution():
+def test_assemble_and_run_solution( debug=False, verbose=False):
 
     # solution_code = [
     #     "def check_birthdays(df):",
@@ -222,27 +234,48 @@ def test_assemble_and_run_solution():
     #     "    return birthdays"
     # ]
     # example_code = "solution = check_birthdays( df )"
-    # results = assemble_and_run_solution( solution_code, example_code, solution_code_returns="dataframe", path="/src/conf/long-term-memory/events.csv", debug=debug )
+    # results = assemble_and_run_solution( solution_code, example_code, solution_code_returns="dataframe", path_to_df="/src/conf/long-term-memory/events.csv", debug=debug, verbose=verbose )
     
     solution_code = [
         "import datetime",
         "import pytz",
-        "import datetime",
-        "import pytz",
-        "def get_time():",
-        "def get_time():",
+        "import pandas as pd",
+        "import lib.utils.util as du",
+        "import lib.utils.util_pandas as dup",
+        "debug = False",
+        "df = pd.read_csv( du.get_project_root() + '/src/conf/long-term-memory/events.csv' )",
+        "df = dup.cast_to_datetime( df, debug=debug )",
+        "def get_events_for_this_week( df ):",
+        "    import pandas as pd",
         "    import datetime",
-        "    now = datetime.datetime.now()",
-        "    tz_name = 'America/New_York'",
-        "    tz = pytz.timezone( tz_name )",
-        "    tz_date = now.astimezone( tz )",
-        "    return tz_date.strftime( '%I:%M %p %Z' )"
+        "    today = datetime.date.today()",
+        "    start_of_week = today - pd.DateOffset(days=today.weekday())",
+        "    end_of_week = start_of_week + pd.DateOffset(days=7)",
+        "    solution = df[(df['event_type'] == 'concert') & (df['start_date'].between(start_of_week, end_of_week))]",
+        "    return solution"
     ]
-    example_code = "solution = get_time()"
-    results = assemble_and_run_solution( solution_code, example_code, solution_code_returns="string", debug=False, verbose=False, inject_bugs=False )
+    example_code = "solution = get_events_for_this_week( df )"
+    results = assemble_and_run_solution( solution_code, example_code, solution_code_returns="dataframe", path_to_df="/src/conf/long-term-memory/events.csv", debug=debug, verbose=verbose )
+    
+    # solution_code = [
+    #     "import datetime",
+    #     "import pytz",
+    #     "import datetime",
+    #     "import pytz",
+    #     "def get_time():",
+    #     "def get_time():",
+    #     "    import datetime",
+    #     "    now = datetime.datetime.now()",
+    #     "    tz_name = 'America/New_York'",
+    #     "    tz = pytz.timezone( tz_name )",
+    #     "    tz_date = now.astimezone( tz )",
+    #     "    return tz_date.strftime( '%I:%M %p %Z' )"
+    # ]
+    # example_code = "solution = get_time()"
+    # results = assemble_and_run_solution( solution_code, example_code, solution_code_returns="string", debug=True, verbose=False, inject_bugs=False )
 
     for line in results[ "output" ].split( "\n" ): print( line )
         
 if __name__ == "__main__":
-    test_assemble_and_run_solution()
+    test_assemble_and_run_solution( debug=True, verbose=True )
     # pass
