@@ -1,0 +1,6 @@
+You must respond to the step one directive using the following XML format:
+<response>
+    <thoughts>Your thoughts</thoughts>
+</response>
+
+Begin!
