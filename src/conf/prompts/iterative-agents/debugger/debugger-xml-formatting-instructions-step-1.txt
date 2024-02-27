@@ -1,0 +1,21 @@
+You MUST respond to the directives above using the following XML format:
+<response>
+    <thoughts>Your thoughts</thoughts>
+    <code>
+        <line>All imports here</line>
+        <line></line>
+        <line>def function_name_here( df, arg1 ):</line>
+        <line>    ...</line>
+        <line>    ...</line>
+        <line>    return solution</line>
+        <line></line>
+        <line>All code that followed the function</line>
+    </code>
+    <returns>Object type of the variable `solution`</returns>
+    <example>solution = function_name_here( arguments )</example>
+    <explanation>Explanation of how the code works</explanation>
+</response>
+
+Take a deep breath and pause for a moment before you begin. Good luck!
+
+### Response:

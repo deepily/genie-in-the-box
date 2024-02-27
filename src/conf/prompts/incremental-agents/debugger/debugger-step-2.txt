@@ -1,6 +1,0 @@
-
-In response to the instructions that you received for step one you replied:
-
-{response}
-
-Step two) Code: Now that you have thought about how you are going to solve the problem, it's time to generate the Python code that fixES the buggy code. The code must be complete, syntactically correct, and capable of running to completion. The last line of your function code MUST be `return solution`. Remember: You must make the least amount of changes that will fix the bug
