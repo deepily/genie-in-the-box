@@ -15,9 +15,10 @@ class IterativeDebuggingAgent( Agent ):
         super().__init__( debug=debug, verbose=verbose )
         
         self.code                  = []
+        self.project_root          = du.get_project_root()
         self.path_to_code          = path_to_code
-        self.formatted_code        = du.get_file_as_source_code_with_line_numbers( self.path_to_code )
-        self.path_to_prompts       = du.get_project_root() + self.config_mgr.get( "path_to_debugger_prompts_wo_root" )
+        self.formatted_code        = du.get_file_as_source_code_with_line_numbers( self.project_root + self.path_to_code )
+        self.path_to_prompts       = self.config_mgr.get( "path_to_debugger_prompts_wo_root" )
         self.token_count           = 0
         self.prompt_components     = None
         self.prompt_response_dict  = None
@@ -39,17 +40,12 @@ class IterativeDebuggingAgent( Agent ):
     
     def _initialize_prompt_components( self ):
         
-        step_1 = du.get_file_as_string( self.path_to_prompts + "debugger-step-1.txt" ).format(
+        # This is a chopped down version of the incremental approach to calendaring and todo list agents
+        step_1 = du.get_file_as_string( self.project_root + self.path_to_prompts + "debugger-step-1.txt" ).format(
             error_message=self.error_message, formatted_code=self.formatted_code
         )
-        # step_2 = du.get_file_as_string( self.path_to_prompts + "debugger-step-2.txt" )
-        # step_3 = du.get_file_as_string( self.path_to_prompts + "debugger-step-3.txt" )
-        # step_4 = du.get_file_as_string( self.path_to_prompts + "debugger-step-4.txt" )
+        xml_formatting_instructions_step_1 = du.get_file_as_string( self.project_root + self.path_to_prompts + "debugger-xml-formatting-instructions-step-1.txt" )
         
-        xml_formatting_instructions_step_1 = du.get_file_as_string( self.path_to_prompts + "debugger-xml-formatting-instructions-step-1.txt" )
-        # xml_formatting_instructions_step_2 = du.get_file_as_string( self.path_to_prompts + "debugger-xml-formatting-instructions-step-2.txt" )
-        # xml_formatting_instructions_step_3 = du.get_file_as_string( self.path_to_prompts + "debugger-xml-formatting-instructions-step-3.txt" )
-
         steps = [ step_1 ]
         self.step_len = len( steps )
         prompt_components = {
@@ -149,9 +145,6 @@ class IterativeDebuggingAgent( Agent ):
                 # incorporate the previous response into the current step, then append it to the running history
                 running_history = running_history + steps[ step ].format( response=responses[ step - 1 ] )
             
-            # we're not going to execute the last step, it's been added just to keep the running history current
-            # if step != len( steps ) - 1:
-                
             response = self._query_llm(
                 running_history, xml_formatting_instructions[ step ], model=model, max_new_tokens=max_new_tokens, temperature=temperature, top_p=top_p, top_k=top_k, debug=True
             )
@@ -161,11 +154,6 @@ class IterativeDebuggingAgent( Agent ):
             prompt_response_dict = self._update_response_dictionary(
                 step, response, prompt_response_dict, response_tag_names, debug=debug
             )
-            # else:
-            #     if debug:
-            #         print( "LAST STEP: Skipping execution. Response from the previous step:" )
-            #         print( responses[ step - 1 ] )
-            
             # Update the prompt component's state before serializing a copy of it
             self.prompt_components[ "running_history" ] = running_history
             self.prompt_response_dict = prompt_response_dict
@@ -224,7 +212,31 @@ class IterativeDebuggingAgent( Agent ):
         os.chmod( file_path, 0o666 )
         
         print( f"Serialized to {file_path}" )
+    
+    @staticmethod
+    def restore_from_serialized_state( file_path ):
         
+        print( f"Restoring from {file_path}..." )
+        
+        # Read the file and parse JSON
+        with open( file_path, 'r' ) as file:
+            data = json.load( file )
+        
+        # Create a new object instance with the parsed data
+        restored_agent = IterativeDebuggingAgent(
+            data[ "error_message" ], data[ "path_to_code" ],
+            debug=data[ "debug" ], verbose=data[ "verbose" ]
+        )
+        # Set the remaining attributes from the parsed data, skipping the ones that we've already set
+        keys_to_skip = [ "error_message", "path_to_code", "debug", "verbose" ]
+        for k, v in data.items():
+            if k not in keys_to_skip:
+                setattr( restored_agent, k, v )
+            else:
+                print( f"Skipping key [{k}], it's already been set" )
+        
+        return restored_agent
+    
     def _get_system_message( self ):
         
         print( " _get_system_message NOT implemented" )
@@ -256,10 +268,15 @@ File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 13
 solution = df[(df['event_type'] == 'concert') && (df['start_date'].between(start_of_week, end_of_week))]
                                                ^
 SyntaxError: invalid syntax"""
-    
-    debugging_agent = IterativeDebuggingAgent( error_message, du.get_project_root() + "/io/code.py", debug=True, verbose=False )
-    
-    debugging_agent.run_prompts( debug=False )
+
+    # We do not want to use the full path
+    # source_code_path = du.get_file_as_string( du.get_project_root() + "/io/code.py" )
+    # source_code_path = "/io/code.py"
+    # debugging_agent  = IterativeDebuggingAgent( error_message, source_code_path, debug=True, verbose=False )
+    # Deserialize from file
+    debugging_agent = IterativeDebuggingAgent.restore_from_serialized_state( du.get_project_root() + "/io/log/code-debugging-on-2024-2-28-at-14-28-run-1-of-3-using-llm-phind34b-step-1-of-1.json" )
+    # debugging_agent.run_prompts( debug=False )
+    debugging_agent.run_code()
     
     # du.print_banner( "This may fail to run the completion due to a library version conflict 😢", expletive=True )
     # print( f"Is promptable? {debugging_agent.is_prompt_executable()}, is runnable? {debugging_agent.is_code_runnable()}" )
