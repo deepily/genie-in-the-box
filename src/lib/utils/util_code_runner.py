@@ -177,7 +177,7 @@ def _remove_consecutive_empty_strings( strings ):
             
     return result
 
-def assemble_and_run_solution( solution_code, example_code, path_to_df=None, solution_code_returns="string", debug=False, verbose=False, inject_bugs=False ):
+def assemble_and_run_solution( solution_code, example_code, path_to_df=None, solution_code_returns="string", python_runtime="python3", debug=False, verbose=False, inject_bugs=False ):
     
     if debug and verbose:
         du.print_banner( "Solution code BEFORE:", prepend_nl=True)
@@ -210,8 +210,8 @@ def assemble_and_run_solution( solution_code, example_code, path_to_df=None, sol
     
     if debug: print( "Code runner executing [{}]... ".format( code_path ), end="" )
     
-    # ¡OJO! Hardcoded value of python run time... Make this runtime configurable
-    results = run( [ "python3", code_path ], stdout=PIPE, stderr=PIPE, universal_newlines=True )
+    # ¡OJO! Hardcoded value of python runtime... Make this runtime configurable
+    results = run( [ python_runtime, code_path ], stdout=PIPE, stderr=PIPE, universal_newlines=True )
     
     if debug: print( f"results.returncode = [{results.returncode}]...", end="" )
     
