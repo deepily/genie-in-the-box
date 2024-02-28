@@ -23,7 +23,8 @@ class IncrementalCalendaringAgent( DataQueryingAgent ):
         
         self.step_len             = -1
         self.token_count          = 0
-        self.path_to_prompts      = du.get_project_root() + self.config_mgr.get( "path_to_event_prompts_wo_root" )
+        self.project_root         = du.get_project_root()
+        self.path_to_prompts      = self.config_mgr.get( "path_to_event_prompts_wo_root" )
         self.prompt_components    = None
         self.question             = SolutionSnapshot.clean_question( question )
         self.prompt_response_dict = None
@@ -87,16 +88,16 @@ class IncrementalCalendaringAgent( DataQueryingAgent ):
         
         head, value_counts = self._get_df_metadata()
         
-        step_1 = du.get_file_as_string( self.path_to_prompts + "calendaring-step-1.txt" ).format(
+        step_1 = du.get_file_as_string( self.project_root + self.path_to_prompts + "calendaring-step-1.txt" ).format(
             head=head, value_counts=value_counts, question=self.question
         )
-        step_2 = du.get_file_as_string( self.path_to_prompts + "calendaring-step-2.txt" )
-        step_3 = du.get_file_as_string( self.path_to_prompts + "calendaring-step-3.txt" )
-        step_4 = du.get_file_as_string( self.path_to_prompts + "calendaring-step-4.txt" )
+        step_2 = du.get_file_as_string( self.project_root + self.path_to_prompts + "calendaring-step-2.txt" )
+        step_3 = du.get_file_as_string( self.project_root + self.path_to_prompts + "calendaring-step-3.txt" )
+        step_4 = du.get_file_as_string( self.project_root + self.path_to_prompts + "calendaring-step-4.txt" )
         
-        xml_formatting_instructions_step_1 = du.get_file_as_string( self.path_to_prompts + "calendaring-xml-formatting-instructions-step-1.txt" )
-        xml_formatting_instructions_step_2 = du.get_file_as_string( self.path_to_prompts + "calendaring-xml-formatting-instructions-step-2.txt" )
-        xml_formatting_instructions_step_3 = du.get_file_as_string( self.path_to_prompts + "calendaring-xml-formatting-instructions-step-3.txt" )
+        xml_formatting_instructions_step_1 = du.get_file_as_string( self.project_root + self.path_to_prompts + "calendaring-xml-formatting-instructions-step-1.txt" )
+        xml_formatting_instructions_step_2 = du.get_file_as_string( self.project_root + self.path_to_prompts + "calendaring-xml-formatting-instructions-step-2.txt" )
+        xml_formatting_instructions_step_3 = du.get_file_as_string( self.project_root + self.path_to_prompts + "calendaring-xml-formatting-instructions-step-3.txt" )
         
         steps = [ step_1, step_2, step_3, step_4 ]
         self.step_len = len( steps )
@@ -106,8 +107,7 @@ class IncrementalCalendaringAgent( DataQueryingAgent ):
             "response_tag_names"         : [ [ "thoughts" ], [ "code" ], [ "returns", "example", "explanation" ] ],
             "running_history"            : "",
             "xml_formatting_instructions": [
-                xml_formatting_instructions_step_1, xml_formatting_instructions_step_2,
-                xml_formatting_instructions_step_3
+                xml_formatting_instructions_step_1, xml_formatting_instructions_step_2, xml_formatting_instructions_step_3
             ]
         }
         
@@ -270,7 +270,7 @@ class IncrementalCalendaringAgent( DataQueryingAgent ):
             
             self.error = self.code_response_dict[ "output" ]
             
-            debugging_agent = IterativeDebuggingAgent( code_response_dict[ "output" ], du.get_project_root() + "/io/code.py", debug=self.debug, verbose=self.verbose )
+            debugging_agent = IterativeDebuggingAgent( code_response_dict[ "output" ], "/io/code.py", debug=self.debug, verbose=self.verbose )
             debugging_agent.run_prompts()
             
             if debugging_agent.was_successfully_debugged():
