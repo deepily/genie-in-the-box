@@ -17,6 +17,7 @@ class IterativeDebuggingAgent( Agent ):
         self.code                  = []
         self.path_to_code          = path_to_code
         self.formatted_code        = du.get_file_as_source_code_with_line_numbers( self.path_to_code )
+        self.path_to_prompts       = du.get_project_root() + self.config_mgr.get( "path_to_debugger_prompts_wo_root" )
         self.token_count           = 0
         self.prompt_components     = None
         self.prompt_response_dict  = None
@@ -30,7 +31,7 @@ class IterativeDebuggingAgent( Agent ):
         
         # TODO: make run-time configurable, like AMPE's dynamic configuration
         prompt_run_llms = [
-            { "model": Agent.PHIND_34B_v2, "short_name": "phind34b", "temperature": 0.25, "top_k": 10, "top_p": 0.25, "max_new_tokens": 1024 },
+            { "model": Agent.PHIND_34B_v2, "short_name": "phind34b", "temperature": 0.5, "top_k": 10, "top_p": 0.25, "max_new_tokens": 1024 },
             { "model": Agent.GPT_3_5, "short_name": "gpt3.5" },
             { "model": Agent.GPT_4, "short_name": "gpt4" }
         ]
@@ -38,102 +39,26 @@ class IterativeDebuggingAgent( Agent ):
     
     def _initialize_prompt_components( self ):
         
-        step_1 = f"""
-        You are a cheerful and helpful assistant, with proven expertise using Python to query pandas dataframes.
+        step_1 = du.get_file_as_string( self.path_to_prompts + "debugger-step-1.txt" ).format(
+            error_message=self.error_message, formatted_code=self.formatted_code
+        )
+        # step_2 = du.get_file_as_string( self.path_to_prompts + "debugger-step-2.txt" )
+        # step_3 = du.get_file_as_string( self.path_to_prompts + "debugger-step-3.txt" )
+        # step_4 = du.get_file_as_string( self.path_to_prompts + "debugger-step-4.txt" )
         
-        Your job is to debug the code that produced the following error message and generate valid Python code that will correct the bug. You will return your response to each question using XML format.
-        
-        {self.error_message}
-        
-Source code:
-{self.formatted_code}
-        
-        In order to successfully address the error message above, you must follow my instructions step by step. As you complete each step I will recount your progress on the previous steps and provide you with the next step's instructions.
-        
-        Step one) Think: think out loud about what you are being asked, including what are the steps that you will need to take to solve this problem. Be critical of your thought process!
-        
-        Hint: When joining multiple filtering condition clauses in pandas, you must use the single bitwise operators `&` and `|` instead of the double logical operators `&&` and `||`.
-        """
-        
-        xml_formatting_instructions_step_1 = """
-        You must respond to the step one directive using the following XML format:
-        <response>
-            <thoughts>Your thoughts</thoughts>
-        </response>
-        
-        Begin!
-        """
-        step_2 = """
-        In response to the instructions that you received for step one you replied:
-        
-        {response}
-        
-        Step two) Code: Now that you have thought about how you are going to solve the problem, it's time to generate the Python code that fix the buggy code. The code must be complete, syntactically correct, and capable of running to completion. The last line of your function code must be `return solution`. Remember: You must make the least amount of changes that will fix the bug
-        """
-        xml_formatting_instructions_step_2 = """
-        You must respond to the step 2 directive using the following XML format:
-        <response>
-            <code>
-                <line>import ...</line>
-                <line></line>
-                <line>df = pd.read_csv( ... )</line>
-                <line>df = dup.cast_to_datetime( ... )</line>
-                <line></line>
-                <line>def function_name_here( df, arg1 ):</line>
-                <line>    ...</line>
-                <line>    ...</line>
-                <line>    return solution</line>
-                <line>solution = function_name_here( df, arg1 )</line>
-                <line>print( solution )</line>
-            </code>
-        </response>
-        
-        Begin!
-        """
-        
-        step_3 = """
-        In response to the instructions that you received for step two, you replied:
+        xml_formatting_instructions_step_1 = du.get_file_as_string( self.path_to_prompts + "debugger-xml-formatting-instructions-step-1.txt" )
+        # xml_formatting_instructions_step_2 = du.get_file_as_string( self.path_to_prompts + "debugger-xml-formatting-instructions-step-2.txt" )
+        # xml_formatting_instructions_step_3 = du.get_file_as_string( self.path_to_prompts + "debugger-xml-formatting-instructions-step-3.txt" )
 
-        {response}
-
-        Now that you have generated the code that addresses the bug mentioned above, you will need to perform the following three steps:
-
-        Step three) Return: Report on the object type of the variable `solution` returned in your last line of code. Use one word to represent the object type.
-
-        Step four) Example: Create a one line example of how to call your code.
-
-        Step five) Explain: Explain how your code works, including any assumptions that you have made.
-        """
-        xml_formatting_instructions_step_3 = """
-        You MUST respond to the directives in steps three, four and five using the following XML format:
-
-        <response>
-            <returns>Object type of the variable `solution`</returns>
-            <example>solution = function_name_here( arguments )</example>
-            <explanation>Explanation of how the code works</explanation>
-        </response>
-
-        Begin!
-        """
-        
-        step_4 = """
-        In response to the instructions that you received for step three, you replied:
-
-        {response}
-
-        Congratulations! We're finished 😀
-
-        """
-        
-        steps = [ step_1, step_2, step_3, step_4 ]
+        steps = [ step_1 ]
         self.step_len = len( steps )
         prompt_components = {
             "steps"                      : steps,
             "responses"                  : [ ],
-            "response_tag_names"         : [ [ "thoughts" ], [ "code" ], [ "returns", "example", "explanation" ] ],
+            "response_tag_names"         : [ [ "thoughts", "code", "returns", "example", "explanation" ] ],
             "running_history"            : "",
             "xml_formatting_instructions": [
-                xml_formatting_instructions_step_1, xml_formatting_instructions_step_2, xml_formatting_instructions_step_3
+                xml_formatting_instructions_step_1
             ]
         }
         
@@ -225,21 +150,21 @@ Source code:
                 running_history = running_history + steps[ step ].format( response=responses[ step - 1 ] )
             
             # we're not going to execute the last step, it's been added just to keep the running history current
-            if step != len( steps ) - 1:
+            # if step != len( steps ) - 1:
                 
-                response = self._query_llm(
-                    running_history, xml_formatting_instructions[ step ], model=model, max_new_tokens=max_new_tokens, temperature=temperature, top_p=top_p, top_k=top_k, debug=self.debug
-                )
-                responses.append( response )
-                
-                # Incrementally update the contents of the response dictionary according to the results of the XML-esque parsing
-                prompt_response_dict = self._update_response_dictionary(
-                    step, response, prompt_response_dict, response_tag_names, debug=debug
-                )
-            else:
-                if debug:
-                    print( "LAST STEP: Skipping execution. Response from the previous step:" )
-                    print( responses[ step - 1 ] )
+            response = self._query_llm(
+                running_history, xml_formatting_instructions[ step ], model=model, max_new_tokens=max_new_tokens, temperature=temperature, top_p=top_p, top_k=top_k, debug=True
+            )
+            responses.append( response )
+            
+            # Incrementally update the contents of the response dictionary according to the results of the XML-esque parsing
+            prompt_response_dict = self._update_response_dictionary(
+                step, response, prompt_response_dict, response_tag_names, debug=debug
+            )
+            # else:
+            #     if debug:
+            #         print( "LAST STEP: Skipping execution. Response from the previous step:" )
+            #         print( responses[ step - 1 ] )
             
             # Update the prompt component's state before serializing a copy of it
             self.prompt_components[ "running_history" ] = running_history
@@ -327,12 +252,12 @@ Source code:
 if __name__ == "__main__":
     
     error_message = """
-      File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 18
-    solution = df[(df['event_type'] == 'concert') && (df['start_date'].between(start_of_week, end_of_week))]
-                                                   ^
-    SyntaxError: invalid syntax"""
+File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 13
+solution = df[(df['event_type'] == 'concert') && (df['start_date'].between(start_of_week, end_of_week))]
+                                               ^
+SyntaxError: invalid syntax"""
     
-    debugging_agent = IterativeDebuggingAgent( error_message, du.get_project_root() + "/io/code.py", debug=False, verbose=False )
+    debugging_agent = IterativeDebuggingAgent( error_message, du.get_project_root() + "/io/code.py", debug=True, verbose=False )
     
     debugging_agent.run_prompts( debug=False )
     

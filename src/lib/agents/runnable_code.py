@@ -9,14 +9,11 @@ class RunnableCode:
         self.debug                = debug
         self.verbose              = verbose
         
-        # self.code                 = None
-        
         self.prompt_response      = None
         self.prompt_response_dict = None
         
         self.code_response_dict   = None
         self.answer               = None
-        # self.answer_conversational= None
         self.error                = None
 
     def print_code( self ):
@@ -26,17 +23,18 @@ class RunnableCode:
         
     def run_code( self, path_to_df=None, inject_bugs=False ):
         
-        if self.debug: du.print_banner( f"RunnableCode.run_code( path_to_df={path_to_df}, debug={self.debug}, verbose{self.verbose})", prepend_nl=True )
+        if self.debug: du.print_banner( f"RunnableCode.run_code( path_to_df={path_to_df}, debug={self.debug}, verbose={self.verbose} )", prepend_nl=True )
         
         self.code_response_dict = ucr.assemble_and_run_solution(
             self.prompt_response_dict[ "code" ],
             self.prompt_response_dict[ "example" ],
             path_to_df=path_to_df,
-            solution_code_returns=self.prompt_response_dict.get( "returns", "" ),
+            solution_code_returns=self.prompt_response_dict.get( "returns", "string" ),
             debug=self.debug, inject_bugs=inject_bugs
         )
         if self.code_response_dict[ "return_code" ] != 0:
             self.error = self.code_response_dict[ "output" ]
+            self.answer = None
         else:
             self.error = None
             self.answer = self.code_response_dict[ "output" ]

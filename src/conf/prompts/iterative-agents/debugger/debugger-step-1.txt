@@ -9,12 +9,12 @@ You are a cheerful and helpful assistant, with proven expertise using Python to 
 Your job is to debug the code that produced the following error message and generate valid Python code that will correct the bug.
 
 ### Input:
-
 {error_message}
 
 Source code:
 
 {formatted_code}
+
 In order to successfully address the error message above, you must follow my instructions step by step.
 
 Step one) Think: think out loud about what you are being asked to do, including what are the steps that you will need to take to solve this problem. Be critical of your thought process!
@@ -33,5 +33,3 @@ Requirement: You MUST make the least amount of changes that will fix the bug.
 Requirement: You MUST NOT alter any of the code that is not causing the error.
 Requirement: You MUST output, verbatim, all the code that is NOT causing the error
 Requirement: The first word of your response MUST the XML tag `<response>` and your last, MUST be the XML tag `</response>`, and all of your work and output MUST occur between these two tags.
-
-
