@@ -8,6 +8,7 @@ from lib.memory.solution_snapshot         import SolutionSnapshot
 from lib.agents.agent                     import Agent
 from lib.agents.iterative_debugging_agent import IterativeDebuggingAgent
 from lib.agents.raw_output_formatter      import RawOutputFormatter
+from lib.agents.llm                       import Llm
 
 import lib.utils.util as du
 import lib.utils.util_xml as dux
@@ -23,6 +24,7 @@ class IncrementalCalendaringAgent( DataQueryingAgent ):
         
         self.step_len             = -1
         self.token_count          = 0
+        self.model_name           = self.config_mgr.get( "agent_model_name_for_calendaring" )
         self.project_root         = du.get_project_root()
         self.path_to_prompts      = self.config_mgr.get( "path_to_event_prompts_wo_root" )
         self.prompt_components    = None
@@ -30,7 +32,9 @@ class IncrementalCalendaringAgent( DataQueryingAgent ):
         self.prompt_response_dict = None
         # Initialization of prompt components pushed to run_prompt
         # self.prompt_components = self._initialize_prompt_components( self.df, self.question )
-        self.do_not_serialize     = [ "df", "config_mgr" ]
+        self.default_url          = self.config_mgr.get( "tgi_server_codegen_url", default=None )
+        self.llm                  = Llm( model=self.model_name, default_url=self.default_url, debug=self.debug, verbose=self.verbose )
+        self.do_not_serialize     = [ "df", "config_mgr", "llm" ]
     
     def serialize_to_json( self, question, current_step, total_steps, now ):
         
@@ -152,7 +156,8 @@ class IncrementalCalendaringAgent( DataQueryingAgent ):
             # we're not going to execute the last step, it's been added just to keep the running history current
             if step != len( steps ) - 1:
                 
-                response = self._query_llm_phind( running_history, xml_formatting_instructions[ step ], debug=self.debug, verbose=self.verbose )
+                response = self.llm.query_llm( prompt=running_history + xml_formatting_instructions[ step ], debug=self.debug, verbose=self.verbose )
+                # response = self._query_llm_phind( running_history, xml_formatting_instructions[ step ], debug=self.debug, verbose=self.verbose )
                 responses.append( response )
                 
                 # Incrementally update the contents of the response dictionary according to the results of the XML-esque parsing
@@ -171,34 +176,34 @@ class IncrementalCalendaringAgent( DataQueryingAgent ):
         
         return self.prompt_response_dict
 
-    def _query_llm_phind( self, preamble, instructions, model=Agent.PHIND_34B_v2, temperature=0.50, max_new_tokens=1024, debug=False, verbose=False ):
-    
-        timer = sw.Stopwatch( msg=f"Asking LLM [{model}]..." )
-        
-        # Get the TGI server URL for this context
-        default_url    = self.config_mgr.get( "tgi_server_codegen_url", default=None )
-        tgi_server_url = du.get_tgi_server_url_for_this_context( default_url=default_url )
-        
-        client         = InferenceClient( tgi_server_url )
-        token_list     = [ ]
-        
-        prompt = f"{preamble}{instructions}\n"
-        if debug and verbose: print( prompt )
-        
-        for token in client.text_generation(
-            prompt, max_new_tokens=max_new_tokens, stream=True, stop_sequences=[ "</response>" ], temperature=temperature
-        ):
-            print( token, end="" )
-            token_list.append( token )
-            
-        response         = "".join( token_list ).strip()
-        self.token_count = self.token_count + len( token_list )
-        
-        print()
-        print( f"Response tokens [{len( token_list )}]" )
-        timer.print( "Done!", use_millis=True, prepend_nl=True )
-        
-        return response
+    # def _query_llm_phind( self, preamble, instructions, model=Agent.PHIND_34B_v2, temperature=0.50, max_new_tokens=1024, debug=False, verbose=False ):
+    #
+    #     timer = sw.Stopwatch( msg=f"Asking LLM [{model}]..." )
+    #
+    #     # Get the TGI server URL for this context
+    #     default_url    = self.config_mgr.get( "tgi_server_codegen_url", default=None )
+    #     tgi_server_url = du.get_tgi_server_url_for_this_context( default_url=default_url )
+    #
+    #     client         = InferenceClient( tgi_server_url )
+    #     token_list     = [ ]
+    #
+    #     prompt = f"{preamble}{instructions}\n"
+    #     if debug and verbose: print( prompt )
+    #
+    #     for token in client.text_generation(
+    #         prompt, max_new_tokens=max_new_tokens, stream=True, stop_sequences=[ "</response>" ], temperature=temperature
+    #     ):
+    #         print( token, end="" )
+    #         token_list.append( token )
+    #
+    #     response         = "".join( token_list ).strip()
+    #     self.token_count = self.token_count + len( token_list )
+    #
+    #     print()
+    #     print( f"Response tokens [{len( token_list )}]" )
+    #     timer.print( "Done!", use_millis=True, prepend_nl=True )
+    #
+    #     return response
     
     def _update_response_dictionary( self, step, response, prompt_response_dict, tag_names, debug=True ):
     
@@ -214,7 +219,7 @@ class IncrementalCalendaringAgent( DataQueryingAgent ):
             if xml_tag == "code":
                 # the get_code method expects enclosing tags
                 xml_string = "<code>" + dux.get_value_by_xml_tag_name( response, xml_tag ) + "</code>"
-                prompt_response_dict[ xml_tag ] = self._get_code( xml_string, debug=debug )
+                prompt_response_dict[ xml_tag ] = dux.get_code_list( xml_string, debug=debug )
             else:
                 prompt_response_dict[ xml_tag ] = dux.get_value_by_xml_tag_name( response, xml_tag ).strip()
 
@@ -307,15 +312,14 @@ if __name__ == "__main__":
     prompt_response  = agent.run_prompt()
     code_response    = agent.run_code( auto_debug=True, inject_bugs=False )
     formatted_output = agent.format_output()
-    # du.print_banner( f"code_response[ 'return_code' ] = [{code_response[ 'return_code' ]}]", prepend_nl=False )
+    
+    du.print_banner( f"code_response[ 'return_code' ] = [{code_response[ 'return_code' ]}]", prepend_nl=False )
     for line in code_response[ "output" ].split( "\n" ):
         print( line )
         
-    # formatted_output = agent.format_output()
-    #
-    # du.print_banner( question, prepend_nl=False )
-    # for line in formatted_output.split( "\n" ):
-    #     print( line )
+    du.print_banner( question, prepend_nl=False )
+    for line in formatted_output.split( "\n" ):
+        print( line )
     #
     # # code_response_dict = prompt_response_dict[ "code" ]
     #

@@ -263,11 +263,11 @@ class IterativeDebuggingAgent( Agent ):
         
 if __name__ == "__main__":
     
-    error_message = """
-File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 13
-solution = df[(df['event_type'] == 'concert') && (df['start_date'].between(start_of_week, end_of_week))]
-                                               ^
-SyntaxError: invalid syntax"""
+    #     error_message = """
+    # File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 13
+    # solution = df[(df['event_type'] == 'concert') && (df['start_date'].between(start_of_week, end_of_week))]
+    #                                                ^
+    # SyntaxError: invalid syntax"""
 
     # We do not want to use the full path
     # source_code_path = du.get_file_as_string( du.get_project_root() + "/io/code.py" )

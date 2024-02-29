@@ -18,8 +18,8 @@ class DataQueryingAgent( Agent ):
         
         super().__init__( debug=debug, verbose=verbose, routing_command=routing_command, auto_debug=auto_debug, inject_bugs=inject_bugs )
         
-        self.df         = pd.read_csv( du.get_project_root() + self.config_mgr.get( df_path_key ) )
-        self.df         = dup.cast_to_datetime( self.df )
+        self.df = pd.read_csv( du.get_project_root() + self.config_mgr.get( df_path_key ) )
+        self.df = dup.cast_to_datetime( self.df )
         
         self.default_model         = default_model
         
@@ -38,11 +38,8 @@ class DataQueryingAgent( Agent ):
 
         self.user_message          = None
         
-        # We'll set these later
+        # We'll set this later when we get an answer
         self.answer_conversational = None
-        # self.prompt_response              = None
-        # self.prompt_response_dict         = None
-        # self.error                 = None
     
     def get_html( self ):
         

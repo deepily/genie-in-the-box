@@ -34,8 +34,7 @@ class IncrementalTodoListAgent( IncrementalCalendaringAgent ):
             "response_tag_names"         : [ [ "thoughts" ], [ "code" ], [ "returns", "example", "explanation" ] ],
             "running_history"            : "",
             "xml_formatting_instructions": [
-                xml_formatting_instructions_step_1, xml_formatting_instructions_step_2,
-                xml_formatting_instructions_step_3
+                xml_formatting_instructions_step_1, xml_formatting_instructions_step_2, xml_formatting_instructions_step_3
             ]
         }
         
@@ -57,4 +56,5 @@ if __name__ == "__main__":
     question = "What's on my to do list for today?"
     
     todolist_agent = IncrementalTodoListAgent( question=question, debug=False, verbose=False, auto_debug=False, inject_bugs=False )
+    todolist_agent.run_prompts()
     
