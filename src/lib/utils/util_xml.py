@@ -29,8 +29,6 @@ def get_xml_tag_and_value_by_name( xml_string, name, default_value=None ):
 
 def get_code_list( xml_string, debug=False ):
     
-    # print( f"xml_string: [{xml_string}]..." )
-    
     skip_list = [ ]  # [ "import pandas", "import datetime" ]
     
     # Matches all text between the opening and closing line tags, including the white space after the opening line tag
