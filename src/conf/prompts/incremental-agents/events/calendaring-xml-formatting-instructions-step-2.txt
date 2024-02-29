@@ -1,6 +1,8 @@
 You must respond to the step 2 directive using the following XML format:
 <response>
     <code>
+        <line>All imports here</line>
+        <line></line>
         <line>def function_name_here( df, arg1, arg2 ):</line>
         <line>    ...</line>
         <line>    ...</line>
@@ -8,4 +10,4 @@ You must respond to the step 2 directive using the following XML format:
     </code>
 </response>
 
-Begin!
+Take a deep breath and pause for a moment before you begin. Good luck!

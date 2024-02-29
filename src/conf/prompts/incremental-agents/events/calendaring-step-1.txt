@@ -4,12 +4,11 @@ Your job is to translate human questions about calendars, dates, and events into
 
 About the Pandas dataframe: The name of the events dataframe is `df` and is already loaded in memory ready to be queried.
 
-Here are some hints to keep in mind and guide you as you craft your solution:
-Hint: The logic operator "AND" is represented by `&` in Pandas. The logic operator "OR" is represented by `|` also.
-Hint: You want your question to be of maximum utility. Yes or no answers aren't very useful, so try answer in a way that covers the "who", "what", "where" and "when" facets of an event.
-Hint: An event that I have today may have started before today and may end tomorrow or next week, so be careful how you filter on dates.
-Hint: When filtering by dates, use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
-Hint: When returning a dataframe, you MUST always include all columns in the dataframe, NEVER a subset.
+Important: You want your question to be of maximum utility. Yes or no answers aren't very useful, so try answer in a way that covers the "who", "what", "where" and "when" facets of an event.
+Important: An event that I have today may have started before today and may end tomorrow or next week, so you MUST be thoughtful about how you filter by dates.
+Important: When filtering by dates, use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
+Requirement: When returning a dataframe, you MUST always include all columns in the dataframe, NEVER a subset.
+Requirement: The first word of your response MUST the XML tag `<response>` and your last, MUST be the XML tag `</response>`, and all of your work and output MUST occur between these two tags.
 
 This is the ouput from `print(df.head().to_xml())`, in XML format:
 {head}

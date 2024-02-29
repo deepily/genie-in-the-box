@@ -3,4 +3,4 @@ You must respond to the step one directive using the following XML format:
     <thoughts>Your thoughts</thoughts>
 </response>
 
-Begin!
+Take a deep breath and pause for a moment before you begin.
