@@ -586,7 +586,7 @@ def load_stt_model():
     stt_model_id  = config_mgr.get( "stt_model_id" )
     
     model = AutoModelForSpeechSeq2Seq.from_pretrained(
-        stt_model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True, use_flash_attention_2=True
+        stt_model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True, use_flash_attention_2=True, local_files_only=True
     )
     model.to( stt_device_id )
     
