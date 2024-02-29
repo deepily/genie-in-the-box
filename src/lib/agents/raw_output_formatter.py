@@ -16,28 +16,28 @@ class RawOutputFormatter:
         
         self.config_mgr  = ConfigurationManager( env_var_name="GIB_CONFIG_MGR_CLI_ARGS", debug=self.debug, verbose=self.verbose, silent=True )
 
-        self.routing_command_paths = {
-            "agent router go to date and time": self.config_mgr.get( "raw_output_formatter_date_and_time" ),
-            "agent router go to calendar"     : self.config_mgr.get( "raw_output_formatter_calendaring" ),
-            "agent router go to weather"      : self.config_mgr.get( "raw_output_formatter_weather" ),
-            "agent router go to todo list"    : self.config_mgr.get( "raw_output_formatter_todo_list" )
+        self.formatter_prompt_paths = {
+            "agent router go to date and time": self.config_mgr.get( "formatter_prompt_for_date_and_time" ),
+            "agent router go to calendar"     : self.config_mgr.get( "formatter_prompt_for_calendaring" ),
+            "agent router go to weather"      : self.config_mgr.get( "formatter_prompt_for_weather" ),
+            "agent router go to todo list"    : self.config_mgr.get( "formatter_prompt_for_todo_list" )
         }
-        self.llms                  = {
-            "agent router go to date and time": self.config_mgr.get( "formatter_llm_for_date_and_time" ),
-            "agent router go to calendar"     : self.config_mgr.get( "formatter_llm_for_calendaring" ),
-            "agent router go to weather"      : self.config_mgr.get( "formatter_llm_for_weather" ),
-            "agent router go to todo list"    : self.config_mgr.get( "formatter_llm_for_todo_list" )
+        self.models                  = {
+            "agent router go to date and time": self.config_mgr.get( "formatter_model_name_for_date_and_time" ),
+            "agent router go to calendar"     : self.config_mgr.get( "formatter_model_name_for_calendaring" ),
+            "agent router go to weather"      : self.config_mgr.get( "formatter_model_name_for_weather" ),
+            "agent router go to todo list"    : self.config_mgr.get( "formatter_model_name_for_todo_list" )
         }
         self.routing_command       = routing_command
-        self.formatting_template   = du.get_file_as_string( du.get_project_root() + self.routing_command_paths.get( routing_command ) )
+        self.formatting_template   = du.get_file_as_string( du.get_project_root() + self.formatter_prompt_paths[ routing_command ] )
         self.prompt                = self._get_prompt()
         
         default_url                = self.config_mgr.get( "tgi_server_codegen_url", default=None )
-        self.llm                   = Llm( self.llms[ routing_command ], self.prompt, default_url=default_url, debug=self.debug, verbose=self.verbose )
+        self.llm                   = Llm( model=self.models[ routing_command ], default_url=default_url, debug=self.debug, verbose=self.verbose )
     
     def format_output( self ):
         
-        return self.llm.query_llm()
+        return self.llm.query_llm( prompt=self.prompt, debug=self.debug, verbose=self.verbose )
     
     def _get_prompt( self ):
         
@@ -59,38 +59,105 @@ if __name__ == "__main__":
     # question        = "Is it daylight savings time?"
     # raw_output      = "8:57PM EDT, Monday, February 19, 2024"
     
-    question        = "Who has birthdays this week?"
+    # question        = "Who has birthdays this week?"
+    question        = "What concerts do I have this week?"
     raw_output      = """
-    <data>
-  <row>
-    <index>57</index>
-    <start_date>2024-02-20 00:00:00</start_date>
-    <end_date>2024-02-20 00:00:00</end_date>
-    <start_time>00:00</start_time>
-    <end_time>23:59</end_time>
-    <event_type>birthday</event_type>
-    <recurrent>True</recurrent>
-    <recurrence_interval>2 month</recurrence_interval>
-    <priority_level>medium</priority_level>
-    <name>Tom Ruiz</name>
-    <relationship>brother</relationship>
-    <description_who_what_where>Tom Ruiz's birthday party at their favorite bar</description_who_what_where>
-  </row>
-  <row>
-    <index>71</index>
-    <start_date>2024-02-23 00:00:00</start_date>
-    <end_date>2024-02-23 00:00:00</end_date>
-    <start_time>00:00</start_time>
-    <end_time>23:59</end_time>
-    <event_type>birthday</event_type>
-    <recurrent>True</recurrent>
-    <recurrence_interval>4 day</recurrence_interval>
-    <priority_level>high</priority_level>
-    <name>Alice</name>
-    <relationship>aunt</relationship>
-    <description_who_what_where>Alice's birthday party at their favorite bar</description_who_what_where>
-  </row>
-</data>
-    """
-    formatter = RawOutputFormatter( question, raw_output, routing_command, debug=False, verbose=False)
+          <row>
+            <start_date>2024-02-27 00:00:00</start_date>
+            <end_date>2024-03-01 00:00:00</end_date>
+            <start_time>00:00</start_time>
+            <end_time>23:59</end_time>
+            <event_type>concert</event_type>
+            <recurrent>False</recurrent>
+            <recurrence_interval/>
+            <priority_level>low</priority_level>
+            <name>Pablo</name>
+            <relationship>friend</relationship>
+            <description_who_what_where>Concert of Pablo at the city center</description_who_what_where>
+          </row>
+          <row>
+            <start_date>2024-02-28 00:00:00</start_date>
+            <end_date>2024-02-28 00:00:00</end_date>
+            <start_time>00:00</start_time>
+            <end_time>23:59</end_time>
+            <event_type>concert</event_type>
+            <recurrent>False</recurrent>
+            <recurrence_interval/>
+            <priority_level>highest</priority_level>
+            <name>John</name>
+            <relationship>coworker</relationship>
+            <description_who_what_where>Concert of John at the city center</description_who_what_where>
+          </row>
+          <row>
+            <start_date>2024-03-01 00:00:00</start_date>
+            <end_date>2024-03-01 00:00:00</end_date>
+            <start_time>00:00</start_time>
+            <end_time>23:59</end_time>
+            <event_type>concert</event_type>
+            <recurrent>False</recurrent>
+            <recurrence_interval/>
+            <priority_level>medium</priority_level>
+            <name>Sue</name>
+            <relationship>sister</relationship>
+            <description_who_what_where>Concert of Sue at the city center</description_who_what_where>
+          </row>
+          <row>
+            <start_date>2024-03-01 00:00:00</start_date>
+            <end_date>2024-03-03 00:00:00</end_date>
+            <start_time>00:00</start_time>
+            <end_time>23:59</end_time>
+            <event_type>concert</event_type>
+            <recurrent>False</recurrent>
+            <recurrence_interval/>
+            <priority_level>none</priority_level>
+            <name>Inash</name>
+            <relationship>girlfriend</relationship>
+            <description_who_what_where>Concert of Inash at the city center</description_who_what_where>
+          </row>
+          <row>
+            <start_date>2024-03-03 00:00:00</start_date>
+            <end_date>2024-03-03 00:00:00</end_date>
+            <start_time>00:00</start_time>
+            <end_time>23:59</end_time>
+            <event_type>concert</event_type>
+            <recurrent>False</recurrent>
+            <recurrence_interval/>
+            <priority_level>high</priority_level>
+            <name>Inash</name>
+            <relationship>girlfriend</relationship>
+            <description_who_what_where>Concert of Inash at the city center</description_who_what_where>
+          </row>"""
+#     raw_output      = """
+#     <data>
+#   <row>
+#     <index>57</index>
+#     <start_date>2024-02-20 00:00:00</start_date>
+#     <end_date>2024-02-20 00:00:00</end_date>
+#     <start_time>00:00</start_time>
+#     <end_time>23:59</end_time>
+#     <event_type>birthday</event_type>
+#     <recurrent>True</recurrent>
+#     <recurrence_interval>2 month</recurrence_interval>
+#     <priority_level>medium</priority_level>
+#     <name>Tom Ruiz</name>
+#     <relationship>brother</relationship>
+#     <description_who_what_where>Tom Ruiz's birthday party at their favorite bar</description_who_what_where>
+#   </row>
+#   <row>
+#     <index>71</index>
+#     <start_date>2024-02-23 00:00:00</start_date>
+#     <end_date>2024-02-23 00:00:00</end_date>
+#     <start_time>00:00</start_time>
+#     <end_time>23:59</end_time>
+#     <event_type>birthday</event_type>
+#     <recurrent>True</recurrent>
+#     <recurrence_interval>4 day</recurrence_interval>
+#     <priority_level>high</priority_level>
+#     <name>Alice</name>
+#     <relationship>aunt</relationship>
+#     <description_who_what_where>Alice's birthday party at their favorite bar</description_who_what_where>
+#   </row>
+# </data>
+#     """
+    formatter = RawOutputFormatter( question, raw_output, routing_command, debug=True, verbose=False)
     print( formatter.format_output() )
