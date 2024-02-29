@@ -1,8 +1,6 @@
 import lib.utils.util             as du
 import lib.utils.util_code_runner as ucr
 
-# from lib.agents.iterative_debugging_agent import IterativeDebuggingAgent
-
 class RunnableCode:
     def __init__( self, debug=False, verbose=False ):
         
@@ -48,9 +46,13 @@ class RunnableCode:
     
     def ran_to_completion( self ):
         
-        return self.code_response_dict is not None and self.code_response_dict[ "return_code" ] == 0
+        return self.code_response_dict is not None and self.code_response_dict.get( "return_code", -1 ) == 0
     
     def get_code_and_metadata( self ):
         
         return self.code_response_dict
     
+# Add main method
+if __name__ == "__main__":
+    
+    pass
