@@ -15,7 +15,7 @@ import lib.app.util_llm_client as du_llm_client
 
 from huggingface_hub          import InferenceClient
 from lib.utils.util_stopwatch import Stopwatch
-from lib.agents.agent         import Agent
+from lib.agents.llm           import Llm
 
 class XmlFineTuningPromptGenerator:
     
@@ -780,7 +780,7 @@ class XmlFineTuningPromptGenerator:
             
         return response
 
-    def query_llm_tgi( self, prompt, model_name=Agent.PHIND_34B_v2, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, silent=False ):
+    def query_llm_tgi( self, prompt, model_name=Llm.PHIND_34B_v2, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, silent=False ):
     
         timer = Stopwatch( msg=f"Asking LLM [{model_name}]...".format( model_name ), silent=silent )
         
@@ -846,7 +846,7 @@ class XmlFineTuningPromptGenerator:
         
         self._call_counter = 0
     
-    def get_response_to_prompt( self, prompt, rows, switch="tgi", model_name=Agent.PHIND_34B_v2, tokenizer=None, model=None, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, device="cuda:0", silent=False  ):
+    def get_response_to_prompt( self, prompt, rows, switch="tgi", model_name=Llm.PHIND_34B_v2, tokenizer=None, model=None, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, device="cuda:0", silent=False  ):
         
         self._call_counter += 1
         
@@ -861,7 +861,7 @@ class XmlFineTuningPromptGenerator:
         else:
             raise Exception( f"Unknown switch [{switch}]" )
 
-    def generate_responses( self, df, tokenizer=None, model=None, switch="tgi", model_name=Agent.PHIND_34B_v2, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, device="cuda:0", silent=False ):
+    def generate_responses( self, df, tokenizer=None, model=None, switch="tgi", model_name=Llm.PHIND_34B_v2, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, device="cuda:0", silent=False ):
         
         self.reset_call_counter()
         rows = df.shape[ 0 ]

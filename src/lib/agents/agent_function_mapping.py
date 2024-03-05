@@ -6,6 +6,7 @@ import lib.utils.util_stopwatch as sw
 from lib.memory import solution_snapshot as ss
 
 from lib.agents.agent import Agent
+from lib.agents.llm   import Llm
 
 import pandas as pd
 
@@ -101,7 +102,7 @@ class FunctionMappingAgent( Agent ):
         
         return self.question != "" and self.signatures_dict != { }
         
-    def run_prompt( self, question="", prompt_model=Agent.GPT_4 ):
+    def run_prompt( self, question="", prompt_model=Llm.GPT_4 ):
         
         self.user_message = self._get_user_message( question=question )
         
@@ -135,16 +136,17 @@ class FunctionMappingAgent( Agent ):
     
     def format_output( self ):
         
-        format_model = Agent.GPT_3_5
-        preamble     = self._get_formatting_preamble()
-        instructions = self._get_formatting_instructions()
-        
-        self._print_token_count( preamble, message_name="formatting preamble", model=format_model )
-        self._print_token_count( instructions, message_name="formatting instructions", model=format_model )
-        
-        self.answer_conversational = self._query_llm( preamble, instructions, model=format_model, debug=self.debug )
-        
-        return self.answer_conversational
+        # format_model = Agent.GPT_3_5
+        # preamble     = self._get_formatting_preamble()
+        # instructions = self._get_formatting_instructions()
+        #
+        # self._print_token_count( preamble, message_name="formatting preamble", model=format_model )
+        # self._print_token_count( instructions, message_name="formatting instructions", model=format_model )
+        #
+        # self.answer_conversational = self._query_llm( preamble, instructions, model=format_model, debug=self.debug )
+        #
+        # return self.answer_conversational
+        raise NotImplementedError( "FunctionMappingAgent.format_output() not implemented" )
     
     def get_html( self ):
         

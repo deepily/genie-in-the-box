@@ -1,10 +1,11 @@
 import lib.utils.util as du
 
 from agent import Agent
+from llm   import Llm
 
 from incremental_calendaring_agent import IncrementalCalendaringAgent
 class IncrementalTodoListAgent( IncrementalCalendaringAgent ):
-    def __init__( self, df_path_key="path_to_todolist_df_wo_root", question="", default_model=Agent.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
+    def __init__( self, df_path_key="path_to_todolist_df_wo_root", question="", default_model=Llm.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
         super().__init__( df_path_key=df_path_key, question=question, default_model=default_model, push_counter=push_counter, debug=debug, verbose=verbose, auto_debug=auto_debug, inject_bugs=inject_bugs )
         
@@ -44,7 +45,7 @@ class IncrementalTodoListAgent( IncrementalCalendaringAgent ):
         
         head = self.df.head( 3 ).to_xml( index=False )
         head = head + self.df.tail( 3 ).to_xml( index=False )
-        head = head.replace( "data>", "lists>" ).replace( "<?xml version='1.0' encoding='utf-8'?>", "" )
+        head = head.replace( "data>", "todo-lists>" ).replace( "<?xml version='1.0' encoding='utf-8'?>", "" )
         
         value_counts = self.df.list_name.value_counts()
         

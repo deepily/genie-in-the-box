@@ -1,12 +1,12 @@
 import os
 import json
-import regex                as re
+import regex as re
 
-import lib.utils.util as du
+import lib.utils.util             as du
 import lib.utils.util_code_runner as ucr
-from lib.memory import solution_snapshot as ss
 
-from lib.agents.agent import Agent
+from lib.agents.llm                   import Llm
+from lib.agents.agent                 import Agent
 from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
 class RefactoringAgent( Agent ):
     
@@ -121,9 +121,9 @@ class RefactoringAgent( Agent ):
         else:
             return True
 
-    def run_prompt( self, prompt_model=Agent.GPT_4 ):
+    def run_prompt( self, prompt_model=Llm.GPT_4 ):
         
-        prompt_model = Agent.GPT_4
+        prompt_model = Llm.GPT_4
         
         self._print_token_count( self.system_message, message_name="system_message", model=prompt_model )
         self._print_token_count( self.user_message, message_name="user_message", model=prompt_model )
