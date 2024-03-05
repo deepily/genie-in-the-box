@@ -15,7 +15,7 @@ Requirement: If the main premise of the question is not answerable given the raw
 Requirement: You MUST NOT include any XML used to tag the raw input.
 Requirement: You MUST return your rephrased answer as simple conversational English.
 
-### Input
+### Input:
 {question}
 
 Requirement: You MUST return your rephrased answer as a simple xml document with the following fields:
