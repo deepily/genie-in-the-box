@@ -1,7 +1,8 @@
 from lib.app.fifo_queue                       import FifoQueue
+from lib.agents.agent_base                    import AgentBase
 from lib.agents.incremental_calendaring_agent import IncrementalCalendaringAgent
 from lib.agents.agent_function_mapping import FunctionMappingAgent
-from lib.memory.solution_snapshot import SolutionSnapshot
+from lib.memory.solution_snapshot             import SolutionSnapshot
 # from lib.utils.util import print_banner, get_current_datetime, truncate_string
 # from lib.utils.util_stopwatch import Stopwatch
 
@@ -13,14 +14,19 @@ import traceback
 import pprint
 
 class RunningFifoQueue( FifoQueue ):
-    def __init__( self, app, socketio, snapshot_mgr, jobs_todo_queue, jobs_done_queue, jobs_dead_queue ):
+    def __init__( self, app, socketio, snapshot_mgr, jobs_todo_queue, jobs_done_queue, jobs_dead_queue, config_mgr=None ):
+        
         super().__init__()
+        
         self.app             = app
         self.socketio        = socketio
         self.snapshot_mgr    = snapshot_mgr
         self.jobs_todo_queue = jobs_todo_queue
         self.jobs_done_queue = jobs_done_queue
         self.jobs_dead_queue = jobs_dead_queue
+        
+        self.auto_debug      = False if config_mgr is None else config_mgr.get( "auto_debug",  default=False, return_type="boolean" )
+        self.inject_bugs     = False if config_mgr is None else config_mgr.get( "inject_bugs", default=False, return_type="boolean" )
     
     def enter_running_loop( self ):
         
@@ -45,12 +51,12 @@ class RunningFifoQueue( FifoQueue ):
                 # Limit the length of the question string
                 truncated_question = du.truncate_string( running_job.question, max_len=64 )
                 
-                if type( running_job ) == FunctionMappingAgent:
-                    running_job = self._handle_function_mapping_agent( running_job, truncated_question )
+                # if type( running_job ) == FunctionMappingAgent:
+                #     running_job = self._handle_function_mapping_agent( running_job, truncated_question )
                     
-                if type( running_job ) == IncrementalCalendaringAgent:
-                    running_job = self._handle_calendaring_agent( running_job, truncated_question )
-                    
+                # Assume for now that all *agents* are of type AgentBase. If it's not, then it's a solution snapshot
+                if isinstance( running_job, AgentBase ):
+                    running_job = self._handle_base_agent( running_job, truncated_question )
                 else:
                     running_job = self._handle_solution_snapshot( running_job, truncated_question, run_timer )
                     running_job.debug = True
@@ -69,47 +75,47 @@ class RunningFifoQueue( FifoQueue ):
                 # print( "No jobs to pop from todo Q " )
                 self.socketio.sleep( 1 )
 
-    def _handle_function_mapping_agent( self, running_job, truncated_question ):
-        
-        self.socketio.emit( 'audio_update', { 'audioURL': self._get_audio_url( "Searching my memory" ) } )
-        print( running_job.get_html() )
-        msg = f"Running FunctionMappingAgent for [{truncated_question}]..."
-        agent_timer = sw.Stopwatch( msg=msg )
-        
-        response_dict = running_job.run_prompt()
-        
-        if running_job.is_code_runnable():
-            
-            code_response = running_job.run_code()
-            
-            if code_response[ "return_code" ] != 0:
-                
-                running_job = self._handle_error_case( code_response, running_job, truncated_question )
-            
-            else:
-                
-                du.print_banner( f"Job [{running_job.question}] complete...", prepend_nl=True, end="\n" )
-                
-                # If we've arrived at this point, then we've successfully run the agentic part of this job
-                # recast the agent object as a solution snapshot object and add it to the snapshot manager
-                running_job = SolutionSnapshot.create( running_job )
-                
-                running_job.update_runtime_stats( agent_timer )
-                
-                # Adding this snapshot to the snapshot manager serializes it to the local filesystem
-                print( f"Adding job [{truncated_question}] to snapshot manager..." )
-                self.snapshot_mgr.add_snapshot( running_job )
-                print( f"Adding job [{truncated_question}] to snapshot manager... Done!" )
-                
-                du.print_banner( "running_job.runtime_stats", prepend_nl=True )
-                pprint.pprint( running_job.runtime_stats )
-        else:
-            
-            print( f"Executing [{truncated_question}] as a open ended calendaring agent job instead..." )
-            self.socketio.emit( 'notification_sound_update', { 'soundFile': '/static/gentle-gong.mp3' } )
-            running_job = IncrementalCalendaringAgent( question=running_job.question, push_counter=running_job.push_counter, debug=True, verbose=True )
-            
-        return running_job
+    # def _handle_function_mapping_agent( self, running_job, truncated_question ):
+    #
+    #     self.socketio.emit( 'audio_update', { 'audioURL': self._get_audio_url( "Searching my memory" ) } )
+    #     print( running_job.get_html() )
+    #     msg = f"Running FunctionMappingAgent for [{truncated_question}]..."
+    #     agent_timer = sw.Stopwatch( msg=msg )
+    #
+    #     response_dict = running_job.run_prompt()
+    #
+    #     if running_job.is_code_runnable():
+    #
+    #         code_response = running_job.run_code()
+    #
+    #         if code_response[ "return_code" ] != 0:
+    #
+    #             running_job = self._handle_error_case( code_response, running_job, truncated_question )
+    #
+    #         else:
+    #
+    #             du.print_banner( f"Job [{running_job.question}] complete...", prepend_nl=True, end="\n" )
+    #
+    #             # If we've arrived at this point, then we've successfully run the agentic part of this job
+    #             # recast the agent object as a solution snapshot object and add it to the snapshot manager
+    #             running_job = SolutionSnapshot.create( running_job )
+    #
+    #             running_job.update_runtime_stats( agent_timer )
+    #
+    #             # Adding this snapshot to the snapshot manager serializes it to the local filesystem
+    #             print( f"Adding job [{truncated_question}] to snapshot manager..." )
+    #             self.snapshot_mgr.add_snapshot( running_job )
+    #             print( f"Adding job [{truncated_question}] to snapshot manager... Done!" )
+    #
+    #             du.print_banner( "running_job.runtime_stats", prepend_nl=True )
+    #             pprint.pprint( running_job.runtime_stats )
+    #     else:
+    #
+    #         print( f"Executing [{truncated_question}] as a open ended calendaring agent job instead..." )
+    #         self.socketio.emit( 'notification_sound_update', { 'soundFile': '/static/gentle-gong.mp3' } )
+    #         running_job = IncrementalCalendaringAgent( question=running_job.question, push_counter=running_job.push_counter, debug=True, verbose=True )
+    #
+    #     return running_job
         
     def _handle_error_case( self, response, running_job, truncated_question ):
         
@@ -127,9 +133,58 @@ class RunningFifoQueue( FifoQueue ):
         
         return running_job
         
-    def _handle_calendaring_agent( self, running_job, truncated_question ):
+    # def _handle_calendaring_agent( self, running_job, truncated_question ):
+    #
+    #     msg = f"Running IncrementalCalendaringAgent for [{truncated_question}]..."
+    #
+    #     code_response = {
+    #         "return_code": -1,
+    #         "output"     : "ERROR: Output not yet generated!?!"
+    #     }
+    #
+    #     agent_timer = sw.Stopwatch( msg=msg )
+    #     try:
+    #         # TODO: auto_debug flag should be runtime configurable similar to how AMPE used to do
+    #         response_dict    = running_job.run_prompt()
+    #         code_response    = running_job.run_code( auto_debug=True, inject_bugs=False )
+    #         formatted_output = running_job.format_output()
+    #
+    #         running_job.answer_conversational = formatted_output
+    #
+    #     except Exception as e:
+    #
+    #         stack_trace = traceback.format_tb( e.__traceback__ )
+    #         running_job = self._handle_error_case( code_response, running_job, truncated_question )
+    #
+    #     agent_timer.print( "Done!", use_millis=True )
+    #
+    #     du.print_banner( f"Job [{running_job.question}] complete...", prepend_nl=True, end="\n" )
+    #
+    #     if code_response[ "return_code" ] == 0:
+    #
+    #         # If we've arrived at this point, then we've successfully run the agentic part of this job
+    #         # recast the agent object as a solution snapshot object and add it to the snapshot manager
+    #         running_job = SolutionSnapshot.create( running_job )
+    #
+    #         running_job.update_runtime_stats( agent_timer )
+    #
+    #         # Adding this snapshot to the snapshot manager serializes it to the local filesystem
+    #         print( f"Adding job [{truncated_question}] to snapshot manager..." )
+    #         self.snapshot_mgr.add_snapshot( running_job )
+    #         print( f"Adding job [{truncated_question}] to snapshot manager... Done!" )
+    #
+    #         du.print_banner( "running_job.runtime_stats", prepend_nl=True )
+    #         pprint.pprint( running_job.runtime_stats )
+    #
+    #     else:
+    #
+    #         running_job = self._handle_error_case( code_response, running_job, truncated_question )
+    #
+    #     return running_job
+    
+    def _handle_base_agent( self, running_job, truncated_question ):
         
-        msg = f"Running IncrementalCalendaringAgent for [{truncated_question}]..."
+        msg = f"Running AgentBase for [{truncated_question}]..."
         
         code_response = {
             "return_code": -1,
@@ -138,9 +193,8 @@ class RunningFifoQueue( FifoQueue ):
         
         agent_timer = sw.Stopwatch( msg=msg )
         try:
-            # TODO: auto_debug flag should be runtime configurable similar to how AMPE used to do
             response_dict    = running_job.run_prompt()
-            code_response    = running_job.run_code( auto_debug=True, inject_bugs=False )
+            code_response    = running_job.run_code( auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
             formatted_output = running_job.format_output()
             
             running_job.answer_conversational = formatted_output
@@ -149,7 +203,7 @@ class RunningFifoQueue( FifoQueue ):
             
             stack_trace = traceback.format_tb( e.__traceback__ )
             running_job = self._handle_error_case( code_response, running_job, truncated_question )
-            
+        
         agent_timer.print( "Done!", use_millis=True )
         
         du.print_banner( f"Job [{running_job.question}] complete...", prepend_nl=True, end="\n" )
@@ -169,13 +223,12 @@ class RunningFifoQueue( FifoQueue ):
             
             du.print_banner( "running_job.runtime_stats", prepend_nl=True )
             pprint.pprint( running_job.runtime_stats )
-            
+        
         else:
             
             running_job = self._handle_error_case( code_response, running_job, truncated_question )
-            
+        
         return running_job
-            
     def _handle_solution_snapshot( self, running_job, truncated_question, run_timer ):
         
         msg = f"Executing SolutionSnapshot code for [{truncated_question}]..."
