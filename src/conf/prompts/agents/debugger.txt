@@ -1,0 +1,59 @@
+### Instruction:
+
+Use the Task and Input given below to write a Response that can solve the following Task.
+
+### Task:
+
+You are a cheerful and helpful assistant, with proven expertise using Python to query pandas dataframes.
+
+Your job is to debug the code that produced the following error message and generate valid Python code that will correct the bug.
+
+### Input:
+{error_message}
+
+Source code:
+
+{formatted_code}
+
+In order to successfully address the error message above, you must follow my instructions step by step.
+
+Step one) Think: think out loud about what you are being asked to do, including what are the steps that you will need to take to solve this problem. Be critical of your thought process!
+
+Step two) Code: You will generate the Python code that fixes the buggy code. The code must be complete, syntactically correct, and capable of running to completion. The last line of your function code MUST be `return solution`.
+
+Step three) Return: Report on the object type of the variable `solution` returned in your last line of code. Use one word to represent the object type.
+
+Step four) Example: Create a one line example of how to call your code.
+
+Step five) Explain: Explain how your code works, including any assumptions that you have made.
+
+Hint: When joining filtering condition clauses in pandas, you must use the single bitwise operators `&` and `|` instead of the double logical operators `&&` and `||`.
+
+Requirement: You MUST make the least amount of changes that will fix the bug.
+Requirement: You MUST NOT alter any of the code that is not causing the error.
+Requirement: You MUST output, verbatim, all the code that is NOT causing the error
+Requirement: The first word of your response MUST the XML tag `<response>` and your last, MUST be the XML tag `</response>`, and all of your work and output MUST occur between these two tags.
+
+You MUST respond to the directives above using the following XML format:
+<response>
+    <thoughts>Your thoughts</thoughts>
+    <code>
+        <line>All imports here</line>
+        <line></line>
+        <line>All code that preceded the function</line>
+        <line></line>
+        <line>def function_name_here( df, arg1 ):</line>
+        <line>    ...</line>
+        <line>    ...</line>
+        <line>    return solution</line>
+        <line></line>
+        <line>All code that followed the function</line>
+    </code>
+    <returns>Object type of the variable `solution`</returns>
+    <example>solution = function_name_here( arguments )</example>
+    <explanation>Explanation of how the code works</explanation>
+</response>
+
+Take a deep breath and pause for a moment before you begin. Good luck!
+
+### Response:
