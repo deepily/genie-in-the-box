@@ -2,6 +2,7 @@ import lib.utils.util as du
 import lib.utils.util_xml as dux
 
 from lib.agents.agent import Agent
+from lib.agents.llm   import Llm
 
 class BugInjector( Agent ):
     def __init__( self, code, debug=True, verbose=True ):
@@ -55,8 +56,8 @@ class BugInjector( Agent ):
         
         print( "BugInjector.run_prompt() called..." )
         
-        model = Agent.PHIND_34B_v2  # Asking LLM [Phind/Phind-CodeLlama-34B-v2]... Done! in 1,270 ms
-        # model = Agent.GPT_4       # Asking LLM [gpt-4-0613]... Done! in 5,222 ms
+        model = Llm.PHIND_34B_v2  # Asking LLM [TGI/Phind-CodeLlama-34B-v2]... Done! in 1,270 ms
+        # model = Llm.GPT_4       # Asking LLM [gpt-4-0613]... Done! in 5,222 ms
         self.prompt_components = self._initialize_prompt_components()
         response               = self._query_llm(
             self.prompt_components[ "preamble" ], self.prompt_components[ "instructions" ], model=model, temperature=2.0, top_k=1000, top_p=0.25, debug=self.debug
