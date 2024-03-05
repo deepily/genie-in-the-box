@@ -15,8 +15,8 @@ Requirement: You MUST NOT include any information that is not relevant to the qu
 Requirement: If the question does not mention priority, then you MUST NOT mention it.
 Requirement: If the question mentions today, then you MUST NOT mention the date
 Requirement: If the main premise of the question is incorrect, then you MUST politely correct the question.
-Requirement: If the main premise of the question is not answerable given the raw output below, then you MUST politely advise the user.
-Requirement: You MUST return your rephrased answer as simple conversational English.
+Requirement: If the main premise of the question is not answerable given the raw XML output above, then you MUST politely advise the user.
+Requirement: You MUST return your rephrased answer as simple conversational English only.
 Requirement: You MUST NOT include any XML used to tag the raw input.
 
 ### Input:
