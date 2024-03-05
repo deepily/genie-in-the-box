@@ -18,7 +18,7 @@ from huggingface_hub import InferenceClient
 
 class IncrementalCalendaringAgent( DataQueryingAgent ):
     
-    def __init__( self, df_path_key="path_to_events_df_wo_root", routing_command="agent router go to calendar", question="", default_model=Agent.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
+    def __init__( self, df_path_key="path_to_events_df_wo_root", routing_command="agent router go to calendar", question="", default_model=Llm.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
         super().__init__( df_path_key=df_path_key, routing_command=routing_command, question=question, default_model=default_model, push_counter=push_counter, debug=debug, verbose=verbose, auto_debug=auto_debug, inject_bugs=inject_bugs )
         
@@ -176,7 +176,7 @@ class IncrementalCalendaringAgent( DataQueryingAgent ):
         
         return self.prompt_response_dict
 
-    # def _query_llm_phind( self, preamble, instructions, model=Agent.PHIND_34B_v2, temperature=0.50, max_new_tokens=1024, debug=False, verbose=False ):
+    # def _query_llm_phind( self, preamble, instructions, model=Llm.PHIND_34B_v2, temperature=0.50, max_new_tokens=1024, debug=False, verbose=False ):
     #
     #     timer = sw.Stopwatch( msg=f"Asking LLM [{model}]..." )
     #
