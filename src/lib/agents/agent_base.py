@@ -7,22 +7,22 @@ import pandas as pd
 import lib.utils.util        as du
 import lib.utils.util_pandas as dup
 import lib.utils.util_xml    as dux
-from lib.agents.iterative_debugging_agent import IterativeDebuggingAgent
-from lib.agents.llm import Llm
+
+from lib.agents.llm                  import Llm
 
 from lib.agents.raw_output_formatter import RawOutputFormatter
 from lib.agents.runnable_code        import RunnableCode
 from lib.app.configuration_manager   import ConfigurationManager
-from lib.memory.solution_snapshot import SolutionSnapshot
-
+from lib.memory.solution_snapshot    import SolutionSnapshot
 
 class AgentBase( RunnableCode, abc.ABC ):
     
-    GPT_4        = "gpt-4-0613"
-    GPT_3_5      = "gpt-3.5-turbo-1106"
-    PHIND_34B_v2 = "Phind/Phind-CodeLlama-34B-v2"
-    
-    DEFAULT_MODEL = PHIND_34B_v2
+    # GPT_4             = "gpt-4-0613"
+    # GPT_3_5           = "gpt-3.5-turbo-1106"
+    # PHIND_34B_v2      = "TGI/Phind-CodeLlama-34B-v2"
+    # GROQ_MIXTRAL_8X78 = "Groq/mixtral-8x7b-32768"
+    #
+    DEFAULT_MODEL = Llm.PHIND_34B_v2
     
     def __init__( self, df_path_key=None, question=None, routing_command=None, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
@@ -48,13 +48,15 @@ class AgentBase( RunnableCode, abc.ABC ):
             "agent router go to date and time": self.config_mgr.get( "agent_prompt_for_date_and_time" ),
             "agent router go to calendar"     : self.config_mgr.get( "agent_prompt_for_calendaring" ),
             "agent router go to weather"      : self.config_mgr.get( "agent_prompt_for_weather" ),
-            "agent router go to todo list"    : self.config_mgr.get( "agent_prompt_for_todo_list" )
+            "agent router go to todo list"    : self.config_mgr.get( "agent_prompt_for_todo_list" ),
+            "agent router go to debugger"     : self.config_mgr.get( "agent_prompt_for_debugger" ),
         }
         self.models = {
             "agent router go to date and time": self.config_mgr.get( "agent_model_name_for_date_and_time" ),
             "agent router go to calendar"     : self.config_mgr.get( "agent_model_name_for_calendaring" ),
             "agent router go to weather"      : self.config_mgr.get( "agent_model_name_for_weather" ),
-            "agent router go to todo list"    : self.config_mgr.get( "agent_model_name_for_todo_list" )
+            "agent router go to todo list"    : self.config_mgr.get( "agent_model_name_for_todo_list" ),
+            "agent router go to debugger"     : self.config_mgr.get( "agent_model_name_for_debugger" ),
         }
         self.model_name              = self.models[ routing_command ]
         self.prompt_template         = du.get_file_as_string( du.get_project_root() + self.prompt_template_paths[ routing_command ] )
@@ -103,10 +105,14 @@ class AgentBase( RunnableCode, abc.ABC ):
         
         return prompt_response_dict
     
-    def run_prompt( self ):
-    
+    def run_prompt( self, model_name=None, temperature=0.5, top_p=0.25, top_k=10, max_new_tokens=1024 ):
+        
+        from lib.agents.llm import Llm
+        
+        if model_name is not None: self.model_name = model_name
+        
         llm = Llm( model=self.model_name, default_url=self.default_url, debug=self.debug, verbose=self.verbose )
-        response = llm.query_llm( prompt=self.prompt, debug=self.debug, verbose=self.verbose )
+        response = llm.query_llm( prompt=self.prompt, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens, debug=self.debug, verbose=self.verbose )
 
         self.prompt_response_dict = self._update_response_dictionary( response )
 
@@ -138,6 +144,8 @@ class AgentBase( RunnableCode, abc.ABC ):
         
         elif auto_debug:
             
+            from lib.agents.iterative_debugging_agent import IterativeDebuggingAgent
+
             self.error = self.code_response_dict[ "output" ]
             
             debugging_agent = IterativeDebuggingAgent(
