@@ -17,11 +17,6 @@ from lib.memory.solution_snapshot    import SolutionSnapshot
 
 class AgentBase( RunnableCode, abc.ABC ):
     
-    # GPT_4             = "gpt-4-0613"
-    # GPT_3_5           = "gpt-3.5-turbo-1106"
-    # PHIND_34B_v2      = "TGI/Phind-CodeLlama-34B-v2"
-    # GROQ_MIXTRAL_8X78 = "Groq/mixtral-8x7b-32768"
-    #
     DEFAULT_MODEL = Llm.PHIND_34B_v2
     
     def __init__( self, df_path_key=None, question=None, routing_command=None, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
@@ -58,6 +53,13 @@ class AgentBase( RunnableCode, abc.ABC ):
             "agent router go to todo list"    : self.config_mgr.get( "agent_model_name_for_todo_list" ),
             "agent router go to debugger"     : self.config_mgr.get( "agent_model_name_for_debugger" ),
         }
+        self.serialization_topics = {
+            "agent router go to date and time": "date-and-time",
+            "agent router go to calendar"     : "calendar",
+            "agent router go to weather"      : "weather",
+            "agent router go to todo list"    : "todo-list",
+            "agent router go to debugger"     : "code-debugger",
+        }
         self.model_name              = self.models[ routing_command ]
         self.prompt_template         = du.get_file_as_string( du.get_project_root() + self.prompt_template_paths[ routing_command ] )
         self.prompt                  = None
@@ -67,25 +69,33 @@ class AgentBase( RunnableCode, abc.ABC ):
             self.df = pd.read_csv( du.get_project_root() + self.config_mgr.get( self.df_path_key ) )
             self.df = dup.cast_to_datetime( self.df )
     
-    def serialize_to_json( self, question, now ):
-        
+    @abc.abstractmethod
+    def restore_from_serialized_state( file_path ):
+        pass
+    
+    def serialize_to_json( self, subtopic=None ):
+
         # Convert object's state to a dictionary
         state_dict = self.__dict__
-        
+
         # Convert object's state to a dictionary, omitting specified fields
         state_dict = { key: value for key, value in self.__dict__.items() if key not in self.do_not_serialize }
-        
+
         # Constructing the filename
         # Format: "topic-year-month-day-hour-minute-second.json", limit question to the first 96 characters
-        topic = SolutionSnapshot.clean_question( question[ :96 ] ).replace( " ", "-" )
-        file_path = f"{du.get_project_root()}/io/log/{topic}-{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-{now.second}.json"
-        
+        question_short = SolutionSnapshot.clean_question( self.question[ :96 ] ).replace( " ", "-" )
+        topic          = self.serialization_topics[ self.routing_command ]
+        topic          = topic + "-" + subtopic if subtopic is not None else topic
+        now            = du.get_current_datetime_raw()
+        file_path = f"{du.get_project_root()}/io/log/{topic}-{question_short}-{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-{now.second}.json"
+
         # Serialize and save to file
         with open( file_path, 'w' ) as file:
             json.dump( state_dict, file, indent=4 )
         os.chmod( file_path, 0o666 )
-        
+
         print( f"Serialized to {file_path}" )
+        
     def _update_response_dictionary( self, response ):
         
         if self.debug: print( f"update_response_dictionary called..." )
@@ -113,9 +123,9 @@ class AgentBase( RunnableCode, abc.ABC ):
         
         llm = Llm( model=self.model_name, default_url=self.default_url, debug=self.debug, verbose=self.verbose )
         response = llm.query_llm( prompt=self.prompt, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens, debug=self.debug, verbose=self.verbose )
-
+        
         self.prompt_response_dict = self._update_response_dictionary( response )
-
+        
         return self.prompt_response_dict
     
     def is_code_runnable( self ):
@@ -169,7 +179,7 @@ class AgentBase( RunnableCode, abc.ABC ):
     
     def format_output( self ):
         
-        formatter = RawOutputFormatter( self.question, self.code_response_dict[ "output" ], self.routing_command )
+        formatter = RawOutputFormatter( self.question, self.code_response_dict[ "output" ], self.routing_command, debug=self.debug, verbose=self.verbose )
         self.answer_conversational = formatter.format_output()
         
         return self.answer_conversational
