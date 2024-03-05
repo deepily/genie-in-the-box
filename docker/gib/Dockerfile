@@ -95,6 +95,8 @@ RUN pip install openai
 
 RUN pip install autoawq
 
+RUN pip install groq
+
 WORKDIR /var/genie-in-the-box
 RUN mkdir -p /var/io
 
