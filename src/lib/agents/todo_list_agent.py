@@ -14,7 +14,9 @@ class TodoListAgent( AgentBase ):
         super().__init__( df_path_key="path_to_todolist_df_wo_root", question=question, routing_command="agent router go to todo list", debug=debug, verbose=verbose, auto_debug=auto_debug, inject_bugs=inject_bugs )
         
         self.prompt = self._get_prompt()
-        self.xml_response_tag_names = [ "question", "thoughts", "code", "example", "returns", "explanation" ]
+        self.xml_response_tag_names   = [ "question", "thoughts", "code", "example", "returns", "explanation" ]
+        self.serialize_prompt_to_json = self.config_mgr.get( "agent_todo_list_serialize_prompt_to_json", default=False, return_type="boolean" )
+        self.serialize_code_to_json   = self.config_mgr.get( "agent_todo_list_serialize_code_to_json",   default=False, return_type="boolean" )
     
     def _get_prompt( self ):
         
@@ -40,14 +42,16 @@ class TodoListAgent( AgentBase ):
     def run_prompt( self, model_name=None, temperature=0.5, top_p=0.25, top_k=10, max_new_tokens=1024 ):
         
         results = super().run_prompt( model_name=model_name, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens )
-        self.serialize_to_json( "prompt" )
+        
+        if self.serialize_prompt_to_json: self.serialize_to_json( "prompt" )
         
         return results
         
     def run_code( self, auto_debug=None, inject_bugs=None ):
         
         results = super().run_code( auto_debug=auto_debug, inject_bugs=inject_bugs )
-        self.serialize_to_json( "code" )
+        
+        if self.serialize_code_to_json: self.serialize_to_json( "code" )
         
         return results
     
@@ -78,15 +82,18 @@ if __name__ == "__main__":
     
     question = "What's on my to do list for today?"
     
-    # todolist_agent = TodoListAgent( question=question, debug=True, verbose=False, auto_debug=True, inject_bugs=False )
-    todolist_agent = TodoListAgent.restore_from_serialized_state( du.get_project_root() + "/io/log/todo-list-code-whats-on-my-to-do-list-for-today-2024-3-5-12-51-55.json" )
-    # todolist_agent.run_prompt()
+    todolist_agent = TodoListAgent( question=question, debug=True, verbose=False, auto_debug=True, inject_bugs=False )
+    # Test to see if agent is of type agent base
+    print( isinstance( todolist_agent, AgentBase ) )
+    
+    # todolist_agent = TodoListAgent.restore_from_serialized_state( du.get_project_root() + "/io/log/todo-list-code-whats-on-my-to-do-list-for-today-2024-3-5-12-51-55.json" )
+    todolist_agent.run_prompt()
     
     # results = todolist_agent.run_code()
     # du.print_list( results )
     
-    todolist_agent.debug   = True
-    todolist_agent.verbose = True
-    answer = todolist_agent.format_output()
-    print( answer )
+    # todolist_agent.debug   = True
+    # todolist_agent.verbose = True
+    # answer = todolist_agent.format_output()
+    # print( answer )
     
