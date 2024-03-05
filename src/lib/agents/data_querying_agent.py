@@ -9,12 +9,13 @@ import lib.utils.util_xml as dux
 from lib.memory import solution_snapshot as ss
 
 from lib.agents.agent import Agent
+from lib.agents.llm   import Llm
 
 import pandas as pd
 
 class DataQueryingAgent( Agent ):
     
-    def __init__( self, question="", df_path_key="path_to_events_df_wo_root", routing_command="", default_model=Agent.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False, auto_debug=False, inject_bugs=False  ):
+    def __init__( self, question="", df_path_key="path_to_events_df_wo_root", routing_command="", default_model=Llm.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False, auto_debug=False, inject_bugs=False  ):
         
         super().__init__( debug=debug, verbose=verbose, routing_command=routing_command, auto_debug=auto_debug, inject_bugs=inject_bugs )
         
@@ -26,7 +27,7 @@ class DataQueryingAgent( Agent ):
         self.last_question_asked   = question
         self.question              = ss.SolutionSnapshot.clean_question( question )
         
-        if self.default_model == Agent.PHIND_34B_v2:
+        if self.default_model == Llm.PHIND_34B_v2:
             self.system_message    = self._get_system_message_phind()
         else:
             self.system_message    = self._get_system_message()
@@ -187,7 +188,7 @@ class DataQueryingAgent( Agent ):
     
     def run_prompt( self, question="" ):
         
-        prompt_model      = Agent.PHIND_34B_v2
+        prompt_model      = Llm.PHIND_34B_v2
         self.user_message = self._get_user_message( question )
         
         self._print_token_count( self.system_message, message_name="system_message", model=prompt_model )
@@ -195,7 +196,7 @@ class DataQueryingAgent( Agent ):
         
         self.prompt_response = self._query_llm( self.system_message, self.user_message, model=prompt_model, debug=self.debug )
         
-        if prompt_model == Agent.PHIND_34B_v2:
+        if prompt_model == Llm.PHIND_34B_v2:
             # skip for now: it chokes on the = contained within the code section
             # See: https://codebeautify.org/xmlvalidator
             # self.validate_xml( self.prompt_response )
@@ -234,7 +235,7 @@ class DataQueryingAgent( Agent ):
     
     def format_output( self ):
         
-        format_model = Agent.PHIND_34B_v2
+        format_model = Llm.PHIND_34B_v2
         preamble     = self._get_formatting_preamble()
         instructions = self._get_formatting_instructions()
         
