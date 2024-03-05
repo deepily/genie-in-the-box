@@ -1,7 +1,10 @@
 from flask import url_for
 
-from lib.app.fifo_queue                       import FifoQueue
-from lib.agents.incremental_calendaring_agent import IncrementalCalendaringAgent
+from lib.app.fifo_queue                        import FifoQueue
+from lib.agents.todo_list_agent                import TodoListAgent
+from lib.agents.calendaring_agent              import CalendaringAgent
+
+# from lib.agents.incremental_calendaring_agent import IncrementalCalendaringAgent
 # from lib.agents.agent_function_mapping        import FunctionMappingAgent
 # from lib.memory.solution_snapshot_mgr         import SolutionSnapshotManager
 
@@ -25,6 +28,9 @@ class TodoFifoQueue( FifoQueue ):
         self.app          = app
         self.push_counter = 0
         self.config_mgr   = config_mgr
+        
+        self.auto_debug   = False if config_mgr is None else config_mgr.get( "auto_debug",  default=False, return_type="boolean" )
+        self.inject_bugs  = False if config_mgr is None else config_mgr.get( "inject_bugs", default=False, return_type="boolean" )
         
         # Set by set_llm() below
         self.cmd_llm_in_memory = None
@@ -98,9 +104,13 @@ class TodoFifoQueue( FifoQueue ):
             if command == "none":
                 msg = "Hmm... I'm not certain what to do with that question, Could you rephrase and try again?"
             elif command == "agent router go to calendar":
-                calendaring_agent = IncrementalCalendaringAgent( question=question, routing_command=command, push_counter=self.push_counter, debug=True, verbose=False )
+                calendaring_agent = CalendaringAgent( question=question, routing_command=command, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 self.push( calendaring_agent )
                 msg = f"Starting a new calendaring job, I'll be right back."
+            elif command == "agent router go to todo list":
+                todo_list_agent = TodoListAgent( question=question, routing_command=command, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
+                self.push( todo_list_agent )
+                msg = f"Starting a new todo list job, I'll be right back."
             else:
                 msg = "TO DO: Implement command " + command
             
