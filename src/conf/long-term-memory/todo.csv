@@ -1,133 +1,44 @@
-todo,due_date,priority,status,list_name
-Carrots,2024-04-17,high,not done,Trader Joe's
-Peas,2024-04-21,normal,not done,Trader Joe's
-Fruit,2024-04-25,high,not done,Trader Joe's
-Bread,2024-02-26,normal,not done,Trader Joe's
-Milk,2024-03-17,low,not done,Trader Joe's
-Eggs,2024-04-20,high,not done,Trader Joe's
-Butter,2024-02-05,low,not done,Trader Joe's
-Cheese,2024-04-17,normal,not done,Trader Joe's
-Yogurt,2024-02-16,normal,not done,Trader Joe's
-Chicken,2024-04-08,high,not done,Trader Joe's
-Beef,2024-02-08,low,not done,Trader Joe's
-Fish,2024-03-24,low,not done,Trader Joe's
-Decorations,2024-03-04,high,not done,Birthday Party Planning
-Invitations,2024-03-05,high,not done,Birthday Party Planning
-Catering,2024-03-13,normal,not done,Birthday Party Planning
-Music Playlist,2024-03-18,normal,not done,Birthday Party Planning
-Party Favors,2024-03-28,low,not done,Birthday Party Planning
-Table Settings,2024-02-18,normal,not done,Birthday Party Planning
-Games,2024-02-26,normal,not done,Birthday Party Planning
-Gift Bags,2024-03-23,high,not done,Birthday Party Planning
-Outdoor Tents,2024-03-14,high,not done,Birthday Party Planning
-Lighting,2024-04-23,high,not done,Birthday Party Planning
-Drinks,2024-03-01,low,not done,Birthday Party Planning
-Snacks,2024-03-18,high,not done,Birthday Party Planning
-Clothes,2024-02-28,normal,not done,Packing for Vacation
-Toiletries,2024-02-16,high,not done,Packing for Vacation
-Chargers,2024-04-30,high,not done,Packing for Vacation
-Passports,2024-03-07,normal,not done,Packing for Vacation
-Travel Tickets,2024-04-02,normal,not done,Packing for Vacation
-Sunglasses,2024-03-06,low,not done,Packing for Vacation
-Sunscreen,2024-03-21,normal,not done,Packing for Vacation
-Hats,2024-03-23,normal,not done,Packing for Vacation
-Swimwear,2024-04-16,high,not done,Packing for Vacation
-Books,2024-02-26,normal,not done,Packing for Vacation
-Snacks,2024-02-19,high,not done,Packing for Vacation
-Travel Pillow,2024-02-05,low,not done,Packing for Vacation
-Fix Leaky Faucet,2024-04-29,low,not done,Home Maintenance
-Paint Living Room,2024-03-21,high,not done,Home Maintenance
-Clean Gutters,2024-04-28,normal,not done,Home Maintenance
-Replace AC Filter,2024-02-18,low,not done,Home Maintenance
-Garden Weeding,2024-02-05,low,not done,Home Maintenance
-Fix Garage Door,2024-03-15,normal,not done,Home Maintenance
-Window Cleaning,2024-02-14,normal,not done,Home Maintenance
-Check Smoke Detectors,2024-02-29,low,not done,Home Maintenance
-Unclog Drains,2024-02-19,low,not done,Home Maintenance
-Replace Light Bulbs,2024-03-02,low,not done,Home Maintenance
-Pressure Wash Driveway,2024-03-10,high,not done,Home Maintenance
-Organize Attic,2024-04-24,low,not done,Home Maintenance
-Complete Report,2024-02-12,high,not done,Work Project
-Review Meeting Notes,2024-03-27,normal,not done,Work Project
-Update Project Plan,2024-04-12,normal,not done,Work Project
-Client Follow-Up,2024-02-18,normal,not done,Work Project
-Prepare Presentation,2024-02-29,normal,not done,Work Project
-Budget Review,2024-04-15,high,not done,Work Project
-Team Meeting,2024-04-10,high,not done,Work Project
-Project Deadline,2024-03-10,high,not done,Work Project
-Feedback Collection,2024-04-26,low,not done,Work Project
-Documentation Update,2024-04-13,normal,not done,Work Project
-Competitor Analysis,2024-03-12,high,not done,Work Project
-Market Research,2024-02-08,normal,not done,Work Project
-Read Chapter 5,2024-02-16,high,not done,Study Schedule
-Complete Math Homework,2024-03-13,high,not done,Study Schedule
-Write Essay,2024-04-03,high,not done,Study Schedule
-Study for History Test,2024-04-02,normal,not done,Study Schedule
-Prepare Science Project,2024-02-08,low,not done,Study Schedule
-Group Study Session,2024-02-17,normal,not done,Study Schedule
-Review Lecture Notes,2024-03-15,normal,not done,Study Schedule
-Practice Problems,2024-02-25,low,not done,Study Schedule
-Attend Tutoring,2024-04-18,high,not done,Study Schedule
-Complete Lab Assignment,2024-02-07,low,not done,Study Schedule
-Research Paper,2024-03-28,low,not done,Study Schedule
-Prepare for Oral Presentation,2024-03-13,normal,not done,Study Schedule
-Run 5km,2024-02-26,high,not done,Fitness Goals
-Attend Yoga Class,2024-02-23,normal,not done,Fitness Goals
-Complete Strength Training,2024-02-02,low,not done,Fitness Goals
-Swim 20 Laps,2024-03-10,high,not done,Fitness Goals
-Bike 30km,2024-03-18,normal,not done,Fitness Goals
-Hike Local Trail,2024-04-28,low,not done,Fitness Goals
-Join Pilates Class,2024-04-01,high,not done,Fitness Goals
-Sign Up for Marathon,2024-02-12,low,not done,Fitness Goals
-Track Nutrition,2024-04-24,normal,not done,Fitness Goals
-Increase Flexibility,2024-04-23,high,not done,Fitness Goals
-Weight Lifting,2024-03-09,normal,not done,Fitness Goals
-Rest Day,2024-04-12,low,not done,Fitness Goals
-1984 by George Orwell,2024-04-29,high,not done,Books to Read
-To Kill a Mockingbird by Harper Lee,2024-02-15,high,not done,Books to Read
-The Great Gatsby by F. Scott Fitzgerald,2024-02-01,high,not done,Books to Read
-Pride and Prejudice by Jane Austen,2024-02-28,normal,not done,Books to Read
-Moby Dick by Herman Melville,2024-03-04,high,not done,Books to Read
-War and Peace by Leo Tolstoy,2024-02-29,normal,not done,Books to Read
-The Catcher in the Rye by J.D. Salinger,2024-04-09,normal,not done,Books to Read
-The Hobbit by J.R.R. Tolkien,2024-03-30,low,not done,Books to Read
-The Lord of the Rings by J.R.R. Tolkien,2024-03-10,normal,not done,Books to Read
-Harry Potter Series by J.K. Rowling,2024-04-27,low,not done,Books to Read
-A Tale of Two Cities by Charles Dickens,2024-02-27,normal,not done,Books to Read
-Jane Eyre by Charlotte Brontë,2024-04-05,high,not done,Books to Read
-Mom's Birthday,2024-02-22,high,not done,Gift Shopping
-Anniversary Gift,2024-03-11,normal,not done,Gift Shopping
-Wedding Present,2024-04-03,normal,not done,Gift Shopping
-Graduation Gift,2024-04-10,low,not done,Gift Shopping
-Father's Day,2024-02-23,normal,not done,Gift Shopping
-Valentine's Day,2024-04-13,normal,not done,Gift Shopping
-Christmas Gifts,2024-04-13,normal,not done,Gift Shopping
-New Baby Gift,2024-04-18,high,not done,Gift Shopping
-Housewarming Gift,2024-04-22,high,not done,Gift Shopping
-Retirement Gift,2024-02-15,normal,not done,Gift Shopping
-Thank You Gift,2024-04-28,normal,not done,Gift Shopping
-Get Well Soon Gift,2024-04-20,normal,not done,Gift Shopping
-Learn to Cook,2024-04-09,low,not done,Personal Goals
-Read More Books,2024-04-09,low,not done,Personal Goals
-Practice Meditation,2024-02-09,normal,not done,Personal Goals
-Travel to New Places,2024-03-08,low,not done,Personal Goals
-Learn a New Language,2024-03-27,high,not done,Personal Goals
-Start a Blog,2024-03-29,high,not done,Personal Goals
-Volunteer,2024-03-10,high,not done,Personal Goals
-Take a Photography Class,2024-03-13,high,not done,Personal Goals
-Improve Time Management,2024-03-19,normal,not done,Personal Goals
-Get Organized,2024-04-17,high,not done,Personal Goals
-Save Money,2024-02-26,normal,not done,Personal Goals
-Focus on Self-Care,2024-04-21,normal,not done,Personal Goals
-Create Budget,2024-02-20,high,not done,Financial Planning
-Review Investments,2024-02-28,high,not done,Financial Planning
-Save for Vacation,2024-04-19,low,not done,Financial Planning
-Pay Off Debt,2024-02-05,high,not done,Financial Planning
-Start Emergency Fund,2024-03-14,high,not done,Financial Planning
-Invest in Stocks,2024-04-15,normal,not done,Financial Planning
-Plan for Retirement,2024-03-09,low,not done,Financial Planning
-Review Insurance Policies,2024-03-22,low,not done,Financial Planning
-Buy Real Estate,2024-04-20,normal,not done,Financial Planning
-Cut Unnecessary Expenses,2024-04-22,normal,not done,Financial Planning
-Increase Income,2024-02-13,low,not done,Financial Planning
-Financial Education,2024-04-04,normal,not done,Financial Planning
+todo_item,due_date,priority,completed,list_name
+carrots,2024-04-09,high,no,trader joe's
+carrots,2024-04-09,high,no,trader joe's
+fruit,2024-04-15,high,no,trader joe's
+fruit,2024-03-04,normal,no,trader joe's
+bread,2024-03-07,normal,no,trader joe's
+buy decorations,2024-03-29,low,no,birthday party planning
+create playlist,2024-04-24,low,no,birthday party planning
+buy decorations,2024-04-19,high,no,birthday party planning
+pack snacks,2024-03-09,low,no,packing for vacation
+buy sunscreen,2024-04-14,low,no,packing for vacation
+pack snacks,2024-04-15,high,no,packing for vacation
+pack clothes,2024-04-04,normal,no,packing for vacation
+charge electronics,2024-02-27,low,no,packing for vacation
+paint living room,2024-03-12,low,no,home maintenance
+fix leaky faucet,2024-04-22,high,no,home maintenance
+clean gutters,2024-03-02,high,no,home maintenance
+mow the lawn,2024-04-18,low,no,home maintenance
+meeting with Josh,2024-03-05,normal,no,ongoing google interview process
+review budget,2024-04-01,low,no,work project
+submit proposal,2024-03-30,high,no,work project
+review budget,2024-03-10,high,no,work project
+attend meeting,2024-04-11,normal,no,work project
+study for midterms,2024-03-25,high,no,study schedule
+group project meeting,2024-03-04,low,no,study schedule
+complete assignment 2,2024-03-01,normal,no,study schedule
+read chapter 4,2024-04-03,high,no,study schedule
+bike ride,2024-03-11,low,no,fitness goals
+run 5km,2024-04-11,high,no,fitness goals
+run 5km,2024-03-11,low,no,fitness goals
+the great gatsby by f. scott fitzgerald,2024-03-01,high,no,books to read
+to kill a mockingbird by harper lee,2024-03-14,high,no,books to read
+moby dick by herman melville,2024-03-10,high,no,books to read
+christmas presents,2024-04-02,normal,no,gift shopping
+anniversary present,2024-04-16,normal,no,gift shopping
+graduation gift,2024-03-09,low,no,gift shopping
+meditate,2024-03-19,normal,no,personal goals
+meditate,2024-03-26,high,no,personal goals
+learn a new language,2024-04-09,high,no,personal goals
+budget review,2024-02-29,normal,no,financial planning
+save for vacation,2024-04-17,low,no,financial planning
+invest in stocks,2024-03-09,low,no,financial planning
+plan retirement,2024-03-25,low,no,financial planning
+pay off debt,2024-03-08,normal,no,financial planning
