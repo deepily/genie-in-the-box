@@ -2,63 +2,44 @@ import os
 import json
 
 import lib.utils.util             as du
-import lib.utils.util_stopwatch   as sw
 import lib.utils.util_code_runner as ucr
 
-from lib.agents.agent      import Agent
+from lib.agents.agent_base import AgentBase
+from lib.agents.llm        import Llm
 
-import lib.utils.util_xml as dux
-class IterativeDebuggingAgent( Agent ):
+class IterativeDebuggingAgent( AgentBase ):
     
     def __init__( self, error_message, path_to_code, debug=False, verbose=False ):
         
-        super().__init__( debug=debug, verbose=verbose )
+        super().__init__( routing_command="agent router go to debugger", debug=debug, verbose=verbose )
         
-        self.code                  = []
-        self.project_root          = du.get_project_root()
-        self.path_to_code          = path_to_code
-        self.formatted_code        = du.get_file_as_source_code_with_line_numbers( self.project_root + self.path_to_code )
-        self.path_to_prompts       = self.config_mgr.get( "path_to_debugger_prompts_wo_root" )
-        self.token_count           = 0
-        self.prompt_components     = None
-        self.prompt_response_dict  = None
-        self.available_llms        = self._inialize_available_llms()
-        self.error_message         = error_message
-        self.successfully_debugged = False
+        self.code                   = []
+        self.project_root           = du.get_project_root()
+        self.path_to_code           = path_to_code
+        self.formatted_code         = du.get_file_as_source_code_with_line_numbers( self.project_root + self.path_to_code )
+        self.error_message          = error_message
+        self.prompt                 = self._get_prompt()
+        self.prompt_response_dict   = None
+        self.available_llms         = self._inialize_available_llms()
+        self.successfully_debugged  = False
+        self.xml_response_tag_names = [ "thoughts", "code", "example", "returns", "explanation" ]
         
-        self.do_not_serialize     = [ "config_mgr" ]
+        self.do_not_serialize       = [ "config_mgr" ]
         
     def _inialize_available_llms( self ):
         
         # TODO: make run-time configurable, like AMPE's dynamic configuration
         prompt_run_llms = [
-            { "model": Agent.PHIND_34B_v2, "short_name": "phind34b", "temperature": 0.5, "top_k": 10, "top_p": 0.25, "max_new_tokens": 1024 },
-            { "model": Agent.GPT_3_5, "short_name": "gpt3.5" },
-            { "model": Agent.GPT_4, "short_name": "gpt4" }
+            { "model": Llm.PHIND_34B_v2, "short_name": "phind34b", "temperature": 0.5, "top_k": 10, "top_p": 0.25, "max_new_tokens": 1024 },
+            { "model": Llm.GROQ_MIXTRAL_8X78, "short_name": "mixtral8x7", "temperature": 0.5, "top_k": 10, "top_p": 0.25, "max_new_tokens": 1024 },
+            { "model": Llm.GPT_3_5, "short_name": "gpt3.5" },
+            { "model": Llm.GPT_4, "short_name": "gpt4" }
         ]
         return prompt_run_llms
     
-    def _initialize_prompt_components( self ):
+    def _get_prompt( self ):
         
-        # This is a chopped down version of the incremental approach to calendaring and todo list agents
-        step_1 = du.get_file_as_string( self.project_root + self.path_to_prompts + "debugger-step-1.txt" ).format(
-            error_message=self.error_message, formatted_code=self.formatted_code
-        )
-        xml_formatting_instructions_step_1 = du.get_file_as_string( self.project_root + self.path_to_prompts + "debugger-xml-formatting-instructions-step-1.txt" )
-        
-        steps = [ step_1 ]
-        self.step_len = len( steps )
-        prompt_components = {
-            "steps"                      : steps,
-            "responses"                  : [ ],
-            "response_tag_names"         : [ [ "thoughts", "code", "returns", "example", "explanation" ] ],
-            "running_history"            : "",
-            "xml_formatting_instructions": [
-                xml_formatting_instructions_step_1
-            ]
-        }
-        
-        return prompt_components
+        return self.prompt_template.format( error_message=self.error_message, formatted_code=self.formatted_code )
     
     def run_prompts( self, debug=None ):
         
@@ -83,7 +64,8 @@ class IterativeDebuggingAgent( Agent ):
             
             du.print_banner( f"{run_descriptor}: Executing debugging prompt using model [{model_name}] and short name [{short_name}]...", end="\n" )
             
-            prompt_response_dict = self.run_prompt( run_descriptor=run_descriptor, model=model_name, short_name=short_name, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens, debug=self.debug )
+            prompt_response_dict = self.run_prompt( model_name=model_name, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens )
+            self.serialize_to_json( "code-debugging", du.get_current_datetime_raw(), run_descriptor=run_descriptor, short_name=short_name )
             
             code_response_dict = ucr.initialize_code_response_dict()
             if self.is_code_runnable():
@@ -115,85 +97,7 @@ class IterativeDebuggingAgent( Agent ):
         
         return self.successfully_debugged
     
-    def run_prompt( self, run_descriptor="Run 1 of 1", model=Agent.PHIND_34B_v2, short_name="phind34b", max_new_tokens=1024, temperature=0.5, top_p=0.25, top_k=10, debug=None ):
-        
-        if debug is not None: self.debug = debug
-        
-        self.prompt_components      = self._initialize_prompt_components()
-        
-        steps                       = self.prompt_components[ "steps" ]
-        xml_formatting_instructions = self.prompt_components[ "xml_formatting_instructions" ]
-        response_tag_names          = self.prompt_components[ "response_tag_names" ]
-        responses                   = self.prompt_components[ "responses" ]
-        running_history             = self.prompt_components[ "running_history" ]
-        timer                       = sw.Stopwatch( msg=f"Executing iterative prompt(s) on {short_name} with {len( steps )} steps..." )
-        
-        self.token_count            = 0
-        prompt_response_dict        = { }
-        
-        # Get the current time so that we can track all the steps in this iterative prompt using the same timestamp
-        now = du.get_current_datetime_raw()
-        
-        for step in range( len( steps ) ):
-            
-            print()
-            print( f"Step [{step + 1}] of [{len( steps )}]" )
-            if step == 0:
-                # the first step doesn't have any previous responses to incorporate into it
-                running_history = steps[ step ]
-            else:
-                # incorporate the previous response into the current step, then append it to the running history
-                running_history = running_history + steps[ step ].format( response=responses[ step - 1 ] )
-            
-            response = self._query_llm(
-                running_history, xml_formatting_instructions[ step ], model=model, max_new_tokens=max_new_tokens, temperature=temperature, top_p=top_p, top_k=top_k, debug=True
-            )
-            responses.append( response )
-            
-            # Incrementally update the contents of the response dictionary according to the results of the XML-esque parsing
-            prompt_response_dict = self._update_response_dictionary(
-                step, response, prompt_response_dict, response_tag_names, debug=debug
-            )
-            # Update the prompt component's state before serializing a copy of it
-            self.prompt_components[ "running_history" ] = running_history
-            self.prompt_response_dict = prompt_response_dict
-            
-            self.serialize_to_json( "code-debugging", step, self.step_len, now, run_descriptor=run_descriptor, short_name=short_name )
-            
-        timer.print( "Done!", use_millis=True, prepend_nl=False )
-        # tokens_per_second = self.token_count / (timer.get_delta_ms() / 1000.0 )
-        # print( f"Tokens per second [{round( tokens_per_second, 1 )}]" )
-        
-        return self.prompt_response_dict
-    
-    def _update_response_dictionary( self, step, response, prompt_response_dict, tag_names, debug=True ):
-        
-        if debug: print( f"update_response_dictionary called with step [{step}]..." )
-
-        # Parse response and update response dictionary
-        xml_tags_for_step_n = tag_names[ step ]
-
-        for xml_tag in xml_tags_for_step_n:
-
-            if debug: print( f"Looking for xml_tag [{xml_tag}]" )
-
-            if xml_tag == "code":
-                
-                xml_string = dux.get_value_by_xml_tag_name( response, xml_tag, default_value="" )
-                if xml_string == "":
-                    print( f"WARNING: No <code> tags found, falling back to the default tick tick tick syntax..." )
-                    xml_string = dux.rescue_code_using_tick_tick_tick_syntax( response, debug=debug )
-                    # TODO: Find a principal the way to update the response object with the newly rescued and reformatted code
-                
-                # the get_code method expects enclosing tags
-                xml_string = "<code>" + xml_string + "</code>"
-                prompt_response_dict[ xml_tag ] = dux.get_code_list( xml_string, debug=debug )
-            else:
-                prompt_response_dict[ xml_tag ] = dux.get_value_by_xml_tag_name( response, xml_tag ).strip()
-
-        return prompt_response_dict
-    
-    def serialize_to_json( self, topic, current_step, total_steps, now, run_descriptor="Run 1 of 1", short_name="phind34b" ):
+    def serialize_to_json( self, topic, now, run_descriptor="Run 1 of 1", short_name="phind34b" ):
 
         # Convert object's state to a dictionary
         state_dict = self.__dict__
@@ -204,7 +108,7 @@ class IterativeDebuggingAgent( Agent ):
         # Constructing the filename, format: "topic-run-on-year-month-day-at-hour-minute-run-1-of-3-using-llm-short_name-step-N-of-M.json"
         run_descriptor = run_descriptor.replace( " ", "-" ).lower()
         short_name     = short_name.replace( " ", "-" ).lower()
-        file_path       = f"{du.get_project_root()}/io/log/{topic}-on-{now.year}-{now.month}-{now.day}-at-{now.hour}-{now.minute}-{run_descriptor}-using-llm-{short_name}-step-{( current_step + 1 )}-of-{total_steps}.json"
+        file_path       = f"{du.get_project_root()}/io/log/{topic}-on-{now.year}-{now.month}-{now.day}-at-{now.hour}-{now.minute}-{now.second}-{run_descriptor}-using-llm-{short_name}.json"
 
         # Serialize and save to file
         with open( file_path, 'w' ) as file:
@@ -237,18 +141,6 @@ class IterativeDebuggingAgent( Agent ):
         
         return restored_agent
     
-    def _get_system_message( self ):
-        
-        print( " _get_system_message NOT implemented" )
-        
-    def _get_user_message( self ):
-        
-        print( " _get_user_message NOT implemented" )
-        
-    def format_output( self ):
-        
-        print( "format_output() NOT implemented" )
-        
     def is_code_runnable( self ):
         
         if self.prompt_response_dict is not None and len( self.prompt_response_dict[ "code" ] ) > 0:
@@ -257,25 +149,42 @@ class IterativeDebuggingAgent( Agent ):
             print( "No code to run: self.response_dict[ 'code' ] = [ ]" )
             return False
         
-    def is_prompt_executable( self ):
-        
-        return self.prompt_components is not None
-        
 if __name__ == "__main__":
     
+    error_message = """
+    File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 18
+    mask = (df['event_type'] == 'concert') && (df['start_date'] >= start_date) && (df['start_date'] < end_date)
+                                            ^
+    SyntaxError: invalid syntax"""
     #     error_message = """
-    # File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 13
-    # solution = df[(df['event_type'] == 'concert') && (df['start_date'].between(start_of_week, end_of_week))]
-    #                                                ^
-    # SyntaxError: invalid syntax"""
+    #     Traceback (most recent call last):
+    #   File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 20, in <module>
+    #     solution = get_concerts_this_week( df )
+    #   File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 14, in get_concerts_this_week
+    #     mask = (df['event_type'] == 'concert') & (df['start_date'] >= start_date) & (df['start_date'] < end_date)
+    #   File "/Users/rruiz/Projects/genie-in-the-box/venv/lib/python3.10/site-packages/pandas/core/ops/common.py", line 81, in new_method
+    #     return method(self, other)
+    #   File "/Users/rruiz/Projects/genie-in-the-box/venv/lib/python3.10/site-packages/pandas/core/arraylike.py", line 60, in __ge__
+    #     return self._cmp_method(other, operator.ge)
+    #   File "/Users/rruiz/Projects/genie-in-the-box/venv/lib/python3.10/site-packages/pandas/core/series.py", line 6096, in _cmp_method
+    #     res_values = ops.comparison_op(lvalues, rvalues, op)
+    #   File "/Users/rruiz/Projects/genie-in-the-box/venv/lib/python3.10/site-packages/pandas/core/ops/array_ops.py", line 279, in comparison_op
+    #     res_values = op(lvalues, rvalues)
+    #   File "/Users/rruiz/Projects/genie-in-the-box/venv/lib/python3.10/site-packages/pandas/core/ops/common.py", line 81, in new_method
+    #     return method(self, other)
+    #   File "/Users/rruiz/Projects/genie-in-the-box/venv/lib/python3.10/site-packages/pandas/core/arraylike.py", line 60, in __ge__
+    #     return self._cmp_method(other, operator.ge)
+    #   File "/Users/rruiz/Projects/genie-in-the-box/venv/lib/python3.10/site-packages/pandas/core/arrays/datetimelike.py", line 937, in _cmp_method
+    #     return invalid_comparison(self, other, op)
+    #   File "/Users/rruiz/Projects/genie-in-the-box/venv/lib/python3.10/site-packages/pandas/core/ops/invalid.py", line 36, in invalid_comparison
+    #     raise TypeError(f"Invalid comparison between dtype={left.dtype} and {typ}")
+    # TypeError: Invalid comparison between dtype=datetime64[ns] and date"""
 
-    # We do not want to use the full path
-    # source_code_path = du.get_file_as_string( du.get_project_root() + "/io/code.py" )
-    # source_code_path = "/io/code.py"
-    # debugging_agent  = IterativeDebuggingAgent( error_message, source_code_path, debug=True, verbose=False )
+    source_code_path = "/io/code.py"
+    debugging_agent  = IterativeDebuggingAgent( error_message, source_code_path, debug=True, verbose=False )
     # Deserialize from file
-    debugging_agent = IterativeDebuggingAgent.restore_from_serialized_state( du.get_project_root() + "/io/log/code-debugging-on-2024-2-28-at-14-28-run-1-of-3-using-llm-phind34b-step-1-of-1.json" )
-    # debugging_agent.run_prompts( debug=False )
+    # debugging_agent = IterativeDebuggingAgent.restore_from_serialized_state( du.get_project_root() + "/io/log/code-debugging-on-2024-2-28-at-14-28-run-1-of-3-using-llm-phind34b-step-1-of-1.json" )
+    debugging_agent.run_prompts( debug=False )
     debugging_agent.run_code()
     
     # du.print_banner( "This may fail to run the completion due to a library version conflict 😢", expletive=True )
