@@ -17,7 +17,7 @@ class CalendaringAgent( AgentBase ):
         
         column_names, unique_event_types, head = self._get_metadata()
         
-        return self.prompt_template.format( question=self.question, column_names=column_names, unique_event_types=unique_event_types, head=head)
+        return self.prompt_template.format( question=self.question, column_names=column_names, unique_event_types=unique_event_types, head=head )
     
     def _get_metadata( self ):
         
