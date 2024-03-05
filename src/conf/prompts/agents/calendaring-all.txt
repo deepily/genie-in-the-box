@@ -102,7 +102,7 @@ This is the output from `print(self.df.event_type.unique())`:
 
 ['conference', 'concert', 'performance', 'appointment', 'anniversary', 'workout', 'birthday', 'workshop', 'todo', 'subscription', 'meeting', 'interview']
 
-Given the context I have provided above, I want you to write a Python function that answers the following question: `{question}`
+Given the context I have provided above, I want you to write a Python function that answers the following question: `What concerts do I have this week?`
 
 In order to successfully write a function that answers the question above, you MUST follow my instructions step by step.
 
@@ -143,6 +143,6 @@ Requirement: You MUST respond to the step by step directives above using the fol
 Take a deep breath and pause before you begin. Good luck!
 
 ### User Message
-{question}
+What concerts do I have this week?
 
 ### Assistant
