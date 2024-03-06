@@ -1,16 +1,17 @@
 import json
 
-from agent_base import AgentBase
+from lib.agents.agent_base import AgentBase
 # from lib.agents.llm import Llm
 
 
 class CalendaringAgent( AgentBase ):
     
-    def __init__( self, question=None, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
+    def __init__( self, question=None, push_counter=-1, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
-        super().__init__( df_path_key="path_to_events_df_wo_root", question=question, routing_command="agent router go to calendar", debug=debug, verbose=verbose, auto_debug=auto_debug, inject_bugs=inject_bugs )
+        super().__init__( df_path_key="path_to_events_df_wo_root", question=question, routing_command="agent router go to calendar", push_counter=push_counter, debug=debug, verbose=verbose, auto_debug=auto_debug, inject_bugs=inject_bugs )
+
+        self.prompt       = self._get_prompt()
         
-        self.prompt = self._get_prompt()
         self.xml_response_tag_names = [ "question", "thoughts", "code", "example", "returns", "explanation" ]
         
     def _get_prompt( self ):
