@@ -104,11 +104,11 @@ class TodoFifoQueue( FifoQueue ):
             if command == "none":
                 msg = "Hmm... I'm not certain what to do with that question, Could you rephrase and try again?"
             elif command == "agent router go to calendar":
-                calendaring_agent = CalendaringAgent( question=question, routing_command=command, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
+                calendaring_agent = CalendaringAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 self.push( calendaring_agent )
                 msg = f"Starting a new calendaring job, I'll be right back."
             elif command == "agent router go to todo list":
-                todo_list_agent = TodoListAgent( question=question, routing_command=command, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
+                todo_list_agent = TodoListAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 self.push( todo_list_agent )
                 msg = f"Starting a new todo list job, I'll be right back."
             else:
