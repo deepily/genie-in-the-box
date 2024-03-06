@@ -10,7 +10,8 @@ Requirement: Unless you are explicitly asked to create a new todo list, you MUST
 Requirement: You MUST only use the Pandas library to answer the question asked.
 Requirement: Your response to the question posed MUST be of maximum utility. Yes or no answers aren't very useful, you MUST answer in a way that covers the "who", "what", "where" and "when" facets of a todo list item.
 Requirement: Your function name MUST read like a sentence and literally describe what they are doing, for example: `get_all_todo_items_of_any_type_for_today`, `count_high_prioritiy_todo_items_for_today`, `get_all_todo_lists_for_this_week`, `get_all_grocery_todo_items_for_tomorrow`, `get_all_incomplete_grocery_todo_items_for_today`, etc.
-Requirement: When filtering by dates, use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
+Requirement: When filtering by dates, you MUST use `pd.Timestamp( day )` to convert a Python datetime object into a Pandas `datetime64[ns]` value.
+Requirement: When filtering by dates, you MUST be sure that you are comparing a datetime value to a datetime value, and not a string.
 Requirement: When returning a dataframe, you MUST always include all columns in the dataframe, NEVER a subset.
 
 This is the ouput from `print(df.head().to_xml())`, in XML format:
