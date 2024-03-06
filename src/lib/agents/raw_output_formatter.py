@@ -1,4 +1,5 @@
-from lib.utils import util as du
+from lib.utils import util     as du
+from lib.utils import util_xml as dux
 
 from lib.app.configuration_manager import ConfigurationManager
 
@@ -37,7 +38,10 @@ class RawOutputFormatter:
     
     def format_output( self ):
         
-        return self.llm.query_llm( prompt=self.prompt, debug=self.debug, verbose=self.verbose )
+        response = self.llm.query_llm( prompt=self.prompt, debug=self.debug, verbose=self.verbose )
+        output   = dux.get_value_by_xml_tag_name( response, "rephrased-answer" )
+        
+        return output
     
     def _get_prompt( self ):
         
