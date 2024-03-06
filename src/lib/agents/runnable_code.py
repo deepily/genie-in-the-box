@@ -14,9 +14,9 @@ class RunnableCode:
         self.answer               = None
         self.error                = None
 
-    def print_code( self ):
+    def print_code( self, msg="Code" ):
         
-        du.print_banner( "Code", prepend_nl=True )
+        du.print_banner( msg, prepend_nl=True )
         du.print_list( self.prompt_response_dict[ "code" ] )
         
     def run_code( self, path_to_df=None, inject_bugs=False ):
