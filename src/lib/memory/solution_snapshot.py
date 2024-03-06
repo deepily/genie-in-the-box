@@ -300,7 +300,6 @@ class SolutionSnapshot( RunnableCode ):
         else:
             print( f"File [{file_path}] does not exist" )
             
-
     def update_runtime_stats( self, timer ) -> None:
         """
         Updates the runtime stats for this object
@@ -318,9 +317,15 @@ class SolutionSnapshot( RunnableCode ):
     
     def run_code( self, debug=False, verbose=False ):
         
-        # TODO: Remove all references to the events.csv file
+        if self.routing_command == "agent router go to todo list":
+            path_to_df = "/src/conf/long-term-memory/todo.csv"
+        elif self.routing_command == "agent router go to calendar":
+            path_to_df = "/src/conf/long-term-memory/events.csv"
+        else:
+            path_to_df = None
+            
         self.code_response_dict = ucr.assemble_and_run_solution(
-            self.code, self.code_example, solution_code_returns=self.code_returns, path_to_df="/src/conf/long-term-memory/events.csv", debug=debug
+            self.code, self.code_example, solution_code_returns=self.code_returns, path_to_df=path_to_df, debug=debug
         )
         self.answer             = self.code_response_dict[ "output" ]
         
