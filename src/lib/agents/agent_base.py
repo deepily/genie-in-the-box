@@ -4,9 +4,10 @@ import os
 
 import pandas as pd
 
-import lib.utils.util        as du
-import lib.utils.util_pandas as dup
-import lib.utils.util_xml    as dux
+import lib.utils.util               as du
+import lib.utils.util_pandas        as dup
+import lib.utils.util_xml           as dux
+import lib.memory.solution_snapshot as ss
 
 from lib.agents.llm                  import Llm
 
@@ -19,7 +20,7 @@ class AgentBase( RunnableCode, abc.ABC ):
     
     DEFAULT_MODEL = Llm.PHIND_34B_v2
     
-    def __init__( self, df_path_key=None, question=None, routing_command=None, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
+    def __init__( self, df_path_key=None, question=None, push_counter=-1, routing_command=None, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
         self.debug                 = debug
         self.verbose               = verbose
@@ -28,7 +29,13 @@ class AgentBase( RunnableCode, abc.ABC ):
         self.df_path_key           = df_path_key
         self.routing_command       = routing_command
         
-        self.question              = question
+        # Added to allow behavioral compatibility with solution snapshot object
+        self.run_date              = ss.SolutionSnapshot.get_timestamp()
+        self.push_counter          = push_counter
+        self.id_hash               = ss.SolutionSnapshot.generate_id_hash( self.push_counter, self.run_date )
+        
+        self.last_question_asked   = question # This is a bit of a misnomer, it's the unprocessed question that was asked of the agent
+        self.question              = ss.SolutionSnapshot.clean_question( question )
         self.answer_conversational = None
         
         self.config_mgr            = ConfigurationManager( env_var_name="GIB_CONFIG_MGR_CLI_ARGS" )
@@ -68,6 +75,10 @@ class AgentBase( RunnableCode, abc.ABC ):
             
             self.df = pd.read_csv( du.get_project_root() + self.config_mgr.get( self.df_path_key ) )
             self.df = dup.cast_to_datetime( self.df )
+    
+    def get_html( self ):
+        
+        return f"<li id='{self.id_hash}'>{self.run_date} Q: {self.last_question_asked}</li>"
     
     @abc.abstractmethod
     def restore_from_serialized_state( file_path ):
@@ -165,9 +176,12 @@ class AgentBase( RunnableCode, abc.ABC ):
             
             if debugging_agent.was_successfully_debugged():
                 
-                self.code_response_dict = debugging_agent.get_code_and_metadata()
-                self.error = None
-            
+                self.prompt_response_dict[ "code" ] = debugging_agent.code
+                self.code_response_dict             = debugging_agent.code_response_dict
+                self.error                          = None
+                
+                self.print_code( msg="Debugging successful, corrected code returned to AgentBase:" )
+                
             else:
                 
                 du.print_banner( "Debugging failed, returning original code, such as it is... 😢 sniff 😢" )
@@ -179,7 +193,7 @@ class AgentBase( RunnableCode, abc.ABC ):
     
     def format_output( self ):
         
-        formatter = RawOutputFormatter( self.question, self.code_response_dict[ "output" ], self.routing_command, debug=self.debug, verbose=self.verbose )
+        formatter = RawOutputFormatter( self.last_question_asked, self.code_response_dict[ "output" ], self.routing_command, debug=self.debug, verbose=self.verbose )
         self.answer_conversational = formatter.format_output()
         
         return self.answer_conversational
