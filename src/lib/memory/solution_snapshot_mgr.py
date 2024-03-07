@@ -4,6 +4,7 @@ import lib.utils.util as du
 from lib.memory import solution_snapshot as ss
 from lib.memory.question_embeddings_dict import QuestionEmbeddingsDict
 
+
 class SolutionSnapshotManager:
     def __init__( self, path, debug=False, verbose=False ):
         

@@ -13,7 +13,6 @@ import lib.utils.util as du
 import lib.utils.util_xml as dux
 import lib.utils.util_stopwatch as sw
 
-
 class IncrementalCalendaringAgent( XXX_DataQueryingAgent ):
     
     def __init__( self, df_path_key="path_to_events_df_wo_root", routing_command="agent router go to calendar", question="", default_model=Llm.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):

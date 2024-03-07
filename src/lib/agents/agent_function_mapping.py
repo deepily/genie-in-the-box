@@ -9,7 +9,6 @@ from lib.agents.agent_base import AgentBase
 from lib.agents.llm        import Llm
 
 import pandas as pd
-
 class FunctionMappingAgent( AgentBase ):
     
     def __init__( self, path_to_df, question="", push_counter=-1, run_date=du.get_current_datetime(), debug=False, verbose=False ):

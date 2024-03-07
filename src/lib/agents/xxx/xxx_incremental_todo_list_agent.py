@@ -1,7 +1,6 @@
 import lib.utils.util as du
 
-from xxx_agent import XXX_Agent
-from llm   import Llm
+from lib.agents.llm             import Llm
 
 from xxx_incremental_calendaring_agent import IncrementalCalendaringAgent
 class IncrementalTodoListAgent( IncrementalCalendaringAgent ):

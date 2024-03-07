@@ -2,8 +2,8 @@ import os
 import json
 import regex as re
 
-import lib.utils.util             as du
-import lib.utils.util_code_runner as ucr
+import lib.utils.util                 as du
+import lib.utils.util_code_runner     as ucr
 
 from lib.agents.llm                   import Llm
 from lib.agents.agent_base            import AgentBase
