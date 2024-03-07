@@ -10,7 +10,6 @@ import lib.utils.util_xml           as dux
 import lib.memory.solution_snapshot as ss
 
 from lib.agents.llm                  import Llm
-
 from lib.agents.raw_output_formatter import RawOutputFormatter
 from lib.agents.runnable_code        import RunnableCode
 from lib.app.configuration_manager   import ConfigurationManager
@@ -18,9 +17,9 @@ from lib.memory.solution_snapshot    import SolutionSnapshot
 
 class AgentBase( RunnableCode, abc.ABC ):
     
-    DEFAULT_MODEL = Llm.PHIND_34B_v2
+    # DEFAULT_MODEL = Llm.PHIND_34B_v2
     
-    def __init__( self, df_path_key=None, question=None, push_counter=-1, routing_command=None, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
+    def __init__( self, df_path_key=None, question="", push_counter=-1, routing_command=None, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
         self.debug                 = debug
         self.verbose               = verbose
@@ -52,6 +51,7 @@ class AgentBase( RunnableCode, abc.ABC ):
             "agent router go to weather"      : self.config_mgr.get( "agent_prompt_for_weather" ),
             "agent router go to todo list"    : self.config_mgr.get( "agent_prompt_for_todo_list" ),
             "agent router go to debugger"     : self.config_mgr.get( "agent_prompt_for_debugger" ),
+            "agent router go to bug injector" : self.config_mgr.get( "agent_prompt_for_bug_injector" ),
         }
         self.models = {
             "agent router go to date and time": self.config_mgr.get( "agent_model_name_for_date_and_time" ),
@@ -59,6 +59,7 @@ class AgentBase( RunnableCode, abc.ABC ):
             "agent router go to weather"      : self.config_mgr.get( "agent_model_name_for_weather" ),
             "agent router go to todo list"    : self.config_mgr.get( "agent_model_name_for_todo_list" ),
             "agent router go to debugger"     : self.config_mgr.get( "agent_model_name_for_debugger" ),
+            "agent router go to bug injector" : self.config_mgr.get( "agent_model_name_for_bug_injector" ),
         }
         self.serialization_topics = {
             "agent router go to date and time": "date-and-time",
@@ -66,6 +67,7 @@ class AgentBase( RunnableCode, abc.ABC ):
             "agent router go to weather"      : "weather",
             "agent router go to todo list"    : "todo-list",
             "agent router go to debugger"     : "code-debugger",
+            "agent router go to bug injector" : "bug-injector",
         }
         self.model_name              = self.models[ routing_command ]
         self.prompt_template         = du.get_file_as_string( du.get_project_root() + self.prompt_template_paths[ routing_command ] )
@@ -128,7 +130,7 @@ class AgentBase( RunnableCode, abc.ABC ):
     
     def run_prompt( self, model_name=None, temperature=0.5, top_p=0.25, top_k=10, max_new_tokens=1024 ):
         
-        from lib.agents.llm import Llm
+        # from lib.agents.llm import Llm
         
         if model_name is not None: self.model_name = model_name
         
@@ -149,7 +151,7 @@ class AgentBase( RunnableCode, abc.ABC ):
         if inject_bugs is None: inject_bugs = self.inject_bugs
         
         # TODO: figure out where this should live, i suspect it will be best located in util_code_runner.py
-        print( f"Executing super().run_code() with inject_bugs [{inject_bugs}] and auto_debug [{auto_debug}]..." )
+        if self.debug: print( f"Executing super().run_code() with inject_bugs [{inject_bugs}] and auto_debug [{auto_debug}]..." )
         
         if self.df_path_key is not None:
             path_to_df = self.config_mgr.get( self.df_path_key, default=None )
