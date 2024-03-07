@@ -1,6 +1,4 @@
 import json
-import re
-import xml.etree.ElementTree as et
 
 import lib.utils.util as du
 import lib.utils.util_pandas as dup
@@ -8,12 +6,12 @@ import lib.utils.util_stopwatch as sw
 import lib.utils.util_xml as dux
 from lib.memory import solution_snapshot as ss
 
-from lib.agents.agent import Agent
+from lib.agents.xxx.xxx_agent import XXX_Agent
 from lib.agents.llm   import Llm
 
 import pandas as pd
 
-class DataQueryingAgent( Agent ):
+class XXX_DataQueryingAgent( XXX_Agent ):
     
     def __init__( self, question="", df_path_key="path_to_events_df_wo_root", routing_command="", default_model=Llm.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False, auto_debug=False, inject_bugs=False  ):
         
@@ -252,7 +250,7 @@ class DataQueryingAgent( Agent ):
     
 if __name__ == "__main__":
     
-    agent = DataQueryingAgent( debug=True, verbose=True )
+    agent = XXX_DataQueryingAgent( debug=True, verbose=True )
 
     # question         = "What todo items do I have on my calendar for this week?"
     # question         = "What todo items do I have on my calendar for today?"

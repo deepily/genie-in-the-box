@@ -6,9 +6,9 @@ import lib.utils.util             as du
 import lib.utils.util_code_runner as ucr
 
 from lib.agents.llm                   import Llm
-from lib.agents.agent                 import Agent
+from lib.agents.agent_base            import AgentBase
 from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
-class RefactoringAgent( Agent ):
+class RefactoringAgent( AgentBase ):
     
     def __init__( self, similar_snapshots=[], path_to_solutions="/src/conf/long-term-memory/solutions", debug=False, verbose=False ):
         

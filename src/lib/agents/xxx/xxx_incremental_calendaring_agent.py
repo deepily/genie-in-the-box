@@ -3,9 +3,8 @@ import re
 import json
 import datetime
 
-from lib.agents.data_querying_agent       import DataQueryingAgent
+from lib.agents.xxx.xxx_data_querying_agent import XXX_DataQueryingAgent
 from lib.memory.solution_snapshot         import SolutionSnapshot
-from lib.agents.agent                     import Agent
 from lib.agents.iterative_debugging_agent import IterativeDebuggingAgent
 from lib.agents.raw_output_formatter      import RawOutputFormatter
 from lib.agents.llm                       import Llm
@@ -14,9 +13,8 @@ import lib.utils.util as du
 import lib.utils.util_xml as dux
 import lib.utils.util_stopwatch as sw
 
-from huggingface_hub import InferenceClient
 
-class IncrementalCalendaringAgent( DataQueryingAgent ):
+class IncrementalCalendaringAgent( XXX_DataQueryingAgent ):
     
     def __init__( self, df_path_key="path_to_events_df_wo_root", routing_command="agent router go to calendar", question="", default_model=Llm.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         

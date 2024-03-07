@@ -5,12 +5,12 @@ import lib.utils.util_pandas as dup
 import lib.utils.util_stopwatch as sw
 from lib.memory import solution_snapshot as ss
 
-from lib.agents.agent import Agent
-from lib.agents.llm   import Llm
+from lib.agents.agent_base import AgentBase
+from lib.agents.llm        import Llm
 
 import pandas as pd
 
-class FunctionMappingAgent( Agent ):
+class FunctionMappingAgent( AgentBase ):
     
     def __init__( self, path_to_df, question="", push_counter=-1, run_date=du.get_current_datetime(), debug=False, verbose=False ):
         

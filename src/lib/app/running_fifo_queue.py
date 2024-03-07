@@ -1,6 +1,5 @@
 from lib.app.fifo_queue                       import FifoQueue
 from lib.agents.agent_base                    import AgentBase
-from lib.agents.incremental_calendaring_agent import IncrementalCalendaringAgent
 from lib.agents.agent_function_mapping import FunctionMappingAgent
 from lib.memory.solution_snapshot             import SolutionSnapshot
 # from lib.utils.util import print_banner, get_current_datetime, truncate_string

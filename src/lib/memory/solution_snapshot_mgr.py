@@ -53,7 +53,7 @@ class SolutionSnapshotManager:
         du.print_banner( f"Found [{len( snapshots_by_synomymous_questions )}] synonymous questions", prepend_nl=True )
         for question in snapshots_by_synomymous_questions.keys():
             if question != snapshots_by_synomymous_questions[ question ][ 1 ].question:
-                print( f"Snapshot.question [{snapshots_by_synomymous_questions[ question ][ 1 ].question}] has synonymous question [{question}]" )
+                print( f"Snapshot Q [{snapshots_by_synomymous_questions[ question ][ 1 ].question}] has synonymous Q [{question}]" )
             
         print()
         return snapshots_by_synomymous_questions

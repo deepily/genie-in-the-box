@@ -1,9 +1,9 @@
 import lib.utils.util as du
 
-from agent import Agent
+from xxx_agent import XXX_Agent
 from llm   import Llm
 
-from incremental_calendaring_agent import IncrementalCalendaringAgent
+from xxx_incremental_calendaring_agent import IncrementalCalendaringAgent
 class IncrementalTodoListAgent( IncrementalCalendaringAgent ):
     def __init__( self, df_path_key="path_to_todolist_df_wo_root", question="", default_model=Llm.PHIND_34B_v2, push_counter=-1, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         

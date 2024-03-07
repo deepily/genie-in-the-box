@@ -5,8 +5,8 @@ import abc
 
 import lib.utils.util           as du
 import lib.utils.util_stopwatch as sw
-from lib.agents.llm import Llm
 
+from lib.agents.llm                import Llm
 from lib.agents.runnable_code      import RunnableCode
 from lib.app.configuration_manager import ConfigurationManager
 
@@ -14,12 +14,7 @@ import openai
 import tiktoken
 from huggingface_hub import InferenceClient
 
-class Agent( RunnableCode, abc.ABC ):
-    
-    # GPT_4             = "gpt-4-0613"
-    # GPT_3_5           = "gpt-3.5-turbo-1106"
-    # PHIND_34B_v2      = "TGI/Phind-CodeLlama-34B-v2"
-    # GROQ_MIXTRAL_8X78 = "Groq/mixtral-8x7b-32768"
+class XXX_Agent( RunnableCode, abc.ABC ):
     
     DEFAULT_MODEL = Llm.PHIND_34B_v2
     

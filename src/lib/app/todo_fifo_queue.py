@@ -4,9 +4,7 @@ from lib.app.fifo_queue                        import FifoQueue
 from lib.agents.todo_list_agent                import TodoListAgent
 from lib.agents.calendaring_agent              import CalendaringAgent
 
-# from lib.agents.incremental_calendaring_agent import IncrementalCalendaringAgent
 # from lib.agents.agent_function_mapping        import FunctionMappingAgent
-# from lib.memory.solution_snapshot_mgr         import SolutionSnapshotManager
 
 from lib.utils import util     as du
 from lib.utils import util_xml as dux

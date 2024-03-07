@@ -1,10 +1,10 @@
 import lib.utils.util as du
 import lib.utils.util_xml as dux
 
-from lib.agents.agent import Agent
+from lib.agents.agent_base import AgentBase
 from lib.agents.llm   import Llm
 
-class BugInjector( Agent ):
+class BugInjector( AgentBase ):
     def __init__( self, code, debug=True, verbose=True ):
         
         super().__init__( debug=debug, verbose=verbose )
