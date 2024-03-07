@@ -197,9 +197,9 @@ def assemble_and_run_solution( solution_code, example_code, path_to_df=None, sol
         from lib.agents.bug_injector import BugInjector
         
         du.print_banner( "Injecting bugs...", prepend_nl=True, expletive=True, chunk="buggy 🦂 bug injector 💉 " )
-        bug_injector  = BugInjector( solution_code, debug=debug, verbose=verbose )
+        bug_injector  = BugInjector( solution_code, example=example_code, debug=debug, verbose=verbose )
         response_dict = bug_injector.run_prompt()
-        code          = response_dict[ "code" ]
+        solution_code = response_dict[ "code" ]
         
     code_path = du.get_project_root() + "/io/code.py"
     du.write_lines_to_file( code_path, solution_code )
