@@ -3,7 +3,7 @@ import re
 import json
 import datetime
 
-from lib.agents.xxx.xxx_data_querying_agent import XXX_DataQueryingAgent
+from lib.agents.deprecated.xxx_data_querying_agent import XXX_DataQueryingAgent
 from lib.memory.solution_snapshot         import SolutionSnapshot
 from lib.agents.iterative_debugging_agent import IterativeDebuggingAgent
 from lib.agents.raw_output_formatter      import RawOutputFormatter
