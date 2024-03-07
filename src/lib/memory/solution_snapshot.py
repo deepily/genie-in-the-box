@@ -56,10 +56,12 @@ class SolutionSnapshot( RunnableCode ):
     def get_default_stats_dict():
         
         return {
-            "run_count"  : 0,
+           "first_run_ms": 0,
+            "run_count"  : -1,
             "total_ms"   : 0,
             "mean_run_ms": 0,
-            "last_run_ms": 0
+            "last_run_ms": 0,
+          "time_saved_ms": 0
         }
     
     def __init__( self, push_counter=-1, question="", synonymous_questions=OrderedDict(), non_synonymous_questions=[],
@@ -309,10 +311,16 @@ class SolutionSnapshot( RunnableCode ):
         """
         delta_ms = timer.get_delta_ms()
         
-        self.runtime_stats[ "run_count"   ] += 1
-        self.runtime_stats[ "total_ms"    ] += delta_ms
-        self.runtime_stats[ "mean_run_ms" ]  = int( self.runtime_stats[ "total_ms" ] / self.runtime_stats[ "run_count" ] )
-        self.runtime_stats[ "last_run_ms" ]  = delta_ms
+        # We're now tracking the first time which is expensive to calculate, after that we're tracking all subsequent cashed runs
+        if self.runtime_stats[ "run_count" ] == -1:
+            self.runtime_stats[ "first_run_ms"  ]  = delta_ms
+            self.runtime_stats[ "run_count"     ]  = 0
+        else:
+            self.runtime_stats[ "run_count"     ] += 1
+            self.runtime_stats[ "total_ms"      ] += delta_ms
+            self.runtime_stats[ "mean_run_ms"   ]  = int( self.runtime_stats[ "total_ms" ] / self.runtime_stats[ "run_count" ] )
+            self.runtime_stats[ "last_run_ms"   ]  = delta_ms
+            self.runtime_stats[ "time_saved_ms" ]  = ( self.runtime_stats[ "first_run_ms" ] * self.runtime_stats[ "run_count" ] ) - self.runtime_stats[ "total_ms" ]
     
     def run_code( self, debug=False, verbose=False ):
         

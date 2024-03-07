@@ -37,6 +37,7 @@
   "created_date": "2023-12-11 @ 14:28:23 EST",
   "run_date": "2024-02-20 @ 15:25:24 EST",
   "runtime_stats": {
+    "first_run_ms": 1627,
     "run_count": 17,
     "total_ms": 41697,
     "mean_run_ms": 2452,

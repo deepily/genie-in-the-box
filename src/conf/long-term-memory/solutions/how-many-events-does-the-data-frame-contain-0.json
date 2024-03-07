@@ -34,10 +34,12 @@
   "created_date": "2023-12-11 @ 13:39:13 EST",
   "run_date": "2024-02-20 @ 14:33:19 EST",
   "runtime_stats": {
-    "run_count": 7,
-    "total_ms": 33422,
-    "mean_run_ms": 4774,
-    "last_run_ms": 1618
+    "first_run_ms": 20000,
+    "run_count": 0,
+    "total_ms": 0,
+    "mean_run_ms": 0,
+    "last_run_ms": 0,
+    "time_saved_ms": 0
   },
   "id_hash": "e5e88b823e265c0f29b264127e930d4d345c9c7c747a89fc1565ff3132a44b50",
   "programming_language": "Python",

@@ -33,7 +33,6 @@ class RunningFifoQueue( FifoQueue ):
             if not self.jobs_todo_queue.is_empty():
                 
                 print( "Jobs running @ " + du.get_current_datetime() )
-                run_timer = sw.Stopwatch( "Starting run timer..." )
                 
                 print( "popping one job from todo Q" )
                 job = self.jobs_todo_queue.pop()
@@ -48,12 +47,14 @@ class RunningFifoQueue( FifoQueue ):
                 # Limit the length of the question string
                 truncated_question = du.truncate_string( running_job.question, max_len=64 )
                 
+                run_timer = sw.Stopwatch( "Starting run timer..." )
+                
                 # if type( running_job ) == FunctionMappingAgent:
                 #     running_job = self._handle_function_mapping_agent( running_job, truncated_question )
-                    
+                
                 # Assume for now that all *agents* are of type AgentBase. If it's not, then it's a solution snapshot
                 if isinstance( running_job, AgentBase ):
-                    running_job = self._handle_base_agent( running_job, truncated_question )
+                    running_job = self._handle_base_agent( running_job, truncated_question, run_timer )
                 else:
                     running_job = self._handle_solution_snapshot( running_job, truncated_question, run_timer )
                     running_job.debug = True
@@ -88,7 +89,7 @@ class RunningFifoQueue( FifoQueue ):
         
         return running_job
     
-    def _handle_base_agent( self, running_job, truncated_question ):
+    def _handle_base_agent( self, running_job, truncated_question, agent_timer ):
         
         msg = f"Running AgentBase for [{truncated_question}]..."
         
@@ -97,7 +98,7 @@ class RunningFifoQueue( FifoQueue ):
             "output"     : "ERROR: Output not yet generated!?!"
         }
         
-        agent_timer = sw.Stopwatch( msg=msg )
+        # agent_timer = sw.Stopwatch( msg=msg )
         try:
             response_dict    = running_job.run_prompt()
             code_response    = running_job.run_code( auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
@@ -112,8 +113,6 @@ class RunningFifoQueue( FifoQueue ):
             for line in stack_trace: print( line )
             running_job = self._handle_error_case( code_response, running_job, truncated_question )
         
-        agent_timer.print( "Done!", use_millis=True )
-        
         du.print_banner( f"Job [{running_job.question}] complete...", prepend_nl=True, end="\n" )
         
         if code_response[ "return_code" ] == 0:
@@ -122,6 +121,7 @@ class RunningFifoQueue( FifoQueue ):
             # recast the agent object as a solution snapshot object and add it to the snapshot manager
             running_job = SolutionSnapshot.create( running_job )
             
+            agent_timer.print( "Done!", use_millis=True )
             running_job.update_runtime_stats( agent_timer )
             
             # Adding this snapshot to the snapshot manager serializes it to the local filesystem
@@ -152,7 +152,7 @@ class RunningFifoQueue( FifoQueue ):
         # timer.print( "Done!", use_millis=True )
         
         # If we've arrived at this point, then we've successfully run the job
-        run_timer.print( "Full run complete ", use_millis=True )
+        run_timer.print( "Solution snapshot full run complete ", use_millis=True )
         running_job.update_runtime_stats( run_timer )
         du.print_banner( f"Job [{running_job.question}] complete!", prepend_nl=True, end="\n" )
         
