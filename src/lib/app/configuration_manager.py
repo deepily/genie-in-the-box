@@ -1,6 +1,6 @@
 import configparser
 import os
-import sys
+import json
 
 import lib.utils.util as du
 
@@ -581,8 +581,10 @@ class ConfigurationManager():
             return value
         elif return_type == "list-string":
             return value.split( ", " )
+        elif return_type == "json":
+            return json.loads( value )
         else:
-            raise ValueError( f"Return type [{return_type}] is invalid.  Accepts: 'boolean', 'float', 'int', 'string' and 'list-string'".format( return_type ) )
+            raise ValueError( f"Return type [{return_type}] is invalid.  Accepts: 'boolean', 'float', 'int', 'string', 'list-string' and 'json'".format( return_type ) )
         
     def splain_me( self, key, end="\n\n" ):
 
