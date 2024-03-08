@@ -6,6 +6,8 @@ import lib.utils.util_code_runner as ucr
 
 from lib.agents.agent_base import AgentBase
 from lib.agents.llm        import Llm
+from lib.app.configuration_manager import ConfigurationManager
+
 
 class IterativeDebuggingAgent( AgentBase ):
     
@@ -20,22 +22,24 @@ class IterativeDebuggingAgent( AgentBase ):
         self.error_message          = error_message
         self.prompt                 = self._get_prompt()
         self.prompt_response_dict   = None
-        self.available_llms         = self._inialize_available_llms()
+        self.available_llms         = self._load_available_llm_specs()
         self.successfully_debugged  = False
         self.xml_response_tag_names = [ "thoughts", "code", "example", "returns", "explanation" ]
         
         self.do_not_serialize       = [ "config_mgr" ]
         
-    def _inialize_available_llms( self ):
+    def _load_available_llm_specs( self ):
         
-        # TODO: make run-time configurable, like AMPE's dynamic configuration
-        prompt_run_llms = [
-            { "model": Llm.PHIND_34B_v2, "short_name": "phind34b", "temperature": 0.5, "top_k": 10, "top_p": 0.25, "max_new_tokens": 1024 },
-            { "model": Llm.GROQ_MIXTRAL_8X78, "short_name": "mixtral8x7", "temperature": 0.5, "top_k": 10, "top_p": 0.25, "max_new_tokens": 1024 },
-            { "model": Llm.GPT_3_5, "short_name": "gpt3.5" },
-            { "model": Llm.GPT_4, "short_name": "gpt4" }
-        ]
-        return prompt_run_llms
+        model_keys = self.config_mgr.get( "llm_model_keys_for_debugger", default=[ ], return_type="json" )
+        
+        available_llms = []
+        for key in model_keys:
+            print( f"Loading debugger LLM: {key}... ", end="" )
+            llm_spec = self.config_mgr.get( key, default={ }, return_type="json" )
+            available_llms.append( llm_spec )
+            print( llm_spec )
+        
+        return available_llms
     
     def _get_prompt( self ):
         
@@ -152,8 +156,8 @@ class IterativeDebuggingAgent( AgentBase ):
 if __name__ == "__main__":
     
     error_message = """
-    File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 18
-    mask = (df['event_type'] == 'concert') && (df['start_date'] >= start_date) && (df['start_date'] < end_date)
+    File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 12
+    birthdays = df[(df.event_type == 'birthday') && (df.start_date <= week_from_today) && (df.end_date >= today)]
                                             ^
     SyntaxError: invalid syntax"""
     #     error_message = """
@@ -182,18 +186,8 @@ if __name__ == "__main__":
 
     source_code_path = "/io/code.py"
     debugging_agent  = IterativeDebuggingAgent( error_message, source_code_path, debug=True, verbose=False )
-    # Deserialize from file
-    # debugging_agent = IterativeDebuggingAgent.restore_from_serialized_state( du.get_project_root() + "/io/log/code-debugging-on-2024-2-28-at-14-28-run-1-of-3-using-llm-phind34b-step-1-of-1.json" )
+    # # Deserialize from file
+    # # debugging_agent = IterativeDebuggingAgent.restore_from_serialized_state( du.get_project_root() + "/io/log/code-debugging-on-2024-2-28-at-14-28-run-1-of-3-using-llm-phind34b-step-1-of-1.json" )
     debugging_agent.run_prompts( debug=False )
-    debugging_agent.run_code()
-    
-    # du.print_banner( "This may fail to run the completion due to a library version conflict 😢", expletive=True )
-    # print( f"Is promptable? {debugging_agent.is_prompt_executable()}, is runnable? {debugging_agent.is_code_runnable()}" )
-    # prompt_response = debugging_agent.run_prompt()
-    # print( f"Is promptable? {debugging_agent.is_prompt_executable()}, is runnable? {debugging_agent.is_code_runnable()}" )
-    #
-    # code_response     = debugging_agent.run_code()
-    # ran_to_completion = debugging_agent.ran_to_completion()
-    #
-    # du.print_banner( f"Ran to completion? ¡{ran_to_completion}!", prepend_nl=False )
+    # debugging_agent.run_code()
     
