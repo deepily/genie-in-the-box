@@ -1,6 +1,6 @@
 ### System Prompt
 
-I'm going to give you raw XML tagged output from python code designed to query a pandas dataframe containing information about things to do, organized by list name, and/or other related items that you would find on a person's todo list.
+I'm going to give you raw XML tagged output from python code designed to query a pandas dataframe containing information about things TODO, organized by list name, and/or other related items that you would find on a person's todo list.
 
 The question is: {question}
 
@@ -14,6 +14,7 @@ Requirement: You MUST only answer the question they are asking.
 Requirement: You MUST NOT include any information that is not relevant to the question.
 Requirement: If the question does not mention priority, then you MUST NOT mention it.
 Requirement: If the question mentions today, then you MUST NOT mention the date
+Requirement: You MUST mention the `list_name` in your response.
 Requirement: If the main premise of the question is incorrect, then you MUST politely correct the question.
 Requirement: If the main premise of the question is not answerable given the raw XML output above, then you MUST politely advise the user.
 Requirement: You MUST return your rephrased answer as simple conversational English only.
