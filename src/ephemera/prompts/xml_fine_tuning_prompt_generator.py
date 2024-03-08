@@ -820,7 +820,7 @@ class XmlFineTuningPromptGenerator:
         
         return response
     
-    def _query_llm_openai( self, messages, model_name="gpt-3.5-turbo-1106" ):
+    def _query_llm_openai( self, messages, model_name="OpenAI/gpt-3.5-turbo-1106" ):
         
         openai.api_key = du.get_api_key( "openai", project_root=du.get_project_root() )
         
