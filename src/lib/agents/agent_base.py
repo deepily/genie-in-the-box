@@ -128,14 +128,14 @@ class AgentBase( RunnableCode, abc.ABC ):
         
         return prompt_response_dict
     
-    def run_prompt( self, model_name=None, temperature=0.5, top_p=0.25, top_k=10, max_new_tokens=1024 ):
+    def run_prompt( self, model_name=None, temperature=0.5, top_p=0.25, top_k=10, max_new_tokens=1024, stop_sequences=None ):
         
         # from lib.agents.llm import Llm
         
         if model_name is not None: self.model_name = model_name
         
-        llm = Llm( model=self.model_name, default_url=self.default_url, debug=self.debug, verbose=self.verbose )
-        response = llm.query_llm( prompt=self.prompt, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens, debug=self.debug, verbose=self.verbose )
+        llm = Llm( config_mgr=self.config_mgr, model=self.model_name, default_url=self.default_url, debug=self.debug, verbose=self.verbose )
+        response = llm.query_llm( prompt=self.prompt, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens, stop_sequences=stop_sequences, debug=self.debug, verbose=self.verbose )
         
         self.prompt_response_dict = self._update_response_dictionary( response )
         
