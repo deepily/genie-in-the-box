@@ -65,10 +65,11 @@ class IterativeDebuggingAgent( AgentBase ):
             top_p          = llm[ "top_p"          ] if "top_p"          in llm else 0.25
             top_k          = llm[ "top_k"          ] if "top_k"          in llm else 10
             max_new_tokens = llm[ "max_new_tokens" ] if "max_new_tokens" in llm else 1024
+            stop_sequences = llm[ "stop_sequences" ] if "stop_sequences"  in llm else []
             
             du.print_banner( f"{run_descriptor}: Executing debugging prompt using model [{model_name}] and short name [{short_name}]...", end="\n" )
             
-            prompt_response_dict = self.run_prompt( model_name=model_name, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens )
+            prompt_response_dict = self.run_prompt( model_name=model_name, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens, stop_sequences=stop_sequences )
             self.serialize_to_json( "code-debugging", du.get_current_datetime_raw(), run_descriptor=run_descriptor, short_name=short_name )
             
             code_response_dict = ucr.initialize_code_response_dict()
