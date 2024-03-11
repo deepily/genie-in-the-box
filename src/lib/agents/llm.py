@@ -57,7 +57,7 @@ class Llm:
                 
         return ellipsis_count
     
-    def query_llm( self, model=None, prompt=None, preamble=None, question=None, max_new_tokens=1024, temperature=0.5, top_k=100, top_p=0.25, debug=None, verbose=None ):
+    def query_llm( self, model=None, prompt=None, preamble=None, question=None, max_new_tokens=1024, temperature=0.5, top_k=100, top_p=0.25, stop_sequences=None, debug=None, verbose=None ):
         
         if preamble is None and question is None and prompt is None:
             raise ValueError( "ERROR: Neither prompt, preamble, nor question has a value set!" )
@@ -71,16 +71,15 @@ class Llm:
             if prompt is None: raise ValueError( "ERROR: Prompt is `None`!" )
             
             return self._query_llm_phind(
-                prompt, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, debug=debug, verbose=verbose
+                prompt, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, debug=debug, verbose=verbose, stop_sequences=stop_sequences
             )
         
         elif self.model == Llm.GOOGLE_GEMINI_PRO:
             
             # Quick sanity check
             if prompt is None: raise ValueError( "ERROR: Prompt is `None`!" )
-        
             return self._query_llm_google(
-                prompt, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, debug=debug, verbose=verbose
+                prompt, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, stop_sequences=stop_sequences, debug=debug, verbose=verbose
             )
         
         else:
@@ -124,17 +123,16 @@ class Llm:
                 raise ValueError( "ERROR: Preamble or question is `None`!" )
                 
             if self.model.startswith( "OpenAI/" ):
-                return self._query_llm_openai( preamble, question, debug=debug, verbose=verbose )
+                return self._query_llm_openai( preamble, question, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, stop_sequences=stop_sequences, debug=debug, verbose=verbose )
             elif self.model.startswith( "Groq/" ):
-                return self._query_llm_groq( preamble, question, debug=debug, verbose=verbose )
+                return self._query_llm_groq( preamble, question, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, stop_sequences=stop_sequences, debug=debug, verbose=verbose )
             elif self.model.startswith( "Google/" ):
-                return self._query_llm_google( preamble, question, debug=debug, verbose=verbose )
+                return self._query_llm_google( preamble, question, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, stop_sequences=stop_sequences, debug=debug, verbose=verbose )
             else:
                 raise ValueError( f"ERROR: Model [{self.model}] not recognized!" )
     
-    def _query_llm_google( self, prompt, max_new_tokens=1024, temperature=0.25, stop_tokens=[ "</response>" ],
-                         top_k=10, top_p=0.9, stream=True, debug=None, verbose=None
-        ):
+    def _query_llm_google( self, prompt, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.25, stop_sequences=[ "</response>" ], stream=True, debug=None, verbose=None ):
+        
         if debug   is None: debug   = self.debug
         if verbose is None: verbose = self.verbose
         
@@ -143,21 +141,30 @@ class Llm:
         self._start_timer()
         genai.configure( api_key=du.get_api_key( "google" ) )
         
+        generation_config = {
+                  "temperature": temperature,
+                        "top_p": top_p,
+                        "top_k": top_k,
+            "max_output_tokens": max_new_tokens,
+               "stop_sequences": stop_sequences
+        }
         model    = genai.GenerativeModel( "models/" + self.model.split( "/" )[ 1 ] )
-        response = model.generate_content( prompt, stream=True )
+        response = model.generate_content( prompt, generation_config=generation_config, stream=stream )
         
         chunks = [ ]
         ellipsis_count = 0
         
+        # Chunks are not the same as tokens, specifically for Google models
         for chunk in response:
             chunks.append( chunk.text )
             ellipsis_count = self._do_conditional_print( chunk.text, ellipsis_count, debug=debug )
 
-        self._stop_timer( chunks=chunks)
+        self._stop_timer( chunks=chunks )
         
-        return "".join( chunks ).strip()
+        # According to the documentation, stop sequences will not be returned with the chunks, So append the most likely: response
+        return "".join( chunks ).strip() + "</response>"
     
-    def _query_llm_groq( self, preamble, query, max_new_tokens=1024, temperature=0.25, stop_tokens=[ "</response>" ], top_k=10, top_p=0.9, stream=True, debug=False, verbose=False ):
+    def _query_llm_groq( self, preamble, query, max_new_tokens=1024, temperature=0.25, stop_tokens=[ "</response>" ], top_k=10, top_p=0.9, debug=False, verbose=False ):
         
         client = Groq( api_key=du.get_api_key( "groq" ) )
         stream = client.chat.completions.create(
@@ -170,8 +177,10 @@ class Llm:
             temperature=temperature,
             max_tokens=max_new_tokens,
             top_p=top_p,
+            # Not used by groq: https://console.groq.com/docs/text-chat
+            # top_k=top_k,
             stop=stop_tokens,
-            stream=stream,
+            stream=True,
         )
         self._start_timer()
         chunks = [ ]
@@ -185,7 +194,7 @@ class Llm:
         
         return "".join( chunks ).strip()
     
-    def _query_llm_openai( self, preamble, query, debug=False, verbose=False ):
+    def _query_llm_openai( self, preamble, query, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.25, stop_sequences=[ "</response>" ], debug=False, verbose=False ):
         
         openai.api_key = du.get_api_key( "openai" )
         
@@ -198,11 +207,17 @@ class Llm:
                 { "role": "system", "content": preamble },
                 { "role": "user", "content": query }
             ],
-            temperature=0,
-            max_tokens=2000,
-            top_p=1.0,
+            max_tokens=max_new_tokens,
+            # It's recommended to use top P or temperature but not both... TODO: decide which one to use
+            # https://platform.openai.com/docs/api-reference/chat/create
+            temperature=temperature,
+            top_p=top_p,
+            # Not used by open AI?
+            # top_k=top_k,
+            # Zero is default value for frequency and presence penalties
             frequency_penalty=0.0,
             presence_penalty=0.0,
+            stop=stop_sequences,
             stream=True
         )
         chunks         = [ ]
@@ -218,7 +233,7 @@ class Llm:
         return response
     
     def _query_llm_phind(
-            self, prompt, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, debug=False, verbose=False
+            self, prompt, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.25, stop_sequences=[ "</response>" ], debug=False, verbose=False
     ):
         self._start_timer()
         
@@ -232,18 +247,9 @@ class Llm:
         
         for token in client.text_generation(
                 prompt, max_new_tokens=max_new_tokens, stream=True, temperature=temperature, top_k=top_k, top_p=top_p,
-                stop_sequences=[ "</response>" ]
+                stop_sequences=stop_sequences
         ):
             ellipsis_count = self._do_conditional_print( token, ellipsis_count, debug=debug )
-            # if self.debug:
-            #     print( token, end="" )
-            # else:
-            #     print( ".", end="" )
-            #     ellipsis_count += 1
-            #     if ellipsis_count == 120:
-            #         ellipsis_count = 0
-            #         print()
-            
             token_list.append( token )
         
         response = "".join( token_list ).strip()
