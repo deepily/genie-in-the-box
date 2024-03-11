@@ -1,5 +1,3 @@
-import os
-
 import openai
 
 from huggingface_hub            import InferenceClient
@@ -8,7 +6,8 @@ from groq                       import Groq
 
 import google.generativeai      as genai
 
-from lib.utils.util_stopwatch   import Stopwatch
+from lib.app.configuration_manager import ConfigurationManager
+from lib.utils.util_stopwatch      import Stopwatch
 
 import lib.utils.util as du
 
@@ -22,7 +21,7 @@ class Llm:
     GROQ_LLAMA2_70B   = "Groq/llama2-70b-4096"
     GOOGLE_GEMINI_PRO = "Google/gemini-1.0-pro-latest"
 
-    def __init__( self, model=PHIND_34B_v2, default_url=None, debug=False, verbose=False ):
+    def __init__( self, model=PHIND_34B_v2, config_mgr=None, default_url=None, debug=False, verbose=False ):
         
         self.timer          = None
         self.debug          = debug
@@ -30,6 +29,7 @@ class Llm:
         self.model          = model
         # Get the TGI server URL for this context
         self.tgi_server_url = du.get_tgi_server_url_for_this_context( default_url=default_url )
+        self.config_mgr     = config_mgr
 
     def _start_timer( self, msg="Asking LLM [{model}]..." ):
         
@@ -44,6 +44,19 @@ class Llm:
             chunks_per_second = len( chunks ) / ( self.timer.get_delta_ms() / 1000.0 )
             print( f"Chunks per second [{round( chunks_per_second, 1 )}]" )
         
+    def _do_conditional_print( self, chunk, ellipsis_count=0, debug=False ):
+        
+        if debug:
+            print( chunk, end="" )
+        else:
+            print( ".", end="" )
+            ellipsis_count += 1
+            if ellipsis_count == 120:
+                ellipsis_count = 0
+                print()
+                
+        return ellipsis_count
+    
     def query_llm( self, model=None, prompt=None, preamble=None, question=None, max_new_tokens=1024, temperature=0.5, top_k=100, top_p=0.25, debug=None, verbose=None ):
         
         if preamble is None and question is None and prompt is None:
@@ -63,6 +76,9 @@ class Llm:
         
         elif self.model == Llm.GOOGLE_GEMINI_PRO:
             
+            # Quick sanity check
+            if prompt is None: raise ValueError( "ERROR: Prompt is `None`!" )
+        
             return self._query_llm_google(
                 prompt, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, debug=debug, verbose=verbose
             )
@@ -100,7 +116,6 @@ class Llm:
                 question = question.replace( "### Assistant", "" )
                 question = question.replace( "### Response:", "" )
                 
-                
                 if debug:
                     print( f"Preamble: [{preamble}]" )
                     print( f"Question: [{question}]" )
@@ -132,12 +147,11 @@ class Llm:
         response = model.generate_content( prompt, stream=True )
         
         chunks = [ ]
+        ellipsis_count = 0
+        
         for chunk in response:
-            if debug:
-                print( chunk )
-            else:
-                print( ".", end="" )
             chunks.append( chunk.text )
+            ellipsis_count = self._do_conditional_print( chunk.text, ellipsis_count, debug=debug )
 
         self._stop_timer( chunks=chunks)
         
@@ -145,9 +159,7 @@ class Llm:
     
     def _query_llm_groq( self, preamble, query, max_new_tokens=1024, temperature=0.25, stop_tokens=[ "</response>" ], top_k=10, top_p=0.9, stream=True, debug=False, verbose=False ):
         
-        client = Groq(
-            api_key=du.get_api_key( "groq" )
-        )
+        client = Groq( api_key=du.get_api_key( "groq" ) )
         stream = client.chat.completions.create(
             messages=[
                 { "role"   : "system", "content": preamble },
@@ -161,27 +173,25 @@ class Llm:
             stop=stop_tokens,
             stream=stream,
         )
-        timer = Stopwatch( msg=f"Asking Groq [{self.model}]..." )
+        self._start_timer()
         chunks = [ ]
+        ellipsis_count = 0
         for chunk in stream:
             
-            chunks.append( str( chunk ) )
-            print( chunk.choices[ 0 ].delta.content, end="" )
+            chunks.append( chunk.choices[ 0 ].delta.content )
+            ellipsis_count = self._do_conditional_print( chunk.choices[ 0 ].delta.content, ellipsis_count, debug=debug )
             
-        timer.print( "Done!", use_millis=True )
-        
-        chunks_per_second = len( chunks ) / ( timer.get_delta_ms() / 1000.0 )
-        print( f"Chunks per second [{round( chunks_per_second, 1 )}]" )
+        self._stop_timer( chunks=chunks )
         
         return "".join( chunks ).strip()
     
     def _query_llm_openai( self, preamble, query, debug=False, verbose=False ):
         
-        openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
+        openai.api_key = du.get_api_key( "openai" )
         
-        timer = Stopwatch( msg=f"Asking OpenAI [{self.model}]...".format( self.model ) )
+        self._start_timer()
         
-        response = openai.chat.completions.create(
+        stream = openai.chat.completions.create(
             # Model names are stored in the format "OpenAI/{model_name} in the config_mgr file
             model=self.model.split( "/" )[ 1 ],
             messages=[
@@ -192,22 +202,28 @@ class Llm:
             max_tokens=2000,
             top_p=1.0,
             frequency_penalty=0.0,
-            presence_penalty=0.0
+            presence_penalty=0.0,
+            stream=True
         )
+        chunks         = [ ]
+        ellipsis_count = 0
+        for chunk in stream:
+            if chunk.choices[ 0 ].delta.content is not None:
+                chunks.append( chunk.choices[ 0 ].delta.content )
+                ellipsis_count = self._do_conditional_print( chunk.choices[ 0 ].delta.content, ellipsis_count, debug=debug )
+                
+        self._stop_timer( chunks=chunks )
+        response = "".join( chunks ).strip()
         
-        timer.print( "Done!", use_millis=True )
-        if debug and self.verbose:
-            print( response )
-        
-        return response.choices[ 0 ].message.content.strip()
+        return response
     
     def _query_llm_phind(
             self, prompt, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, debug=False, verbose=False
     ):
-        timer = Stopwatch( msg=f"Asking LLM [{self.model}]...".format( self.model ) )
+        self._start_timer()
         
         client = InferenceClient( self.tgi_server_url )
-        token_list = [ ]
+        token_list     = [ ]
         ellipsis_count = 0
         
         if self.debug:
@@ -218,22 +234,21 @@ class Llm:
                 prompt, max_new_tokens=max_new_tokens, stream=True, temperature=temperature, top_k=top_k, top_p=top_p,
                 stop_sequences=[ "</response>" ]
         ):
-            if self.debug:
-                print( token, end="" )
-            else:
-                print( ".", end="" )
-                ellipsis_count += 1
-                if ellipsis_count == 120:
-                    ellipsis_count = 0
-                    print()
+            ellipsis_count = self._do_conditional_print( token, ellipsis_count, debug=debug )
+            # if self.debug:
+            #     print( token, end="" )
+            # else:
+            #     print( ".", end="" )
+            #     ellipsis_count += 1
+            #     if ellipsis_count == 120:
+            #         ellipsis_count = 0
+            #         print()
             
             token_list.append( token )
         
         response = "".join( token_list ).strip()
         
-        timer.print( msg="Done!", use_millis=True, prepend_nl=True, end="\n" )
-        tokens_per_second = len( token_list ) / ( timer.get_delta_ms() / 1000.0 )
-        print( f"Tokens per second [{round( tokens_per_second, 1 )}]" )
+        self._stop_timer( chunks=token_list )
         
         if self.debug:
             print( f"Token list length [{len( token_list )}]" )
