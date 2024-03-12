@@ -65,7 +65,7 @@ class IterativeDebuggingAgent( AgentBase ):
             top_p          = llm[ "top_p"          ] if "top_p"          in llm else 0.25
             top_k          = llm[ "top_k"          ] if "top_k"          in llm else 10
             max_new_tokens = llm[ "max_new_tokens" ] if "max_new_tokens" in llm else 1024
-            stop_sequences = llm[ "stop_sequences" ] if "stop_sequences"  in llm else []
+            stop_sequences = llm[ "stop_sequences" ] if "stop_sequences" in llm else []
             
             du.print_banner( f"{run_descriptor}: Executing debugging prompt using model [{model_name}] and short name [{short_name}]...", end="\n" )
             
@@ -76,7 +76,7 @@ class IterativeDebuggingAgent( AgentBase ):
             if self.is_code_runnable():
                 
                 code_response_dict         = self.run_code()
-                self.successfully_debugged = self.ran_to_completion()
+                self.successfully_debugged = self.code_ran_to_completion()
                 
                 # Only update the code if it was successfully debugged and run to completion
                 if self.successfully_debugged:

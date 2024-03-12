@@ -160,7 +160,7 @@ class AgentBase( RunnableCode, abc.ABC ):
             
         code_response_dict = super().run_code( path_to_df=path_to_df, inject_bugs=inject_bugs )
         
-        if self.ran_to_completion():
+        if self.code_ran_to_completion():
             
             self.error = None
             return self.code_response_dict
@@ -199,3 +199,8 @@ class AgentBase( RunnableCode, abc.ABC ):
         self.answer_conversational = formatter.format_output()
         
         return self.answer_conversational
+    
+    # Create a message to check and see if the formatting ran to completion
+    def formatter_ran_to_completion( self ):
+        
+        return self.answer_conversational is not None

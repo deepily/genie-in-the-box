@@ -263,7 +263,7 @@ class IncrementalCalendaringAgent( XXX_DataQueryingAgent ):
         print( f"Executing super().run_code() with inject_bugs [{inject_bugs}] and auto_debug [{auto_debug}]...")
         path_to_df = self.config_mgr.get( "path_to_events_df_wo_root" )
         code_response_dict = super().run_code( path_to_df=path_to_df, inject_bugs=inject_bugs )
-        if self.ran_to_completion():
+        if self.code_ran_to_completion():
             
             self.error  = None
             return self.code_response_dict

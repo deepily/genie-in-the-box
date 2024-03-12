@@ -186,9 +186,10 @@ class SolutionSnapshot( RunnableCode ):
     
     def add_synonymous_question( self, question, score=100.0 ):
         
-        question = SolutionSnapshot.clean_question( question )
-        
+        # Add last question in unmodified for him before cleaning it
         self.last_question_asked = question
+        
+        question = SolutionSnapshot.clean_question( question )
         
         if question not in self.synonymous_questions:
             self.synonymous_questions[ question ] = score
@@ -353,6 +354,10 @@ class SolutionSnapshot( RunnableCode ):
         if self.debug and self.verbose: print( f"POST self.answer_conversational: [{self.answer_conversational}]" )
         
         return self.answer_conversational
+    
+    def formatter_ran_to_completion( self ):
+        
+        return self.answer_conversational is not None
     
 # Add main method
 if __name__ == "__main__":

@@ -57,17 +57,26 @@ class RunningFifoQueue( FifoQueue ):
                     running_job = self._handle_base_agent( running_job, truncated_question, run_timer )
                 else:
                     running_job = self._handle_solution_snapshot( running_job, truncated_question, run_timer )
-                    running_job.debug = True
-                    
-                self.pop()
-                self.socketio.emit( 'run_update', { 'value': self.size() } )
-                self.jobs_done_queue.push( running_job )
-                self.socketio.emit( 'done_update', { 'value': self.jobs_done_queue.size() } )
-                
-                url = self._get_audio_url( running_job.answer_conversational )
-                
-                print( f"Emitting DONE url [{url}]...", end="\n\n" )
-                self.socketio.emit( 'audio_update', { 'audioURL': url } )
+                    #
+                    # du.print_banner( "Job completion flags:", prepend_nl=True )
+                    # print( f"     code_ran_to_completion: {running_job.code_ran_to_completion()}" )
+                    # print( f"formatter_ran_to_completion: {running_job.formatter_ran_to_completion()}" )
+                    #
+                    # if running_job.code_ran_to_completion() and running_job.formatter_ran_to_completion():
+                    #
+                    #     self.pop()
+                    #     self.socketio.emit( 'run_update', { 'value': self.size() } )
+                    #     self.jobs_done_queue.push( running_job )
+                    #     self.socketio.emit( 'done_update', { 'value': self.jobs_done_queue.size() } )
+                    #
+                    #     url = self._get_audio_url( running_job.answer_conversational )
+                    #
+                    #     print( f"Emitting DONE url [{url}]...", end="\n\n" )
+                    #     self.socketio.emit( 'audio_update', { 'audioURL': url } )
+                    #
+                    # else:
+                    #
+                    #     print( f"Job [{truncated_question}] code or formatter did not run to completion, adding to dead queue?" )
             
             else:
                 # print( "No jobs to pop from todo Q " )
@@ -80,12 +89,12 @@ class RunningFifoQueue( FifoQueue ):
         for line in response[ "output" ].split( "\n" ): print( line )
         
         self.pop()
-        self.socketio.emit( 'run_update', { 'value': self.size() } )
         
         url = self._get_audio_url( "I'm sorry Dave, I'm afraid I can't do that. Please check your logs" )
         self.socketio.emit( 'audio_update', { 'audioURL': url } )
         self.jobs_dead_queue.push( running_job )
         self.socketio.emit( 'dead_update', { 'value': self.jobs_dead_queue.size() } )
+        self.socketio.emit( 'run_update', { 'value': self.jobs_running.size() } )
         
         return running_job
     
@@ -98,13 +107,14 @@ class RunningFifoQueue( FifoQueue ):
             "output"     : "ERROR: Output not yet generated!?!"
         }
         
-        # agent_timer = sw.Stopwatch( msg=msg )
+        formatted_output = "ERROR: Output not yet generated!?!"
         try:
             response_dict    = running_job.run_prompt()
             code_response    = running_job.run_code( auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
             formatted_output = running_job.format_output()
-            
-            running_job.answer_conversational = formatted_output
+        
+            # This shouldn't be necessary is running format output assigns this value inside the object...
+            # running_job.answer_conversational = formatted_output
         
         except Exception as e:
             
@@ -115,11 +125,19 @@ class RunningFifoQueue( FifoQueue ):
         
         du.print_banner( f"Job [{running_job.question}] complete...", prepend_nl=True, end="\n" )
         
-        if code_response[ "return_code" ] == 0:
+        if running_job.code_ran_to_completion() and running_job.formatter_ran_to_completion():
             
             # If we've arrived at this point, then we've successfully run the agentic part of this job
+            url = self._get_audio_url( running_job.answer_conversational )
+            
+            print( f"Emitting DONE url [{url}]...", end="\n\n" )
+            self.socketio.emit( 'audio_update', { 'audioURL': url } )
+            
             # recast the agent object as a solution snapshot object and add it to the snapshot manager
             running_job = SolutionSnapshot.create( running_job )
+            # KLUDGE! I shouldn't have to do this!
+            print( f"KLUDGE! Setting running_job.answer_conversational to [{formatted_output}]...")
+            running_job.answer_conversational = formatted_output
             
             agent_timer.print( "Done!", use_millis=True )
             running_job.update_runtime_stats( agent_timer )
@@ -131,6 +149,11 @@ class RunningFifoQueue( FifoQueue ):
             
             du.print_banner( "running_job.runtime_stats", prepend_nl=True )
             pprint.pprint( running_job.runtime_stats )
+            
+            self.pop()
+            self.socketio.emit( 'run_update', { 'value': self.size() } )
+            self.jobs_done_queue.push( running_job )
+            self.socketio.emit( 'done_update', { 'value': self.jobs_done_queue.size() } )
         
         else:
             
@@ -149,8 +172,16 @@ class RunningFifoQueue( FifoQueue ):
         # timer = sw.Stopwatch( msg )
         formatted_output = running_job.format_output()
         print( formatted_output )
-        # timer.print( "Done!", use_millis=True )
+        url = self._get_audio_url( running_job.answer_conversational )
+        print( f"Emitting DONE url [{url}]...", end="\n\n" )
+        self.socketio.emit( 'audio_update', { 'audioURL': url } )
         
+        # timer.print( "Done!", use_millis=True )
+        self.pop()
+        self.jobs_done_queue.push( running_job )
+        self.socketio.emit( 'run_update', { 'value': self.size() } )
+        self.socketio.emit( 'done_update', { 'value': self.jobs_done_queue.size() } )
+
         # If we've arrived at this point, then we've successfully run the job
         run_timer.print( "Solution snapshot full run complete ", use_millis=True )
         running_job.update_runtime_stats( run_timer )

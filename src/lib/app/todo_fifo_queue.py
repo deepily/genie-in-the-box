@@ -72,9 +72,9 @@ class TodoFifoQueue( FifoQueue ):
             job.verbose = self.verbose
             job.add_synonymous_question( question, best_score )
             
-            job.run_date = du.get_current_datetime()
+            job.run_date     = du.get_current_datetime()
             job.push_counter = self.push_counter
-            job.id_hash = SolutionSnapshot.generate_id_hash( job.push_counter, job.run_date )
+            job.id_hash      = SolutionSnapshot.generate_id_hash( job.push_counter, job.run_date )
             
             print()
             

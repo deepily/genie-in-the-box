@@ -127,7 +127,7 @@ class SolutionSnapshotManager:
                 similar_snapshots.append( ( similarity_score, snapshot ) )
                 if self.debug and self.verbose: print( f"Score [{similarity_score:.1f}]% for question [{snapshot.question}] IS similar enough to [{question}]" )
             else:
-                if self.debug and self.verbose: print( f"Score [{similarity_score:.1f}]% for question [{snapshot.question}] is NOT similar enough to [{question}]" )
+                if self.debug: print( f"Score [{similarity_score:.1f}]% for question [{snapshot.question}] is NOT similar enough to [{question}]" )
         
         # Sort by similarity score, descending
         similar_snapshots.sort( key=lambda x: x[ 0 ], reverse=True )

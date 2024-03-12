@@ -400,6 +400,8 @@ class MultiModalMunger:
         print( "TODO: Implement munge_vox_cmd_agent()... For now this is just a simple passthrough..." )
         
         transcription = self._remove_dashed_spellings( raw_transcription )
+        # Add hawk clean up for forcing underscores when giving explicit field name commands to the agent
+        transcription = transcription.replace( " underscore ", "_" )
         
         return transcription, mode
     

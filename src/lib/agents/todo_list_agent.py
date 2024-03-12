@@ -11,7 +11,7 @@ class TodoListAgent( AgentBase ):
         super().__init__( df_path_key="path_to_todolist_df_wo_root", question=question, routing_command="agent router go to todo list", push_counter=push_counter, debug=debug, verbose=verbose, auto_debug=auto_debug, inject_bugs=inject_bugs )
         
         self.prompt = self._get_prompt()
-        self.xml_response_tag_names   = [ "question", "thoughts", "code", "example", "returns", "explanation" ]
+        self.xml_response_tag_names   = [ "thoughts", "code", "example", "returns", "explanation" ]
         self.serialize_prompt_to_json = self.config_mgr.get( "agent_todo_list_serialize_prompt_to_json", default=False, return_type="boolean" )
         self.serialize_code_to_json   = self.config_mgr.get( "agent_todo_list_serialize_code_to_json",   default=False, return_type="boolean" )
     
@@ -23,13 +23,16 @@ class TodoListAgent( AgentBase ):
     
     def _get_df_metadata( self ):
         
-        head = self.df.head( 2 ).to_xml( index=False )
-        head = head.replace( "<?xml version='1.0' encoding='utf-8'?>", "" )
-        head = head.replace( "data>", "todo>" )
+        # head = self.df.head( 2 ).to_xml( index=False )
+        # head = head.replace( "<?xml version='1.0' encoding='utf-8'?>", "" )
+        # head = head.replace( "data>", "todo>" )
+        #
+        # head = head + self.df.tail( 2 ).to_xml( index=False )
+        # head = head.replace( "<?xml version='1.0' encoding='utf-8'?>", "" )
+        # head = head.replace( "data>", "todo>" )
         
-        head = head + self.df.tail( 2 ).to_xml( index=False )
-        head = head.replace( "<?xml version='1.0' encoding='utf-8'?>", "" )
-        head = head.replace( "data>", "todo>" )
+        head = self.df.head( 2 ).to_csv( index=False )
+        head = head + self.df.tail( 2 ).to_csv( index=False )
         
         column_names = self.df.columns.tolist()
         list_names   = self.df.list_name.unique().tolist()

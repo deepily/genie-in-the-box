@@ -46,9 +46,10 @@ class RunnableCode:
                 
         return self.code_response_dict
     
-    def ran_to_completion( self ):
+    def code_ran_to_completion( self ):
         
         return self.code_response_dict is not None and self.code_response_dict.get( "return_code", -1 ) == 0
+    
     
     def get_code_and_metadata( self ):
         
