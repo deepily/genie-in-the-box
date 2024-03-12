@@ -1,3 +1,5 @@
+import re
+
 from flask import url_for
 
 from lib.app.fifo_queue                        import FifoQueue
@@ -34,19 +36,77 @@ class TodoFifoQueue( FifoQueue ):
         self.cmd_llm_in_memory = None
         self.cmd_llm_tokenizer = None
         
+        # Salutations to be stripped by a brute force method until the router purchase them off for us
+        self.salutations = [ "computer", "assistant", "buddy", "pal", "ai", "jarvis", "alexa", "siri", "hal", "einstein",
+            "jeeves", "alfred", "watson", "giles", "samwise", "sam", "friday", "wilson", "hawkeye", "oye", "hey", "you", "yo",
+            "hi", "hello", "hola", "good", "morning", "afternoon", "evening", "night", "buenas", "buenos", "buen", "tardes",
+            "noches", "dias", "día", "tarde", "mañana"
+        ]
+        
     def set_llm( self, cmd_llm_in_memory, cmd_llm_tokenizer ):
         
         self.cmd_llm_in_memory = cmd_llm_in_memory
         self.cmd_llm_tokenizer = cmd_llm_tokenizer
+    
+    def parse_salutations( self, transcription ):
         
+        # from lib.utils.util_stopwatch import Stopwatch
+        # timer = Stopwatch( "parse_salutations()" )
+        
+        # Normalize the transcription by removing extra spaces after punctuation
+        transcription_lower = re.sub( r'([,\.!?:;])\s*', r'\1', transcription.lower() )
+        stripped_prefixes   = [ ]
+        
+        # Flag to determine if at least one prefix was stripped in the last iteration
+        prefix_stripped = True
+        
+        while prefix_stripped:
+            
+            prefix_stripped = False
+            
+            for prefix in self.salutations:
+                
+                # Check if the transcription starts with the current prefix followed by a space or comma
+                if any( transcription_lower.startswith( prefix + punctuation ) for punctuation in [ " ", ",", ".", ":", ";", "!" ] ):
+                    
+                    # Add the prefix to the list of stripped-off prefixes
+                    stripped_prefixes.append( prefix )
+                    
+                    # Remove the prefix from the transcription
+                    prefix_length = len( prefix ) + 1  # Adding 1 to account for the space/comma
+                    
+                    transcription_lower = transcription_lower[ prefix_length: ]
+                    
+                    prefix_stripped = True
+                    break  # Restart checking from the first prefix after removing one
+            
+            # Return the list of stripped-off prefixes and the modified transcription, restoring the case for the remaining text
+        remaining_text = transcription[ len( transcription ) - len( transcription_lower ): ].strip()
+        
+        # Capitalize the first letter of the remaining text
+        remaining_text = remaining_text[ 0 ].upper() + remaining_text[ 1: ]
+        
+        # Capitalize the first letter of the stripped prefixes
+        if len( stripped_prefixes ) > 0:
+            stripped_prefixes = ' '.join( stripped_prefixes )
+            stripped_prefixes = stripped_prefixes[ 0 ].upper() + stripped_prefixes[ 1: ]
+            stripped_prefixes = stripped_prefixes.strip()
+        else:
+            stripped_prefixes = None
+        
+        # timer.print( "Done!", use_millis=True)
+        return stripped_prefixes, remaining_text
     
     def push_job( self, question ):
         
         self.push_counter += 1
+        salutations, question = self.parse_salutations( question )
         
-        du.print_banner( f"push_job( '{question}' )", prepend_nl=True )
+        du.print_banner( f"push_job( '{salutations}: {question}' )", prepend_nl=True )
         threshold = self.config_mgr.get( "snapshot_similiarity_threshold", default=90.0, return_type="float" )
         print( f"push_job(): Using snapshot similarity threshold of [{threshold}]" )
+        
+        # We're searching for similar snapshots without any salutations pretended to the question.
         similar_snapshots = self.snapshot_mgr.get_snapshots_by_question( question, threshold=threshold )
         print()
         
@@ -54,7 +114,7 @@ class TodoFifoQueue( FifoQueue ):
         if len( similar_snapshots ) > 0:
             
             best_snapshot = similar_snapshots[ 0 ][ 1 ]
-            best_score = similar_snapshots[ 0 ][ 0 ]
+            best_score    = similar_snapshots[ 0 ][ 0 ]
             
             lines_of_code = best_snapshot.code
             if len( lines_of_code ) > 0:
@@ -70,7 +130,7 @@ class TodoFifoQueue( FifoQueue ):
             print( "Python object ID for copied job: " + str( id( job ) ) )
             job.debug   = self.debug
             job.verbose = self.verbose
-            job.add_synonymous_question( question, best_score )
+            job.add_synonymous_question( question, salutation=salutations, score=best_score )
             
             job.run_date     = du.get_current_datetime()
             job.push_counter = self.push_counter
@@ -142,3 +202,12 @@ class TodoFifoQueue( FifoQueue ):
         args    = dux.get_value_by_xml_tag_name( response, "args" )
         
         return command, args
+    
+# Add me
+if __name__ == "__main__":
+    
+    queue = TodoFifoQueue( None, None, None )
+    salutions, question = queue.parse_salutations( "Yo! Einstein: what's the weather like today?" )
+    # salutions, question = queue.parse_salutations( "What's the weather like today?" )
+    print( salutions )
+    print( question )

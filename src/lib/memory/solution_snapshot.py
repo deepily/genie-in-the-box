@@ -184,10 +184,14 @@ class SolutionSnapshot( RunnableCode ):
                # solution_directory=calendaring_agent.solution_directory
         )
     
-    def add_synonymous_question( self, question, score=100.0 ):
+    def add_synonymous_question( self, question, salutation=None, score=100.0 ):
         
-        # Add last question in unmodified for him before cleaning it
-        self.last_question_asked = question
+        # We're doing a mechanical peel off of the salutation before it even gets here, and adding it back in for conversationality sake here
+        # Also: Add last question in unmodified form before cleaning it
+        if salutation is not None:
+            self.last_question_asked = salutation + " " + question
+        else:
+            self.last_question_asked = question
         
         question = SolutionSnapshot.clean_question( question )
         
