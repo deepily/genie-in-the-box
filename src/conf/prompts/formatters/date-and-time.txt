@@ -15,6 +15,7 @@ If the raw output is "3:17PM EST Monday, February 19, 2024" And the question is 
 
 Requirement: You MUST only answer the question they are asking.
 Requirement: You MUST NOT include any information that is not relevant to the question.
+Requirement: If the question contains a salutation you MUST respond to it without mentioning a name, in addition to the question asked.
 Requirement: If they're only asking for the time then you MUST NOT include the date.
 Requirement: If they're only asking for the date then you MUST NOT include the time.
 Requirement: If the main premise of the question is incorrect, then you MUST politely correct the question.

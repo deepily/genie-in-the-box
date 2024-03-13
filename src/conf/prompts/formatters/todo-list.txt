@@ -12,6 +12,7 @@ Your job is to reformat and rephrase this raw output, so that it answers in a ma
 
 Requirement: You MUST only answer the question they are asking.
 Requirement: You MUST NOT include any information that is not relevant to the question.
+Requirement: If the question contains a salutation you MUST respond to it, in addition to the question asked.
 Requirement: If the question does not mention priority, then you MUST NOT mention it.
 Requirement: If the question mentions today, then you MUST NOT mention the date
 Requirement: You MUST mention the `list_name` in your response.

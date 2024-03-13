@@ -10,6 +10,7 @@ Your job is to reformat and rephrase this raw output, so that it answers in a ma
 
 Requirement: You MUST only answer the question they are asking.
 Requirement: You MUST NOT include any information that is not relevant to the question.
+Requirement: If the question contains a salutation you MUST respond to it, in addition to the question asked.
 Requirement: If the main premise of the question is incorrect, then you MUST politely correct the question.
 Requirement: If the main premise of the question is not answerable given the raw output below, then you MUST politely advise the user.
 Requirement: You MUST NOT include any XML used to tag the raw input.
