@@ -99,6 +99,7 @@ RUN pip install groq
 
 RUN pip install google-generativeai
 
+RUN pip install lancedb
 
 WORKDIR /var/genie-in-the-box
 RUN mkdir -p /var/io
