@@ -36,11 +36,11 @@ class TodoFifoQueue( FifoQueue ):
         self.cmd_llm_in_memory = None
         self.cmd_llm_tokenizer = None
         
-        # Salutations to be stripped by a brute force method until the router purchase them off for us
-        self.salutations = [ "computer", "assistant", "buddy", "pal", "ai", "jarvis", "alexa", "siri", "hal", "einstein",
-            "jeeves", "alfred", "watson", "giles", "samwise", "sam", "friday", "wilson", "hawkeye", "oye", "hey", "you", "yo",
+        # Salutations to be stripped by a brute force method until the router parses them off for us
+        self.salutations = [ "computer", "little" "buddy", "pal", "ai", "jarvis", "alexa", "siri", "hal", "einstein",
+            "jeeves", "alfred", "watson", "samwise", "sam", "hawkeye", "oye", "hey", "there", "you", "yo",
             "hi", "hello", "hola", "good", "morning", "afternoon", "evening", "night", "buenas", "buenos", "buen", "tardes",
-            "noches", "dias", "día", "tarde", "mañana"
+            "noches", "dias", "día", "tarde"
         ]
         
     def set_llm( self, cmd_llm_in_memory, cmd_llm_tokenizer ):
@@ -54,6 +54,7 @@ class TodoFifoQueue( FifoQueue ):
         # timer = Stopwatch( "parse_salutations()" )
         
         # Normalize the transcription by removing extra spaces after punctuation
+        # From: https://chat.openai.com/share/5783e1d5-c9ce-4503-9338-270a4c9095b2
         transcription_lower = re.sub( r'([,\.!?:;])\s*', r'\1', transcription.lower() )
         stripped_prefixes   = [ ]
         
@@ -66,7 +67,7 @@ class TodoFifoQueue( FifoQueue ):
             
             for prefix in self.salutations:
                 
-                # Check if the transcription starts with the current prefix followed by a space or comma
+                # Check if the transcription starts with the current prefix followed by some kind of punctuation mark
                 if any( transcription_lower.startswith( prefix + punctuation ) for punctuation in [ " ", ",", ".", ":", ";", "!" ] ):
                     
                     # Add the prefix to the list of stripped-off prefixes
