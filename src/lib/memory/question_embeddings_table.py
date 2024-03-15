@@ -7,20 +7,20 @@ class QuestionEmbeddingsTable():
     
     def __init__( self, *args, **kwargs ):
         
-        self.config_mgr = ConfigurationManager( env_var_name="GIB_CONFIG_MGR_CLI_ARGS" )
+        self._config_mgr = ConfigurationManager( env_var_name="GIB_CONFIG_MGR_CLI_ARGS" )
         
-        uri = du.get_project_root() + self.config_mgr.get( "database_path_wo_root" )
+        uri = du.get_project_root() + self._config_mgr.get( "database_path_wo_root" )
         
         db = lancedb.connect( uri )
         
-        self.question_embeddings_tbl = db.open_table( "question_embeddings" )
+        self._question_embeddings_tbl = db.open_table( "question_embeddings" )
         
-        print( f"Opened question_embeddings_tbl w/ [{self.question_embeddings_tbl.count_rows()}] rows" )
+        print( f"Opened question_embeddings_tbl w/ [{self._question_embeddings_tbl.count_rows()}] rows" )
         
     def is_in( self, question ):
         
         timer = Stopwatch( msg=f"is_in( '{question}' )" )
-        synonyms = self.question_embeddings_tbl.search().where( f"question = '{question}'" ).limit( 1 ).select( [ "question" ] ).to_list()
+        synonyms = self._question_embeddings_tbl.search().where( f"question = '{question}'" ).limit( 1 ).select( [ "question" ] ).to_list()
         timer.print( "Done!", use_millis=True )
         
         return len( synonyms ) > 0
@@ -28,7 +28,7 @@ class QuestionEmbeddingsTable():
     def get_embedding( self, question ):
         
         timer = Stopwatch( msg=f"get_embedding( '{question}' )" )
-        synonyms = self.question_embeddings_tbl.search().where( f"question = '{question}'" ).limit( 1 ).select( [ "embedding" ] ).to_list()
+        synonyms = self._question_embeddings_tbl.search().where( f"question = '{question}'" ).limit( 1 ).select( [ "embedding" ] ).to_list()
         timer.print( "Done!", use_millis=True )
         
         if not synonyms:
@@ -39,7 +39,7 @@ class QuestionEmbeddingsTable():
     def add_embedding( self, question, embedding ):
         
         new_row = [ { "question": question, "embedding": embedding } ]
-        self.question_embeddings_tbl.add( new_row )
+        self._question_embeddings_tbl.add( new_row )
     # def _init_db( self ):
     #
     #     # question_embeddings_dict = QuestionEmbeddingsDict()
