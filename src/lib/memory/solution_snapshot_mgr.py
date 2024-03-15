@@ -2,7 +2,8 @@ import os
 
 import lib.utils.util as du
 from lib.memory import solution_snapshot as ss
-from lib.memory.question_embeddings_dict import QuestionEmbeddingsDict
+# from lib.memory.question_embeddings_dict import QuestionEmbeddingsDict
+from lib.memory.question_embeddings_table import QuestionEmbeddingsTable
 
 
 class SolutionSnapshotManager:
@@ -14,7 +15,7 @@ class SolutionSnapshotManager:
        
         self.snapshots_by_question             = None
         self.snapshots_by_synomymous_questions = None
-        self.embeddings_by_question            = None
+        self.question_embeddings_tbl           = None
         
         self.load_snapshots()
         
@@ -22,7 +23,7 @@ class SolutionSnapshotManager:
         
         self.snapshots_by_question             = self.load_snapshots_by_question()
         self.snapshots_by_synomymous_questions = self.get_snapshots_by_synomymous_questions( self.snapshots_by_question )
-        self.embeddings_by_question            = QuestionEmbeddingsDict()
+        self.question_embeddings_tbl           = QuestionEmbeddingsTable()
         
         if self.debug:
             print( self )
@@ -64,15 +65,16 @@ class SolutionSnapshotManager:
         self.snapshots_by_question[ snapshot.question ] = snapshot
         snapshot.write_current_state_to_file()
     
+    # ¡OJO! Doesn't appear to be called by anything
     # get the questions embedding if it exists otherwise generate it and add it to the dictionary
-    def get_question_embedding( self, question ):
-        
-        if question in self.embeddings_by_question:
-            return self.embeddings_by_question[ question ]
-        else:
-            question_embedding = ss.SolutionSnapshot.generate_embedding( question )
-    
-        return question_embedding
+    # def get_question_embedding( self, question ):
+    #
+    #     if self.question_embeddings_tbl.is_in( question ):
+    #         return self.question_embeddings_tbl[ question ]
+    #     else:
+    #         question_embedding = ss.SolutionSnapshot.generate_embedding( question )
+    #
+    #     return question_embedding
     
     def question_exists( self, question ):
         
@@ -102,12 +104,12 @@ class SolutionSnapshotManager:
         
         print( f"get_snapshots_by_question_similarity( '{question}' )..." )
         # Generate the embedding for the question, if it doesn't already exist
-        if question not in self.embeddings_by_question:
+        if not self.question_embeddings_tbl.is_in( question ):
             question_embedding = ss.SolutionSnapshot.generate_embedding( question )
-            self.embeddings_by_question[ question ] = question_embedding
+            self.question_embeddings_tbl.add_embedding( question, question_embedding )
         else:
             print( f"Embedding for question [{question}] already exists!" )
-            question_embedding = self.embeddings_by_question[ question ]
+            question_embedding = self.question_embeddings_tbl.get_embedding( question )
             
         question_snapshot  = ss.SolutionSnapshot( question=question, question_embedding=question_embedding )
         similar_snapshots  = [ ]
