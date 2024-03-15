@@ -702,14 +702,14 @@ class MultiModalMunger:
     #
     #     return probabilities
     
-    
     def extract_args( self, raw_text, model="NO_MODEL_SPECIFIED" ):
         
-        openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
+        openai.api_key = du.get_api_key( "openai" )
+        # openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
         
         if self.debug:
             print( " raw_text [{}]".format( raw_text ) )
-            print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
+            # print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
         
         timer = sw.Stopwatch()
         print( "Calling [{}]...".format( model ), end="" )

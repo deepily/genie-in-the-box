@@ -243,8 +243,9 @@ class GenieClient:
         
     def ask_chat_gpt_using_raw_prompt_and_content( self, prompt_and_content, model=GPT_4 ):
         
-        openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
-        print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
+        openai.api_key = du.get_api_key( "openai")
+        # openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
+        # print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
         
         print( "prompt_and_content [{}]".format( prompt_and_content ) )
         prompt  = prompt_and_content.split( "```" )[ 0 ].strip()
@@ -278,13 +279,15 @@ class GenieClient:
     
     def run_fine_tuning( self, prompt_and_content ):
         
-        openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
+        openai.api_key = du.get_api_key( "openai" )
+        # openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
         # TODO: Sketch out fine tuning parameters in notebook and add here
         
     def ask_chat_gpt_text( self, query, preamble="What does this mean: ", model=GPT_4 ):
 
-        openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
-        if self.debug: print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
+        openai.api_key = du.get_api_key( "openai" )
+        # openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
+        # if self.debug: print( "Using FALSE_POSITIVE_API_KEY [{}]".format( os.getenv( "FALSE_POSITIVE_API_KEY" ) ) )
     
         timer = sw.Stopwatch()
         print( "Asking ChatGPT [{}]...".format( model ), end="" )
@@ -306,8 +309,9 @@ class GenieClient:
         return response.choices[ 0 ].message.content.strip()
 
     def ask_chat_gpt_code( self, query, preamble="Fix this source code", model=GPT_4 ):
-    
-        openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
+        
+        openai.api_key = du.get_api_key( "openai" )
+        # openai.api_key = os.getenv( "FALSE_POSITIVE_API_KEY" )
     
         response = openai.completions.create(
             model=model,
