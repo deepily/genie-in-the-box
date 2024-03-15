@@ -1,8 +1,8 @@
 todo_item,due_date,priority,completed,list_name
-carrots,2024-04-09,high,no,trader joe's
-carrots,2024-04-09,high,no,trader joe's
+fruit,2024-04-09,high,no,trader joe's
+cheese,2024-04-09,high,no,trader joe's
 fruit,2024-04-15,high,no,trader joe's
-fruit,2024-03-04,normal,no,trader joe's
+nuts,2024-03-04,normal,no,trader joe's
 bread,2024-03-07,normal,no,trader joe's
 buy decorations,2024-03-29,low,no,birthday party
 create playlist,2024-04-24,low,no,birthday party

@@ -1,201 +1,201 @@
-start_date,end_date,start_time,end_time,event_type,recurrent,recurrence_interval,priority_level,name,relationship,description_who_what_where
-2024-02-01,2024-02-04,00:00,23:59,concert,False,,none,Jenny,coworker,Concert of Jenny at the city center
-2024-02-01,2024-02-01,05:25,17:22,todo,False,,highest,Gregorio,friend,Send out invitations for the party for Gregorio
-2024-02-01,2024-02-01,13:27,01:59,appointment,False,,high,Leroy Ruiz,father,Appointment with Leroy Ruiz at the clinic
-2024-02-02,2024-02-03,13:18,02:40,interview,False,,highest,John,coworker,Job interview with John at Google
-2024-02-03,2024-02-04,00:00,23:59,performance,False,,medium,Sue,sister,Theatre performance with Sue
-2024-02-03,2024-02-04,00:00,23:59,subscription,True,1 year,highest,Leroy Ruiz,father,Renewal of Leroy Ruiz's subscription
-2024-02-03,2024-02-04,00:00,23:59,anniversary,True,4 week,none,Juan,neighbor,Juan's anniversary celebration at the park
-2024-02-04,2024-02-04,00:00,23:59,anniversary,True,4 week,medium,Leroy Ruiz,father,Leroy Ruiz's anniversary celebration at the park
-2024-02-04,2024-02-07,00:00,23:59,performance,False,,high,Inash,girlfriend,Theatre performance with Inash
-2024-02-04,2024-02-07,00:00,23:59,birthday,True,1 year,low,Alice,aunt,Alice's birthday party at their favorite bar
-2024-02-04,2024-02-04,01:06,23:23,workout,False,,highest,Jenny,coworker,Workout session with Jenny at the gym
-2024-02-04,2024-02-04,15:55,11:28,workshop,False,,medium,Pablo,friend,Exciting workshop with Pablo on AGI
-2024-02-05,2024-02-08,14:26,08:14,appointment,False,,highest,Sally,sister,Appointment with Sally at the clinic
-2024-02-05,2024-02-05,22:06,03:53,interview,False,,medium,Bob,brother,Job interview with Bob at Google
-2024-02-06,2024-02-13,00:00,23:59,concert,False,,highest,Juan,neighbor,Concert of Juan at the city center
-2024-02-06,2024-02-06,00:00,23:59,birthday,True,4 month,highest,Alice,aunt,Alice's birthday party at their favorite bar
-2024-02-06,2024-02-06,06:55,07:02,interview,False,,high,Pablo,friend,Job interview with Pablo at Google
-2024-02-06,2024-02-06,14:03,14:43,workout,False,,medium,Sally,sister,Workout session with Sally at the gym
-2024-02-07,2024-02-12,00:00,23:59,conference,False,,medium,Sue,sister,Conference with Sue on AI advancements
-2024-02-07,2024-02-10,00:00,23:59,performance,False,,high,Tom Ruiz,brother,Theatre performance with Tom Ruiz
-2024-02-08,2024-02-11,00:00,23:59,performance,False,,highest,Gregorio,friend,Theatre performance with Gregorio
-2024-02-08,2024-02-11,00:00,23:59,conference,False,,none,Sally,sister,Conference with Sally on AI advancements
-2024-02-08,2024-02-08,13:03,19:20,meeting,False,,none,Pablo,friend,Another boring meeting with Pablo
-2024-02-09,2024-02-10,00:00,23:59,concert,False,,medium,Barbara Jane Ruiz,mother,Concert of Barbara Jane Ruiz at the city center
-2024-02-09,2024-02-09,00:00,23:59,performance,False,,highest,Tom Ruiz,brother,Theatre performance with Tom Ruiz
-2024-02-09,2024-02-16,17:50,18:06,todo,False,,medium,Sally,sister,Pay electric bill for Sally (sister)
-2024-02-10,2024-02-10,00:00,23:59,performance,False,,high,Gregorio,friend,Theatre performance with Gregorio
-2024-02-10,2024-02-11,00:00,23:59,performance,False,,none,Juan,neighbor,Theatre performance with Juan
-2024-02-10,2024-02-10,02:31,18:31,workshop,False,,highest,Inash,girlfriend,Exciting workshop with Inash on AGI
-2024-02-11,2024-02-18,00:00,23:59,performance,False,,medium,Gregorio,friend,Theatre performance with Gregorio
-2024-02-11,2024-02-11,08:41,01:27,meeting,False,,highest,Barbara Jane Ruiz,mother,Another boring meeting with Barbara Jane Ruiz
-2024-02-11,2024-02-14,18:26,11:14,workout,False,,high,Sue,sister,Workout session with Sue at the gym
-2024-02-12,2024-02-12,00:00,23:59,concert,False,,medium,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
-2024-02-12,2024-02-15,00:00,23:59,anniversary,True,2 week,highest,Sally,sister,Sally's anniversary celebration at the park
-2024-02-12,2024-02-12,07:23,03:06,appointment,False,,none,Jenny,coworker,Appointment with Jenny at the clinic
-2024-02-12,2024-02-13,17:06,04:10,todo,False,,highest,Gregorio,friend,Pay electric bill for Gregorio
-2024-02-13,2024-02-13,00:00,23:59,conference,False,,high,Bob,brother,Conference with Bob on AI advancements
-2024-02-13,2024-02-13,23:48,01:17,appointment,False,,medium,Barbara Jane Ruiz,mother,Appointment with Barbara Jane Ruiz at the clinic
-2024-02-14,2024-02-14,00:00,23:59,performance,False,,low,Gregorio,friend,Theatre performance with Gregorio
-2024-02-14,2024-02-14,00:00,23:59,anniversary,True,1 week,none,Bob,brother,Bob's anniversary celebration at the park
-2024-02-14,2024-02-19,00:00,23:59,anniversary,True,1 month,highest,Jenny,coworker,Jenny's anniversary celebration at the park
-2024-02-15,2024-02-15,05:24,14:03,meeting,False,,highest,Gregorio,friend,Another boring meeting with Gregorio
-2024-02-15,2024-02-15,18:21,01:40,workout,False,,low,Inash,girlfriend,Workout session with Inash at the gym
-2024-02-16,2024-02-16,00:00,23:59,conference,False,,highest,Barbara Jane Ruiz,mother,Conference with Barbara Jane Ruiz on AI advancements
-2024-02-16,2024-02-21,00:00,23:59,subscription,True,3 day,none,Bob,brother,Renewal of Bob's subscription
-2024-02-16,2024-02-19,10:20,01:34,interview,False,,none,Gregorio,friend,Job interview with Gregorio at Google
-2024-02-17,2024-02-17,00:00,23:59,conference,False,,high,Inash,girlfriend,Conference with Inash on AI advancements
-2024-02-17,2024-02-17,00:00,23:59,subscription,True,1 year,highest,Jenny,coworker,Renewal of Jenny's subscription
-2024-02-17,2024-02-18,11:28,19:39,meeting,False,,low,Pablo,friend,Another boring meeting with Pablo
-2024-02-17,2024-02-17,16:41,02:25,workout,False,,none,Alice,aunt,Workout session with Alice at the gym
-2024-02-17,2024-02-18,21:10,06:20,workshop,False,,none,Barbara Jane Ruiz,mother,Exciting workshop with Barbara Jane Ruiz on AGI
-2024-02-18,2024-02-21,00:00,23:59,performance,False,,medium,Sally,sister,Theatre performance with Sally
-2024-02-18,2024-02-21,03:31,01:36,todo,False,,low,Juan,neighbor,Fix the leaky faucet for Juan (neighbor)
-2024-02-18,2024-02-18,18:17,21:54,meeting,False,,high,Juan,neighbor,Another boring meeting with Juan
-2024-02-19,2024-02-19,00:00,23:59,conference,False,,medium,Sue,sister,Conference with Sue on AI advancements
-2024-02-19,2024-02-22,00:00,23:59,performance,False,,high,Alice,aunt,Theatre performance with Alice
-2024-02-19,2024-02-19,09:23,02:40,interview,False,,medium,Sally,sister,Job interview with Sally at Google
-2024-02-20,2024-02-20,00:00,23:59,birthday,True,2 month,medium,Tom Ruiz,brother,Tom Ruiz's birthday party at their favorite bar
-2024-02-20,2024-02-20,00:00,23:59,conference,False,,high,Sally,sister,Conference with Sally on AI advancements
-2024-02-20,2024-02-20,00:00,23:59,concert,False,,highest,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
-2024-02-20,2024-02-20,03:21,10:45,workshop,False,,none,Barbara Jane Ruiz,mother,Exciting workshop with Barbara Jane Ruiz on AGI
-2024-02-20,2024-02-25,11:40,20:59,todo,False,,highest,Bob,brother,Take the car for servicing for Bob (brother)
-2024-02-20,2024-02-20,23:37,07:36,meeting,False,,medium,John,coworker,Another boring meeting with John
-2024-02-21,2024-02-21,00:00,23:59,performance,False,,none,Barbara Jane Ruiz,mother,Theatre performance with Barbara Jane Ruiz
-2024-02-21,2024-02-22,00:46,04:16,todo,False,,high,Tom Ruiz,brother,Take the car for servicing for Tom Ruiz (brother)
-2024-02-21,2024-02-21,05:14,15:37,workshop,False,,none,Alice,aunt,Exciting workshop with Alice on AGI
-2024-02-21,2024-02-28,06:00,23:57,workshop,False,,highest,Sally,sister,Exciting workshop with Sally on AGI
-2024-02-21,2024-02-21,14:13,14:37,appointment,False,,highest,Sally,sister,Appointment with Sally at the clinic
-2024-02-21,2024-02-21,18:26,20:50,todo,False,,none,Juan,neighbor,Plan meals for the week for Juan (neighbor)
-2024-02-22,2024-02-27,00:00,23:59,subscription,True,1 day,high,Pablo,friend,Renewal of Pablo's subscription
-2024-02-22,2024-02-27,16:14,02:22,workout,False,,low,Bob,brother,Workout session with Bob at the gym
-2024-02-23,2024-02-23,00:00,23:59,birthday,True,4 day,high,Alice,aunt,Alice's birthday party at their favorite bar
-2024-02-23,2024-02-23,09:49,11:09,workout,False,,medium,Sue,sister,Workout session with Sue at the gym
-2024-02-24,2024-03-01,00:00,23:59,anniversary,True,5 week,medium,Gregorio,friend,Gregorio's anniversary celebration at the park
-2024-02-24,2024-03-01,00:00,23:59,subscription,True,2 week,high,Juan,neighbor,Renewal of Juan's subscription
-2024-02-24,2024-03-01,00:00,23:59,conference,False,,high,Tom Ruiz,brother,Conference with Tom Ruiz on AI advancements
-2024-02-24,2024-02-25,00:00,23:59,performance,False,,high,Barbara Jane Ruiz,mother,Theatre performance with Barbara Jane Ruiz
-2024-02-24,2024-03-01,07:12,07:59,workout,False,,none,Alice,aunt,Workout session with Alice at the gym
-2024-02-24,2024-02-29,16:17,02:57,appointment,False,,none,Tom Ruiz,brother,Appointment with Tom Ruiz at the clinic
-2024-02-26,2024-03-01,00:00,23:59,performance,False,,highest,Sue,sister,Theatre performance with Sue
-2024-02-26,2024-02-29,00:00,23:59,anniversary,True,4 week,high,Pablo,friend,Pablo's anniversary celebration at the park
-2024-02-27,2024-02-27,00:00,23:59,subscription,True,3 week,highest,John,coworker,Renewal of John's subscription
-2024-02-27,2024-03-01,00:00,23:59,concert,False,,low,Pablo,friend,Concert of Pablo at the city center
-2024-02-27,2024-02-27,04:46,12:34,meeting,False,,high,Barbara Jane Ruiz,mother,Another boring meeting with Barbara Jane Ruiz
-2024-02-28,2024-02-28,00:00,23:59,anniversary,True,1 year,highest,Juan,neighbor,Juan's anniversary celebration at the park
-2024-02-28,2024-02-28,00:00,23:59,concert,False,,highest,John,coworker,Concert of John at the city center
-2024-02-28,2024-02-29,01:10,13:08,interview,False,,high,John,coworker,Job interview with John at Google
-2024-02-28,2024-02-28,21:57,18:50,workout,False,,none,Pablo,friend,Workout session with Pablo at the gym
-2024-02-29,2024-02-29,00:00,23:59,conference,False,,none,Sue,sister,Conference with Sue on AI advancements
-2024-02-29,2024-02-29,01:42,21:32,workout,False,,none,Tom Ruiz,brother,Workout session with Tom Ruiz at the gym
-2024-02-29,2024-02-29,05:46,23:31,workshop,False,,high,Leroy Ruiz,father,Exciting workshop with Leroy Ruiz on AGI
-2024-02-29,2024-02-29,07:44,15:37,appointment,False,,high,Alice,aunt,Appointment with Alice at the clinic
-2024-02-29,2024-02-29,18:02,12:06,appointment,False,,highest,Leroy Ruiz,father,Appointment with Leroy Ruiz at the clinic
-2024-03-01,2024-03-01,00:00,23:59,concert,False,,medium,Sue,sister,Concert of Sue at the city center
-2024-03-01,2024-03-06,02:56,06:16,todo,False,,none,Gregorio,friend,Fix the leaky faucet for Gregorio
-2024-03-01,2024-03-06,09:34,19:01,appointment,False,,medium,Tom Ruiz,brother,Appointment with Tom Ruiz at the clinic
-2024-03-01,2024-03-03,00:00,23:59,concert,False,,none,Inash,girlfriend,Concert of Inash at the city center
-2024-03-01,2024-03-01,00:00,23:59,conference,False,,none,Pablo,friend,Conference with Pablo on AI advancements
-2024-03-01,2024-03-05,00:59,17:10,meeting,False,,low,Tom Ruiz,brother,Another boring meeting with Tom Ruiz
-2024-03-01,2024-03-03,20:52,17:37,appointment,False,,highest,Gregorio,friend,Appointment with Gregorio at the clinic
-2024-03-01,2024-03-04,00:00,23:59,performance,False,,low,Inash,girlfriend,Theatre performance with Inash
-2024-03-02,2024-03-02,00:00,23:59,birthday,True,2 month,none,Barbara Jane Ruiz,mother,Barbara Jane Ruiz's birthday party at their favorite bar
-2024-03-02,2024-03-03,00:00,23:59,anniversary,True,3 month,none,John,coworker,John's anniversary celebration at the park
-2024-03-02,2024-03-07,00:00,23:59,birthday,True,2 day,highest,Leroy Ruiz,father,Leroy Ruiz's birthday party at their favorite bar
-2024-03-02,2024-03-02,00:00,23:59,performance,False,,highest,Juan,neighbor,Theatre performance with Juan
-2024-03-03,2024-03-06,00:00,23:59,performance,False,,high,John,coworker,Theatre performance with John
-2024-03-03,2024-03-03,00:00,23:59,concert,False,,high,Inash,girlfriend,Concert of Inash at the city center
-2024-03-03,2024-03-03,09:46,22:09,appointment,False,,none,Alice,aunt,Appointment with Alice at the clinic
-2024-03-03,2024-03-08,15:35,07:47,workshop,False,,medium,John,coworker,Exciting workshop with John on AGI
-2024-03-03,2024-03-10,19:38,05:22,interview,False,,none,Leroy Ruiz,father,Job interview with Leroy Ruiz at Google
-2024-03-04,2024-03-05,00:00,23:59,birthday,True,5 month,medium,Barbara Jane Ruiz,mother,Barbara Jane Ruiz's birthday party at their favorite bar
-2024-03-04,2024-03-05,15:06,19:39,workout,False,,highest,Gregorio,friend,Workout session with Gregorio at the gym
-2024-03-04,2024-03-09,15:26,12:23,interview,False,,highest,Inash,girlfriend,Job interview with Inash at Google
-2024-03-05,2024-03-06,00:00,23:59,subscription,True,1 year,low,Gregorio,friend,Renewal of Gregorio's subscription
-2024-03-06,2024-03-06,16:34,18:42,interview,False,,highest,Inash,girlfriend,Job interview with Inash at Google
-2024-03-07,2024-03-14,00:00,23:59,conference,False,,low,Bob,brother,Conference with Bob on AI advancements
-2024-03-07,2024-03-07,00:00,23:59,conference,False,,none,Jenny,coworker,Conference with Jenny on AI advancements
-2024-03-07,2024-03-07,00:00,23:59,concert,False,,low,Inash,girlfriend,Concert of Inash at the city center
-2024-03-07,2024-03-07,14:43,07:14,workshop,False,,high,Tom Ruiz,brother,Exciting workshop with Tom Ruiz on AGI
-2024-03-07,2024-03-14,18:33,18:28,meeting,False,,low,Gregorio,friend,Another boring meeting with Gregorio
-2024-03-09,2024-03-09,00:00,23:59,birthday,True,3 day,highest,Alice,aunt,Alice's birthday party at their favorite bar
-2024-03-09,2024-03-09,00:00,23:59,conference,False,,medium,Inash,girlfriend,Conference with Inash on AI advancements
-2024-03-10,2024-03-11,16:22,07:17,appointment,False,,low,Barbara Jane Ruiz,mother,Appointment with Barbara Jane Ruiz at the clinic
-2024-03-10,2024-03-10,22:02,03:23,interview,False,,highest,Gregorio,friend,Job interview with Gregorio at Google
-2024-03-11,2024-03-11,00:00,23:59,anniversary,True,1 month,low,John,coworker,John's anniversary celebration at the park
-2024-03-11,2024-03-11,00:00,23:59,birthday,True,5 month,highest,Sue,sister,Sue's birthday party at their favorite bar
-2024-03-11,2024-03-11,00:00,23:59,birthday,True,2 day,none,Leroy Ruiz,father,Leroy Ruiz's birthday party at their favorite bar
-2024-03-11,2024-03-11,00:03,16:23,appointment,False,,low,Jenny,coworker,Appointment with Jenny at the clinic
-2024-03-11,2024-03-11,20:51,05:50,appointment,False,,medium,Jenny,coworker,Appointment with Jenny at the clinic
-2024-03-12,2024-03-19,00:00,23:59,subscription,True,3 day,medium,John,coworker,Renewal of John's subscription
-2024-03-12,2024-03-12,00:00,23:59,conference,False,,highest,Tom Ruiz,brother,Conference with Tom Ruiz on AI advancements
-2024-03-12,2024-03-12,00:00,23:59,subscription,True,3 week,medium,Sue,sister,Renewal of Sue's subscription
-2024-03-12,2024-03-19,00:00,23:59,anniversary,True,3 week,highest,Leroy Ruiz,father,Leroy Ruiz's anniversary celebration at the park
-2024-03-12,2024-03-12,06:37,21:16,todo,False,,medium,Pablo,friend,Buy birthday gift for Pablo
-2024-03-13,2024-03-16,00:00,23:59,birthday,True,1 year,highest,Juan,neighbor,Juan's birthday party at their favorite bar
-2024-03-13,2024-03-13,00:00,23:59,concert,False,,highest,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
-2024-03-13,2024-03-13,04:08,01:25,workout,False,,high,Tom Ruiz,brother,Workout session with Tom Ruiz at the gym
-2024-03-13,2024-03-14,23:08,08:33,workout,False,,high,Pablo,friend,Workout session with Pablo at the gym
-2024-03-14,2024-03-17,00:00,23:59,anniversary,True,1 year,medium,Leroy Ruiz,father,Leroy Ruiz's anniversary celebration at the park
-2024-03-14,2024-03-14,00:00,23:59,conference,False,,high,Alice,aunt,Conference with Alice on AI advancements
-2024-03-14,2024-03-19,00:00,23:59,anniversary,True,4 week,highest,Gregorio,friend,Gregorio's anniversary celebration at the park
-2024-03-14,2024-03-19,00:00,23:59,subscription,True,5 week,medium,Barbara Jane Ruiz,mother,Renewal of Barbara Jane Ruiz's subscription
-2024-03-14,2024-03-14,00:00,23:59,conference,False,,medium,Gregorio,friend,Conference with Gregorio on AI advancements
-2024-03-14,2024-03-14,10:35,18:11,workshop,False,,medium,Inash,girlfriend,Exciting workshop with Inash on AGI
-2024-03-15,2024-03-15,00:00,23:59,performance,False,,none,Leroy Ruiz,father,Theatre performance with Leroy Ruiz
-2024-03-15,2024-03-18,00:00,23:59,conference,False,,none,Bob,brother,Conference with Bob on AI advancements
-2024-03-15,2024-03-15,00:00,23:59,concert,False,,high,Tom Ruiz,brother,Concert of Tom Ruiz at the city center
-2024-03-15,2024-03-16,00:00,23:59,birthday,True,4 day,low,Gregorio,friend,Gregorio's birthday party at their favorite bar
-2024-03-15,2024-03-15,07:13,19:00,workout,False,,medium,Alice,aunt,Workout session with Alice at the gym
-2024-03-15,2024-03-18,20:40,13:35,workshop,False,,medium,Inash,girlfriend,Exciting workshop with Inash on AGI
-2024-03-16,2024-03-16,00:00,23:59,subscription,True,2 month,high,Tom Ruiz,brother,Renewal of Tom Ruiz's subscription
-2024-03-16,2024-03-16,06:29,00:09,workout,False,,low,Leroy Ruiz,father,Workout session with Leroy Ruiz at the gym
-2024-03-17,2024-03-20,00:00,23:59,performance,False,,none,Alice,aunt,Theatre performance with Alice
-2024-03-17,2024-03-17,00:00,23:59,performance,False,,low,John,coworker,Theatre performance with John
-2024-03-17,2024-03-17,05:56,12:05,workshop,False,,highest,Inash,girlfriend,Exciting workshop with Inash on AGI
-2024-03-17,2024-03-24,09:57,12:43,workshop,False,,highest,Tom Ruiz,brother,Exciting workshop with Tom Ruiz on AGI
-2024-03-17,2024-03-20,11:52,18:18,todo,False,,highest,John,coworker,Order new shoes online for John (coworker)
-2024-03-17,2024-03-17,23:47,23:49,workout,False,,highest,Sue,sister,Workout session with Sue at the gym
-2024-03-18,2024-03-23,00:00,23:59,subscription,True,5 month,none,Tom Ruiz,brother,Renewal of Tom Ruiz's subscription
-2024-03-18,2024-03-19,00:00,23:59,conference,False,,medium,Pablo,friend,Conference with Pablo on AI advancements
-2024-03-18,2024-03-18,06:40,15:31,interview,False,,none,Bob,brother,Job interview with Bob at Google
-2024-03-19,2024-03-19,00:00,23:59,subscription,True,4 month,low,John,coworker,Renewal of John's subscription
-2024-03-19,2024-03-19,00:00,23:59,concert,False,,none,John,coworker,Concert of John at the city center
-2024-03-19,2024-03-26,00:00,23:59,conference,False,,medium,Sue,sister,Conference with Sue on AI advancements
-2024-03-19,2024-03-19,00:01,00:53,workshop,False,,high,Juan,neighbor,Exciting workshop with Juan on AGI
-2024-03-19,2024-03-20,04:20,23:49,meeting,False,,high,Inash,girlfriend,Another boring meeting with Inash
-2024-03-19,2024-03-19,17:30,13:39,todo,False,,highest,Inash,girlfriend,Pick up groceries for Inash (girlfriend)
-2024-03-20,2024-03-27,00:00,23:59,birthday,True,2 week,medium,Gregorio,friend,Gregorio's birthday party at their favorite bar
-2024-03-20,2024-03-23,00:00,23:59,concert,False,,medium,Bob,brother,Concert of Bob at the city center
-2024-03-20,2024-03-21,02:27,05:06,meeting,False,,none,Pablo,friend,Another boring meeting with Pablo
-2024-03-21,2024-03-21,00:00,23:59,performance,False,,none,Jenny,coworker,Theatre performance with Jenny
-2024-03-21,2024-03-28,00:00,23:59,concert,False,,high,Juan,neighbor,Concert of Juan at the city center
-2024-03-21,2024-03-21,09:40,11:15,workout,False,,none,Sue,sister,Workout session with Sue at the gym
-2024-03-22,2024-03-27,00:00,23:59,concert,False,,none,Gregorio,friend,Concert of Gregorio at the city center
-2024-03-22,2024-03-29,00:00,23:59,conference,False,,none,Barbara Jane Ruiz,mother,Conference with Barbara Jane Ruiz on AI advancements
-2024-03-22,2024-03-22,00:00,23:59,subscription,True,1 year,medium,Jenny,coworker,Renewal of Jenny's subscription
-2024-03-22,2024-03-23,00:00,23:59,anniversary,True,1 year,medium,Bob,brother,Bob's anniversary celebration at the park
-2024-03-24,2024-03-30,12:01,04:55,todo,False,,medium,Juan,neighbor,Prepare presentation for next week's meeting for Juan (neighbor)
-2024-03-25,2024-03-25,00:00,23:59,conference,False,,none,Leroy Ruiz,father,Conference with Leroy Ruiz on AI advancements
-2024-03-25,2024-03-25,20:45,10:03,appointment,False,,medium,Leroy Ruiz,father,Appointment with Leroy Ruiz at the clinic
-2024-03-25,2024-03-26,21:49,12:57,appointment,False,,medium,Sally,sister,Appointment with Sally at the clinic
-2024-03-25,2024-04-01,21:58,00:54,meeting,False,,low,Sally,sister,Another boring meeting with Sally
-2024-03-26,2024-03-26,00:00,23:59,conference,False,,high,Pablo,friend,Conference with Pablo on AI advancements
-2024-03-27,2024-04-01,00:00,23:59,conference,False,,highest,Leroy Ruiz,father,Conference with Leroy Ruiz on AI advancements
-2024-03-27,2024-03-28,00:00,23:59,birthday,True,2 month,none,Juan,neighbor,Juan's birthday party at their favorite bar
-2024-03-27,2024-04-03,00:00,23:59,birthday,True,1 year,none,Gregorio,friend,Gregorio's birthday party at their favorite bar
-2024-03-27,2024-03-27,18:55,05:58,todo,False,,low,Pablo,friend,Prepare presentation for next week's meeting for Pablo
-2024-03-28,2024-04-04,00:00,23:59,concert,False,,low,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
-2024-03-28,2024-03-28,00:00,23:59,concert,False,,low,Sally,sister,Concert of Sally at the city center
-2024-03-28,2024-03-28,20:06,08:32,appointment,False,,high,Juan,neighbor,Appointment with Juan at the clinic
-2024-03-29,2024-04-03,00:00,23:59,conference,False,,none,Pablo,friend,Conference with Pablo on AI advancements
-2024-03-29,2024-03-30,00:00,23:59,anniversary,True,5 month,medium,Pablo,friend,Pablo's anniversary celebration at the park
-2024-03-29,2024-04-05,16:58,13:49,todo,False,,medium,Juan,neighbor,Renew gym membership for Juan (neighbor)
-2024-03-30,2024-03-30,00:00,23:59,concert,False,,highest,Sue,sister,Concert of Sue at the city center
-2024-03-30,2024-04-05,00:00,23:59,anniversary,True,1 year,highest,Pablo,friend,Pablo's anniversary celebration at the park
-2024-03-30,2024-04-07,04:11,16:53,workshop,False,,none,John,coworker,Exciting workshop with John on AGI
-2024-04-01,2024-04-02,00:00,23:59,concert,False,,highest,Gregorio,friend,Concert of Gregorio at the city center
-2024-04-01,2024-04-01,00:00,23:59,birthday,True,3 day,low,Bob,brother,Bob's birthday party at their favorite bar
-2024-04-01,2024-02-01,00:00,23:59,anniversary,True,3 week,highest,Tom Ruiz,brother,Tom Ruiz's anniversary celebration at the park
-2024-04-01,2024-04-04,00:00,23:59,concert,False,,highest,John,coworker,Concert of John at the city center
+,start_date,end_date,start_time,end_time,event_type,recurrent,recurrence_interval,priority_level,name,relationship,description_who_what_where
+0,2024-02-01,2024-02-04,00:00,23:59,concert,False,,none,Jenny,coworker,Concert of Jenny at the city center
+1,2024-02-01,2024-02-01,05:25,17:22,todo,False,,highest,Gregorio,friend,Send out invitations for the party for Gregorio
+2,2024-02-01,2024-02-01,13:27,01:59,appointment,False,,high,Leroy Ruiz,father,Appointment with Leroy Ruiz at the clinic
+3,2024-02-02,2024-02-03,13:18,02:40,interview,False,,highest,John,coworker,Job interview with John at Google
+4,2024-02-03,2024-02-04,00:00,23:59,performance,False,,medium,Sue,sister,Theatre performance with Sue
+5,2024-02-03,2024-02-04,00:00,23:59,subscription,True,1 year,highest,Leroy Ruiz,father,Renewal of Leroy Ruiz's subscription
+6,2024-02-03,2024-02-04,00:00,23:59,anniversary,True,4 week,none,Juan,neighbor,Juan's anniversary celebration at the park
+7,2024-02-04,2024-02-04,00:00,23:59,anniversary,True,4 week,medium,Leroy Ruiz,father,Leroy Ruiz's anniversary celebration at the park
+8,2024-02-04,2024-02-07,00:00,23:59,performance,False,,high,Inash,girlfriend,Theatre performance with Inash
+9,2024-02-04,2024-02-07,00:00,23:59,birthday,True,1 year,low,Alice,aunt,Alice's birthday party at their favorite bar
+10,2024-02-04,2024-02-04,01:06,23:23,workout,False,,highest,Jenny,coworker,Workout session with Jenny at the gym
+11,2024-02-04,2024-02-04,15:55,11:28,workshop,False,,medium,Pablo,friend,Exciting workshop with Pablo on AGI
+12,2024-02-05,2024-02-08,14:26,08:14,appointment,False,,highest,Sally,sister,Appointment with Sally at the clinic
+13,2024-02-05,2024-02-05,22:06,03:53,interview,False,,medium,Bob,brother,Job interview with Bob at Google
+14,2024-02-06,2024-02-13,00:00,23:59,concert,False,,highest,Juan,neighbor,Concert of Juan at the city center
+15,2024-02-06,2024-02-06,00:00,23:59,birthday,True,4 month,highest,Alice,aunt,Alice's birthday party at their favorite bar
+16,2024-02-06,2024-02-06,06:55,07:02,interview,False,,high,Pablo,friend,Job interview with Pablo at Google
+17,2024-02-06,2024-02-06,14:03,14:43,workout,False,,medium,Sally,sister,Workout session with Sally at the gym
+18,2024-02-07,2024-02-12,00:00,23:59,conference,False,,medium,Sue,sister,Conference with Sue on AI advancements
+19,2024-02-07,2024-02-10,00:00,23:59,performance,False,,high,Tom Ruiz,brother,Theatre performance with Tom Ruiz
+20,2024-02-08,2024-02-11,00:00,23:59,performance,False,,highest,Gregorio,friend,Theatre performance with Gregorio
+21,2024-02-08,2024-02-11,00:00,23:59,conference,False,,none,Sally,sister,Conference with Sally on AI advancements
+22,2024-02-08,2024-02-08,13:03,19:20,meeting,False,,none,Pablo,friend,Another boring meeting with Pablo
+23,2024-02-09,2024-02-10,00:00,23:59,concert,False,,medium,Barbara Jane Ruiz,mother,Concert of Barbara Jane Ruiz at the city center
+24,2024-02-09,2024-02-09,00:00,23:59,performance,False,,highest,Tom Ruiz,brother,Theatre performance with Tom Ruiz
+25,2024-02-09,2024-02-16,17:50,18:06,todo,False,,medium,Sally,sister,Pay electric bill for Sally (sister)
+26,2024-02-10,2024-02-10,00:00,23:59,performance,False,,high,Gregorio,friend,Theatre performance with Gregorio
+27,2024-02-10,2024-02-11,00:00,23:59,performance,False,,none,Juan,neighbor,Theatre performance with Juan
+28,2024-02-10,2024-02-10,02:31,18:31,workshop,False,,highest,Inash,girlfriend,Exciting workshop with Inash on AGI
+29,2024-02-11,2024-02-18,00:00,23:59,performance,False,,medium,Gregorio,friend,Theatre performance with Gregorio
+30,2024-02-11,2024-02-11,08:41,01:27,meeting,False,,highest,Barbara Jane Ruiz,mother,Another boring meeting with Barbara Jane Ruiz
+31,2024-02-11,2024-02-14,18:26,11:14,workout,False,,high,Sue,sister,Workout session with Sue at the gym
+32,2024-02-12,2024-02-12,00:00,23:59,concert,False,,medium,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
+33,2024-02-12,2024-02-15,00:00,23:59,anniversary,True,2 week,highest,Sally,sister,Sally's anniversary celebration at the park
+34,2024-02-12,2024-02-12,07:23,03:06,appointment,False,,none,Jenny,coworker,Appointment with Jenny at the clinic
+35,2024-02-12,2024-02-13,17:06,04:10,todo,False,,highest,Gregorio,friend,Pay electric bill for Gregorio
+36,2024-02-13,2024-02-13,00:00,23:59,conference,False,,high,Bob,brother,Conference with Bob on AI advancements
+37,2024-02-13,2024-02-13,23:48,01:17,appointment,False,,medium,Barbara Jane Ruiz,mother,Appointment with Barbara Jane Ruiz at the clinic
+38,2024-02-14,2024-02-14,00:00,23:59,performance,False,,low,Gregorio,friend,Theatre performance with Gregorio
+39,2024-02-14,2024-02-14,00:00,23:59,anniversary,True,1 week,none,Bob,brother,Bob's anniversary celebration at the park
+40,2024-02-14,2024-02-19,00:00,23:59,anniversary,True,1 month,highest,Jenny,coworker,Jenny's anniversary celebration at the park
+41,2024-02-15,2024-02-15,05:24,14:03,meeting,False,,highest,Gregorio,friend,Another boring meeting with Gregorio
+42,2024-02-15,2024-02-15,18:21,01:40,workout,False,,low,Inash,girlfriend,Workout session with Inash at the gym
+43,2024-02-16,2024-02-16,00:00,23:59,conference,False,,highest,Barbara Jane Ruiz,mother,Conference with Barbara Jane Ruiz on AI advancements
+44,2024-02-16,2024-02-21,00:00,23:59,subscription,True,3 day,none,Bob,brother,Renewal of Bob's subscription
+45,2024-02-16,2024-02-19,10:20,01:34,interview,False,,none,Gregorio,friend,Job interview with Gregorio at Google
+46,2024-02-17,2024-02-17,00:00,23:59,conference,False,,high,Inash,girlfriend,Conference with Inash on AI advancements
+47,2024-02-17,2024-02-17,00:00,23:59,subscription,True,1 year,highest,Jenny,coworker,Renewal of Jenny's subscription
+48,2024-02-17,2024-02-18,11:28,19:39,meeting,False,,low,Pablo,friend,Another boring meeting with Pablo
+49,2024-02-17,2024-02-17,16:41,02:25,workout,False,,none,Alice,aunt,Workout session with Alice at the gym
+50,2024-02-17,2024-02-18,21:10,06:20,workshop,False,,none,Barbara Jane Ruiz,mother,Exciting workshop with Barbara Jane Ruiz on AGI
+51,2024-02-18,2024-02-21,00:00,23:59,performance,False,,medium,Sally,sister,Theatre performance with Sally
+52,2024-02-18,2024-02-21,03:31,01:36,todo,False,,low,Juan,neighbor,Fix the leaky faucet for Juan (neighbor)
+53,2024-02-18,2024-02-18,18:17,21:54,meeting,False,,high,Juan,neighbor,Another boring meeting with Juan
+54,2024-02-19,2024-02-19,00:00,23:59,conference,False,,medium,Sue,sister,Conference with Sue on AI advancements
+55,2024-02-19,2024-02-22,00:00,23:59,performance,False,,high,Alice,aunt,Theatre performance with Alice
+56,2024-02-19,2024-02-19,09:23,02:40,interview,False,,medium,Sally,sister,Job interview with Sally at Google
+57,2024-02-20,2024-02-20,00:00,23:59,birthday,True,2 month,medium,Tom Ruiz,brother,Tom Ruiz's birthday party at their favorite bar
+58,2024-02-20,2024-02-20,00:00,23:59,conference,False,,high,Sally,sister,Conference with Sally on AI advancements
+59,2024-02-20,2024-02-20,00:00,23:59,concert,False,,highest,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
+60,2024-02-20,2024-02-20,03:21,10:45,workshop,False,,none,Barbara Jane Ruiz,mother,Exciting workshop with Barbara Jane Ruiz on AGI
+61,2024-02-20,2024-02-25,11:40,20:59,todo,False,,highest,Bob,brother,Take the car for servicing for Bob (brother)
+62,2024-02-20,2024-02-20,23:37,07:36,meeting,False,,medium,John,coworker,Another boring meeting with John
+63,2024-02-21,2024-02-21,00:00,23:59,performance,False,,none,Barbara Jane Ruiz,mother,Theatre performance with Barbara Jane Ruiz
+64,2024-02-21,2024-02-22,00:46,04:16,todo,False,,high,Tom Ruiz,brother,Take the car for servicing for Tom Ruiz (brother)
+65,2024-02-21,2024-02-21,05:14,15:37,workshop,False,,none,Alice,aunt,Exciting workshop with Alice on AGI
+66,2024-02-21,2024-02-28,06:00,23:57,workshop,False,,highest,Sally,sister,Exciting workshop with Sally on AGI
+67,2024-02-21,2024-02-21,14:13,14:37,appointment,False,,highest,Sally,sister,Appointment with Sally at the clinic
+68,2024-02-21,2024-02-21,18:26,20:50,todo,False,,none,Juan,neighbor,Plan meals for the week for Juan (neighbor)
+69,2024-02-22,2024-02-27,00:00,23:59,subscription,True,1 day,high,Pablo,friend,Renewal of Pablo's subscription
+70,2024-02-22,2024-02-27,16:14,02:22,workout,False,,low,Bob,brother,Workout session with Bob at the gym
+71,2024-02-23,2024-02-23,00:00,23:59,birthday,True,4 day,high,Alice,aunt,Alice's birthday party at their favorite bar
+72,2024-02-23,2024-02-23,09:49,11:09,workout,False,,medium,Sue,sister,Workout session with Sue at the gym
+73,2024-02-24,2024-03-01,00:00,23:59,anniversary,True,5 week,medium,Gregorio,friend,Gregorio's anniversary celebration at the park
+74,2024-02-24,2024-03-01,00:00,23:59,subscription,True,2 week,high,Juan,neighbor,Renewal of Juan's subscription
+75,2024-02-24,2024-03-01,00:00,23:59,conference,False,,high,Tom Ruiz,brother,Conference with Tom Ruiz on AI advancements
+76,2024-02-24,2024-02-25,00:00,23:59,performance,False,,high,Barbara Jane Ruiz,mother,Theatre performance with Barbara Jane Ruiz
+77,2024-02-24,2024-03-01,07:12,07:59,workout,False,,none,Alice,aunt,Workout session with Alice at the gym
+78,2024-02-24,2024-02-29,16:17,02:57,appointment,False,,none,Tom Ruiz,brother,Appointment with Tom Ruiz at the clinic
+79,2024-02-26,2024-03-01,00:00,23:59,performance,False,,highest,Sue,sister,Theatre performance with Sue
+80,2024-02-26,2024-02-29,00:00,23:59,anniversary,True,4 week,high,Pablo,friend,Pablo's anniversary celebration at the park
+81,2024-02-27,2024-02-27,00:00,23:59,subscription,True,3 week,highest,John,coworker,Renewal of John's subscription
+82,2024-02-27,2024-03-01,00:00,23:59,concert,False,,low,Pablo,friend,Concert of Pablo at the city center
+83,2024-02-27,2024-02-27,04:46,12:34,meeting,False,,high,Barbara Jane Ruiz,mother,Another boring meeting with Barbara Jane Ruiz
+84,2024-02-28,2024-02-28,00:00,23:59,anniversary,True,1 year,highest,Juan,neighbor,Juan's anniversary celebration at the park
+85,2024-02-28,2024-02-28,00:00,23:59,concert,False,,highest,John,coworker,Concert of John at the city center
+86,2024-02-28,2024-02-29,01:10,13:08,interview,False,,high,John,coworker,Job interview with John at Google
+87,2024-02-28,2024-02-28,21:57,18:50,workout,False,,none,Pablo,friend,Workout session with Pablo at the gym
+88,2024-02-29,2024-02-29,00:00,23:59,conference,False,,none,Sue,sister,Conference with Sue on AI advancements
+89,2024-02-29,2024-02-29,01:42,21:32,workout,False,,none,Tom Ruiz,brother,Workout session with Tom Ruiz at the gym
+90,2024-02-29,2024-02-29,05:46,23:31,workshop,False,,high,Leroy Ruiz,father,Exciting workshop with Leroy Ruiz on AGI
+91,2024-02-29,2024-02-29,07:44,15:37,appointment,False,,high,Alice,aunt,Appointment with Alice at the clinic
+92,2024-02-29,2024-02-29,18:02,12:06,appointment,False,,highest,Leroy Ruiz,father,Appointment with Leroy Ruiz at the clinic
+93,2024-03-01,2024-03-01,00:00,23:59,concert,False,,medium,Sue,sister,Concert of Sue at the city center
+94,2024-03-01,2024-03-06,02:56,06:16,todo,False,,none,Gregorio,friend,Fix the leaky faucet for Gregorio
+95,2024-03-01,2024-03-06,09:34,19:01,appointment,False,,medium,Tom Ruiz,brother,Appointment with Tom Ruiz at the clinic
+96,2024-03-01,2024-03-03,00:00,23:59,concert,False,,none,Inash,girlfriend,Concert of Inash at the city center
+97,2024-03-01,2024-03-01,00:00,23:59,conference,False,,none,Pablo,friend,Conference with Pablo on AI advancements
+98,2024-03-01,2024-03-05,00:59,17:10,meeting,False,,low,Tom Ruiz,brother,Another boring meeting with Tom Ruiz
+99,2024-03-01,2024-03-03,20:52,17:37,appointment,False,,highest,Gregorio,friend,Appointment with Gregorio at the clinic
+100,2024-03-01,2024-03-04,00:00,23:59,performance,False,,low,Inash,girlfriend,Theatre performance with Inash
+101,2024-03-02,2024-03-02,00:00,23:59,birthday,True,2 month,none,Barbara Jane Ruiz,mother,Barbara Jane Ruiz's birthday party at their favorite bar
+102,2024-03-02,2024-03-03,00:00,23:59,anniversary,True,3 month,none,John,coworker,John's anniversary celebration at the park
+103,2024-03-02,2024-03-07,00:00,23:59,birthday,True,2 day,highest,Leroy Ruiz,father,Leroy Ruiz's birthday party at their favorite bar
+104,2024-03-02,2024-03-02,00:00,23:59,performance,False,,highest,Juan,neighbor,Theatre performance with Juan
+105,2024-03-03,2024-03-06,00:00,23:59,performance,False,,high,John,coworker,Theatre performance with John
+106,2024-03-03,2024-03-03,00:00,23:59,concert,False,,high,Inash,girlfriend,Concert of Inash at the city center
+107,2024-03-03,2024-03-03,09:46,22:09,appointment,False,,none,Alice,aunt,Appointment with Alice at the clinic
+108,2024-03-03,2024-03-08,15:35,07:47,workshop,False,,medium,John,coworker,Exciting workshop with John on AGI
+109,2024-03-03,2024-03-10,19:38,05:22,interview,False,,none,Leroy Ruiz,father,Job interview with Leroy Ruiz at Google
+110,2024-03-04,2024-03-05,00:00,23:59,birthday,True,5 month,medium,Barbara Jane Ruiz,mother,Barbara Jane Ruiz's birthday party at their favorite bar
+111,2024-03-04,2024-03-05,15:06,19:39,workout,False,,highest,Gregorio,friend,Workout session with Gregorio at the gym
+112,2024-03-04,2024-03-09,15:26,12:23,interview,False,,highest,Inash,girlfriend,Job interview with Inash at Google
+113,2024-03-05,2024-03-06,00:00,23:59,subscription,True,1 year,low,Gregorio,friend,Renewal of Gregorio's subscription
+114,2024-03-06,2024-03-06,16:34,18:42,interview,False,,highest,Inash,girlfriend,Job interview with Inash at Google
+115,2024-03-07,2024-03-14,00:00,23:59,conference,False,,low,Bob,brother,Conference with Bob on AI advancements
+116,2024-03-07,2024-03-07,00:00,23:59,conference,False,,none,Jenny,coworker,Conference with Jenny on AI advancements
+117,2024-03-07,2024-03-07,00:00,23:59,concert,False,,low,Inash,girlfriend,Concert of Inash at the city center
+118,2024-03-07,2024-03-07,14:43,07:14,workshop,False,,high,Tom Ruiz,brother,Exciting workshop with Tom Ruiz on AGI
+119,2024-03-07,2024-03-14,18:33,18:28,meeting,False,,low,Gregorio,friend,Another boring meeting with Gregorio
+120,2024-03-09,2024-03-09,00:00,23:59,birthday,True,3 day,highest,Alice,aunt,Alice's birthday party at their favorite bar
+121,2024-03-09,2024-03-09,00:00,23:59,conference,False,,medium,Inash,girlfriend,Conference with Inash on AI advancements
+122,2024-03-10,2024-03-11,16:22,07:17,appointment,False,,low,Barbara Jane Ruiz,mother,Appointment with Barbara Jane Ruiz at the clinic
+123,2024-03-10,2024-03-10,22:02,03:23,interview,False,,highest,Gregorio,friend,Job interview with Gregorio at Google
+124,2024-03-11,2024-03-11,00:00,23:59,anniversary,True,1 month,low,John,coworker,John's anniversary celebration at the park
+125,2024-03-11,2024-03-11,00:00,23:59,birthday,True,5 month,highest,Sue,sister,Sue's birthday party at their favorite bar
+126,2024-03-11,2024-03-11,00:00,23:59,birthday,True,2 day,none,Leroy Ruiz,father,Leroy Ruiz's birthday party at their favorite bar
+127,2024-03-11,2024-03-11,00:03,16:23,appointment,False,,low,Jenny,coworker,Appointment with Jenny at the clinic
+128,2024-03-11,2024-03-11,20:51,05:50,appointment,False,,medium,Jenny,coworker,Appointment with Jenny at the clinic
+129,2024-03-12,2024-03-19,00:00,23:59,subscription,True,3 day,medium,John,coworker,Renewal of John's subscription
+130,2024-03-12,2024-03-12,00:00,23:59,conference,False,,highest,Tom Ruiz,brother,Conference with Tom Ruiz on AI advancements
+131,2024-03-12,2024-03-12,00:00,23:59,subscription,True,3 week,medium,Sue,sister,Renewal of Sue's subscription
+132,2024-03-12,2024-03-19,00:00,23:59,anniversary,True,3 week,highest,Leroy Ruiz,father,Leroy Ruiz's anniversary celebration at the park
+133,2024-03-12,2024-03-12,06:37,21:16,todo,False,,medium,Pablo,friend,Buy birthday gift for Pablo
+134,2024-03-13,2024-03-16,00:00,23:59,birthday,True,1 year,highest,Juan,neighbor,Juan's birthday party at their favorite bar
+135,2024-03-13,2024-03-13,00:00,23:59,concert,False,,highest,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
+136,2024-03-13,2024-03-13,04:08,01:25,workout,False,,high,Tom Ruiz,brother,Workout session with Tom Ruiz at the gym
+137,2024-03-13,2024-03-14,23:08,08:33,workout,False,,high,Pablo,friend,Workout session with Pablo at the gym
+138,2024-03-14,2024-03-17,00:00,23:59,anniversary,True,1 year,medium,Leroy Ruiz,father,Leroy Ruiz's anniversary celebration at the park
+139,2024-03-14,2024-03-14,00:00,23:59,conference,False,,high,Alice,aunt,Conference with Alice on AI advancements
+140,2024-03-14,2024-03-19,00:00,23:59,anniversary,True,4 week,highest,Gregorio,friend,Gregorio's anniversary celebration at the park
+141,2024-03-14,2024-03-19,00:00,23:59,subscription,True,5 week,medium,Barbara Jane Ruiz,mother,Renewal of Barbara Jane Ruiz's subscription
+142,2024-03-14,2024-03-14,00:00,23:59,conference,False,,medium,Gregorio,friend,Conference with Gregorio on AI advancements
+143,2024-03-14,2024-03-14,10:35,18:11,workshop,False,,medium,Inash,girlfriend,Exciting workshop with Inash on AGI
+144,2024-03-15,2024-03-15,00:00,23:59,performance,False,,none,Leroy Ruiz,father,Theatre performance with Leroy Ruiz
+145,2024-03-15,2024-03-18,00:00,23:59,conference,False,,none,Bob,brother,Conference with Bob on AI advancements
+146,2024-03-15,2024-03-15,00:00,23:59,concert,False,,high,Tom Ruiz,brother,Concert of Tom Ruiz at the city center
+147,2024-03-15,2024-03-16,00:00,23:59,birthday,True,4 day,low,Gregorio,friend,Gregorio's birthday party at their favorite bar
+148,2024-03-15,2024-03-15,07:13,19:00,workout,False,,medium,Alice,aunt,Workout session with Alice at the gym
+149,2024-03-15,2024-03-18,20:40,13:35,workshop,False,,medium,Inash,girlfriend,Exciting workshop with Inash on AGI
+150,2024-03-16,2024-03-16,00:00,23:59,subscription,True,2 month,high,Tom Ruiz,brother,Renewal of Tom Ruiz's subscription
+151,2024-03-16,2024-03-16,06:29,00:09,workout,False,,low,Leroy Ruiz,father,Workout session with Leroy Ruiz at the gym
+152,2024-03-17,2024-03-20,00:00,23:59,performance,False,,none,Alice,aunt,Theatre performance with Alice
+153,2024-03-17,2024-03-17,00:00,23:59,performance,False,,low,John,coworker,Theatre performance with John
+154,2024-03-17,2024-03-17,05:56,12:05,workshop,False,,highest,Inash,girlfriend,Exciting workshop with Inash on AGI
+155,2024-03-17,2024-03-24,09:57,12:43,workshop,False,,highest,Tom Ruiz,brother,Exciting workshop with Tom Ruiz on AGI
+156,2024-03-17,2024-03-20,11:52,18:18,todo,False,,highest,John,coworker,Order new shoes online for John (coworker)
+157,2024-03-17,2024-03-17,23:47,23:49,workout,False,,highest,Sue,sister,Workout session with Sue at the gym
+158,2024-03-18,2024-03-23,00:00,23:59,subscription,True,5 month,none,Tom Ruiz,brother,Renewal of Tom Ruiz's subscription
+159,2024-03-18,2024-03-19,00:00,23:59,conference,False,,medium,Pablo,friend,Conference with Pablo on AI advancements
+160,2024-03-18,2024-03-18,06:40,15:31,interview,False,,none,Bob,brother,Job interview with Bob at Google
+161,2024-03-19,2024-03-19,00:00,23:59,subscription,True,4 month,low,John,coworker,Renewal of John's subscription
+162,2024-03-19,2024-03-19,00:00,23:59,concert,False,,none,John,coworker,Concert of John at the city center
+163,2024-03-19,2024-03-26,00:00,23:59,conference,False,,medium,Sue,sister,Conference with Sue on AI advancements
+164,2024-03-19,2024-03-19,00:01,00:53,workshop,False,,high,Juan,neighbor,Exciting workshop with Juan on AGI
+165,2024-03-19,2024-03-20,04:20,23:49,meeting,False,,high,Inash,girlfriend,Another boring meeting with Inash
+166,2024-03-19,2024-03-19,17:30,13:39,todo,False,,highest,Inash,girlfriend,Pick up groceries for Inash (girlfriend)
+167,2024-03-20,2024-03-27,00:00,23:59,birthday,True,2 week,medium,Gregorio,friend,Gregorio's birthday party at their favorite bar
+168,2024-03-20,2024-03-23,00:00,23:59,concert,False,,medium,Bob,brother,Concert of Bob at the city center
+169,2024-03-20,2024-03-21,02:27,05:06,meeting,False,,none,Pablo,friend,Another boring meeting with Pablo
+170,2024-03-21,2024-03-21,00:00,23:59,performance,False,,none,Jenny,coworker,Theatre performance with Jenny
+171,2024-03-21,2024-03-28,00:00,23:59,concert,False,,high,Juan,neighbor,Concert of Juan at the city center
+172,2024-03-21,2024-03-21,09:40,11:15,workout,False,,none,Sue,sister,Workout session with Sue at the gym
+173,2024-03-22,2024-03-27,00:00,23:59,concert,False,,none,Gregorio,friend,Concert of Gregorio at the city center
+174,2024-03-22,2024-03-29,00:00,23:59,conference,False,,none,Barbara Jane Ruiz,mother,Conference with Barbara Jane Ruiz on AI advancements
+175,2024-03-22,2024-03-22,00:00,23:59,subscription,True,1 year,medium,Jenny,coworker,Renewal of Jenny's subscription
+176,2024-03-22,2024-03-23,00:00,23:59,anniversary,True,1 year,medium,Bob,brother,Bob's anniversary celebration at the park
+177,2024-03-24,2024-03-30,12:01,04:55,todo,False,,medium,Juan,neighbor,Prepare presentation for next week's meeting for Juan (neighbor)
+178,2024-03-25,2024-03-25,00:00,23:59,conference,False,,none,Leroy Ruiz,father,Conference with Leroy Ruiz on AI advancements
+179,2024-03-25,2024-03-25,20:45,10:03,appointment,False,,medium,Leroy Ruiz,father,Appointment with Leroy Ruiz at the clinic
+180,2024-03-25,2024-03-26,21:49,12:57,appointment,False,,medium,Sally,sister,Appointment with Sally at the clinic
+181,2024-03-25,2024-04-01,21:58,00:54,meeting,False,,low,Sally,sister,Another boring meeting with Sally
+182,2024-03-26,2024-03-26,00:00,23:59,conference,False,,high,Pablo,friend,Conference with Pablo on AI advancements
+183,2024-03-27,2024-04-01,00:00,23:59,conference,False,,highest,Leroy Ruiz,father,Conference with Leroy Ruiz on AI advancements
+184,2024-03-27,2024-03-28,00:00,23:59,birthday,True,2 month,none,Juan,neighbor,Juan's birthday party at their favorite bar
+185,2024-03-27,2024-04-03,00:00,23:59,birthday,True,1 year,none,Gregorio,friend,Gregorio's birthday party at their favorite bar
+186,2024-03-27,2024-03-27,18:55,05:58,todo,False,,low,Pablo,friend,Prepare presentation for next week's meeting for Pablo
+187,2024-03-28,2024-04-04,00:00,23:59,concert,False,,low,Leroy Ruiz,father,Concert of Leroy Ruiz at the city center
+188,2024-03-28,2024-03-28,00:00,23:59,concert,False,,low,Sally,sister,Concert of Sally at the city center
+189,2024-03-28,2024-03-28,20:06,08:32,appointment,False,,high,Juan,neighbor,Appointment with Juan at the clinic
+190,2024-03-29,2024-04-03,00:00,23:59,conference,False,,none,Pablo,friend,Conference with Pablo on AI advancements
+191,2024-03-29,2024-03-30,00:00,23:59,anniversary,True,5 month,medium,Pablo,friend,Pablo's anniversary celebration at the park
+192,2024-03-29,2024-04-05,16:58,13:49,todo,False,,medium,Juan,neighbor,Renew gym membership for Juan (neighbor)
+193,2024-03-30,2024-03-30,00:00,23:59,concert,False,,highest,Sue,sister,Concert of Sue at the city center
+194,2024-03-30,2024-04-05,00:00,23:59,anniversary,True,1 year,highest,Pablo,friend,Pablo's anniversary celebration at the park
+195,2024-03-30,2024-04-07,04:11,16:53,workshop,False,,none,John,coworker,Exciting workshop with John on AGI
+196,2024-04-01,2024-04-02,00:00,23:59,concert,False,,highest,Gregorio,friend,Concert of Gregorio at the city center
+197,2024-04-01,2024-04-01,00:00,23:59,birthday,True,3 day,low,Bob,brother,Bob's birthday party at their favorite bar
+198,2024-04-01,2024-02-01,00:00,23:59,anniversary,True,3 week,highest,Tom Ruiz,brother,Tom Ruiz's anniversary celebration at the park
+199,2024-04-01,2024-04-04,00:00,23:59,concert,False,,highest,John,coworker,Concert of John at the city center
