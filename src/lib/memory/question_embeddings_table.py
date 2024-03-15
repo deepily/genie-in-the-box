@@ -36,6 +36,10 @@ class QuestionEmbeddingsTable():
         else:
             return synonyms[ 0 ][ "embedding"]
         
+    def add_embedding( self, question, embedding ):
+        
+        new_row = [ { "question": question, "embedding": embedding } ]
+        self.question_embeddings_tbl.add( new_row )
     # def _init_db( self ):
     #
     #     # question_embeddings_dict = QuestionEmbeddingsDict()
