@@ -322,30 +322,6 @@ class XmlFineTuningPromptGenerator:
         Requirement: The first word of your response MUST be `<response>`
         Hint: Anything that isn't a part of the command itself should be treated as arguments related to the command."""
         
-        # self.agent_routing_input_template = """
-        # Below is the raw human voice command transcription formatted using simple XML:
-        # {human_says}
-        #
-        # The standardized command that you translate MUST be returned wrapped in simple, well-formed XML:
-        # {response_format}"""
-        #
-        # self.common_human_says_template = """
-        # <human>
-        #     <voice-command>{voice_command}</voice-command>
-        # </human>"""
-        #
-        # self.common_response_format = """
-        # <response>
-        #     <command></command>
-        #     <args></args>
-        # </response>"""
-        #
-        # self.common_output_template = """
-        # <response>
-        #     <command>{command}</command>
-        #     <args>{args}</args>
-        # </response>"""
-        
         return
     
     def _get_prompt_instruction_format( self, instruction, input ):
