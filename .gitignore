@@ -9,6 +9,9 @@
 
 **/.ipynb_checkpoints/**
 
+# Don't track DB artifacts
+src/conf/long-term-memory/gib.lancedb**
+
 # No LLM's, please
 models/**
 
