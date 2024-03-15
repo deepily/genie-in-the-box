@@ -21,6 +21,9 @@ class QuestionEmbeddingsDict( dict ):
             QuestionEmbeddingsDict.loading = False
             print( " Done!" )
             
+        else:
+            print( "No question embeddings dictionary found" )
+            
     def __setitem__( self, key, value ):
         
         super().__setitem__( key, value )
@@ -43,3 +46,16 @@ class QuestionEmbeddingsDict( dict ):
             pickle.dump( self, f )
         # Set pickled file rights to world readable/writable
         os.chmod( QuestionEmbeddingsDict.PATH_TO_DICT, 0o666 )
+        
+        
+if __name__ == '__main__':
+    
+    # question_embeddings_dict = QuestionEmbeddingsDict()
+    PATH_TO_DICT = os.path.join( du.get_project_root(), "src/conf/long-term-memory/question-embeddings-dictionary.pickle" )
+    question_embeddings_dict = None
+    with open( PATH_TO_DICT, "rb" ) as f:
+        question_embeddings_dict = pickle.load( f )
+    print( type( question_embeddings_dict ) )
+    question_embeddings_dict = dict( question_embeddings_dict )
+    print( type( question_embeddings_dict ) )
+    print( len( question_embeddings_dict ) )
