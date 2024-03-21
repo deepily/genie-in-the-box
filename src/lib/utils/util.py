@@ -118,7 +118,7 @@ def get_source_code_with_line_numbers( source_code, join_str="" ):
     return source_code
 
 # Load a plain text file as a list of lines.
-def get_file_as_list( path, lower_case=False, clean=False, randomize=False, seed=42 ):
+def get_file_as_list( path, lower_case=False, clean=False, randomize=False, seed=42, strip_newlines=False ):
     
     with open( path, "r", encoding="utf-8" ) as file:
         lines = file.readlines()
@@ -128,6 +128,9 @@ def get_file_as_list( path, lower_case=False, clean=False, randomize=False, seed
         
     if clean:
         lines = [ line.strip() for line in lines ]
+        
+    if strip_newlines:
+        lines = [ line.strip( "\n" ) for line in lines ]
         
     if randomize:
         random.seed( seed )
