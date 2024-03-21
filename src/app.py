@@ -26,7 +26,6 @@ from lib.app import multimodal_munger as mmm
 
 import lib.utils.util              as du
 import lib.utils.util_stopwatch    as sw
-import lib.utils.util_code_runner  as ulc
 import lib.utils.util_xml          as dux
 
 from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
@@ -355,8 +354,11 @@ def proofread_sql():
     sql_prompt      = prompt_template.format( voice_command=question )
     
     for line in sql_prompt.split( "\n" ): print( line )
-
-    xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url="http://172.17.0.4:3000", debug=False, silent=True, init_prompt_templates=False )
+    
+    tgi_url = config_mgr.get( "tgi_server_codegen_url" )
+    du.print_banner( f"proofread_sql tgi_url: [{tgi_url}]" )
+    
+    xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url=tgi_url, debug=False, silent=True, init_prompt_templates=False )
     response = xml_ftp_generator.query_llm_tgi( sql_prompt, model_name="Phind-CodeLlama-34B-v2", max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, silent=False )
     print( response )
     response = dux.strip_all_white_space( response )
@@ -382,7 +384,10 @@ def proofread_python():
     prompt_template = du.get_file_as_string( du.get_project_root() + "/src/conf/prompts/python-proofreading-template.txt" )
     sql_prompt      = prompt_template.format( voice_command=question )
     
-    xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url="http://172.17.0.4:3000", debug=False, silent=True, init_prompt_templates=False )
+    tgi_url = config_mgr.get( "tgi_server_codegen_url" )
+    du.print_banner( f"proofread_python tgi_url: [{tgi_url}]" )
+    
+    xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url=tgi_url, debug=False, silent=True, init_prompt_templates=False )
     response = xml_ftp_generator.query_llm_tgi( sql_prompt, model_name="Phind-CodeLlama-34B-v2", max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, silent=False )
     print( response )
     response = dux.strip_all_white_space( response )
