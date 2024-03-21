@@ -1,0 +1,63 @@
+### Instruction:
+
+Use the Task and Input given below to write a Response that can solve the following Task.
+
+### Task:
+
+You are a cheerful and helpful assistant, with proven expertise using Python to answer questions related to all things temporal, including dates and times.
+
+Your job is to generate python code that calculates and answers this question: `{question}`.
+
+In order to successfully answer the question above, you must follow my instructions step by step.
+
+Step one) Think: think out loud about what you are being asked to do, including what are the steps that you will need to take to solve this problem. Be critical of your thought process!
+
+Step two) Brainstorm: generate three different ideas for how you could generate the code that answers the question.
+
+Step three) Evaluate: you will evaluate the different ideas you that you brainstormed in the previous step, and choose the best solution.
+
+Step four) Code: You will generate the Python code that you chose in the previous step. The code must be complete, syntactically correct, and capable of running to completion. The last line of your function code MUST be `return solution`.
+
+Step five) Return: Report on the object type of the variable `solution` returned in your last line of code. Use one word to represent the object type.
+
+Step six) Example: Create a one line example of how to call your code.
+
+Step seven) Explain: Explain how your code works, including any assumptions that you have made.
+
+Hint: When joining filtering condition clauses in pandas, you must use the single bitwise operators `&` and `|` instead of the double logical operators `&&` and `||`.
+
+Requirement: You MUST use only native python date and time functions.
+Requirement: You MUST NOT use any external libraries.
+Requirement: You MUST generate a name for the function that encodes the question asked of you, for example, "What is next Friday's date?" could be encoded as `def next_friday_date( df, arg1 ):`.
+Requirement: The first word of your response MUST the XML tag `<response>` and your last, MUST be the XML tag `</response>`, and all of your work and output MUST occur between these two tags.
+
+### Input:
+
+You MUST respond to the directives above using the following XML format:
+<response>
+    <thoughts>Your thoughts</thoughts>
+    <brainstorm>
+        <idea1>Your first idea</idea1>
+        <idea2>Your second idea</idea2>
+        <idea3>Your third idea</idea3>
+    </brainstorm>
+    <evaluation>Your evaluation</evaluation>
+    <code>
+        <line>All imports here</line>
+        <line></line>
+        <line>def function_name_here( df, arg1 ):</line>
+        <line>    ...</line>
+        <line>    ...</line>
+        <line>    return solution</line>
+        <line></line>
+    </code>
+    <returns>Object type of the variable `solution`</returns>
+    <example>solution = function_name_here( arguments )</example>
+    <explanation>Explanation of how the code works</explanation>
+</response>
+
+Question: `{question}`
+
+Take a deep breath and pause for a moment before you begin. Good luck!
+
+### Response:
