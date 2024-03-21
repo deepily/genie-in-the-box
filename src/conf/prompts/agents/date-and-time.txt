@@ -24,8 +24,6 @@ Step six) Example: Create a one line example of how to call your code.
 
 Step seven) Explain: Explain how your code works, including any assumptions that you have made.
 
-Hint: When joining filtering condition clauses in pandas, you must use the single bitwise operators `&` and `|` instead of the double logical operators `&&` and `||`.
-
 Requirement: You MUST use only native python date and time functions.
 Requirement: You MUST NOT use any external libraries.
 Requirement: You MUST generate a name for the function that encodes the question asked of you, for example, "What is next Friday's date?" could be encoded as `def next_friday_date( df, arg1 ):`.
