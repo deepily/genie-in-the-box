@@ -134,7 +134,7 @@ class IterativeDebuggingAgent( AgentBase ):
         print( formatted_code )
         
         # Get raw code 1st
-        code = du.get_file_as_list( self.project_root + self.path_to_code, lower_case=False, clean=False, randomize=False, strip_newlines=True )
+        code = du.get_file_as_list( self.project_root + self.path_to_code, strip_newlines=True )
         self.prompt_response_dict[ "code" ] = code
         if self.debug: self.print_code( msg="BEFORE patching code in response dictionary" )
         
