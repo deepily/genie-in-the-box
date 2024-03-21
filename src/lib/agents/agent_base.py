@@ -124,7 +124,7 @@ class AgentBase( RunnableCode, abc.ABC ):
                 xml_string = "<code>" + dux.get_value_by_xml_tag_name( response, xml_tag ) + "</code>"
                 prompt_response_dict[ xml_tag ] = dux.get_code_list( xml_string, debug=self.debug )
             else:
-                prompt_response_dict[ xml_tag ] = dux.get_value_by_xml_tag_name( response, xml_tag ).strip()
+                prompt_response_dict[ xml_tag ] = dux.get_value_by_xml_tag_name( response, xml_tag )#.strip()
         
         return prompt_response_dict
     
@@ -171,24 +171,30 @@ class AgentBase( RunnableCode, abc.ABC ):
 
             self.error = self.code_response_dict[ "output" ]
             
-            debugging_agent = IterativeDebuggingAgent(
-                code_response_dict[ "output" ], "/io/code.py", debug=self.debug, verbose=self.verbose
-            )
-            debugging_agent.run_prompts()
-            
-            if debugging_agent.was_successfully_debugged():
+            # Start out by running the minimalistic debugger first, and then if it fails run the full debugger
+            for minimalist in [ True, False ]:
                 
-                self.prompt_response_dict[ "code" ] = debugging_agent.code
-                self.code_response_dict             = debugging_agent.code_response_dict
-                self.error                          = None
+                debugging_agent = IterativeDebuggingAgent(
+                    code_response_dict[ "output" ], "/io/code.py",
+                    minimalist=minimalist, example=self.prompt_response_dict[ "example" ], returns=self.prompt_response_dict.get( "returns", "string" ),
+                    debug=self.debug, verbose=self.verbose
+                )
+                debugging_agent.run_prompts()
                 
-                self.print_code( msg="Debugging successful, corrected code returned to AgentBase:" )
-                
-            else:
-                
-                du.print_banner( "Debugging failed, returning original code, such as it is... 😢 sniff 😢" )
+                if debugging_agent.was_successfully_debugged():
+                    
+                    self.prompt_response_dict[ "code" ] = debugging_agent.code
+                    self.code_response_dict             = debugging_agent.code_response_dict
+                    self.error                          = None
+                    
+                    self.print_code( msg=f"Minimalist [{minimalist}] debugging successful, corrected code returned to calling AgentBase run_code()" )
+                    break
+                    
+                else:
+                    
+                    du.print_banner( f"Minimalist [{minimalist}] debugging failed, returning original code, such as it is... 😢 sniff 😢" )
         
-        return self.code_response_dict
+            return self.code_response_dict
     
     def is_format_output_runnable( self ):
         pass
