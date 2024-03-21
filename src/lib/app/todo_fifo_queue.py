@@ -2,6 +2,7 @@ import re
 
 from flask import url_for
 
+from lib.agents.date_and_time_agent            import DateAndTimeAgent
 from lib.app.fifo_queue                        import FifoQueue
 from lib.agents.todo_list_agent                import TodoListAgent
 from lib.agents.calendaring_agent              import CalendaringAgent
@@ -107,7 +108,7 @@ class TodoFifoQueue( FifoQueue ):
         threshold = self.config_mgr.get( "snapshot_similiarity_threshold", default=90.0, return_type="float" )
         print( f"push_job(): Using snapshot similarity threshold of [{threshold}]" )
         
-        # We're searching for similar snapshots without any salutations pretended to the question.
+        # We're searching for similar snapshots without any salutations prepended to the question.
         similar_snapshots = self.snapshot_mgr.get_snapshots_by_question( question, threshold=threshold )
         print()
         
@@ -160,16 +161,21 @@ class TodoFifoQueue( FifoQueue ):
             
             command, args = self._get_routing_command( question )
             
+            starting_a_new_job = "Starting a new {agent_type} job, I'll be right back."
             if command == "none":
                 msg = "Hmm... I'm not certain what to do with that question, Could you rephrase and try again?"
             elif command == "agent router go to calendar":
-                calendaring_agent = CalendaringAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
-                self.push( calendaring_agent )
-                msg = f"Starting a new calendaring job, I'll be right back."
+                agent = CalendaringAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
+                self.push( agent )
+                msg = starting_a_new_job.format( agent_type="calendaring" )
             elif command == "agent router go to todo list":
-                todo_list_agent = TodoListAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
-                self.push( todo_list_agent )
-                msg = f"Starting a new todo list job, I'll be right back."
+                agent = TodoListAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
+                self.push( agent )
+                msg = starting_a_new_job.format( agent_type="todo list")
+            elif command == "agent router go to date and time":
+                agent = DateAndTimeAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
+                self.push( agent )
+                msg = starting_a_new_job.format( agent_type="date and time")
             else:
                 msg = "TO DO: Implement command " + command
             
