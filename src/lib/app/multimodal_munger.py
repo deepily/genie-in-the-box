@@ -12,6 +12,8 @@ import lib.utils.util           as du
 import lib.utils.util_xml       as du_xml
 import lib.app.util_llm_client  as llm_client
 
+from lib.app.configuration_manager import ConfigurationManager
+
 from ephemera.prompts.xml_fine_tuning_prompt_generator import XmlFineTuningPromptGenerator
 
 from lib.clients.genie_client  import GenieClient
@@ -58,6 +60,7 @@ class MultiModalMunger:
 
         self.debug                  = debug
         self.verbose                = verbose
+        self.config_mgr             = ConfigurationManager( env_var_name="GIB_CONFIG_MGR_CLI_ARGS" )
         self.config_path            = config_path
         self.raw_transcription      = raw_transcription
         self.prefix                 = prefix
@@ -527,9 +530,12 @@ class MultiModalMunger:
         # proofread_code = self._extract_string_from_backticked_llm_output( proofread_code, tag_name="python" )
         # print( "POST:", proofread_code )
         
+        tgi_url = self.config_mgr.get( "tgi_server_codegen_url" )
+        du.print_banner( "tgi_url: [{}]".format( tgi_url ) )
+        
         python_prompt_template = du.get_file_as_string( du.get_project_root() + "/src/conf/prompts/python-proofreading-template.txt" )
         python_prompt = python_prompt_template.format( voice_command=code )
-        xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url="http://172.17.0.4:3000", debug=False, silent=True, init_prompt_templates=False )
+        xml_ftp_generator = XmlFineTuningPromptGenerator( tgi_url=tgi_url, debug=False, silent=True, init_prompt_templates=False )
         
         response = xml_ftp_generator.query_llm_tgi( python_prompt, model_name="Phind-CodeLlama-34B-v2", max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.9, silent=False )
         response = du_xml.strip_all_white_space( response )
