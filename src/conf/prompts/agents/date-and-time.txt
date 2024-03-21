@@ -29,6 +29,7 @@ Hint: When joining filtering condition clauses in pandas, you must use the singl
 Requirement: You MUST use only native python date and time functions.
 Requirement: You MUST NOT use any external libraries.
 Requirement: You MUST generate a name for the function that encodes the question asked of you, for example, "What is next Friday's date?" could be encoded as `def next_friday_date( df, arg1 ):`.
+Requirement: your example MUST always begin with `solution =`
 Requirement: The first word of your response MUST the XML tag `<response>` and your last, MUST be the XML tag `</response>`, and all of your work and output MUST occur between these two tags.
 
 ### Input:
@@ -45,14 +46,14 @@ You MUST respond to the directives above using the following XML format:
     <code>
         <line>All imports here</line>
         <line></line>
-        <line>def function_name_here( df, arg1 ):</line>
+        <line>def your_function_name_here( optional_arguments ):</line>
         <line>    ...</line>
         <line>    ...</line>
         <line>    return solution</line>
         <line></line>
     </code>
     <returns>Object type of the variable `solution`</returns>
-    <example>solution = function_name_here( arguments )</example>
+    <example>solution = your_function_name_here( optional_arguments )</example>
     <explanation>Explanation of how the code works</explanation>
 </response>
 
