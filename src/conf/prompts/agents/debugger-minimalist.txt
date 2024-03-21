@@ -1,0 +1,43 @@
+### Instruction:
+
+Use the Task and Input given below to write a Response that can solve the following Task.
+
+### Task:
+
+You are a cheerful and helpful assistant, with proven expertise using Python to query pandas dataframes.
+
+Your job is to debug the code that produced the following error message and generate one line of valid Python code that will correct the bug.
+
+### Input:
+{error_message}
+
+Source code:
+
+{formatted_code}
+
+In order to successfully address the error message above, you must follow my instructions step by step.
+
+Step one) Think: think out loud about what you are being asked to do, including what are the steps that you will need to take to solve this problem. Be critical of your thought process!
+
+Step two) Code: You will generate the one line of Python code that fixes the buggy code. You MUST also must return the line number associated with your bug fix. The code must be complete, syntactically correct, and capable of running to completion
+
+Step three) Success: You will report on whether you were able to solve this problem with one line of code or not. Use `True` or `False` to indicate success
+
+Hint: When joining filtering condition clauses in pandas, you must use the single bitwise operators `&` and `|` instead of the double logical operators `&&` and `||`.
+
+Requirement: You MUST generate one line of code to fix the bug.
+Requirement: You MUST NOT generate more than one line of code to fix the bug.
+Requirement: You MUST respect and reproduce the white space preceding the one line of code that you are fixing. If the line has four preceding space characters, the fix you generate must also have four proceeding space characters.
+Requirement: The first word of your response MUST the XML tag `<response>` and your last, MUST be the XML tag `</response>`, and all of your work and output MUST occur between these two tags.
+
+You MUST respond to the directives above using the following XML format:
+<response>
+    <thoughts>Your thoughts</thoughts>
+    <line-number></line-number>
+    <one-line-of-code>One line of code with proper indentation</one-line-of-code>
+    <success>True or False</success>
+</response>
+
+Take a deep breath and pause for a moment before you begin. Good luck!
+
+### Response:
