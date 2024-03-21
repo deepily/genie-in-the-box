@@ -48,7 +48,8 @@ def get_code_list( xml_string, debug=False ):
             
             if match:
                 line = match.group( 1 )
-                line = line.replace( "&gt;", ">" ).replace( "&lt;", "<" ).replace( "&amp;", "&" )
+                # line = line.replace( "&gt;", ">" ).replace( "&lt;", "<" ).replace( "&amp;", "&" )
+                line = remove_xml_escapes( line )
                 code_list.append( line )
                 if debug: print( line )
             else:
@@ -57,6 +58,9 @@ def get_code_list( xml_string, debug=False ):
         
     return code_list
 
+def remove_xml_escapes( xml_string ):
+    
+    return xml_string.replace( "&gt;", ">" ).replace( "&lt;", "<" ).replace( "&amp;", "&" )
 
 def rescue_code_using_tick_tick_tick_syntax( raw_response_text, debug=False ):
     
