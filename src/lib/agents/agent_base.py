@@ -33,7 +33,8 @@ class AgentBase( RunnableCode, abc.ABC ):
         self.push_counter          = push_counter
         self.id_hash               = ss.SolutionSnapshot.generate_id_hash( self.push_counter, self.run_date )
         
-        self.last_question_asked   = question # This is a bit of a misnomer, it's the unprocessed question that was asked of the agent
+        # This is a bit of a misnomer, it's the unprocessed question that was asked of the agent
+        self.last_question_asked   = question
         self.question              = ss.SolutionSnapshot.clean_question( question )
         self.answer_conversational = None
         
@@ -45,7 +46,22 @@ class AgentBase( RunnableCode, abc.ABC ):
         # ¡OJO! This one server a key may need to become more diversified in the future
         self.default_url           = self.config_mgr.get( "tgi_server_codegen_url", default=None )
         
-        self.prompt_template_paths = {
+        self.prompt_template_paths = self._get_prompt_template_paths()
+        self.models                = self._get_models()
+        self.serialization_topics  = self._get_serialization_topics()
+        
+        self.model_name            = self.models[ routing_command ]
+        self.prompt_template       = du.get_file_as_string( du.get_project_root() + self.prompt_template_paths[ routing_command ] )
+        self.prompt                = None
+        
+        if self.df_path_key is not None:
+            
+            self.df = pd.read_csv( du.get_project_root() + self.config_mgr.get( self.df_path_key ) )
+            self.df = dup.cast_to_datetime( self.df )
+    
+    def _get_prompt_template_paths( self ):
+        
+        return{
             "agent router go to date and time": self.config_mgr.get( "agent_prompt_for_date_and_time" ),
             "agent router go to calendar"     : self.config_mgr.get( "agent_prompt_for_calendaring" ),
             "agent router go to weather"      : self.config_mgr.get( "agent_prompt_for_weather" ),
@@ -53,7 +69,10 @@ class AgentBase( RunnableCode, abc.ABC ):
             "agent router go to debugger"     : self.config_mgr.get( "agent_prompt_for_debugger" ),
             "agent router go to bug injector" : self.config_mgr.get( "agent_prompt_for_bug_injector" ),
         }
-        self.models = {
+    
+    def _get_models( self ):
+        
+        return{
             "agent router go to date and time": self.config_mgr.get( "agent_model_name_for_date_and_time" ),
             "agent router go to calendar"     : self.config_mgr.get( "agent_model_name_for_calendaring" ),
             "agent router go to weather"      : self.config_mgr.get( "agent_model_name_for_weather" ),
@@ -61,7 +80,10 @@ class AgentBase( RunnableCode, abc.ABC ):
             "agent router go to debugger"     : self.config_mgr.get( "agent_model_name_for_debugger" ),
             "agent router go to bug injector" : self.config_mgr.get( "agent_model_name_for_bug_injector" ),
         }
-        self.serialization_topics = {
+    
+    def _get_serialization_topics( self ):
+        
+        return {
             "agent router go to date and time": "date-and-time",
             "agent router go to calendar"     : "calendar",
             "agent router go to weather"      : "weather",
@@ -69,15 +91,6 @@ class AgentBase( RunnableCode, abc.ABC ):
             "agent router go to debugger"     : "code-debugger",
             "agent router go to bug injector" : "bug-injector",
         }
-        self.model_name              = self.models[ routing_command ]
-        self.prompt_template         = du.get_file_as_string( du.get_project_root() + self.prompt_template_paths[ routing_command ] )
-        self.prompt                  = None
-        
-        if self.df_path_key is not None:
-            
-            self.df = pd.read_csv( du.get_project_root() + self.config_mgr.get( self.df_path_key ) )
-            self.df = dup.cast_to_datetime( self.df )
-    
     def get_html( self ):
         
         return f"<li id='{self.id_hash}'>{self.run_date} Q: {self.last_question_asked}</li>"
@@ -130,13 +143,12 @@ class AgentBase( RunnableCode, abc.ABC ):
     
     def run_prompt( self, model_name=None, temperature=0.5, top_p=0.25, top_k=10, max_new_tokens=1024, stop_sequences=None ):
         
-        # from lib.agents.llm import Llm
-        
         if model_name is not None: self.model_name = model_name
         
         llm = Llm( config_mgr=self.config_mgr, model=self.model_name, default_url=self.default_url, debug=self.debug, verbose=self.verbose )
         response = llm.query_llm( prompt=self.prompt, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens, stop_sequences=stop_sequences, debug=self.debug, verbose=self.verbose )
         
+        # Parse XML-esque response
         self.prompt_response_dict = self._update_response_dictionary( response )
         
         return self.prompt_response_dict
@@ -167,6 +179,7 @@ class AgentBase( RunnableCode, abc.ABC ):
         
         elif auto_debug:
             
+            # Iterative debugging agent extends this class: agent base
             from lib.agents.iterative_debugging_agent import IterativeDebuggingAgent
 
             self.error = self.code_response_dict[ "output" ]
@@ -179,6 +192,7 @@ class AgentBase( RunnableCode, abc.ABC ):
                     minimalist=minimalist, example=self.prompt_response_dict[ "example" ], returns=self.prompt_response_dict.get( "returns", "string" ),
                     debug=self.debug, verbose=self.verbose
                 )
+                # Iterates across multiple LLMs in either minimalist or non-minimalist mode until a solution is found
                 debugging_agent.run_prompts()
                 
                 if debugging_agent.was_successfully_debugged():
