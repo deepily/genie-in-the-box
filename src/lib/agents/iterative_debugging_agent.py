@@ -3,6 +3,7 @@ import json
 
 import lib.utils.util             as du
 import lib.utils.util_code_runner as ucr
+import lib.utils.util_xml         as dux
 
 from lib.agents.agent_base import AgentBase
 from lib.agents.llm        import Llm
@@ -11,20 +12,26 @@ from lib.app.configuration_manager import ConfigurationManager
 
 class IterativeDebuggingAgent( AgentBase ):
     
-    def __init__( self, error_message, path_to_code, debug=False, verbose=False ):
+    def __init__( self, error_message, path_to_code, example=None, returns=None, minimalist=True, debug=False, verbose=False ):
         
         super().__init__( routing_command="agent router go to debugger", debug=debug, verbose=verbose )
         
         self.code                   = []
+        self.example                = example
+        self.returns                = returns
         self.project_root           = du.get_project_root()
         self.path_to_code           = path_to_code
         self.formatted_code         = du.get_file_as_source_code_with_line_numbers( self.project_root + self.path_to_code )
         self.error_message          = error_message
+        self.minimalist             = minimalist
         self.prompt                 = self._get_prompt()
-        self.prompt_response_dict   = None
+        self.prompt_response_dict   = { }
         self.available_llms         = self._load_available_llm_specs()
         self.successfully_debugged  = False
-        self.xml_response_tag_names = [ "thoughts", "code", "example", "returns", "explanation" ]
+        if self.minimalist:
+            self.xml_response_tag_names = [ "thoughts", "line-number", "one-line-of-code", "success" ]
+        else:
+            self.xml_response_tag_names = [ "thoughts", "code", "example", "returns", "explanation" ]
         
         self.do_not_serialize       = [ "config_mgr" ]
         
@@ -43,7 +50,14 @@ class IterativeDebuggingAgent( AgentBase ):
     
     def _get_prompt( self ):
         
-        return self.prompt_template.format( error_message=self.error_message, formatted_code=self.formatted_code )
+        if self.debug: print( f"IterativeDebuggingAgent._get_prompt() minimalist: {self.minimalist}", end="\n" )
+        if self.minimalist:
+            self.prompt_template  = du.get_file_as_string( du.get_project_root() + self.config_mgr.get( "agent_prompt_for_debugger_minimalist" ) )
+            prompt                = self.prompt_template.format( error_message=self.error_message, formatted_code=self.formatted_code )
+            if self.debug: print( f"Prompt: {prompt}" )
+            return prompt
+        else:
+            return self.prompt_template.format( error_message=self.error_message, formatted_code=self.formatted_code )
     
     def run_prompts( self, debug=None ):
         
@@ -70,7 +84,22 @@ class IterativeDebuggingAgent( AgentBase ):
             du.print_banner( f"{run_descriptor}: Executing debugging prompt using model [{model_name}] and short name [{short_name}]...", end="\n" )
             
             prompt_response_dict = self.run_prompt( model_name=model_name, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens, stop_sequences=stop_sequences )
-            self.serialize_to_json( "code-debugging", du.get_current_datetime_raw(), run_descriptor=run_descriptor, short_name=short_name )
+            
+            # Serialize the prompt response
+            topic = "code-debugging-minimalist" if self.minimalist else "code-debugging"
+            self.serialize_to_json( topic, du.get_current_datetime_raw(), run_descriptor=run_descriptor, short_name=short_name )
+            
+            du.print_banner( f"{run_descriptor}: Prompt response dictionary" )
+            print( json.dumps( prompt_response_dict, indent=4 ) )
+            
+            # Test for minimalist success
+            if self.minimalist and prompt_response_dict.get( "success", "False" ) == "True":
+                self._patch_code_in_response_dict( prompt_response_dict )
+                self.prompt_response_dict[ "example" ] = self.example
+                self.prompt_response_dict[ "returns" ] = self.returns
+            elif self.minimalist:
+                print( "Minimalist prompt failed, updating code to []..." )
+                self.prompt_response_dict[ "code" ] = []
             
             code_response_dict = ucr.initialize_code_response_dict()
             if self.is_code_runnable():
@@ -98,6 +127,27 @@ class IterativeDebuggingAgent( AgentBase ):
             
         return code_response_dict
     
+    def _patch_code_in_response_dict( self, prompt_response_dict ):
+        
+        print( "Patching code in response dictionary..." )
+        formatted_code = du.get_file_as_source_code_with_line_numbers( self.project_root + self.path_to_code )
+        print( formatted_code )
+        
+        # Get raw code 1st
+        code = du.get_file_as_list( self.project_root + self.path_to_code, lower_case=False, clean=False, randomize=False, strip_newlines=True )
+        self.prompt_response_dict[ "code" ] = code
+        if self.debug: self.print_code( msg="BEFORE patching code in response dictionary" )
+        
+        # Get the patched code
+        line_number  = int( prompt_response_dict[ "line-number" ] ) - 1
+        line_of_code = prompt_response_dict[ "one-line-of-code" ]
+        line_of_code = dux.remove_xml_escapes( line_of_code )
+        print( f"Patching line {line_number} with [{line_of_code}]")
+        
+        # insert the patched line of code into the code list
+        self.prompt_response_dict[ "code" ][ line_number ] = line_of_code
+        if self.debug: self.print_code( msg="AFTER patching code in response dictionary" )
+
     def was_successfully_debugged( self ):
         
         return self.successfully_debugged
@@ -157,10 +207,9 @@ class IterativeDebuggingAgent( AgentBase ):
 if __name__ == "__main__":
     
     error_message = """
-    File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 12
+    File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 11
     birthdays = df[(df.event_type == 'birthday') && (df.start_date <= week_from_today) && (df.end_date >= today)]
-                                            ^
-    SyntaxError: invalid syntax"""
+    """
     #     error_message = """
     #     Traceback (most recent call last):
     #   File "/Users/rruiz/Projects/projects-sshfs/genie-in-the-box/io/code.py", line 20, in <module>
@@ -186,9 +235,10 @@ if __name__ == "__main__":
     # TypeError: Invalid comparison between dtype=datetime64[ns] and date"""
 
     source_code_path = "/io/code.py"
-    debugging_agent  = IterativeDebuggingAgent( error_message, source_code_path, debug=True, verbose=False )
+    example          = "solution = check_birthdays(df)"
+    debugging_agent  = IterativeDebuggingAgent( error_message, source_code_path, example=example, returns="DataFrame", minimalist=True, debug=True, verbose=False )
     # # Deserialize from file
     # # debugging_agent = IterativeDebuggingAgent.restore_from_serialized_state( du.get_project_root() + "/io/log/code-debugging-on-2024-2-28-at-14-28-run-1-of-3-using-llm-phind34b-step-1-of-1.json" )
-    debugging_agent.run_prompts( debug=False )
+    debugging_agent.run_prompts()
     # debugging_agent.run_code()
     
