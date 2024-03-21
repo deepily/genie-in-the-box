@@ -22,32 +22,58 @@ def initialize_code_response_dict():
 
 def _ensure_proper_appendages( code, always_appended ):
     
-    # du.print_banner( "_ensure_proper_appendages", prepend_nl=True )
-    # print( "always_appended", always_appended )
-    len_always_appended = -len( always_appended )
-    # print( f"len_always_appended [{len_always_appended}]" )
+    # du.print_banner( "code BEFORE:", prepend_nl=True )
+    # du.print_list( code )
+    #
+    # Instantiate an ordered dictionary using the code list to populate the keys and the values. The key string should have all of the spaces removed and lowercased
+    code_dict = { line.replace( " ", "" ).lower(): line for i, line in enumerate( code ) }
+    # Print the dictionary in Json format
+    if debug: print( du.get_debug_json( code_dict ) )
     
-    # Check if the last N elements of 'code' match 'always_appended'
-    if code[ len_always_appended: ] != always_appended:
-        
-        # print( "code[ len( always_appended ): ] != always_appended" )
-        # print( "code", code[ len_always_appended: ] )
-        
-        # Identify any elements in 'always_appended' that are already in 'code' but not in the correct position
-        to_remove = set( code[ len_always_appended: ] ) & set( always_appended )
-        # print( "to_remove", to_remove )
-        
-        # Create a new list excluding the elements found above, to ensure they are not duplicated
-        cleaned_code = [ line for line in code if line not in to_remove ]
-        
-        # Append 'always_appended' to the end of the list
-        cleaned_code.extend( always_appended )
-        
-        return cleaned_code
+    # Iterate through the always_appended list and check if the key is in the code dictionary
+    for line in always_appended:
+        key = line.replace( " ", "" ).lower()
+        if key in code_dict:
+            # If the key is in the dictionary, remove it from the dictionary
+            code_dict.pop( key )
     
-    else:
-        
-        return code
+    code = list( code_dict.values() )
+    # du.print_banner( "code AFTER:", prepend_nl=True )
+    # du.print_list( code )
+    #
+    # Append the always_appended list to the code list
+    code = code + always_appended
+
+    return code
+
+# def _ensure_proper_appendages( code, always_appended ):
+#
+#     du.print_banner( "_ensure_proper_appendages", prepend_nl=True )
+#     print( "always_appended", always_appended )
+#     len_always_appended = -len( always_appended )
+#     print( f"len_always_appended [{len_always_appended}]" )
+#
+#     # Check if the last N elements of 'code' match 'always_appended'
+#     if code[ len_always_appended: ] != always_appended:
+#
+#         print( "code[ len( always_appended ): ] != always_appended" )
+#         print( "code", code[ len_always_appended: ] )
+#
+#         # Identify any elements in 'always_appended' that are already in 'code' but not in the correct position
+#         to_remove = set( code[ len_always_appended: ] ) & set( always_appended )
+#         print( "to_remove", to_remove )
+#
+#         # Create a new list excluding the elements found above, to ensure they are not duplicated
+#         cleaned_code = [ line for line in code if line not in to_remove ]
+#
+#         # Append 'always_appended' to the end of the list
+#         cleaned_code.extend( always_appended )
+#
+#         return cleaned_code
+#
+#     else:
+#
+#         return code
 
 def _append_post_function_code( code, code_return_type, example_code, path_to_df=None, debug=False, verbose=False ):
     
@@ -99,19 +125,23 @@ def _append_post_function_code( code, code_return_type, example_code, path_to_df
         always_appended.append( "print( solution )" )
         
     code = _ensure_proper_appendages( code, always_appended )
-    
+    ######################################################################################################
+    # We may not need to use this brute force solution below, after using an order dictionary in the method above, because
+    # insertion with the same key will overwrite the value with the same code value but will essentially ignore any duplicates
+    # that occur after the first declaration
+    ######################################################################################################
     # Remove redundant imports, if present
-    code = _remove_all_but_the_1st_of_repeated_lines( code, "import pandas as pd" )
-    code = _remove_all_but_the_1st_of_repeated_lines( code, "import datetime" )
-    code = _remove_all_but_the_1st_of_repeated_lines( code, "import pytz" )
-    code = _remove_all_but_the_1st_of_repeated_lines( code, "import lib.utils.util as du" )
-    code = _remove_all_but_the_1st_of_repeated_lines( code, "import lib.utils.util_pandas as dup" )
-    #  Remove redundant debug settings, if present
-    code = _remove_all_but_the_1st_of_repeated_lines( code, "debug = True" )
-    code = _remove_all_but_the_1st_of_repeated_lines( code, "debug = False" )
+    # code = _remove_all_but_the_1st_of_repeated_lines( code, "import pandas as pd" )
+    # code = _remove_all_but_the_1st_of_repeated_lines( code, "import datetime" )
+    # code = _remove_all_but_the_1st_of_repeated_lines( code, "import pytz" )
+    # code = _remove_all_but_the_1st_of_repeated_lines( code, "import lib.utils.util as du" )
+    # code = _remove_all_but_the_1st_of_repeated_lines( code, "import lib.utils.util_pandas as dup" )
+    # #  Remove redundant debug settings, if present
+    # code = _remove_all_but_the_1st_of_repeated_lines( code, "debug = True" )
+    # code = _remove_all_but_the_1st_of_repeated_lines( code, "debug = False" )
     
     # Remove any repeated example code
-    code = _remove_all_but_the_1st_of_repeated_lines( code, example_code )
+    # code = _remove_all_but_the_1st_of_repeated_lines( code, example_code )
     
     return code
 
@@ -249,7 +279,8 @@ def test_assemble_and_run_solution( debug=False, verbose=False):
         "solution = check_birthdays( df )"
     ]
     example_code = "solution = check_birthdays( df )"
-    results = assemble_and_run_solution( solution_code, example_code, solution_code_returns="dataframe", path_to_df="/src/conf/long-term-memory/events.csv", debug=debug, verbose=verbose )
+    path_to_df   = "/src/conf/long-term-memory/events.csv"
+    results      = assemble_and_run_solution( solution_code, example_code, solution_code_returns="dataframe", path_to_df=path_to_df, debug=debug, verbose=verbose )
     
     # solution_code = [
     #     "import datetime",
