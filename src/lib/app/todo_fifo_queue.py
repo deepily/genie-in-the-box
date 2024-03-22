@@ -176,6 +176,11 @@ class TodoFifoQueue( FifoQueue ):
                 agent = DateAndTimeAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 self.push( agent )
                 msg = starting_a_new_job.format( agent_type="date and time")
+            elif command == "agent router go to receptionist":
+                # agent = DateAndTimeAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
+                # self.push( agent )
+                msg = starting_a_new_job.format( agent_type="receptionist" )
+                
             else:
                 msg = "TO DO: Implement command " + command
             
