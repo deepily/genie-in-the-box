@@ -66,6 +66,7 @@ class AgentBase( RunnableCode, abc.ABC ):
             "agent router go to calendar"     : self.config_mgr.get( "agent_prompt_for_calendaring" ),
             "agent router go to weather"      : self.config_mgr.get( "agent_prompt_for_weather" ),
             "agent router go to todo list"    : self.config_mgr.get( "agent_prompt_for_todo_list" ),
+            "agent router go to receptionist" : self.config_mgr.get( "agent_prompt_for_receptionist" ),
             "agent router go to debugger"     : self.config_mgr.get( "agent_prompt_for_debugger" ),
             "agent router go to bug injector" : self.config_mgr.get( "agent_prompt_for_bug_injector" ),
         }
@@ -77,6 +78,7 @@ class AgentBase( RunnableCode, abc.ABC ):
             "agent router go to calendar"     : self.config_mgr.get( "agent_model_name_for_calendaring" ),
             "agent router go to weather"      : self.config_mgr.get( "agent_model_name_for_weather" ),
             "agent router go to todo list"    : self.config_mgr.get( "agent_model_name_for_todo_list" ),
+            "agent router go to receptionist" : self.config_mgr.get( "agent_model_name_for_receptionist" ),
             "agent router go to debugger"     : self.config_mgr.get( "agent_model_name_for_debugger" ),
             "agent router go to bug injector" : self.config_mgr.get( "agent_model_name_for_bug_injector" ),
         }
@@ -88,6 +90,7 @@ class AgentBase( RunnableCode, abc.ABC ):
             "agent router go to calendar"     : "calendar",
             "agent router go to weather"      : "weather",
             "agent router go to todo list"    : "todo-list",
+            "agent router go to receptionist" : "receptionist",
             "agent router go to debugger"     : "code-debugger",
             "agent router go to bug injector" : "bug-injector",
         }
