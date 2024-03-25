@@ -90,6 +90,16 @@ class QueryAndResponseTable():
             print( 'knn[ 0 ][ "query_embedding" ] == search_terms_embedding:', knn[ 0 ][ "query_embedding" ] == search_terms_embedding )
         
         return knn
+    
+    def get_all_qna_pairs( self ):
+        
+        timer = Stopwatch( msg="get_all_qna_pairs() called..." )
+        
+        results = self._query_and_response_tbl.search().select( [ "query", "response_conversational" ] ).to_list()
+        timer.print( "Done!", use_millis=True )
+        
+        return results
+    
     def init_tbl( self ):
 
         self.db.drop_table( "query_and_response_tbl" )
