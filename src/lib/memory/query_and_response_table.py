@@ -5,6 +5,26 @@ from lib.app.configuration_manager import ConfigurationManager
 from lib.utils.util_stopwatch      import Stopwatch
 
 import lancedb
+
+
+def singleton( cls ):
+    
+    instances = { }
+    
+    def wrapper( *args, **kwargs ):
+        
+        if cls not in instances:
+            print( "Instantiating QueryAndResponseTable() singleton...", end="\n\n" )
+            instances[ cls ] = cls( *args, **kwargs )
+        else:
+            print( "Reusing QueryAndResponseTable() singleton..." )
+        
+        return instances[ cls ]
+    
+    return wrapper
+
+
+@singleton
 class QueryAndResponseTable():
     
     def __init__( self, debug=False, verbose=False, *args, **kwargs ):
@@ -19,12 +39,15 @@ class QueryAndResponseTable():
         
         self._query_and_response_tbl = self.db.open_table( "query_and_response_tbl" )
 
-        # print( f"Opened query_and_response_tbl w/ [{self._query_and_response_tbl.count_rows()}] rows" )
-        #
-        # du.print_banner( "Table:" )
-        # print( self.query_and_response_tbl.head( 10 ) )
-    
-    def insert_row( self, date=du.get_current_date(), time=du.get_current_time(), query="", query_embedding=[], response_raw="", response_raw_embedding=[], response_conversational="", response_conversational_embedding=[], solution_path_wo_root=None ):
+        print( f"Opened query_and_response_tbl w/ [{self._query_and_response_tbl.count_rows()}] rows" )
+
+        if self.debug and self.verbose:
+            du.print_banner( "Tables:" )
+            print( self.db.table_names() )
+            du.print_banner( "Table:" )
+            print( self._query_and_response_tbl.head( 10 ) )
+        
+    def insert_row( self, date=du.get_current_date(), time=du.get_current_time( include_timezone=False), query="", query_embedding=[], response_raw="", response_raw_embedding=[], response_conversational="", response_conversational_embedding=[], solution_path_wo_root=None ):
         
         timer = Stopwatch( msg="insert_row() called..." )
         new_row = [ {
@@ -38,7 +61,7 @@ class QueryAndResponseTable():
             "response_conversational_embedding": response_conversational_embedding if response_conversational_embedding else ss.generate_embedding( response_conversational ),
             "solution_path_wo_root"            : solution_path_wo_root
         } ]
-        self.query_and_response_tbl.add( new_row )
+        self._query_and_response_tbl.add( new_row )
         timer.print( "Done!", use_millis=True )
     
     def init_tbl( self ):
@@ -59,36 +82,36 @@ class QueryAndResponseTable():
                 pa.field( "solution_path_wo_root",             pa.string() ),
             ]
         )
-        self.query_and_response_tbl = self.db.create_table( "query_and_response_tbl", schema=schema, mode="overwrite" )
-        self.query_and_response_tbl.create_fts_index( "query", replace=True )
-        self.query_and_response_tbl.create_fts_index( "date", replace=True )
-        self.query_and_response_tbl.create_fts_index( "time", replace=True )
-        # self.query_and_response_tbl.create_fts_index( "response_conversational" )
-        print( f"New: Table.count_rows: {self.query_and_response_tbl.count_rows()}" )
-        # self.query_and_response_tbl.add( df_dict )
-        # print( f"New: Table.count_rows: {self.query_and_response_tbl.count_rows()}" )
+        self._query_and_response_tbl = self.db.create_table( "query_and_response_tbl", schema=schema, mode="overwrite" )
+        self._query_and_response_tbl.create_fts_index( "query", replace=True )
+        self._query_and_response_tbl.create_fts_index( "date", replace=True )
+        self._query_and_response_tbl.create_fts_index( "time", replace=True )
+        # self._query_and_response_tbl.create_fts_index( "response_conversational" )
+        print( f"New: Table.count_rows: {self._query_and_response_tbl.count_rows()}" )
+        # self._query_and_response_tbl.add( df_dict )
+        # print( f"New: Table.count_rows: {self._query_and_response_tbl.count_rows()}" )
         
         du.print_banner( "Tables:" )
         print( self.db.table_names() )
         # du.print_banner( "Table:" )
-        # print( self.query_and_response_tbl.head( 10 ) )
+        # print( self._query_and_response_tbl.head( 10 ) )
         #
-        # schema = self.query_and_response_tbl.schema
+        # schema = self._query_and_response_tbl.schema
         #
         # du.print_banner( "Schema:" )
         # print( schema )
 
-        print( f"BEFORE: Table.count_rows: {self.query_and_response_tbl.count_rows()}" )
+        print( f"BEFORE: Table.count_rows: {self._query_and_response_tbl.count_rows()}" )
         query = "you may ask yourself well how did I get here"
         response_raw = "Same as it ever was, same as it ever was. Same as it ever was, same as it ever was. Same as it ever was, same as it ever was. Same as it ever was, same as it ever was."
         response_conversational = "Same as it ever was"
         self.insert_row( query=query, response_raw=response_raw, response_conversational=response_conversational )
-        print( f"AFTER: Table.count_rows: {self.query_and_response_tbl.count_rows()}" )
+        print( f"AFTER: Table.count_rows: {self._query_and_response_tbl.count_rows()}" )
         
         querys = [ query ] + [ "what time is it", "well how did I get here" ]
         timer = Stopwatch()
         for query in querys:
-            results = self.query_and_response_tbl.search().where( f"query = '{query}'" ).limit( 1 ).select( [ "date", "time", "query", "response_conversational", "response_raw" ] ).to_list()
+            results = self._query_and_response_tbl.search().where( f"query = '{query}'" ).limit( 1 ).select( [ "date", "time", "query", "response_conversational", "response_raw" ] ).to_list()
             du.print_banner( f"Synonyms for '{query}': {len( results )} found" )
             for result in results:
                 print( f"Date: [{result[ 'date' ]}], Time: [{result[ 'time' ]}], Query: [{result[ 'query' ]}], Response: [{result[ 'response_conversational' ]}] Raw: [{result[ 'response_raw' ]}]" )
@@ -97,7 +120,7 @@ class QueryAndResponseTable():
         delta_ms = timer.get_delta_ms()
         print( f"Average search time: {delta_ms / len( querys )} ms" )
 
-        # result = self.query_and_response_tbl.search( "what time is it" ).limit( 2 ).to_pandas()
+        # result = self._query_and_response_tbl.search( "what time is it" ).limit( 2 ).to_pandas()
         # print( result )
         
 if __name__ == '__main__':
