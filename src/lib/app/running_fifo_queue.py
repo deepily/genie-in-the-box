@@ -25,7 +25,7 @@ class RunningFifoQueue( FifoQueue ):
         
         self.auto_debug      = False if config_mgr is None else config_mgr.get( "auto_debug",  default=False, return_type="boolean" )
         self.inject_bugs     = False if config_mgr is None else config_mgr.get( "inject_bugs", default=False, return_type="boolean" )
-        self.qna_tbl         = QueryAndResponseTable()
+        self.qnr_tbl         = QueryAndResponseTable()
     
     def enter_running_loop( self ):
         
@@ -138,7 +138,7 @@ class RunningFifoQueue( FifoQueue ):
             self.socketio.emit( 'done_update', { 'value': self.jobs_done_queue.size() } )
             
             # Write the job to the database for posterity's sake
-            self.qna_tbl.insert_row( query=running_job.last_question_asked, response_raw=running_job.answer, response_conversational=running_job.answer_conversational )
+            self.qnr_tbl.insert_qnr( query=running_job.last_question_asked, response_raw=running_job.answer, response_conversational=running_job.answer_conversational )
             
         else:
             
@@ -178,7 +178,7 @@ class RunningFifoQueue( FifoQueue ):
         pprint.pprint( running_job.runtime_stats )
         
         # Write the job to the database for posterity's sake
-        self.qna_tbl.insert_row( query=running_job.last_question_asked, response_raw=running_job.answer, response_conversational=running_job.answer_conversational )
+        self.qnr_tbl.insert_qnr( query=running_job.last_question_asked, response_raw=running_job.answer, response_conversational=running_job.answer_conversational )
         
         return running_job
     
