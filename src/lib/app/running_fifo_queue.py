@@ -1,7 +1,8 @@
-from lib.app.fifo_queue                       import FifoQueue
-from lib.agents.agent_base                    import AgentBase
-from lib.agents.agent_function_mapping import FunctionMappingAgent
-from lib.memory.solution_snapshot             import SolutionSnapshot
+from lib.app.fifo_queue                  import FifoQueue
+from lib.agents.agent_base               import AgentBase
+from lib.agents.agent_function_mapping   import FunctionMappingAgent
+from lib.memory.query_and_response_table import QueryAndResponseTable
+from lib.memory.solution_snapshot        import SolutionSnapshot
 
 import lib.utils.util as du
 import lib.utils.util_stopwatch as sw
@@ -24,6 +25,7 @@ class RunningFifoQueue( FifoQueue ):
         
         self.auto_debug      = False if config_mgr is None else config_mgr.get( "auto_debug",  default=False, return_type="boolean" )
         self.inject_bugs     = False if config_mgr is None else config_mgr.get( "inject_bugs", default=False, return_type="boolean" )
+        self.qna_tbl         = QueryAndResponseTable()
     
     def enter_running_loop( self ):
         
@@ -57,26 +59,6 @@ class RunningFifoQueue( FifoQueue ):
                     running_job = self._handle_base_agent( running_job, truncated_question, run_timer )
                 else:
                     running_job = self._handle_solution_snapshot( running_job, truncated_question, run_timer )
-                    #
-                    # du.print_banner( "Job completion flags:", prepend_nl=True )
-                    # print( f"     code_ran_to_completion: {running_job.code_ran_to_completion()}" )
-                    # print( f"formatter_ran_to_completion: {running_job.formatter_ran_to_completion()}" )
-                    #
-                    # if running_job.code_ran_to_completion() and running_job.formatter_ran_to_completion():
-                    #
-                    #     self.pop()
-                    #     self.socketio.emit( 'run_update', { 'value': self.size() } )
-                    #     self.jobs_done_queue.push( running_job )
-                    #     self.socketio.emit( 'done_update', { 'value': self.jobs_done_queue.size() } )
-                    #
-                    #     url = self._get_audio_url( running_job.answer_conversational )
-                    #
-                    #     print( f"Emitting DONE url [{url}]...", end="\n\n" )
-                    #     self.socketio.emit( 'audio_update', { 'audioURL': url } )
-                    #
-                    # else:
-                    #
-                    #     print( f"Job [{truncated_question}] code or formatter did not run to completion, adding to dead queue?" )
             
             else:
                 # print( "No jobs to pop from todo Q " )
@@ -154,12 +136,16 @@ class RunningFifoQueue( FifoQueue ):
             self.socketio.emit( 'run_update', { 'value': self.size() } )
             self.jobs_done_queue.push( running_job )
             self.socketio.emit( 'done_update', { 'value': self.jobs_done_queue.size() } )
-        
+            
+            # Write the job to the database for posterity's sake
+            self.qna_tbl.insert_row( query=running_job.last_question_asked, response_raw=running_job.answer, response_conversational=running_job.answer_conversational )
+            
         else:
             
             running_job = self._handle_error_case( code_response, running_job, truncated_question )
         
         return running_job
+    
     def _handle_solution_snapshot( self, running_job, truncated_question, run_timer ):
         
         msg = f"Executing SolutionSnapshot code for [{truncated_question}]..."
@@ -168,15 +154,12 @@ class RunningFifoQueue( FifoQueue ):
         _ = running_job.run_code()
         timer.print( "Done!", use_millis=True )
         
-        # msg = "Re-formatting job.answer..."
-        # timer = sw.Stopwatch( msg )
         formatted_output = running_job.format_output()
         print( formatted_output )
         url = self._get_audio_url( running_job.answer_conversational )
         print( f"Emitting DONE url [{url}]...", end="\n\n" )
         self.socketio.emit( 'audio_update', { 'audioURL': url } )
         
-        # timer.print( "Done!", use_millis=True )
         self.pop()
         self.jobs_done_queue.push( running_job )
         self.socketio.emit( 'run_update', { 'value': self.size() } )
@@ -193,6 +176,9 @@ class RunningFifoQueue( FifoQueue ):
         
         du.print_banner( "running_job.runtime_stats", prepend_nl=True )
         pprint.pprint( running_job.runtime_stats )
+        
+        # Write the job to the database for posterity's sake
+        self.qna_tbl.insert_row( query=running_job.last_question_asked, response_raw=running_job.answer, response_conversational=running_job.answer_conversational )
         
         return running_job
     
