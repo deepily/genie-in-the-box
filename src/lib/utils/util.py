@@ -42,11 +42,14 @@ def get_current_date( tz_name="US/Eastern" ):
     
     return tz_date.strftime( "%Y-%m-%d" )
 
-def get_current_time( tz_name="US/Eastern" ):
+def get_current_time( tz_name="US/Eastern", include_timezone=True ):
     
     tz_date = get_current_datetime_raw( tz_name )
     
-    return tz_date.strftime( "%H:%M:%S %Z" )
+    if include_timezone:
+        return tz_date.strftime( "%H:%M:%S %Z" )
+    else:
+        return tz_date.strftime( "%H:%M:%S" )
 
 def get_name_value_pairs( arg_list, debug=False, verbose=False ):
     
