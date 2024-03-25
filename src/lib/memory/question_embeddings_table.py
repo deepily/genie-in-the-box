@@ -1,8 +1,27 @@
 import lib.utils.util as du
+
+from lib.memory.solution_snapshot  import SolutionSnapshot as ss
 from lib.app.configuration_manager import ConfigurationManager
 from lib.utils.util_stopwatch      import Stopwatch
 
 import lancedb
+
+
+def singleton( cls ):
+    instances = { }
+    
+    def wrapper( *args, **kwargs ):
+        
+        if cls not in instances:
+            print( "Instantiating QuestionEmbeddingsTable() singleton...", end="\n\n" )
+            instances[ cls ] = cls( *args, **kwargs )
+        else:
+            print( "Reusing QuestionEmbeddingsTable() singleton..." )
+        
+        return instances[ cls ]
+    
+    return wrapper
+
 class QuestionEmbeddingsTable():
     
     def __init__( self, debug=False, verbose=False, *args, **kwargs ):
@@ -34,7 +53,7 @@ class QuestionEmbeddingsTable():
         if self.debug: timer.print( "Done!", use_millis=True )
         
         if not synonyms:
-            return None
+            return ss.generate_embedding( question )
         else:
             return synonyms[ 0 ][ "embedding"]
         
