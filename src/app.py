@@ -27,6 +27,7 @@ from lib.app import multimodal_munger as mmm
 import lib.utils.util              as du
 import lib.utils.util_stopwatch    as sw
 import lib.utils.util_xml          as dux
+from lib.memory.input_and_output_table import InputAndOutputTable
 
 from lib.memory.solution_snapshot_mgr import SolutionSnapshotManager
 from lib.app.fifo_queue               import FifoQueue
@@ -54,14 +55,15 @@ config_block_id  = cli_args[ "config_block_id" ]
 config_path      = du.get_project_root() + cli_args[ "config_path" ]
 splainer_path    = du.get_project_root() + cli_args[ "splainer_path" ]
 
+io_tbl           = None
+
 app_config_server_name        = None
 path_to_snapshots_dir_wo_root = None
 tts_local_url_template        = None
-# path_to_events_df_wo_root     = None
+
 
 def init_configuration( refresh=False ):
 
-    
     global app_debug
     global app_verbose
     global app_silent
@@ -83,7 +85,7 @@ def init_configuration( refresh=False ):
     global app_config_server_name
     global path_to_snapshots_dir_wo_root
     global tts_local_url_template
-    # global path_to_events_df_wo_root
+    global io_tbl
     
     app_debug                          = config_mgr.get( "app_debug",   default=False, return_type="boolean" )
     app_verbose                        = config_mgr.get( "app_verbose", default=False, return_type="boolean" )
@@ -92,7 +94,8 @@ def init_configuration( refresh=False ):
     app_config_server_name             = config_mgr.get( "app_config_server_name" )
     path_to_snapshots_dir_wo_root      = config_mgr.get( "path_to_snapshots_dir_wo_root" )
     tts_local_url_template             = config_mgr.get( "tts_local_url_template" )
-    # path_to_events_df_wo_root          = config_mgr.get( "path_to_events_df_wo_root" )
+    
+    io_tbl = InputAndOutputTable( debug=app_debug, verbose=app_verbose )
     
 init_configuration()
 
@@ -331,6 +334,9 @@ def proofread():
     print( result )
     timer.print( "Proofread", use_millis=True )
     
+    # TODO: This would be great place to make this insert asynchronous
+    io_tbl.insert_io_row( input_type="proofread", input=question, output_final=result )
+    
     response = make_response( result )
     response.headers.add( "Access-Control-Allow-Origin", "*" )
     
@@ -365,6 +371,9 @@ def proofread_sql():
     print( response )
     sql = dux.get_value_by_xml_tag_name( response, "sql" )
     
+    # TODO: This would be great place to make this insert asynchronous
+    io_tbl.insert_io_row( input_type="proofread sql", input=question, output_final=sql )
+    
     response = make_response( sql )
     # response = make_response( result )
     response.headers.add( "Access-Control-Allow-Origin", "*" )
@@ -393,6 +402,9 @@ def proofread_python():
     response = dux.strip_all_white_space( response )
     print( response )
     python = dux.get_value_by_xml_tag_name( response, "python" )
+    
+    # TODO: This would be great place to make this insert asynchronous
+    io_tbl.insert_io_row( input_type="proofread python", input=question, output_final=python )
     
     response = make_response( python )
     response.headers.add( "Access-Control-Allow-Origin", "*" )
@@ -423,12 +435,12 @@ def upload_and_transcribe_mp3_file():
     print( " Done!" )
     
     timer  = sw.Stopwatch( f"Transcribing {path}..." )
-    result = whisper_pipeline( path )
+    raw_transcription = whisper_pipeline( path )
     timer.print( "Done!", use_millis=True, end="\n\n" )
     
-    result = result[ "text" ].strip()
+    raw_transcription = raw_transcription[ "text" ].strip()
     
-    print( "Result: [{}]".format( result ) )
+    print( "Result: [{}]".format( raw_transcription ) )
     
     # Fetch last response processed... ¡OJO! This is pretty kludgey, but it works for now. TODO: Do better!
     last_response_path = "/io/last_response.json"
@@ -439,7 +451,7 @@ def upload_and_transcribe_mp3_file():
         last_response = None
         
     munger = mmm.MultiModalMunger(
-        result, prefix=prefix, prompt_key=prompt_key, debug=app_debug, verbose=app_verbose, last_response=last_response,
+        raw_transcription, prefix=prefix, prompt_key=prompt_key, debug=app_debug, verbose=app_verbose, last_response=last_response,
         cmd_llm_in_memory=cmd_model,
         cmd_llm_tokenizer=cmd_tokenizer,
         cmd_prompt_template=cmd_prompt_template,
@@ -463,47 +475,9 @@ def upload_and_transcribe_mp3_file():
         
         munger.transcription = response
         munger.results = response
-    
-    # elif munger.is_ddg_search():
-#         du.print_banner( "DDG search detected & ABORTED", prepend_nl=True, expletive=True, chunk="b0rk3d! " )
-#         print( "Investigate why DGG Throws the following Stacktrace:" )
-#         print( """File "/usr/local/lib/python3.11/site-packages/flask/cli.py", line 214, in locate_app
-#     __import__(module_name)
-#   File "/var/genie-in-the-box/src/app.py", line 7, in <module>
-#     from duckduckgo_search import ddg
-#   File "/usr/local/lib/python3.11/site-packages/duckduckgo_search/__init__.py", line 11, in <module>
-#     from .compat import (
-#   File "/usr/local/lib/python3.11/site-packages/duckduckgo_search/compat.py", line 4, in <module>
-#     from .duckduckgo_search import DDGS
-#   File "/usr/local/lib/python3.11/site-packages/duckduckgo_search/duckduckgo_search.py", line 9, in <module>
-#     from curl_cffi import requests
-#   File "/usr/local/lib/python3.11/site-packages/curl_cffi/requests/__init__.py", line 29, in <module>
-#     from .session import AsyncSession, BrowserType, Session
-#   File "/usr/local/lib/python3.11/site-packages/curl_cffi/requests/session.py", line 30, in <module>
-#     import eventlet.tpool
-#   File "/usr/local/lib/python3.11/site-packages/eventlet/__init__.py", line 17, in <module>
-#     from eventlet import convenience
-#   File "/usr/local/lib/python3.11/site-packages/eventlet/convenience.py", line 7, in <module>
-#     from eventlet.green import socket
-#   File "/usr/local/lib/python3.11/site-packages/eventlet/green/socket.py", line 4, in <module>
-#     __import__('eventlet.green._socket_nodns')
-#   File "/usr/local/lib/python3.11/site-packages/eventlet/green/_socket_nodns.py", line 11, in <module>
-#     from eventlet import greenio
-#   File "/usr/local/lib/python3.11/site-packages/eventlet/greenio/__init__.py", line 3, in <module>
-#     from eventlet.greenio.base import *  # noqa
-#     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#   File "/usr/local/lib/python3.11/site-packages/eventlet/greenio/base.py", line 32, in <module>
-#     socket_timeout = eventlet.timeout.wrap_is_timeout(socket.timeout)
-#                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#   File "/usr/local/lib/python3.11/site-packages/eventlet/timeout.py", line 166, in wrap_is_timeout
-#     base.is_timeout = property(lambda _: True)
-#     ^^^^^^^^^^^^^^^
-# TypeError: cannot set 'is_timeout' attribute of immutable type 'TimeoutError'""" )
-#         munger.results = "DDG search detected & ABORTED"
-#         print( "Fetching AI data for [{}]...".format( munger.transcription ) )
-#         results = ddg( munger.transcription, region="wt-wt", safesearch="Off", time="y", max_results=20 )
-#         print( results )
-#         munger.results = results
+        
+        # TODO: This would be great place to make this insert asynchronous
+        io_tbl.insert_io_row( input_type=f"upload and proofread mp3: {prefix}", input=munger.raw_transcription, output_raw=munger.transcription, output_final=munger.results )
         
     elif munger.is_agent():
         
@@ -516,40 +490,56 @@ def upload_and_transcribe_mp3_file():
 
     return last_response
 
+# Create an endpoint to download the entire I/O table
+@app.route( "/api/get-all-io" )
+def get_all_io():
+    
+    all_io = io_tbl.get_all_io_pairs()
+    
+    date = ""
+    for io in all_io:
+        
+        if date != io[ "date" ]:
+            date = io[ "date" ]
+            du.print_banner( f"Date: [{date}]")
+            
+        print( f"Time: [{io[ 'time' ]}] input_type: [{io[ 'input_type' ]}] input: [{io[ 'input' ]}] output_final: [{io[ 'output_final' ]}]")
+    
+    return json.dumps( all_io )
 
-@app.route( "/api/run-raw-prompt-text" )
-def run_raw_prompt_text():
-    
-    for key in request.__dict__:
-        # print( "key [{}] value [{}]".format( key, request.__dict__[ key ] ), end="\n\n" )
-        print( "key [{}]".format( key ) )
-    print()
-    print( "request.args: [{}]".format( request.args ) )
-    print( "request.data: [{}]".format( request.data ) )
-    print( "query_string: [{}]".format( request.query_string ) )
-    
-    prompt_and_content = request.args.get( "prompt_and_content" )
-    # prompt_feedback = request.args.get( "prompt_verbose", default="verbose" )
-    
-    print( "Running prompt [{}]...".format( prompt_and_content ) )
-    
-    timer = sw.Stopwatch()
-    response = genie_client.ask_chat_gpt_using_raw_prompt_and_content( prompt_and_content ).replace( "```", "" ).strip()
-    timer.print( "Done!" )
-    
-    return response
+# @app.route( "/api/run-raw-prompt-text" )
+# def run_raw_prompt_text():
+#
+#     for key in request.__dict__:
+#         # print( "key [{}] value [{}]".format( key, request.__dict__[ key ] ), end="\n\n" )
+#         print( "key [{}]".format( key ) )
+#     print()
+#     print( "request.args: [{}]".format( request.args ) )
+#     print( "request.data: [{}]".format( request.data ) )
+#     print( "query_string: [{}]".format( request.query_string ) )
+#
+#     prompt_and_content = request.args.get( "prompt_and_content" )
+#     # prompt_feedback = request.args.get( "prompt_verbose", default="verbose" )
+#
+#     print( "Running prompt [{}]...".format( prompt_and_content ) )
+#
+#     timer = sw.Stopwatch()
+#     response = genie_client.ask_chat_gpt_using_raw_prompt_and_content( prompt_and_content ).replace( "```", "" ).strip()
+#     timer.print( "Done!" )
+#
+#     return response
 
-@app.route( "/api/get-transcription-to-command" )
-def get_transcription_to_command():
-    
-    transcription = request.args.get( "transcription" )
-    
-    print( f"Fetching command for [{transcription}]..." )
-    timer    = sw.Stopwatch()
-    response = genie_client.get_command_for_transcription( transcription ).strip()
-    timer.print( "Done!" )
-    
-    return response
+# @app.route( "/api/get-transcription-to-command" )
+# def get_transcription_to_command():
+#
+#     transcription = request.args.get( "transcription" )
+#
+#     print( f"Fetching command for [{transcription}]..." )
+#     timer    = sw.Stopwatch()
+#     response = genie_client.get_command_for_transcription( transcription ).strip()
+#     timer.print( "Done!" )
+#
+#     return response
 
 @app.route( "/api/upload-and-transcribe-wav", methods=[ "POST" ] )
 def upload_and_transcribe_wav_file():
@@ -570,17 +560,20 @@ def upload_and_transcribe_wav_file():
     
     timer = sw.Stopwatch( msg=f"Transcribing {temp_file}..." )
     # result = model.transcribe( temp_file )
-    result = whisper_pipeline( temp_file )
+    raw_transcription = whisper_pipeline( temp_file )
     timer.print( "Done!", use_millis=True, end="\n\n" )
     
-    transcribed_text = result[ "text" ].strip()
-    print( "transcribed_text: [{}]".format( transcribed_text ) )
+    raw_transcription = raw_transcription[ "text" ].strip()
+    print( "transcribed_text: [{}]".format( raw_transcription ) )
     
     print( "Deleting temp file [{}]...".format( temp_file ), end="" )
     os.remove( temp_file )
     print( " Done!" )
     
-    munger = mmm.MultiModalMunger( transcribed_text, prefix=prefix, debug=app_debug, verbose=app_verbose )
+    munger = mmm.MultiModalMunger( raw_transcription, prefix=prefix, debug=app_debug, verbose=app_verbose )
+    
+    # TODO: This would be great place to make this insert asynchronous
+    io_tbl.insert_io_row( input_type=f"upload and transcribe wav: {prefix}", input=munger.raw_transcription, output_raw=munger.transcription, output_final=munger.results )
     
     return munger.transcription
 
