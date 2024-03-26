@@ -90,11 +90,11 @@ class InputAndOutputTable():
         
         return knn
     
-    def get_all_io_pairs( self ):
+    def get_all_io( self ):
         
-        timer = Stopwatch( msg="get_all_io_pairs() called..." )
+        timer = Stopwatch( msg="get_all_io() called..." )
         
-        results = self._input_and_output_tbl.search().select( [ "input", "output_final" ] ).to_list()
+        results = self._input_and_output_tbl.search().select( [ "date", "time", "input_type", "input", "output_final" ] ).to_list()
         timer.print( "Done!", use_millis=True )
         
         return results
@@ -176,7 +176,7 @@ if __name__ == '__main__':
     # results = query_and_response_tbl.get_knn_by_input( "what time is it", k=5 )
     # for row in results:
     #     print( row[ "input" ], row[ "output_final" ], row[ "_distance" ] )
-    results = query_and_response_tbl.get_all_io_pairs()
+    results = query_and_response_tbl.get_all_io()
     for row in results:
         print( row[ "input" ], "=", row[ "output_final" ] )
     
