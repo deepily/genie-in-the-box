@@ -25,12 +25,12 @@ class SolutionSnapshot( RunnableCode ):
         return du.get_current_datetime()
     
     @staticmethod
-    def clean_question( question ):
+    def remove_non_alphabetics( input ):
         
         regex = re.compile( "[^a-zA-Z ]" )
-        cleaned_question = regex.sub( '', question ).lower()
+        cleaned_output = regex.sub( '', input ).lower()
         
-        return cleaned_question
+        return cleaned_output
     
     @staticmethod
     def generate_embedding( text ):
@@ -79,7 +79,7 @@ class SolutionSnapshot( RunnableCode ):
         dirty                      = False
         
         self.push_counter          = push_counter
-        self.question              = SolutionSnapshot.clean_question( question )
+        self.question              = SolutionSnapshot.remove_non_alphabetics( question )
         self.thoughts              = thoughts
         
         self.answer                = answer
@@ -193,7 +193,7 @@ class SolutionSnapshot( RunnableCode ):
         else:
             self.last_question_asked = question
         
-        question = SolutionSnapshot.clean_question( question )
+        question = SolutionSnapshot.remove_non_alphabetics( question )
         
         if question not in self.synonymous_questions:
             self.synonymous_questions[ question ] = score

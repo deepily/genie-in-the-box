@@ -27,7 +27,7 @@ class FunctionMappingAgent( AgentBase ):
         self.system_message        = self._get_system_message()
         
         self.last_question_asked   = question
-        self.question              = ss.SolutionSnapshot.clean_question( question )
+        self.question              = ss.SolutionSnapshot.remove_non_alphabetics( question )
         
         # self.prompt_response              = None
         # self.prompt_response_dict         = None
@@ -85,7 +85,7 @@ class FunctionMappingAgent( AgentBase ):
         
         if question != "":
             self.last_question_asked = question
-            self.question            = ss.SolutionSnapshot.clean_question( question )
+            self.question            = ss.SolutionSnapshot.remove_non_alphabetics( question )
         
         if self.question == "":
             raise ValueError( "No question was provided" )

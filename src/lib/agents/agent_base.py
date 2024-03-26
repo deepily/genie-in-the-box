@@ -35,7 +35,7 @@ class AgentBase( RunnableCode, abc.ABC ):
         
         # This is a bit of a misnomer, it's the unprocessed question that was asked of the agent
         self.last_question_asked   = question
-        self.question              = ss.SolutionSnapshot.clean_question( question )
+        self.question              = ss.SolutionSnapshot.remove_non_alphabetics( question )
         self.answer_conversational = None
         
         self.config_mgr            = ConfigurationManager( env_var_name="GIB_CONFIG_MGR_CLI_ARGS" )
@@ -112,7 +112,7 @@ class AgentBase( RunnableCode, abc.ABC ):
 
         # Constructing the filename
         # Format: "topic-year-month-day-hour-minute-second.json", limit question to the first 96 characters
-        question_short = SolutionSnapshot.clean_question( self.question[ :96 ] ).replace( " ", "-" )
+        question_short = SolutionSnapshot.remove_non_alphabetics( self.question[ :96 ] ).replace( " ", "-" )
         topic          = self.serialization_topics[ self.routing_command ]
         topic          = topic + "-" + subtopic if subtopic is not None else topic
         now            = du.get_current_datetime_raw()

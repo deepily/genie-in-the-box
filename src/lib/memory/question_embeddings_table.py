@@ -49,13 +49,13 @@ class QuestionEmbeddingsTable():
     def get_embedding( self, question ):
         
         if self.debug: timer = Stopwatch( msg=f"get_embedding( '{question}' )" )
-        synonyms = self._question_embeddings_tbl.search().where( f"question = '{question}'" ).limit( 1 ).select( [ "embedding" ] ).to_list()
+        rows_returned = self._question_embeddings_tbl.search().where( f"question = '{question}'" ).limit( 1 ).select( [ "embedding" ] ).to_list()
         if self.debug: timer.print( "Done!", use_millis=True )
         
-        if not synonyms:
+        if not rows_returned:
             return ss.generate_embedding( question )
         else:
-            return synonyms[ 0 ][ "embedding"]
+            return rows_returned[ 0 ][ "embedding"]
         
     def add_embedding( self, question, embedding ):
         

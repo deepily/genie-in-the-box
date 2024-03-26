@@ -23,7 +23,7 @@ class XXX_DataQueryingAgent( XXX_Agent ):
         self.default_model         = default_model
         
         self.last_question_asked   = question
-        self.question              = ss.SolutionSnapshot.clean_question( question )
+        self.question              = ss.SolutionSnapshot.remove_non_alphabetics( question )
         
         if self.default_model == Llm.PHIND_34B_v2:
             self.system_message    = self._get_system_message_phind()

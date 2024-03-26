@@ -1,7 +1,7 @@
 from lib.app.fifo_queue                  import FifoQueue
 from lib.agents.agent_base               import AgentBase
 from lib.agents.agent_function_mapping   import FunctionMappingAgent
-from lib.memory.query_and_response_table import QueryAndResponseTable
+from lib.memory.input_and_output_table import InputAndOutputTable
 from lib.memory.solution_snapshot        import SolutionSnapshot
 
 import lib.utils.util as du
@@ -25,7 +25,7 @@ class RunningFifoQueue( FifoQueue ):
         
         self.auto_debug      = False if config_mgr is None else config_mgr.get( "auto_debug",  default=False, return_type="boolean" )
         self.inject_bugs     = False if config_mgr is None else config_mgr.get( "inject_bugs", default=False, return_type="boolean" )
-        self.qnr_tbl         = QueryAndResponseTable()
+        self.io_tbl          = InputAndOutputTable()
     
     def enter_running_loop( self ):
         
@@ -138,7 +138,7 @@ class RunningFifoQueue( FifoQueue ):
             self.socketio.emit( 'done_update', { 'value': self.jobs_done_queue.size() } )
             
             # Write the job to the database for posterity's sake
-            self.qnr_tbl.insert_qnr( query=running_job.last_question_asked, response_raw=running_job.answer, response_conversational=running_job.answer_conversational )
+            self.io_tbl.insert_io_row( input_type=running_job.routing_command, input=running_job.last_question_asked, output_raw=running_job.answer, output_final=running_job.answer_conversational )
             
         else:
             
@@ -178,7 +178,7 @@ class RunningFifoQueue( FifoQueue ):
         pprint.pprint( running_job.runtime_stats )
         
         # Write the job to the database for posterity's sake
-        self.qnr_tbl.insert_qnr( query=running_job.last_question_asked, response_raw=running_job.answer, response_conversational=running_job.answer_conversational )
+        self.io_tbl.insert_io_row( input_type=running_job.routing_command, input=running_job.last_question_asked, output_raw=running_job.answer, output_final=running_job.answer_conversational )
         
         return running_job
     

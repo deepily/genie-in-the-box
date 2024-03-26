@@ -84,7 +84,7 @@ class SolutionSnapshotManager:
     def delete_snapshot( self, question, delete_file=False ):
         
         # clean up the question string before querying
-        question = ss.SolutionSnapshot.clean_question( question )
+        question = ss.SolutionSnapshot.remove_non_alphabetics( question )
         
         if self.question_exists( question ):
             if delete_file:
@@ -187,7 +187,7 @@ class SolutionSnapshotManager:
     
     def get_snapshots_by_question( self, question, threshold=85.0, limit=7, debug=False ):
         
-        question = ss.SolutionSnapshot.clean_question( question )
+        question = ss.SolutionSnapshot.remove_non_alphabetics( question )
         
         print( f"get_snapshots_by_question( '{question}' with threshold [{threshold}] )..." )
         # print( "question in self.snapshots_by_synomymous_questions:", question in self.snapshots_by_synomymous_questions)

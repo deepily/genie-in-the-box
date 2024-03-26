@@ -25,7 +25,7 @@ class IncrementalCalendaringAgent( XXX_DataQueryingAgent ):
         self.project_root         = du.get_project_root()
         self.path_to_prompts      = self.config_mgr.get( "path_to_event_prompts_wo_root" )
         self.prompt_components    = None
-        self.question             = SolutionSnapshot.clean_question( question )
+        self.question             = SolutionSnapshot.remove_non_alphabetics( question )
         self.prompt_response_dict = None
         # Initialization of prompt components pushed to run_prompt
         # self.prompt_components = self._initialize_prompt_components( self.df, self.question )
@@ -46,7 +46,7 @@ class IncrementalCalendaringAgent( XXX_DataQueryingAgent ):
         # Format: "question_year-month-day-hour-minute-step-N-of-M.json"
         print( f"Q: {question}" )
         # limit question to the first 96 characters
-        topic     = SolutionSnapshot.clean_question( question[ :96 ] ).replace( " ", "-" )
+        topic     = SolutionSnapshot.remove_non_alphabetics( question[ :96 ] ).replace( " ", "-" )
         file_path = f"{du.get_project_root()}/io/log/{topic}-{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-step-{(current_step + 1)}-of-{total_steps}.json"
         
         # Serialize and save to file
