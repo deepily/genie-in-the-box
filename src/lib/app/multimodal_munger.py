@@ -54,8 +54,7 @@ modes_to_methods_dict = {
 class MultiModalMunger:
 
     def __init__( self, raw_transcription, prefix="", prompt_key="generic", config_path="conf/modes-vox.json",
-                  use_string_matching=True, use_ai_matching=True, vox_command_model="ada:ft-deepily-2023-07-12-00-02-27",
-                  debug=False, verbose=False, last_response=None,
+                  use_string_matching=True, use_ai_matching=True, debug=False, verbose=False, last_response=None,
                   cmd_llm_name=None, cmd_llm_in_memory=None, cmd_llm_tokenizer=None, cmd_prompt_template=None, cmd_llm_device=None, ):
 
         self.debug                  = debug
@@ -66,11 +65,6 @@ class MultiModalMunger:
         self.prefix                 = prefix
         self.use_ai_matching        = use_ai_matching
         self.use_string_matching    = use_string_matching
-        self.vox_command_model      = vox_command_model
-        self.vox_command_threshold  = 50.0
-        
-        self.domain_name_model      = "ada:ft-deepily:domain-names-2023-07-12-17-15-41"
-        self.search_terms_model     = "ada:ft-deepily:search-terms-2023-07-12-19-27-22"
         
         self.punctuation            = du.get_file_as_dictionary( du.get_project_root() + "/src/conf/translation-dictionary.map", lower_case=True, debug=self.debug )
         self.domain_names           = du.get_file_as_dictionary( du.get_project_root() + "/src/conf/domain-names.map",           lower_case=True )
