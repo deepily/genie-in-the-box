@@ -47,7 +47,7 @@ class InputAndOutputTable():
             du.print_banner( "Table:" )
             print( self._input_and_output_tbl.select( [ "date", "time", "input", "output_final" ] ).head( 10 ) )
         
-    def insert_io_row( self, date=du.get_current_date(), time=du.get_current_time( include_timezone=False ), input_type="", input="", input_embedding=[], output_raw="", output_raw_embedding=[], output_final="", output_final_embedding=[], solution_path_wo_root=None ):
+    def insert_io_row( self, date=du.get_current_date(), time=du.get_current_time( include_timezone=False ), input_type="", input="", input_embedding=[], output_raw="", output_final="", output_final_embedding=[], solution_path_wo_root=None ):
         
         # ¡OJO! The embeddings are optional. If not provided, they will be generated.
         # In this case the only embedding that we are cashing is the one that corresponds to the query/input, otherwise known
@@ -61,7 +61,6 @@ class InputAndOutputTable():
             "input"                            : ss.remove_non_alphabetics( input ),
             "input_embedding"                  : input_embedding if input_embedding else self._question_embeddings_tbl.get_embedding( ss.remove_non_alphabetics( input ) ),
             "output_raw"                       : output_raw,
-            "output_raw_embedding"             : output_raw_embedding if output_raw_embedding else ss.generate_embedding( output_raw ),
             "output_final"                     : output_final,
             "output_final_embedding"           : output_final_embedding if output_final_embedding else ss.generate_embedding( output_final ),
             "solution_path_wo_root"            : solution_path_wo_root
@@ -91,9 +90,9 @@ class InputAndOutputTable():
         
         return knn
     
-    def get_all_qna_pairs( self ):
+    def get_all_io_pairs( self ):
         
-        timer = Stopwatch( msg="get_all_qna_pairs() called..." )
+        timer = Stopwatch( msg="get_all_io_pairs() called..." )
         
         results = self._input_and_output_tbl.search().select( [ "input", "output_final" ] ).to_list()
         timer.print( "Done!", use_millis=True )
@@ -107,16 +106,15 @@ class InputAndOutputTable():
 
         schema = pa.schema(
             [
-                pa.field( "date",                              pa.string() ),
-                pa.field( "time",                              pa.string() ),
-                pa.field( "input_type",                        pa.string() ),
-                pa.field( "input",                             pa.string() ),
-                pa.field( "input_embedding",                   pa.list_( pa.float32(), 1536 ) ),
-                pa.field( "output_raw",                        pa.string() ),
-                pa.field( "output_raw_embedding",              pa.list_( pa.float32(), 1536 ) ),
-                pa.field( "output_final",                      pa.string() ),
-                pa.field( "output_final_embedding", pa.list_( pa.float32(), 1536 ) ),
-                pa.field( "solution_path_wo_root",             pa.string() ),
+                pa.field( "date",                     pa.string() ),
+                pa.field( "time",                     pa.string() ),
+                pa.field( "input_type",               pa.string() ),
+                pa.field( "input",                    pa.string() ),
+                pa.field( "input_embedding",          pa.list_( pa.float32(), 1536 ) ),
+                pa.field( "output_raw",               pa.string() ),
+                pa.field( "output_final",             pa.string() ),
+                pa.field( "output_final_embedding",   pa.list_( pa.float32(), 1536 ) ),
+                pa.field( "solution_path_wo_root",    pa.string() ),
             ]
         )
         self._input_and_output_tbl = self.db.create_table( "input_and_output_tbl", schema=schema, mode="overwrite" )
@@ -142,17 +140,17 @@ class InputAndOutputTable():
         # response_conversational = "Same as it ever was"
         # self.insert_io_row( input=query, output_raw=response_raw, output_final=response_conversational )
         
-        query = "what time is it"
-        response_raw = "14:45:00 EST"
-        response_conversational = "It's 2:45 PM EST."
-        self.insert_io_row( input=query, output_raw=response_raw, output_final=response_conversational )
-        
-        query = "what day is today"
-        response_raw = "03/25/2024"
-        response_conversational = "Today is March 25th, 2024."
-        self.insert_io_row( input=query, output_raw=response_raw, output_final=response_conversational )
-        
-        print( f"AFTER: Table.count_rows: {self._input_and_output_tbl.count_rows()}" )
+        # query = "what time is it"
+        # response_raw = "14:45:00 EST"
+        # response_conversational = "It's 2:45 PM EST."
+        # self.insert_io_row( input=query, output_raw=response_raw, output_final=response_conversational )
+        #
+        # query = "what day is today"
+        # response_raw = "03/25/2024"
+        # response_conversational = "Today is March 25th, 2024."
+        # self.insert_io_row( input=query, output_raw=response_raw, output_final=response_conversational )
+        #
+        # print( f"AFTER: Table.count_rows: {self._input_and_output_tbl.count_rows()}" )
         
         # querys = [ query ] + [ "what time is it", "what day is today", "well how did I get here" ]
         # timer = Stopwatch()
@@ -174,11 +172,11 @@ if __name__ == '__main__':
     # print( "dot product of foo and foo", np.dot( foo, foo ) * 100 )
     #
     query_and_response_tbl = InputAndOutputTable( debug=True )
-    # query_and_response_tbl.init_tbl()
+    query_and_response_tbl.init_tbl()
     # results = query_and_response_tbl.get_knn_by_input( "what time is it", k=5 )
     # for row in results:
     #     print( row[ "input" ], row[ "output_final" ], row[ "_distance" ] )
-    results = query_and_response_tbl.get_all_qna_pairs()
+    results = query_and_response_tbl.get_all_io_pairs()
     for row in results:
         print( row[ "input" ], "=", row[ "output_final" ] )
     
