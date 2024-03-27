@@ -41,11 +41,11 @@ class InputAndOutputTable():
 
         print( f"Opened _input_and_output_tbl w/ [{self._input_and_output_tbl.count_rows()}] rows" )
 
-        if self.debug and self.verbose:
-            du.print_banner( "Tables:" )
-            print( self.db.table_names() )
-            du.print_banner( "Table:" )
-            print( self._input_and_output_tbl.select( [ "date", "time", "input", "output_final" ] ).head( 10 ) )
+        # if self.debug and self.verbose:
+        #     du.print_banner( "Tables:" )
+        #     print( self.db.table_names() )
+        #     du.print_banner( "Table:" )
+        #     print( self._input_and_output_tbl.select( [ "date", "time", "input", "output_final" ] ).head( 10 ) )
         
     def insert_io_row( self, date=du.get_current_date(), time=du.get_current_time( include_timezone=False ), input_type="", input="", input_embedding=[], output_raw="", output_final="", output_final_embedding=[], solution_path_wo_root=None ):
         
