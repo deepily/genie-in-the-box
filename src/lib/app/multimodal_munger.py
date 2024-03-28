@@ -61,7 +61,7 @@ class MultiModalMunger:
         self.verbose                = verbose
         self.config_mgr             = ConfigurationManager( env_var_name="GIB_CONFIG_MGR_CLI_ARGS" )
         self.config_path            = config_path
-        self.raw_transcription      = raw_transcription
+        self.raw_transcription      = raw_transcription.copy()
         self.prefix                 = prefix
         self.use_ai_matching        = use_ai_matching
         self.use_string_matching    = use_string_matching
