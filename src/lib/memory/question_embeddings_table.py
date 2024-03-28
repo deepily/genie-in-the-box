@@ -50,7 +50,7 @@ class QuestionEmbeddingsTable():
         
         if self.debug: timer = Stopwatch( msg=f"get_embedding( '{question}' )" )
         rows_returned = self._question_embeddings_tbl.search().where( f"question = '{question}'" ).limit( 1 ).select( [ "embedding" ] ).to_list()
-        if self.debug: timer.print( "Done!", use_millis=True )
+        if self.debug: timer.print( f"Done! w/ {len( rows_returned )} rows returned", use_millis=True )
         
         if not rows_returned:
             return ss.generate_embedding( question )
