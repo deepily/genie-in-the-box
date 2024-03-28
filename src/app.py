@@ -79,7 +79,7 @@ def init_configuration( refresh=False ):
     
     config_mgr.print_configuration( brackets=True )
     
-    # Running flask version 2.1.3
+    # Running flask version 2.1.3?
     print( f"Running flask version {flask.__version__}", end="\n\n" )
     
     global app_config_server_name
@@ -335,7 +335,7 @@ def proofread():
     timer.print( "Proofread", use_millis=True )
     
     # TODO: This would be great place to make this insert asynchronous
-    io_tbl.insert_io_row( input_type="proofread", input=question, output_final=result )
+    io_tbl.insert_io_row( input_type="/api/proofread", input=question, output_final=result )
     
     response = make_response( result )
     response.headers.add( "Access-Control-Allow-Origin", "*" )
@@ -372,7 +372,7 @@ def proofread_sql():
     sql = dux.get_value_by_xml_tag_name( response, "sql" )
     
     # TODO: This would be great place to make this insert asynchronous
-    io_tbl.insert_io_row( input_type="proofread sql", input=question, output_final=sql )
+    io_tbl.insert_io_row( input_type="/api/proofread-sql", input=question, output_final=sql )
     
     response = make_response( sql )
     # response = make_response( result )
@@ -404,7 +404,7 @@ def proofread_python():
     python = dux.get_value_by_xml_tag_name( response, "python" )
     
     # TODO: This would be great place to make this insert asynchronous
-    io_tbl.insert_io_row( input_type="proofread python", input=question, output_final=python )
+    io_tbl.insert_io_row( input_type="/api/proofread-python", input=question, output_final=python )
     
     response = make_response( python )
     response.headers.add( "Access-Control-Allow-Origin", "*" )
@@ -461,7 +461,7 @@ def upload_and_transcribe_mp3_file():
 
     if munger.is_text_proofread():
         
-        print( "Proofreading text... ", end="" )
+        print( "Munger: Proofreading text... ", end="" )
         timer = sw.Stopwatch()
         
         if prompt_feedback.lower() == "verbose":
@@ -476,13 +476,16 @@ def upload_and_transcribe_mp3_file():
         munger.transcription = response
         munger.results = response
         
-        # TODO: This would be great place to make this insert asynchronous
-        io_tbl.insert_io_row( input_type=f"upload and proofread mp3: {prefix}", input=munger.raw_transcription, output_raw=munger.transcription, output_final=munger.results )
-        
     elif munger.is_agent():
         
-        print( "Posting [{}] to the agent's todo queue...".format( munger.transcription ) )
+        print( "Munger: Posting [{}] to the agent's todo queue...".format( munger.transcription ) )
         munger.results = jobs_todo_queue.push_job( munger.transcription )
+        
+    else:
+        
+        print( "Munger: Transcription is neither proofread nor agent. Returning brute force munger string..." )
+        # TODO: This would be great place to make this insert asynchronous
+        io_tbl.insert_io_row( input_type=f"upload and proofread mp3: {munger.mode}", input=raw_transcription, output_raw=munger.transcription, output_final=munger.get_jsons() )
         
     # Write JSON string to file system.
     last_response = munger.get_jsons()
@@ -494,7 +497,7 @@ def upload_and_transcribe_mp3_file():
 @app.route( "/api/get-all-io" )
 def get_all_io():
     
-    all_io = io_tbl.get_all_io_pairs()
+    all_io = io_tbl.get_all_io()
     
     date = ""
     for io in all_io:
@@ -503,7 +506,7 @@ def get_all_io():
             date = io[ "date" ]
             du.print_banner( f"Date: [{date}]")
             
-        print( f"Time: [{io[ 'time' ]}] input_type: [{io[ 'input_type' ]}] input: [{io[ 'input' ]}] output_final: [{io[ 'output_final' ]}]")
+        print( f"Time: [{io[ 'time' ]}] input_type: [{io[ 'input_type' ]}] input: [{io[ 'input' ]}] output_final: [{io[ 'output_final' ]}]", end="\n\n" )
     
     return json.dumps( all_io )
 
@@ -573,10 +576,10 @@ def upload_and_transcribe_wav_file():
     munger = mmm.MultiModalMunger( raw_transcription, prefix=prefix, debug=app_debug, verbose=app_verbose )
     
     # TODO: This would be great place to make this insert asynchronous
-    io_tbl.insert_io_row( input_type=f"upload and transcribe wav: {prefix}", input=munger.raw_transcription, output_raw=munger.transcription, output_final=munger.results )
+    io_tbl.insert_io_row( input_type=f"upload and proofread wav: {munger.mode}", input=raw_transcription, output_raw=munger.transcription, output_final=munger.get_jsons() )
     
     return munger.transcription
-
+ 
 def load_stt_model():
     
     torch_dtype   = torch.float16 if torch.cuda.is_available() else torch.float32
