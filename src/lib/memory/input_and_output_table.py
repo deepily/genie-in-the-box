@@ -35,11 +35,10 @@ class InputAndOutputTable():
         self._config_mgr = ConfigurationManager( env_var_name="GIB_CONFIG_MGR_CLI_ARGS" )
         
         self.db = lancedb.connect( du.get_project_root() + self._config_mgr.get( "database_path_wo_root" ) )
-        
         self._input_and_output_tbl    = self.db.open_table( "input_and_output_tbl" )
         self._question_embeddings_tbl = QuestionEmbeddingsTable( debug=self.debug, verbose=self.verbose )
 
-        print( f"Opened _input_and_output_tbl w/ [{self._input_and_output_tbl.count_rows()}] rows" )
+        print( f"Opened input_and_output_tbl w/ [{self._input_and_output_tbl.count_rows()}] rows" )
 
         # if self.debug and self.verbose:
         #     du.print_banner( "Tables:" )
@@ -48,6 +47,8 @@ class InputAndOutputTable():
         #     print( self._input_and_output_tbl.select( [ "date", "time", "input", "output_final" ] ).head( 10 ) )
         
     def insert_io_row( self, date=du.get_current_date(), time=du.get_current_time( include_timezone=False ), input_type="", input="", input_embedding=[], output_raw="", output_final="", output_final_embedding=[], solution_path_wo_root=None ):
+        
+        # print( f"insert_io_row() called with input: [{input}]" )
         
         # ¡OJO! The embeddings are optional. If not provided, they will be generated.
         # In this case the only embedding that we are cashing is the one that corresponds to the query/input, otherwise known
@@ -100,8 +101,11 @@ class InputAndOutputTable():
         return results
     
     def init_tbl( self ):
-
-        self.db.drop_table( "input_and_output_tbl" )
+        
+        du.print_banner( "Tables:" )
+        print( self.db.table_names() )
+        
+        # self.db.drop_table( "input_and_output_tbl" )
         import pyarrow as pa
 
         schema = pa.schema(
@@ -127,8 +131,8 @@ class InputAndOutputTable():
         # self._query_and_response_tbl.add( df_dict )
         # print( f"New: Table.count_rows: {self._query_and_response_tbl.count_rows()}" )
         
-        # du.print_banner( "Tables:" )
-        # print( self.db.table_names() )
+        du.print_banner( "Tables:" )
+        print( self.db.table_names() )
         # schema = self._query_and_response_tbl.schema
         #
         # du.print_banner( "Schema:" )
@@ -172,7 +176,7 @@ if __name__ == '__main__':
     # print( "dot product of foo and foo", np.dot( foo, foo ) * 100 )
     #
     query_and_response_tbl = InputAndOutputTable( debug=True )
-    query_and_response_tbl.init_tbl()
+    # query_and_response_tbl.init_tbl()
     # results = query_and_response_tbl.get_knn_by_input( "what time is it", k=5 )
     # for row in results:
     #     print( row[ "input" ], row[ "output_final" ], row[ "_distance" ] )
