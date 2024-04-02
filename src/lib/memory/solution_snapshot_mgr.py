@@ -69,7 +69,7 @@ class SolutionSnapshotManager:
     # get the questions embedding if it exists otherwise generate it and add it to the dictionary
     # def get_question_embedding( self, question ):
     #
-    #     if self.question_embeddings_tbl.is_in( question ):
+    #     if self.question_embeddings_tbl.has( question ):
     #         return self.question_embeddings_tbl[ question ]
     #     else:
     #         question_embedding = ss.SolutionSnapshot.generate_embedding( question )
@@ -104,7 +104,7 @@ class SolutionSnapshotManager:
         
         print( f"get_snapshots_by_question_similarity( '{question}' )..." )
         # Generate the embedding for the question, if it doesn't already exist
-        if not self.question_embeddings_tbl.is_in( question ):
+        if not self.question_embeddings_tbl.has( question ):
             question_embedding = ss.SolutionSnapshot.generate_embedding( question )
             self.question_embeddings_tbl.add_embedding( question, question_embedding )
         else:
