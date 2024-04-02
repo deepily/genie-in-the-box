@@ -241,7 +241,7 @@ class Llm:
         token_list     = [ ]
         ellipsis_count = 0
         
-        if self.debug:
+        if self.debug and self.verbose:
             for line in prompt.split( "\n" ):
                 print( line )
         
@@ -275,7 +275,7 @@ if __name__ == "__main__":
     # # print( prompt)
     # response = llm.query_llm( prompt=prompt, debug=False, verbose=False )
 
-    llm = Llm( model=Llm.GOOGLE_GEMINI_PRO, debug=True, verbose=True )
+    llm = Llm( model=Llm.PHIND_34B_v2, debug=True, verbose=True )
     
     prompt_template = du.get_file_as_string( du.get_project_root() + "/src/conf/prompts/formatters/calendaring.txt" )
     raw_output = """
