@@ -8,24 +8,24 @@ from lib.utils.util_stopwatch             import Stopwatch
 import lancedb
 
 
-def singleton( cls ):
-    
-    instances = { }
-    
-    def wrapper( *args, **kwargs ):
-        
-        if cls not in instances:
-            print( "Instantiating QueryAndResponseTable() singleton...", end="\n\n" )
-            instances[ cls ] = cls( *args, **kwargs )
-        else:
-            print( "Reusing QueryAndResponseTable() singleton..." )
-        
-        return instances[ cls ]
-    
-    return wrapper
+# def singleton( cls ):
+#
+#     instances = { }
+#
+#     def wrapper( *args, **kwargs ):
+#
+#         if cls not in instances:
+#             print( "Instantiating QueryAndResponseTable() singleton...", end="\n\n" )
+#             instances[ cls ] = cls( *args, **kwargs )
+#         else:
+#             print( "Reusing QueryAndResponseTable() singleton..." )
+#
+#         return instances[ cls ]
+#
+#     return wrapper
 
 
-@singleton
+# @singleton
 class InputAndOutputTable():
     
     def __init__( self, debug=False, verbose=False ):
@@ -54,7 +54,7 @@ class InputAndOutputTable():
         # In this case the only embedding that we are cashing is the one that corresponds to the query/input, otherwise known
         # as the 'question' in the solution snapshot object and the 'query' in the self._question_embeddings_tbl object.
         # TODO: Make consistent the use of the terms 'input', 'query' and 'question'. While they are synonymous that's not necessarily clear to the casual reader.
-        timer = Stopwatch( msg="insert_io_row() called..." )
+        timer = Stopwatch( msg=f"insert_io_row( '{input[ :64 ]}[0:64]' )" )
         new_row = [ {
             "date"                             : date,
             "time"                             : time,
@@ -66,8 +66,10 @@ class InputAndOutputTable():
             "output_final_embedding"           : output_final_embedding if output_final_embedding else ss.generate_embedding( output_final ),
             "solution_path_wo_root"            : solution_path_wo_root
         } ]
+        print( f"BEFORE: input_and_output_tbl has [{self._input_and_output_tbl.count_rows()}] rows" )
         self._input_and_output_tbl.add( new_row )
         timer.print( "Done!", use_millis=True )
+        print( f" AFTER: input_and_output_tbl has [{self._input_and_output_tbl.count_rows()}] rows" )
     
     def get_knn_by_input( self, search_terms, k=5 ):
         
@@ -91,14 +93,35 @@ class InputAndOutputTable():
         
         return knn
     
-    def get_all_io( self ):
+    def get_all_io( self, max_rows=1000 ):
         
-        timer = Stopwatch( msg="get_all_io() called..." )
+        timer = Stopwatch( msg=f"get_all_io( max_rows={max_rows} ) called..." )
         
-        results = self._input_and_output_tbl.search().select( [ "date", "time", "input_type", "input", "output_final" ] ).to_list()
-        timer.print( "Done!", use_millis=True )
+        results = self._input_and_output_tbl.search().select( [ "date", "time", "input_type", "input", "output_final" ] ).limit( max_rows ).to_list()
+        row_count = len( results )
+        timer.print( f"Done! Returning [{row_count}] rows", use_millis=True )
+        
+        if row_count == max_rows:
+            print( f"WARNING: Only returning [{max_rows}] rows out of [{self._input_and_output_tbl.count_rows()}]. Increase max_rows to see more data." )
         
         return results
+    
+    def get_io_stats_by_input_type( self, max_rows=1000 ):
+        
+        timer = Stopwatch( msg=f"get_io_stats_by_input_type( max_rows={max_rows} ) called..." )
+        
+        stats_df = self._input_and_output_tbl.search().select( [ "input_type" ] ).limit( max_rows ).to_pandas()
+        row_count = len( stats_df )
+        timer.print( f"Done! Returning [{row_count}] rows for summarization", use_millis=True )
+        if row_count == max_rows:
+            print( f"WARNING: Only returning [{max_rows}] rows out of [{self._input_and_output_tbl.count_rows()}]. Increase max_rows to see more data." )
+        
+        # Add a count column to the dataframe, which will be used to summarize the data
+        stats_df[ "count" ] = stats_df.groupby( [ "input_type" ] )[ "input_type" ].transform( "count" )
+        # Create a dictionary from the dataframe, setting the input_type as the index (key) and the count column as the value
+        stats_dict = stats_df.set_index( 'input_type' )[ 'count' ].to_dict()
+        
+        return stats_dict
     
     def init_tbl( self ):
         
@@ -175,17 +198,13 @@ if __name__ == '__main__':
     # print( "Sum of foo", np.sum( foo ) )
     # print( "dot product of foo and foo", np.dot( foo, foo ) * 100 )
     #
-    query_and_response_tbl = InputAndOutputTable( debug=True )
+    io_tbl = InputAndOutputTable( debug=True )
     # query_and_response_tbl.init_tbl()
     # results = query_and_response_tbl.get_knn_by_input( "what time is it", k=5 )
     # for row in results:
     #     print( row[ "input" ], row[ "output_final" ], row[ "_distance" ] )
-    results = query_and_response_tbl.get_all_io()
-    for row in results:
-        print( row[ "input" ], "=", row[ "output_final" ] )
     
-    # query_and_response_tbl.init_tbl()
-    # query_1 = "what time is it"
-    # print( f"'{query_1}': in embeddings table [{query_and_response_tbl.is_in( query_1 )}]" )
-    # query_2 = "you may ask yourself well how did I get here"
-    # print( f"'{query_2}': in embeddings table [{query_and_response_tbl.is_in( query_2 )}]" )
+    stats_dict = io_tbl.get_io_stats_by_input_type()
+    for k, v in stats_dict.items():
+        print( f"input_type: [{k}] called [{v}] times" )
+    
