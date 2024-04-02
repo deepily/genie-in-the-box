@@ -40,7 +40,15 @@ class QuestionEmbeddingsTable():
         print( f"Opened question_embeddings_tbl w/ [{self._question_embeddings_tbl.count_rows()}] rows" )
         
     def has( self, question ):
-        
+        """
+        checks if a question exists question embeddings table.
+
+        Parameters:
+            question (str): The question to check for.
+
+        Returns:
+            bool: True if the question exists, False otherwise.
+        """
         if self.debug: timer = Stopwatch( msg=f"has( '{question}' )" )
         synonyms = self._question_embeddings_tbl.search().where( f"question = '{question}'" ).limit( 1 ).select( [ "question" ] ).to_list()
         if self.debug: timer.print( "Done!", use_millis=True )
@@ -48,7 +56,17 @@ class QuestionEmbeddingsTable():
         return len( synonyms ) > 0
     
     def get_embedding( self, question ):
+        """
+        Get the embedding for the given question string.
         
+        NOTE: If it's not found in the table, then it generates the embedding, but does not add it to the table.
+
+        Parameters:
+            question (str): The input question to get the embedding for.
+
+        Returns:
+            embedding: The embedding for the given question.
+        """
         if self.debug: timer = Stopwatch( msg=f"get_embedding( '{question}' )" )
         rows_returned = self._question_embeddings_tbl.search().where( f"question = '{question}'" ).limit( 1 ).select( [ "embedding" ] ).to_list()
         if self.debug: timer.print( f"Done! w/ {len( rows_returned )} rows returned", use_millis=True )
