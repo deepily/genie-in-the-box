@@ -7,20 +7,21 @@ from lib.utils.util_stopwatch      import Stopwatch
 import lancedb
 
 
-def singleton( cls ):
-    instances = { }
-    
-    def wrapper( *args, **kwargs ):
-        
-        if cls not in instances:
-            print( "Instantiating QuestionEmbeddingsTable() singleton...", end="\n\n" )
-            instances[ cls ] = cls( *args, **kwargs )
-        else:
-            print( "Reusing QuestionEmbeddingsTable() singleton..." )
-        
-        return instances[ cls ]
-    
-    return wrapper
+# def singleton( cls ):
+#
+#     instances = { }
+#
+#     def wrapper( *args, **kwargs ):
+#
+#         if cls not in instances:
+#             print( "Instantiating QuestionEmbeddingsTable() singleton...", end="\n\n" )
+#             instances[ cls ] = cls( *args, **kwargs )
+#         else:
+#             print( "Reusing QuestionEmbeddingsTable() singleton..." )
+#
+#         return instances[ cls ]
+#
+#     return wrapper
 
 class QuestionEmbeddingsTable():
     
@@ -38,9 +39,9 @@ class QuestionEmbeddingsTable():
         
         print( f"Opened question_embeddings_tbl w/ [{self._question_embeddings_tbl.count_rows()}] rows" )
         
-    def is_in( self, question ):
+    def has( self, question ):
         
-        if self.debug: timer = Stopwatch( msg=f"is_in( '{question}' )" )
+        if self.debug: timer = Stopwatch( msg=f"has( '{question}' )" )
         synonyms = self._question_embeddings_tbl.search().where( f"question = '{question}'" ).limit( 1 ).select( [ "question" ] ).to_list()
         if self.debug: timer.print( "Done!", use_millis=True )
         
@@ -135,9 +136,9 @@ if __name__ == '__main__':
     
     question_embeddings_tbl = QuestionEmbeddingsTable()
     question_1 = "what time is it"
-    print( f"'{question_1}': in embeddings table [{question_embeddings_tbl.is_in( question_1 )}]" )
+    print( f"'{question_1}': in embeddings table [{question_embeddings_tbl.has( question_1 )}]" )
     question_2 = "well how did I get here"
-    print( f"'{question_2}': in embeddings table [{question_embeddings_tbl.is_in( question_2 )}]" )
+    print( f"'{question_2}': in embeddings table [{question_embeddings_tbl.has( question_2 )}]" )
     
     embedding = question_embeddings_tbl.get_embedding( question_1 )
     print( f"embedding length: {len( embedding )}" )
