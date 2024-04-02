@@ -803,7 +803,8 @@ class XmlFineTuningPromptGenerator:
         timer    = Stopwatch( msg=f"Asking LLM [{model_name}]...".format( model_name ) )
         
         response = openai.chat.completions.create(
-            model=model_name,
+            # model=model_name.split( "/" )[ 1 ] if "/" in model_name else model_name,
+            model=Llm.extract_model_name( model_name ),
             messages=messages,
             temperature=0,
             max_tokens=256,

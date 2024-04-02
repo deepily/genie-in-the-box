@@ -21,6 +21,16 @@ class Llm:
     GROQ_LLAMA2_70B   = "Groq/llama2-70b-4096"
     GOOGLE_GEMINI_PRO = "Google/gemini-1.0-pro-latest"
 
+    @staticmethod
+    def extract_model_name( compound_name ):
+        
+        # Model names are stored in the format "Groq/{model_name} in the config_mgr file
+        if "/" in compound_name:
+            return compound_name.split( "/" )[ 1 ]
+        else:
+            du.print_banner( f"WARNING: Model name [{compound_name}] doesn't isn't in 'Make/model' format! Returning entire string as is" )
+            return compound_name
+
     def __init__( self, model=PHIND_34B_v2, config_mgr=None, default_url=None, debug=False, verbose=False ):
         
         self.timer          = None
@@ -148,7 +158,7 @@ class Llm:
             "max_output_tokens": max_new_tokens,
                "stop_sequences": stop_sequences
         }
-        model    = genai.GenerativeModel( "models/" + self.model.split( "/" )[ 1 ] )
+        model    = genai.GenerativeModel( "models/" + Llm.extract_model_name( self.model ) )
         response = model.generate_content( prompt, generation_config=generation_config, stream=stream )
         
         chunks = [ ]
@@ -173,7 +183,8 @@ class Llm:
                 { "role"   : "user", "content": query }
             ],
             # Model names are stored in the format "Groq/{model_name} in the config_mgr file
-            model=self.model.split( "/" )[ 1 ],
+            model=Llm.extract_model_name( self.model ),
+            # model=self.model.split( "/" )[ 1 ],
             temperature=temperature,
             max_tokens=max_new_tokens,
             top_p=top_p,
@@ -202,7 +213,8 @@ class Llm:
         
         stream = openai.chat.completions.create(
             # Model names are stored in the format "OpenAI/{model_name} in the config_mgr file
-            model=self.model.split( "/" )[ 1 ],
+            # model=self.model.split( "/" )[ 1 ],
+            model=Llm.extract_model_name( self.model ),
             messages=[
                 { "role": "system", "content": preamble },
                 { "role": "user", "content": query }
@@ -233,7 +245,7 @@ class Llm:
         return response
     
     def _query_llm_phind(
-            self, prompt, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.25, stop_sequences=[ "</response>" ], debug=False, verbose=False
+            self, prompt, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.25, stop_sequences=[ "</response>", "</s>" ], debug=False, verbose=False
     ):
         self._start_timer()
         
