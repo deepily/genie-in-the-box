@@ -329,7 +329,13 @@ def proofread():
     question = request.args.get( "question" )
     
     timer = sw.Stopwatch()
-    preamble = "You are an expert proofreader. Correct grammar. Correct tense. Correct spelling. Correct contractions. Correct punctuation. Correct capitalization. Correct word choice. Correct sentence structure. Correct paragraph structure. Correct paragraph length. Correct paragraph flow. Correct paragraph topic. Correct paragraph tone. Correct paragraph style. Correct paragraph voice. Correct paragraph mood. Correct paragraph theme."
+    preamble = """You are an expert proofreader. Correct grammar. Correct tense. Correct spelling. Correct contractions.
+    Correct punctuation. Correct capitalization. Correct word choice. Correct sentence structure. Correct paragraph structure.
+    Correct paragraph length. Correct paragraph flow. Correct paragraph topic. Correct paragraph tone. Correct paragraph style.
+    Correct paragraph voice. Correct paragraph mood. Correct paragraph theme.
+    
+    You MUST return the original text if you think there are no corrections to be made."""
+    
     result = genie_client.ask_chat_gpt_text( question, preamble=preamble )
     print( result )
     timer.print( "Proofread", use_millis=True )
@@ -341,7 +347,6 @@ def proofread():
     response.headers.add( "Access-Control-Allow-Origin", "*" )
     
     return response
-
 
 @app.route( "/api/proofread-sql" )
 def proofread_sql():
