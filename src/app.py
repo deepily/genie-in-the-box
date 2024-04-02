@@ -498,7 +498,17 @@ def upload_and_transcribe_mp3_file():
 
     return last_response
 
-# Create an endpoint to download the entire I/O table
+@app.route( "/api/get-io-stats" )
+def get_io_stats():
+    
+    io_stats = io_tbl.get_io_stats_by_input_type()
+
+    du.print_banner( "I/O Stats")
+    for k, v in io_stats.items():
+        print( f"input_type: [{k}] called [{v}] times" )
+        
+    return json.dumps( io_stats )
+
 @app.route( "/api/get-all-io" )
 def get_all_io():
     
@@ -506,11 +516,11 @@ def get_all_io():
     
     date = ""
     for io in all_io:
-        
+
         if date != io[ "date" ]:
             date = io[ "date" ]
             du.print_banner( f"Date: [{date}]")
-            
+
         print( f"Time: [{io[ 'time' ]}] input_type: [{io[ 'input_type' ]}] input: [{io[ 'input' ]}] output_final: [{io[ 'output_final' ]}]", end="\n\n" )
     
     return json.dumps( all_io )
