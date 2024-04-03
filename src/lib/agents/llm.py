@@ -245,7 +245,7 @@ class Llm:
         return response
     
     def _query_llm_phind(
-            self, prompt, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.25, stop_sequences=[ "</response>", "</s>" ], debug=False, verbose=False
+            self, prompt, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.25, stop_sequences=[ "</response>", "></s>" ], debug=False, verbose=False
     ):
         self._start_timer()
         
