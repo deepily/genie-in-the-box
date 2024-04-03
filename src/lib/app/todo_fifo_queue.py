@@ -3,6 +3,7 @@ import re
 from flask import url_for
 
 from lib.agents.date_and_time_agent            import DateAndTimeAgent
+from lib.agents.receptionist_agent import ReceptionistAgent
 from lib.app.fifo_queue                        import FifoQueue
 from lib.agents.todo_list_agent                import TodoListAgent
 from lib.agents.calendaring_agent              import CalendaringAgent
@@ -176,10 +177,10 @@ class TodoFifoQueue( FifoQueue ):
                 agent = DateAndTimeAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 self.push( agent )
                 msg = starting_a_new_job.format( agent_type="date and time")
-            # elif command == "agent router go to receptionist":
-            #     agent = ReceptionistAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
-            #     self.push( agent )
-            #     msg = starting_a_new_job.format( agent_type="receptionist" )
+            elif command == "agent router go to receptionist":
+                agent = ReceptionistAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
+                self.push( agent )
+                msg = "hmm... Thinking"
                 
             else:
                 msg = "TO DO: Implement command " + command
