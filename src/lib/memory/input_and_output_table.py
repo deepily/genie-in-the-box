@@ -46,7 +46,9 @@ class InputAndOutputTable():
         #     du.print_banner( "Table:" )
         #     print( self._input_and_output_tbl.select( [ "date", "time", "input", "output_final" ] ).head( 10 ) )
         
-    def insert_io_row( self, date=du.get_current_date(), time=du.get_current_time( include_timezone=False ), input_type="", input="", input_embedding=[], output_raw="", output_final="", output_final_embedding=[], solution_path_wo_root=None ):
+    def insert_io_row( self, date=du.get_current_date(), time=du.get_current_time( include_timezone=False ),
+        input_type="", input="", input_embedding=[], output_raw="", output_final="", output_final_embedding=[], solution_path_wo_root=None
+    ):
         
         # print( f"insert_io_row() called with input: [{input}]" )
         
@@ -123,6 +125,25 @@ class InputAndOutputTable():
         
         return stats_dict
     
+    # Method to bitch all input an output where input_type starts with "go to agent"
+    def get_all_qnr( self, max_rows=1000 ):
+        
+        timer = Stopwatch( msg=f"get_all_qnr( max_rows={max_rows} ) called..." )
+        
+        # This is all a little bruteforce-ish...  but it works, whereas input_type LIKE does not :-(
+        # TODO: Figure out the use of LIKE!
+        results = self._input_and_output_tbl.search().where(
+            "input_type IN ( 'agent router go to date and time', 'agent router go to calendar', 'agent router go to weather', 'agent router go to todo list', 'agent router go to receptionist' )"
+            ).limit( max_rows ).select( [ "date", "time", "input_type", "input", "output_final" ]
+        ).to_list()
+        
+        row_count = len( results )
+        timer.print( f"Done! Returning [{row_count}] rows of QnR", use_millis=True )
+        if row_count == max_rows:
+            print( f"WARNING: Only returning [{max_rows}] rows. Increase max_rows to see more data." )
+        
+        return results
+    
     def init_tbl( self ):
         
         du.print_banner( "Tables:" )
@@ -182,6 +203,11 @@ if __name__ == '__main__':
     # print( "dot product of foo and foo", np.dot( foo, foo ) * 100 )
     #
     io_tbl = InputAndOutputTable( debug=True )
+    qnr = io_tbl.get_all_qnr( max_rows=100 )
+    # qnr = io_tbl.get_all_io( max_rows=100 )
+    for row in qnr:
+        print( row[ "date" ], row[ "time" ], row[ "input_type" ], row[ "input" ], row[ "output_final" ] )
+    
     # query_and_response_tbl.init_tbl()
     # results = query_and_response_tbl.get_knn_by_input( "what time is it", k=5 )
     # for row in results:
