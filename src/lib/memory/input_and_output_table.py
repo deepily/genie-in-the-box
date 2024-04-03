@@ -66,10 +66,10 @@ class InputAndOutputTable():
             "output_final_embedding"           : output_final_embedding if output_final_embedding else ss.generate_embedding( output_final ),
             "solution_path_wo_root"            : solution_path_wo_root
         } ]
-        print( f"BEFORE: input_and_output_tbl has [{self._input_and_output_tbl.count_rows()}] rows" )
+        if self.debug: print( f"BEFORE: input_and_output_tbl has [{self._input_and_output_tbl.count_rows()}] rows" )
         self._input_and_output_tbl.add( new_row )
-        timer.print( "Done!", use_millis=True )
-        print( f" AFTER: input_and_output_tbl has [{self._input_and_output_tbl.count_rows()}] rows" )
+        timer.print( "Done!", use_millis=True, end="\n" )
+        if self.debug: print( f" AFTER: input_and_output_tbl has [{self._input_and_output_tbl.count_rows()}] rows" )
     
     def get_knn_by_input( self, search_terms, k=5 ):
         
@@ -150,35 +150,18 @@ class InputAndOutputTable():
         self._input_and_output_tbl.create_fts_index( "date", replace=True )
         self._input_and_output_tbl.create_fts_index( "time", replace=True )
         self._input_and_output_tbl.create_fts_index( "output_final", replace=True )
-        print( f"New: Table.count_rows: {self._input_and_output_tbl.count_rows()}" )
+        
         # self._query_and_response_tbl.add( df_dict )
         # print( f"New: Table.count_rows: {self._query_and_response_tbl.count_rows()}" )
         
-        du.print_banner( "Tables:" )
-        print( self.db.table_names() )
+        # du.print_banner( "Tables:" )
+        # print( self.db.table_names() )
+        
         # schema = self._query_and_response_tbl.schema
         #
         # du.print_banner( "Schema:" )
         # print( schema )
 
-        # print( f"BEFORE: Table.count_rows: {self._input_and_output_tbl.count_rows()}" )
-        # query = "you may ask yourself well how did I get here"
-        # response_raw = "Same as it ever was, same as it ever was. Same as it ever was, same as it ever was. Same as it ever was, same as it ever was. Same as it ever was, same as it ever was."
-        # response_conversational = "Same as it ever was"
-        # self.insert_io_row( input=query, output_raw=response_raw, output_final=response_conversational )
-        
-        # query = "what time is it"
-        # response_raw = "14:45:00 EST"
-        # response_conversational = "It's 2:45 PM EST."
-        # self.insert_io_row( input=query, output_raw=response_raw, output_final=response_conversational )
-        #
-        # query = "what day is today"
-        # response_raw = "03/25/2024"
-        # response_conversational = "Today is March 25th, 2024."
-        # self.insert_io_row( input=query, output_raw=response_raw, output_final=response_conversational )
-        #
-        # print( f"AFTER: Table.count_rows: {self._input_and_output_tbl.count_rows()}" )
-        
         # querys = [ query ] + [ "what time is it", "what day is today", "well how did I get here" ]
         # timer = Stopwatch()
         # for query in querys:
@@ -204,7 +187,7 @@ if __name__ == '__main__':
     # for row in results:
     #     print( row[ "input" ], row[ "output_final" ], row[ "_distance" ] )
     
-    stats_dict = io_tbl.get_io_stats_by_input_type()
-    for k, v in stats_dict.items():
-        print( f"input_type: [{k}] called [{v}] times" )
+    # stats_dict = io_tbl.get_io_stats_by_input_type()
+    # for k, v in stats_dict.items():
+    #     print( f"input_type: [{k}] called [{v}] times" )
     
