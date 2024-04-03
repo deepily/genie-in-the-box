@@ -130,11 +130,9 @@ class InputAndOutputTable():
         
         timer = Stopwatch( msg=f"get_all_qnr( max_rows={max_rows} ) called..." )
         
-        # This is all a little bruteforce-ish...  but it works, whereas input_type LIKE does not :-(
-        # TODO: Figure out the use of LIKE!
-        results = self._input_and_output_tbl.search().where(
-            "input_type IN ( 'agent router go to date and time', 'agent router go to calendar', 'agent router go to weather', 'agent router go to todo list', 'agent router go to receptionist' )"
-            ).limit( max_rows ).select( [ "date", "time", "input_type", "input", "output_final" ]
+        where_clause = "input_type LIKE 'agent router go to %'"
+        results = self._input_and_output_tbl.search().where( where_clause ).limit( max_rows ).select(
+            [ "date", "time", "input_type", "input", "output_final" ]
         ).to_list()
         
         row_count = len( results )
