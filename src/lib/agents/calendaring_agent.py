@@ -31,6 +31,9 @@ class CalendaringAgent( AgentBase ):
         
         return column_names, unique_event_types, head
         
+    def restore_from_serialized_state( self, file_path ):
+        
+        print( "WARNING: CalendaringAgent.restore_from_serialized_state( file_path=" + file_path + " ) NOT implemented yet." )
     
 # Add main method
 if __name__ == "__main__":
