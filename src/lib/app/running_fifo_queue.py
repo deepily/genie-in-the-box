@@ -1,7 +1,8 @@
+from lib.agents.receptionist_agent       import ReceptionistAgent
 from lib.app.fifo_queue                  import FifoQueue
 from lib.agents.agent_base               import AgentBase
-from lib.agents.agent_function_mapping   import FunctionMappingAgent
-from lib.memory.input_and_output_table import InputAndOutputTable
+# from lib.agents.agent_function_mapping   import FunctionMappingAgent
+from lib.memory.input_and_output_table   import InputAndOutputTable
 from lib.memory.solution_snapshot        import SolutionSnapshot
 
 import lib.utils.util as du
@@ -91,12 +92,10 @@ class RunningFifoQueue( FifoQueue ):
         
         formatted_output = "ERROR: Output not yet generated!?!"
         try:
-            response_dict    = running_job.run_prompt()
-            code_response    = running_job.run_code( auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
-            formatted_output = running_job.format_output()
-        
-            # This shouldn't be necessary is running format output assigns this value inside the object...
-            # running_job.answer_conversational = formatted_output
+            response_dict     = running_job.run_prompt()
+            if running_job.is_code_runnable():
+                code_response = running_job.run_code( auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
+            formatted_output  = running_job.format_output()
         
         except Exception as e:
             
@@ -115,26 +114,36 @@ class RunningFifoQueue( FifoQueue ):
             print( f"Emitting DONE url [{url}]...", end="\n\n" )
             self.socketio.emit( 'audio_update', { 'audioURL': url } )
             
-            # recast the agent object as a solution snapshot object and add it to the snapshot manager
-            running_job = SolutionSnapshot.create( running_job )
-            # KLUDGE! I shouldn't have to do this!
-            print( f"KLUDGE! Setting running_job.answer_conversational to [{formatted_output}]...")
-            running_job.answer_conversational = formatted_output
-            
             agent_timer.print( "Done!", use_millis=True )
-            running_job.update_runtime_stats( agent_timer )
             
-            # Adding this snapshot to the snapshot manager serializes it to the local filesystem
-            print( f"Adding job [{truncated_question}] to snapshot manager..." )
-            self.snapshot_mgr.add_snapshot( running_job )
-            print( f"Adding job [{truncated_question}] to snapshot manager... Done!" )
-            
-            du.print_banner( "running_job.runtime_stats", prepend_nl=True )
-            pprint.pprint( running_job.runtime_stats )
+            # Only the ReceptionistAgent is not being serialized as a solution snapshot
+            is_not_receptionist = not isinstance( running_job, ReceptionistAgent )
+            if is_not_receptionist:
+                
+                # recast the agent object as a solution snapshot object and add it to the snapshot manager
+                running_job = SolutionSnapshot.create( running_job )
+                # KLUDGE! I shouldn't have to do this!
+                print( f"KLUDGE! Setting running_job.answer_conversational to [{formatted_output}]...")
+                running_job.answer_conversational = formatted_output
+                # agent_timer.print( "Done!", use_millis=True )
+                
+                running_job.update_runtime_stats( agent_timer )
+                
+                # Adding this snapshot to the snapshot manager serializes it to the local filesystem
+                print( f"Adding job [{truncated_question}] to snapshot manager..." )
+                self.snapshot_mgr.add_snapshot( running_job )
+                print( f"Adding job [{truncated_question}] to snapshot manager... Done!" )
+                
+                du.print_banner( "running_job.runtime_stats", prepend_nl=True )
+                pprint.pprint( running_job.runtime_stats )
+            else:
+                print( f"ReceptionistAgent detected, not adding to snapshot manager" )
+                # The receptionist is an exception, there is no code executed to generate a RAW answer, just a conversational one
+                running_job.answer = "no code executed by receptionist"
             
             self.pop()
             self.socketio.emit( 'run_update', { 'value': self.size() } )
-            self.jobs_done_queue.push( running_job )
+            if is_not_receptionist: self.jobs_done_queue.push( running_job )
             self.socketio.emit( 'done_update', { 'value': self.jobs_done_queue.size() } )
             
             # Write the job to the database for posterity's sake
