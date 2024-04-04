@@ -48,13 +48,25 @@ class ReceptionistAgent( AgentBase ):
     
     def run_code( self, auto_debug=None, inject_bugs=None ):
         
-        print( "NOT Running code, as this is a receptionist agent" )
-        return None
+        print( "NOT Running code, this is a receptionist agent" )
+        self.code_response_dict = {
+            "return_code": 0,
+            "output": "No code to run, this is a receptionist agent"
+        }
+        return self.code_response_dict
+    
+    def code_ran_to_completion( self ):
+        
+        return True
     
     def format_output( self ):
         
-        print( "NOT Formatting output, simply returning the answer_conversational, as calculated in self.run_prompt(...)" )
+        print( "NOT Formatting output, returning the answer_conversational, as calculated in ReceptionistAgent.run_prompt(...)" )
         return self.answer_conversational
+    
+    def formatter_ran_to_completion( self ):
+        
+        return True
     
     @staticmethod
     def restore_from_serialized_state( file_path ):
@@ -85,7 +97,11 @@ if __name__ == "__main__":
     # question = "What's on my to do list for today?"
     # question = "AI, have I asked you about the weather lately?"
     # question = "What's your name?"
-    question = "How are you today Einstein?"
+    # question = "How are you today Einstein?"
+    # question = "When's the last time I asked you about the weather?"
+    # question = "Have I ever called you my gal Friday?"
+    # question = "What's the last thing I asked you about?"
+    question = "Dear esteemed receptionist, what's today's date?"
     receptionist_agent = ReceptionistAgent( question=question, debug=True, verbose=True )
     # receptionist_agent = ReceptionistAgent.restore_from_serialized_state( du.get_project_root() + "/io/log/todo-list-code-whats-on-my-to-do-list-for-today-2024-3-5-12-51-55.json" )
     receptionist_agent.run_prompt()
