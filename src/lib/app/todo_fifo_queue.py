@@ -39,10 +39,10 @@ class TodoFifoQueue( FifoQueue ):
         self.cmd_llm_tokenizer = None
         
         # Salutations to be stripped by a brute force method until the router parses them off for us
-        self.salutations = [ "computer", "little" "buddy", "pal", "ai", "jarvis", "alexa", "siri", "hal", "einstein",
+        self.salutations = [ "computer", "little", "buddy", "pal", "ai", "jarvis", "alexa", "siri", "hal", "einstein",
             "jeeves", "alfred", "watson", "samwise", "sam", "hawkeye", "oye", "hey", "there", "you", "yo",
             "hi", "hello", "hola", "good", "morning", "afternoon", "evening", "night", "buenas", "buenos", "buen", "tardes",
-            "noches", "dias", "día", "tarde"
+            "noches", "dias", "día", "tarde", "greetings", "my", "dear", "dearest", "esteemed", "assistant", "receptionist", "friend"
         ]
         
     def set_llm( self, cmd_llm_in_memory, cmd_llm_tokenizer ):
@@ -57,48 +57,23 @@ class TodoFifoQueue( FifoQueue ):
         
         # Normalize the transcription by removing extra spaces after punctuation
         # From: https://chat.openai.com/share/5783e1d5-c9ce-4503-9338-270a4c9095b2
-        transcription_lower = re.sub( r'([,\.!?:;])\s*', r'\1', transcription.lower() )
-        stripped_prefixes   = [ ]
+        words = transcription.split()
+        prefix_holder = [ ]
         
-        # Flag to determine if at least one prefix was stripped in the last iteration
-        prefix_stripped = True
+        # Find the index where salutations stop
+        index = 0
+        for word in words:
+            if word.strip( ',.:;!?' ).lower() in self.salutations:
+                prefix_holder.append( word )
+                index += 1
+            else:
+                break
         
-        while prefix_stripped:
-            
-            prefix_stripped = False
-            
-            for prefix in self.salutations:
-                
-                # Check if the transcription starts with the current prefix followed by some kind of punctuation mark
-                if any( transcription_lower.startswith( prefix + punctuation ) for punctuation in [ " ", ",", ".", ":", ";", "!" ] ):
-                    
-                    # Add the prefix to the list of stripped-off prefixes
-                    stripped_prefixes.append( prefix )
-                    
-                    # Remove the prefix from the transcription
-                    prefix_length = len( prefix ) + 1  # Adding 1 to account for the space/comma
-                    
-                    transcription_lower = transcription_lower[ prefix_length: ]
-                    
-                    prefix_stripped = True
-                    break  # Restart checking from the first prefix after removing one
-            
-            # Return the list of stripped-off prefixes and the modified transcription, restoring the case for the remaining text
-        remaining_text = transcription[ len( transcription ) - len( transcription_lower ): ].strip()
+        # Get the remaining string after salutations
+        remaining_string = ' '.join( words[ index: ] )
         
-        # Capitalize the first letter of the remaining text
-        remaining_text = remaining_text[ 0 ].upper() + remaining_text[ 1: ]
-        
-        # Capitalize the first letter of the stripped prefixes
-        if len( stripped_prefixes ) > 0:
-            stripped_prefixes = ' '.join( stripped_prefixes )
-            stripped_prefixes = stripped_prefixes[ 0 ].upper() + stripped_prefixes[ 1: ]
-            stripped_prefixes = stripped_prefixes.strip()
-        else:
-            stripped_prefixes = None
-        
-        # timer.print( "Done!", use_millis=True)
-        return stripped_prefixes, remaining_text
+        return ' '.join( prefix_holder ), remaining_string
+    
     
     def push_job( self, question ):
         
@@ -115,7 +90,7 @@ class TodoFifoQueue( FifoQueue ):
         
         # if we've got a similar snapshot then go ahead and push it onto the queue
         if len( similar_snapshots ) > 0:
-            
+        
             best_snapshot = similar_snapshots[ 0 ][ 1 ]
             best_score    = similar_snapshots[ 0 ][ 0 ]
             
@@ -157,33 +132,45 @@ class TodoFifoQueue( FifoQueue ):
         
         else:
             
-            self.socketio.emit( 'notification_sound_update', { 'soundFile': '/static/gentle-gong.mp3' } )
             print( "No similar snapshots found, calling routing LLM..." )
             
-            command, args = self._get_routing_command( question )
+            # Note the distinction between salutation and the question: all agents except the receptionist get the question only.
+            # The receptionist gets the salutation plus the question to help it decide how it will respond.
+            salutation_plus_question = salutations + " " + question
+            salutation_plus_question.strip()
+
+            # We're going to give the routing function maximum information, hence including the salutation with the question
+            # ¡OJO! I know this is a tad adhoc-ish, but it's what we want... for the moment at least
+            command, args = self._get_routing_command( salutation_plus_question )
             
             starting_a_new_job = "Starting a new {agent_type} job, I'll be right back."
+            ding_for_new_job   = False
             if command == "none":
                 msg = "Hmm... I'm not certain what to do with that question, Could you rephrase and try again?"
             elif command == "agent router go to calendar":
                 agent = CalendaringAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 self.push( agent )
                 msg = starting_a_new_job.format( agent_type="calendaring" )
+                ding_for_new_job = True
             elif command == "agent router go to todo list":
                 agent = TodoListAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 self.push( agent )
                 msg = starting_a_new_job.format( agent_type="todo list")
+                ding_for_new_job = True
             elif command == "agent router go to date and time":
                 agent = DateAndTimeAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 self.push( agent )
                 msg = starting_a_new_job.format( agent_type="date and time")
+                ding_for_new_job = True
             elif command == "agent router go to receptionist":
-                agent = ReceptionistAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
+                agent = ReceptionistAgent( question=salutation_plus_question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 self.push( agent )
-                msg = "hmm... Thinking"
+                msg = "Hmm... Searching my memory for an answer..."
                 
             else:
                 msg = "TO DO: Implement command " + command
+            
+            if ding_for_new_job: self.socketio.emit( 'notification_sound_update', { 'soundFile': '/static/gentle-gong.mp3' } )
             
             with self.app.app_context():
                 url = url_for( 'get_tts_audio' ) + "?tts_text=" + msg
@@ -220,7 +207,8 @@ class TodoFifoQueue( FifoQueue ):
 if __name__ == "__main__":
     
     queue = TodoFifoQueue( None, None, None )
-    salutions, question = queue.parse_salutations( "Yo! Einstein: what's the weather like today?" )
-    # salutions, question = queue.parse_salutations( "What's the weather like today?" )
-    print( salutions )
+    input_string = "Good morning, my dearest receptionist. How are you feeling today?"
+    # input_string = "Greetings little buddy! What's your name?"
+    salutations, question = queue.parse_salutations( input_string )
+    print( salutations )
     print( question )
