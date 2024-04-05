@@ -3,9 +3,9 @@ import json
 
 import lib.utils.util as du
 
-from lib.agents.agent_base        import AgentBase
+from lib.agents.agent_base             import AgentBase
+from lib.agents.raw_output_formatter   import RawOutputFormatter
 from lib.memory.input_and_output_table import InputAndOutputTable
-
 
 class ReceptionistAgent( AgentBase ):
     def __init__( self, question=None, push_counter=-1, routing_command=None, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
@@ -14,7 +14,7 @@ class ReceptionistAgent( AgentBase ):
         
         self.io_tbl                   = InputAndOutputTable( debug=self.debug, verbose=self.verbose)
         self.prompt                   = self._get_prompt()
-        self.xml_response_tag_names   = [ "thoughts", "answer" ]
+        self.xml_response_tag_names   = [ "thoughts", "category", "answer" ]
         self.serialize_prompt_to_json = self.config_mgr.get( "agent_receptionist_serialize_prompt_to_json", default=False, return_type="boolean" )
         # self.serialize_code_to_json   = self.config_mgr.get( "agent_receptionist_serialize_code_to_json",   default=False, return_type="boolean" )
     
@@ -40,7 +40,9 @@ class ReceptionistAgent( AgentBase ):
         
         results = super().run_prompt( model_name=model_name, temperature=temperature, top_p=top_p, top_k=top_k, max_new_tokens=max_new_tokens )
         
-        self.answer_conversational = results[ "answer" ]
+        self.prompt_response_dict = results
+        
+        self.answer_conversational = self.prompt_response_dict[ "answer" ]
         
         if self.serialize_prompt_to_json: self.serialize_to_json( "prompt" )
         
@@ -61,12 +63,23 @@ class ReceptionistAgent( AgentBase ):
     
     def format_output( self ):
         
-        print( "NOT Formatting output, returning the answer_conversational, as calculated in ReceptionistAgent.run_prompt(...)" )
-        return self.answer_conversational
-    
-    def formatter_ran_to_completion( self ):
+        # Only reformat the output if it's humorous or salacious
+        if self.prompt_response_dict[ "category" ] != "benign":
+            
+            formatter = RawOutputFormatter(
+                self.last_question_asked, self.answer_conversational, self.routing_command,
+                thoughts=self.prompt_response_dict[ "thoughts" ], debug=self.debug, verbose=self.verbose
+            )
+            self.answer_conversational = formatter.format_output()
+            
+        else:
+            print( "Not reformatting the output, it's benign")
         
-        return True
+        return self.answer_conversational
+    #
+    # def formatter_ran_to_completion( self ):
+    #
+    #     return True
     
     @staticmethod
     def restore_from_serialized_state( file_path ):
@@ -101,7 +114,9 @@ if __name__ == "__main__":
     # question = "When's the last time I asked you about the weather?"
     # question = "Have I ever called you my gal Friday?"
     # question = "What's the last thing I asked you about?"
-    question = "Dear esteemed receptionist, what's today's date?"
+    # question = "Good morning dear receptionist, what's today's date?"
+    # question = "my friend and i think you are pretty cool like really fucking cool! my friend thinks i should ask you how you would respond to someone who asked you to suck their dick"
+    question = "my friend and i think you are pretty cool like really fucking cool!"
     receptionist_agent = ReceptionistAgent( question=question, debug=True, verbose=True )
     # receptionist_agent = ReceptionistAgent.restore_from_serialized_state( du.get_project_root() + "/io/log/todo-list-code-whats-on-my-to-do-list-for-today-2024-3-5-12-51-55.json" )
     receptionist_agent.run_prompt()
