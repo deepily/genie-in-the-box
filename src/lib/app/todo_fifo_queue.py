@@ -145,9 +145,9 @@ class TodoFifoQueue( FifoQueue ):
             
             starting_a_new_job = "Starting a new {agent_type} job, I'll be right back."
             ding_for_new_job   = False
-            if command == "none":
-                msg = "Hmm... I'm not certain what to do with that question, Could you rephrase and try again?"
-            elif command == "agent router go to calendar":
+            # if command == "none":
+            #     msg = "Hmm... I'm not certain what to do with that question, Could you rephrase and try again?"
+            if command == "agent router go to calendar":
                 agent = CalendaringAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 self.push( agent )
                 msg = starting_a_new_job.format( agent_type="calendaring" )
@@ -162,7 +162,7 @@ class TodoFifoQueue( FifoQueue ):
                 self.push( agent )
                 msg = starting_a_new_job.format( agent_type="date and time")
                 ding_for_new_job = True
-            elif command == "agent router go to receptionist":
+            elif command == "agent router go to receptionist" or command == "none":
                 agent = ReceptionistAgent( question=salutation_plus_question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 self.push( agent )
                 msg = "Hmm... Searching my memory for an answer..."
