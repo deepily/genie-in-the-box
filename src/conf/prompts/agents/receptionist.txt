@@ -32,7 +32,9 @@ In order to successfully answer the query above, you MUST follow my instructions
 
 Step one) Think: think out loud about what the query means, in addition to what are the steps that you will need to take to answer this query. Be critical of your thought process!
 
-Step two) Answer: provide a clear and concise answer to the query. Remember, your answer MUST be of maximum utility.
+Step two) Categorize: Is the question or query innocent, innocuous, or benign? Is it humorous or jovial? Or is it salacious, suggestive or even offensive? You have three choices for categorizing the question: benign OR humorous OR salacious. Choose one.
+
+Step three) Answer: provide a clear and concise answer to the query. Remember, your answer MUST be of maximum utility.
 
 Requirement: The first word of your response MUST the XML tag `<response>`
 Requirement: The last word of your response MUST be the XML tag `</response>`
@@ -41,6 +43,7 @@ Requirement: You MUST respond to the step by step directives above using the fol
 
 <response>
     <thoughts></thoughts>
+    <category>benign OR humorous OR salacious</category>
     <answer></answer>
 </response>
 
