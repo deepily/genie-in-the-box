@@ -174,7 +174,7 @@ class Llm:
         # According to the documentation, stop sequences will not be returned with the chunks, So append the most likely: response
         return "".join( chunks ).strip() + "</response>"
     
-    def _query_llm_groq( self, preamble, query, max_new_tokens=1024, temperature=0.25, stop_tokens=[ "</response>" ], top_k=10, top_p=0.9, debug=False, verbose=False ):
+    def _query_llm_groq( self, preamble, query, max_new_tokens=1024, temperature=0.25, stop_sequences=[ "</response>" ], top_k=10, top_p=0.9, debug=False, verbose=False ):
         
         client = Groq( api_key=du.get_api_key( "groq" ) )
         stream = client.chat.completions.create(
@@ -190,7 +190,7 @@ class Llm:
             top_p=top_p,
             # Not used by groq: https://console.groq.com/docs/text-chat
             # top_k=top_k,
-            stop=stop_tokens,
+            stop=stop_sequences,
             stream=True,
         )
         self._start_timer()
@@ -198,7 +198,7 @@ class Llm:
         ellipsis_count = 0
         for chunk in stream:
             
-            chunks.append( chunk.choices[ 0 ].delta.content )
+            chunks.append( str( chunk.choices[ 0 ].delta.content ) )
             ellipsis_count = self._do_conditional_print( chunk.choices[ 0 ].delta.content, ellipsis_count, debug=debug )
             
         self._stop_timer( chunks=chunks )
