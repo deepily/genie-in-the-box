@@ -165,7 +165,7 @@ class TodoFifoQueue( FifoQueue ):
             elif command == "agent router go to receptionist" or command == "none":
                 agent = ReceptionistAgent( question=salutation_plus_question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 self.push( agent )
-                msg = "Hmm... Searching my memory for an answer..."
+                msg = "Hmm... Let me think about that..."
                 
             else:
                 msg = "TO DO: Implement command " + command
