@@ -156,9 +156,6 @@ class AgentBase( RunnableCode, abc.ABC ):
         
         return self.prompt_response_dict
     
-    def is_code_runnable( self ):
-        pass
-    
     def run_code( self, auto_debug=None, inject_bugs=None ):
         
         # Use this object's settings, if temporary overriding values aren't provided
