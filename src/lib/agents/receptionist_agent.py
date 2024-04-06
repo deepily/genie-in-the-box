@@ -48,6 +48,10 @@ class ReceptionistAgent( AgentBase ):
         
         return results
     
+    def is_code_runnable( self ):
+        
+        return False
+    
     def run_code( self, auto_debug=None, inject_bugs=None ):
         
         print( "NOT Running code, this is a receptionist agent" )
@@ -59,6 +63,7 @@ class ReceptionistAgent( AgentBase ):
     
     def code_ran_to_completion( self ):
         
+        # This is a necessary lie to satisfy the interface
         return True
     
     def format_output( self ):
@@ -76,10 +81,7 @@ class ReceptionistAgent( AgentBase ):
             print( "Not reformatting the output, it's benign")
         
         return self.answer_conversational
-    #
-    # def formatter_ran_to_completion( self ):
-    #
-    #     return True
+   
     
     @staticmethod
     def restore_from_serialized_state( file_path ):
