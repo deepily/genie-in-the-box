@@ -77,7 +77,7 @@ class RunningFifoQueue( FifoQueue ):
         self.socketio.emit( 'audio_update', { 'audioURL': url } )
         self.jobs_dead_queue.push( running_job )
         self.socketio.emit( 'dead_update', { 'value': self.jobs_dead_queue.size() } )
-        self.socketio.emit( 'run_update', { 'value': self.jobs_running.size() } )
+        self.socketio.emit( 'run_update', { 'value': self.size() } )
         
         return running_job
     
@@ -87,10 +87,10 @@ class RunningFifoQueue( FifoQueue ):
         
         code_response = {
             "return_code": -1,
-            "output"     : "ERROR: Output not yet generated!?!"
+            "output"     : "ERROR: code_response: Output not yet generated!?!"
         }
         
-        formatted_output = "ERROR: Output not yet generated!?!"
+        formatted_output = "ERROR: Formatted output not yet generated!?!"
         try:
             response_dict     = running_job.run_prompt()
             if running_job.is_code_runnable():
@@ -104,7 +104,7 @@ class RunningFifoQueue( FifoQueue ):
             for line in stack_trace: print( line )
             running_job = self._handle_error_case( code_response, running_job, truncated_question )
         
-        du.print_banner( f"Job [{running_job.question}] complete...", prepend_nl=True, end="\n" )
+        du.print_banner( f"Job [{running_job.last_question_asked}] complete...", prepend_nl=True, end="\n" )
         
         if running_job.code_ran_to_completion() and running_job.formatter_ran_to_completion():
             
