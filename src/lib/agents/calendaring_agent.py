@@ -38,14 +38,24 @@ class CalendaringAgent( AgentBase ):
 # Add main method
 if __name__ == "__main__":
     
-    agent = CalendaringAgent( question="What concerts do I have this week?", debug=True, auto_debug=True )
+    running_job = CalendaringAgent( question="What did we talk about yesterday?", debug=True, auto_debug=True )
     # print( agent.prompt )
-    response_dict = agent.run_prompt()
+    response_dict = running_job.run_prompt()
     # Print dictionary as Jason string
     print( json.dumps( response_dict, indent=4 ) )
     
-    code_response_dict = agent.run_code()
-    print( json.dumps( code_response_dict, indent=4 ) )
-    
-    answer = agent.format_output()
-    print( answer )
+    if running_job.is_code_runnable():
+        
+        code_response_dict = running_job.run_code()
+        print( json.dumps( code_response_dict, indent=4 ) )
+        
+        answer = running_job.format_output()
+        print( answer )
+        
+    else:
+        print( "Code not runnable?!?" )
+        
+    if running_job.code_ran_to_completion() and running_job.formatter_ran_to_completion():
+        print( "Job complete..." )
+    else:
+        print( "Job FAILED?" )
