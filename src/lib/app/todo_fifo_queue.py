@@ -1,4 +1,4 @@
-import re
+import random
 
 from flask import url_for
 
@@ -43,6 +43,13 @@ class TodoFifoQueue( FifoQueue ):
             "jeeves", "alfred", "watson", "samwise", "sam", "hawkeye", "oye", "hey", "there", "you", "yo",
             "hi", "hello", "hola", "good", "morning", "afternoon", "evening", "night", "buenas", "buenos", "buen", "tardes",
             "noches", "dias", "día", "tarde", "greetings", "my", "dear", "dearest", "esteemed", "assistant", "receptionist", "friend"
+        ]
+        self.hemming_and_hawing = [
+            "", "", "", "umm...", "hmm...", "hmm...", "well...", "ahem..."
+        ]
+        self.thinking = [
+            "interesting...", "thinking...", "let me see...", "let me think...", "let's see...",
+            "let me think about that...", "let me think about it...", "let me check...", "checking..."
         ]
         
     def set_llm( self, cmd_llm_in_memory, cmd_llm_tokenizer ):
@@ -163,9 +170,11 @@ class TodoFifoQueue( FifoQueue ):
                 msg = starting_a_new_job.format( agent_type="date and time")
                 ding_for_new_job = True
             elif command == "agent router go to receptionist" or command == "none":
+                print( f"Routing '{command}' to receptionist..." )
                 agent = ReceptionistAgent( question=salutation_plus_question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 self.push( agent )
-                msg = "Hmm... Let me think about that..."
+                # Randomly grab hemming and hawing string and prepend it to a randomly chosen thinking string
+                msg = f"{self.hemming_and_hawing[ random.randint( 0, len( self.hemming_and_hawing ) - 1 ) ]} {self.thinking[ random.randint( 0, len( self.thinking ) - 1 ) ]}".strip()
                 
             else:
                 msg = "TO DO: Implement command " + command
