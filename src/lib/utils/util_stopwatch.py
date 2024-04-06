@@ -4,6 +4,7 @@ class Stopwatch:
     
     def __init__( self, msg=None, silent=False  ):
         
+        # This is helpful for suppressing/halving output when it's essentially going to be reproduced later when a task is completed
         if msg and not silent: print( msg )
         
         self.init_msg   = msg
