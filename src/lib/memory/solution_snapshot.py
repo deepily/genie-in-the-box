@@ -35,8 +35,7 @@ class SolutionSnapshot( RunnableCode ):
     @staticmethod
     def generate_embedding( text ):
         
-        msg = f"Generating embedding for [{du.truncate_string( text )}]..."
-        timer = sw.Stopwatch( msg=msg )
+        timer = sw.Stopwatch( msg=f"Generating embedding for [{du.truncate_string( text )}]...", silent=True )
         openai.api_key = du.get_api_key( "openai" )
         
         response = openai.embeddings.create(
