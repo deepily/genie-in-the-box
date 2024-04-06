@@ -20,6 +20,14 @@ class RunnableCode:
         du.print_list( self.prompt_response_dict[ "code" ] )
         
         if end is not None: print( end=end )
+    
+    def is_code_runnable( self ):
+        
+        if self.prompt_response_dict is not None and self.prompt_response_dict[ "code" ] != []:
+            return True
+        else:
+            print( "No code to run: self.response_dict[ 'code' ] = [ ]" )
+            return False
         
     def run_code( self, path_to_df=None, inject_bugs=False ):
         
