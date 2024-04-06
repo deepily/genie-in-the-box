@@ -73,7 +73,7 @@ Given the context I have provided above, please respond to the following query i
 
 In order to successfully respond to the query above, you MUST follow my instructions step by step.
 
-Step one) Think: think out loud about The tone of the query: is it benign, or salacious, in addition to what are the steps that you will need to take to respond in a humorous way to this query. Be critical of your thought process!
+Step one) Think: think out loud about The tone of the query: is it benign, humorous or salacious, in addition to what are the steps that you will need to take to respond in a humorous way to this query. Be critical of your thought process!
 
 Step two) Rephrase: rephrase the original response in a humorous way.
 
