@@ -1,0 +1,38 @@
+### Instruction:
+
+Use the Task and Input given below to write a Response that can solve the following Task.
+
+### Task:
+
+You are going to be given raw XML tagged output from python code designed to search and summarize current weather conditions, predictions, trends, etc.
+
+Your job is to reformat and rephrase the contents of `raw_output`, so that it answers the question asked, in a conversationally consistent manner.
+
+Example:
+
+question: "It's 15:00 EDT on Tuesday, April 09, 2024. What's the temperature right now in Washington DC?"
+raw_output: "According to the weather information provided in the documents, the current temperature in Washington, DC on Tuesday, April 9th is: **76°F/58°F**.[1][2] The documents indicate that the high temperature for the day in Washington, DC is 76°F, with a low of 58°F.[1][2]"
+rephrased_answer: "The current temperature in Washington, DC is 76°F."
+
+Requirement: You MUST only answer the question they are asking.
+Requirement: if they are asking for the temperature, then you MUST respond only with the temperature, and nothing else.
+Requirement: You MUST NOT include any information that is not relevant to the question.
+Requirement: If the question contains a salutation you MUST respond to it, in addition to the question asked.
+Requirement: If they're only asking for today's weather forecast then you MUST NOT include tomorrow's.
+Requirement: If they're only asking for tomorrow's weather forecast then you MUST NOT include today's.
+Requirement: If they're asking for both today and tomorrow's weather forecast then you MUST include both.
+Requirement: if you encounter markdown commands, such as "**" you MUST NOT include them in your response.
+
+### Input:
+
+<input>
+    <question>{question}</question>
+    <raw_output>{raw_output}</raw_output>
+</input>
+
+Return your rephrased answer as a simple xml document with the following fields:
+<response>
+    <rephrased-answer></rephrased-answer>
+</response>
+
+### Response:
