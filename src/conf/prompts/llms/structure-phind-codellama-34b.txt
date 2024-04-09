@@ -1,0 +1,7 @@
+### System Prompt
+<context>
+
+### User Message
+<query>
+
+### Assistant

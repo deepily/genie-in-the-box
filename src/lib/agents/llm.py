@@ -67,10 +67,10 @@ class Llm:
                 
         return ellipsis_count
     
-    def query_llm( self, model=None, prompt=None, preamble=None, question=None, max_new_tokens=1024, temperature=0.5, top_k=100, top_p=0.25, stop_sequences=None, debug=None, verbose=None ):
+    def query_llm( self, model=None, prompt_yaml=None, prompt=None, preamble=None, question=None, max_new_tokens=1024, temperature=0.5, top_k=100, top_p=0.25, stop_sequences=None, debug=None, verbose=None ):
         
-        if preamble is None and question is None and prompt is None:
-            raise ValueError( "ERROR: Neither prompt, preamble, nor question has a value set!" )
+        if prompt_yaml is None and preamble is None and question is None and prompt is None:
+            raise ValueError( "ERROR: Neither prompt_yaml, nor prompt, nor preamble, nor question has a value set!" )
         
         # Allow us to override the prompt, preamble, and question set when instantiated
         if model is not None: self.model = model
@@ -174,7 +174,7 @@ class Llm:
         # According to the documentation, stop sequences will not be returned with the chunks, So append the most likely: response
         return "".join( chunks ).strip() + "</response>"
     
-    def _query_llm_groq( self, preamble, query, max_new_tokens=1024, temperature=0.25, stop_sequences=[ "</response>" ], top_k=10, top_p=0.9, debug=False, verbose=False ):
+    def _query_llm_groq( self, preamble, query, prompt_yaml=None, max_new_tokens=1024, temperature=0.25, stop_sequences=[ "</response>" ], top_k=10, top_p=0.9, debug=False, verbose=False ):
         
         client = Groq( api_key=du.get_api_key( "groq" ) )
         stream = client.chat.completions.create(

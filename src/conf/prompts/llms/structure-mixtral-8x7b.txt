@@ -1,0 +1,1 @@
+<s> [INST] <context>: <query> [/INST] </s>
