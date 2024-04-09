@@ -4,6 +4,7 @@ from flask import url_for
 
 from lib.agents.date_and_time_agent            import DateAndTimeAgent
 from lib.agents.receptionist_agent import ReceptionistAgent
+from lib.agents.weather_agent import WeatherAgent
 from lib.app.fifo_queue                        import FifoQueue
 from lib.agents.todo_list_agent                import TodoListAgent
 from lib.agents.calendaring_agent              import CalendaringAgent
@@ -152,34 +153,37 @@ class TodoFifoQueue( FifoQueue ):
             
             starting_a_new_job = "Starting a new {agent_type} job, I'll be right back."
             ding_for_new_job   = False
-            # if command == "none":
-            #     msg = "Hmm... I'm not certain what to do with that question, Could you rephrase and try again?"
+            agent              = None
+            
             if command == "agent router go to calendar":
                 agent = CalendaringAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
-                self.push( agent )
                 msg = starting_a_new_job.format( agent_type="calendaring" )
                 ding_for_new_job = True
             elif command == "agent router go to todo list":
                 agent = TodoListAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
-                self.push( agent )
-                msg = starting_a_new_job.format( agent_type="todo list")
+                msg = starting_a_new_job.format( agent_type="todo list" )
                 ding_for_new_job = True
             elif command == "agent router go to date and time":
                 agent = DateAndTimeAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
-                self.push( agent )
-                msg = starting_a_new_job.format( agent_type="date and time")
+                msg = starting_a_new_job.format( agent_type="date and time" )
+                ding_for_new_job = True
+            elif command == "agent router go to weather":
+                agent = WeatherAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
+                msg = starting_a_new_job.format( agent_type="weather" )
                 ding_for_new_job = True
             elif command == "agent router go to receptionist" or command == "none":
                 print( f"Routing '{command}' to receptionist..." )
                 agent = ReceptionistAgent( question=salutation_plus_question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
-                self.push( agent )
                 # Randomly grab hemming and hawing string and prepend it to a randomly chosen thinking string
                 msg = f"{self.hemming_and_hawing[ random.randint( 0, len( self.hemming_and_hawing ) - 1 ) ]} {self.thinking[ random.randint( 0, len( self.thinking ) - 1 ) ]}".strip()
                 
             else:
                 msg = "TO DO: Implement command " + command
             
-            if ding_for_new_job: self.socketio.emit( 'notification_sound_update', { 'soundFile': '/static/gentle-gong.mp3' } )
+            if ding_for_new_job:
+                self.socketio.emit( 'notification_sound_update', { 'soundFile': '/static/gentle-gong.mp3' } )
+            if agent is not None:
+                self.push( agent )
             
             with self.app.app_context():
                 url = url_for( 'get_tts_audio' ) + "?tts_text=" + msg
