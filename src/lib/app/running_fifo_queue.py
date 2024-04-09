@@ -1,4 +1,5 @@
 from lib.agents.receptionist_agent       import ReceptionistAgent
+from lib.agents.weather_agent            import WeatherAgent
 from lib.app.fifo_queue                  import FifoQueue
 from lib.agents.agent_base               import AgentBase
 # from lib.agents.agent_function_mapping   import FunctionMappingAgent
@@ -92,7 +93,9 @@ class RunningFifoQueue( FifoQueue ):
         
         formatted_output = "ERROR: Formatted output not yet generated!?!"
         try:
-            response_dict     = running_job.run_prompt()
+            # TODO: This block of conditionals should be replaced by a call to do_all() on the agent
+            if running_job.is_prompt_executable():
+                response_dict = running_job.run_prompt()
             if running_job.is_code_runnable():
                 code_response = running_job.run_code( auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
             formatted_output  = running_job.format_output()
@@ -116,9 +119,10 @@ class RunningFifoQueue( FifoQueue ):
             
             agent_timer.print( "Done!", use_millis=True )
             
-            # Only the ReceptionistAgent is not being serialized as a solution snapshot
-            is_not_receptionist = not isinstance( running_job, ReceptionistAgent )
-            if is_not_receptionist:
+            # Only the ReceptionistAgent and WeatherAgent are not being serialized as a solution snapshot
+            # TODO: this needs to not be so ad hoc as it appears right now!
+            serialize_snapshot = ( not isinstance( running_job, ReceptionistAgent ) and not isinstance( running_job, WeatherAgent ))
+            if serialize_snapshot:
                 
                 # recast the agent object as a solution snapshot object and add it to the snapshot manager
                 running_job = SolutionSnapshot.create( running_job )
@@ -143,7 +147,7 @@ class RunningFifoQueue( FifoQueue ):
             
             self.pop()
             self.socketio.emit( 'run_update', { 'value': self.size() } )
-            if is_not_receptionist: self.jobs_done_queue.push( running_job )
+            if serialize_snapshot: self.jobs_done_queue.push( running_job )
             self.socketio.emit( 'done_update', { 'value': self.jobs_done_queue.size() } )
             
             # Write the job to the database for posterity's sake

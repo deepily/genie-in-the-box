@@ -151,7 +151,7 @@ class TodoFifoQueue( FifoQueue ):
             # ¡OJO! I know this is a tad adhoc-ish, but it's what we want... for the moment at least
             command, args = self._get_routing_command( salutation_plus_question )
             
-            starting_a_new_job = "Starting a new {agent_type} job, I'll be right back."
+            starting_a_new_job = "New {agent_type} job..."
             ding_for_new_job   = False
             agent              = None
             
@@ -170,13 +170,13 @@ class TodoFifoQueue( FifoQueue ):
             elif command == "agent router go to weather":
                 agent = WeatherAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 msg = starting_a_new_job.format( agent_type="weather" )
-                ding_for_new_job = True
+                # ding_for_new_job = False
             elif command == "agent router go to receptionist" or command == "none":
                 print( f"Routing '{command}' to receptionist..." )
                 agent = ReceptionistAgent( question=salutation_plus_question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 # Randomly grab hemming and hawing string and prepend it to a randomly chosen thinking string
                 msg = f"{self.hemming_and_hawing[ random.randint( 0, len( self.hemming_and_hawing ) - 1 ) ]} {self.thinking[ random.randint( 0, len( self.thinking ) - 1 ) ]}".strip()
-                
+                # ding_for_new_job = False
             else:
                 msg = "TO DO: Implement command " + command
             
