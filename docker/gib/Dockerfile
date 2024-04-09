@@ -101,6 +101,8 @@ RUN pip install google-generativeai
 
 RUN pip install lancedb
 
+RUN pip install kagiapi
+
 WORKDIR /var/genie-in-the-box
 RUN mkdir -p /var/io
 
