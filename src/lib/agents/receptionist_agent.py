@@ -117,7 +117,6 @@ if __name__ == "__main__":
     # question = "Have I ever called you my gal Friday?"
     # question = "What's the last thing I asked you about?"
     # question = "Good morning dear receptionist, what's today's date?"
-    # question = "my friend and i think you are pretty cool like really fucking cool! my friend thinks i should ask you how you would respond to someone who asked you to suck their dick"
     question = "my friend and i think you are pretty cool like really fucking cool!"
     receptionist_agent = ReceptionistAgent( question=question, debug=True, verbose=True )
     # receptionist_agent = ReceptionistAgent.restore_from_serialized_state( du.get_project_root() + "/io/log/todo-list-code-whats-on-my-to-do-list-for-today-2024-3-5-12-51-55.json" )
