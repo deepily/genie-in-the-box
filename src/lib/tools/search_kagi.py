@@ -74,8 +74,12 @@ if __name__ == '__main__':
     # du.print_banner( "Kagi: Summary: Data" )
     # print( summary[ "data" ] )
     
-    # question = "What's the current temperature in Washington DC?"
-    question = "What's the weather forecast for Washington DC?"
+    date     = du.get_current_date()
+    time     = du.get_current_time()
+    
+    question = "The current date and time is {date} at {time}. What's the current temperature in Washington DC?"
+    # question = "What's the weather forecast for Washington DC?"
+    # question = "What's the weather forecast for Puerto Rico?"
     kagi     = KagiSearch( query=question )
 
     # fastgpt = kagi.search_fastgpt_req()
@@ -85,6 +89,12 @@ if __name__ == '__main__':
     print( fastgpt[ "meta" ] )
     du.print_banner( "Kagi: FastGPT: Data" )
     print( fastgpt[ "data" ] )
+    du.print_banner( "Kagi: FastGPT: Output" )
+    print( fastgpt[ "data" ][ "output" ] )
+    du.print_banner( "Kagi: FastGPT: References" )
+    references = fastgpt[ "data" ][ "references" ]
+    for reference in references:
+        print( reference )
     
     
     
