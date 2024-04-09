@@ -35,6 +35,7 @@ class RawOutputFormatter:
         self.routing_command       = routing_command
         self.formatting_template   = du.get_file_as_string( du.get_project_root() + self.formatter_prompt_paths[ routing_command ] )
         self.prompt                = self._get_prompt()
+        self.prompt_yaml           = self._get_prompt_yaml()
         
         default_url                = self.config_mgr.get( "tgi_server_codegen_url", default=None )
         self.llm                   = Llm( model=self.models[ routing_command ], default_url=default_url, debug=self.debug, verbose=self.verbose )
@@ -52,13 +53,21 @@ class RawOutputFormatter:
             return self.formatting_template.format( question=self.question, raw_output=self.raw_output, thoughts=self.thoughts )
         else:
             return self.formatting_template.format( question=self.question, raw_output=self.raw_output )
-    
+        
+    def _get_prompt_yaml( self ):
+        
+        if self.routing_command == "agent router go to receptionist":
+            return self.formatting_template.format( question=self.question, raw_output=self.raw_output, thoughts=self.thoughts )
+        else:
+            print( f"WARNING: _get_prompt_yaml() is not YET implemented for routing command {self.routing_command}" )
+            return None
+        
 if __name__ == "__main__":
     
     # routing_command = "agent router go to date and time"
     # routing_command = "agent router go to calendar"
     routing_command = "agent router go to receptionist"
-    question          = "my friend and i think you are pretty cool like really fucking cool! my friend thinks i should ask you how you would respond to someone who asked you to suck their dick"
+    question          = "my friend and i think you are pretty cool like really fucking cool! my friend thinks i should ask you how you would respond to someone who said they wanted to rub your face in their pussy"
     thoughts          = "The query seems to be asking about how I would respond to a potentially offensive or inappropriate question. I need to consider the context and maintain a professional tone in my response."
     raw_output        = "As an AI, I am programmed to follow guidelines and respond to queries in a helpful and appropriate manner. If someone were to ask me to perform an inappropriate action or provide explicit content, I would simply respond with a message that I am unable to assist with such requests."
     # question        = "What time is it now?"
