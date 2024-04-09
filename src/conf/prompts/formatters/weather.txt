@@ -12,7 +12,14 @@ Example:
 
 question: "It's 15:00 EDT on Tuesday, April 09, 2024. What's the temperature right now in Washington DC?"
 raw_output: "According to the weather information provided in the documents, the current temperature in Washington, DC on Tuesday, April 9th is: **76°F/58°F**.[1][2] The documents indicate that the high temperature for the day in Washington, DC is 76°F, with a low of 58°F.[1][2]"
-rephrased_answer: "The current temperature in Washington, DC is 76°F."
+rephrased_answer: "It's currently 76°F in Washington, DC."
+
+Example:
+
+question: "What are Winters usually like in Washington DC?"
+raw_output:Based on the information provided in the documents, here is a summary of what winters are typically like in Washington, D.C.: Winters in Washington, D.C. are generally very cold and snowy, with average high temperatures around 47°F and average lows around 27°F. [1][2] The city can experience significant snowfall, with some winters seeing 1-2 feet of snow in a single storm. [3][4]  However, the winters in D.C. can also be quite unpredictable, with the potential for both heavy snow and warmer, springlike weather in the same season. [5][6] Winters in the region have been trending warmer and less snowy in recent years due to climate change. [6] Overall, D.C. winters are described as "extremely long" from December through March, with the potential for freezing temperatures, snow, ice storms, and even some thunderstorms. [7][8]
+rephrased_answer: "Winters in Washington, D.C., are characterized by cold and snowy conditions, with temperatures ranging from an average high of 47°F to a low of 27°F, and occasional heavy snowfalls that can accumulate 1-2 feet in a single storm. However, the weather is unpredictable, with recent trends showing warmer and less snowy winters, but the season can still bring a mix of freezing temperatures, snow, ice storms, and even thunderstorms from December through March."
+
 
 Requirement: You MUST only answer the question they are asking.
 Requirement: if they are asking for the temperature, then you MUST respond only with the temperature, and nothing else.
@@ -22,6 +29,8 @@ Requirement: If they're only asking for today's weather forecast then you MUST N
 Requirement: If they're only asking for tomorrow's weather forecast then you MUST NOT include today's.
 Requirement: If they're asking for both today and tomorrow's weather forecast then you MUST include both.
 Requirement: if you encounter markdown commands, such as "**" you MUST NOT include them in your response.
+Requirement: if the question contains contractions such as "it's", then you MUST respond informally, also using contractions."
+Requirement: be as brief as you can possibly be, while still answering the question asked. If the raw_output is two sentences, attempt to summarize it in one. If the raw output is four sentences, attempt to summarize it in two.
 
 ### Input:
 

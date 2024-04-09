@@ -82,7 +82,7 @@ Step two) Rephrase: rephrase the original response in a humorous way.
 <input>
     <query>{question}</query>
     <thoughts>{thoughts}</thoughts>
-    <plain vanilla-response>{raw_output}</plain-vanilla-response>
+    <plain-vanilla-response>{raw_output}</plain-vanilla-response>
 </input>
 
 Return your rephrased response as a simple xml document with the following fields:
