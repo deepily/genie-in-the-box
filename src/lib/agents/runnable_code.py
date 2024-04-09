@@ -41,10 +41,10 @@ class RunnableCode:
             debug=self.debug, inject_bugs=inject_bugs
         )
         if self.code_response_dict[ "return_code" ] != 0:
-            self.error = self.code_response_dict[ "output" ]
+            self.error  = self.code_response_dict[ "output" ]
             self.answer = None
         else:
-            self.error = None
+            self.error  = None
             self.answer = self.code_response_dict[ "output" ]
         
         if self.debug and self.verbose:
