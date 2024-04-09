@@ -211,6 +211,8 @@ class AgentBase( RunnableCode, abc.ABC ):
             return self.code_response_dict
     
     def is_format_output_runnable( self ):
+        
+        print( "AgentBase.is_format_output_runnable() not implemented" )
         pass
     
     def format_output( self ):
