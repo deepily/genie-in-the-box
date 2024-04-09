@@ -1,8 +1,15 @@
-from lib.tools.search_kagi import KagiSearch
+"""
+This object is a wrapper for the KagiSearch object.
+
+Purpose: provide a simple vendor-neutral interface to the KagiSearch object.
+"""
+
+from lib.tools.search_kagi           import KagiSearch
+from lib.agents.raw_output_formatter import RawOutputFormatter
 
 import lib.utils.util as du
 
-class SearchGib:
+class GibSearch:
     
     def __init__( self, query=None ):
         
@@ -33,8 +40,15 @@ class SearchGib:
 if __name__ == '__main__':
     
     query   = "What's the current temperature in Washington DC?"
-    search  = SearchGib( query=query )
+    search  = GibSearch( query=query )
     search.search()
     results = search.get_results( scope="summary" )
+    meta    = search.get_results( scope="meta" )
     
     print( results )
+    
+    formatter = RawOutputFormatter( query, results, routing_command="agent router go to weather", debug=False, verbose=False )
+    output    = formatter.format_output()
+    print( output )
+    
+    
