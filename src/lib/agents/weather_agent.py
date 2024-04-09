@@ -8,10 +8,11 @@ from lib.tools.search_gib  import GibSearch
 
 
 class WeatherAgent( AgentBase ):
-    def __init__( self, question="", push_counter=-1, routing_command="agent router go to weather", debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
+    def __init__( self, prepend_date_and_time=False, question="", push_counter=-1, routing_command="agent router go to weather", debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
-        # Prepend a date and time to force the cache to update on an hourly basis
-        question = f"It's {du.get_current_time( format='%H:00' )} on {du.get_current_date( return_prose=True )}. {question}"
+        # Conditionally prepend a date and time to force the cache to update on an hourly basis
+        if prepend_date_and_time:
+            question = f"It's {du.get_current_time( format='%H:00' )} on {du.get_current_date( return_prose=True )}. {question}"
         
         super().__init__( df_path_key=None, question=question, routing_command=routing_command, push_counter=push_counter, debug=debug, verbose=verbose, auto_debug=auto_debug, inject_bugs=inject_bugs )
         
@@ -70,11 +71,11 @@ class WeatherAgent( AgentBase ):
 if __name__ == "__main__":
     
     # question      = "What's the current temperature in Washington DC?"
-    question      = "Is it currently raining in Washington DC?"
-    # question      = f"It's {du.get_current_time( format='%H:00' )} on {du.get_current_date( return_prose=True )}. {question}"
+    # question      = "Is it currently raining in Washington DC?"
+    question      = "What's Spring like in Puerto Rico?"
     print( question )
     
-    weather_agent = WeatherAgent( question=question, routing_command="agent router go to weather", debug=True, verbose=True, auto_debug=True )
+    weather_agent = WeatherAgent( prepend_date_and_time=False, question=question, routing_command="agent router go to weather", debug=True, verbose=True, auto_debug=True )
     weather       = weather_agent.do_all()
     
     print( weather )
