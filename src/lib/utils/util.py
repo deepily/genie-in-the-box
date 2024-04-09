@@ -36,23 +36,45 @@ def get_current_datetime( tz_name="US/Eastern" ):
     
     return tz_date.strftime( '%Y-%m-%d @ %H:%M:%S %Z' )
 
-def get_current_date( tz_name="US/Eastern" ):
-    
+def get_current_date( tz_name="US/Eastern", return_prose=False ):
+    """
+    Returns the current date in the specified time zone.
+
+    Args:
+        tz_name (str): The name of the time zone. Defaults to "US/Eastern".
+        return_prose (bool): Whether to return the date in prose format. Defaults to False.
+            If True, the date will be returned in the format: "Monday, January 01, 2021".
+
+    Returns:
+        str: The current date formatted as specified.
+    """
     tz_date = get_current_datetime_raw( tz_name )
     
-    return tz_date.strftime( "%Y-%m-%d" )
+    if return_prose:
+        return tz_date.strftime( "%A, %B %d, %Y" )
+    else:
+        return tz_date.strftime( "%Y-%m-%d" )
 
-def get_current_time( tz_name="US/Eastern", include_timezone=True ):
-    
+def get_current_time( tz_name="US/Eastern", include_timezone=True, format="%H:%M:%S" ):
+    """
+    A function that returns the current time in a specified time zone with optional timezone information.
+
+    Parameters:
+    - tz_name (str): The name of the timezone to get the current time in. Default is "US/Eastern".
+    - include_timezone (bool): Whether to include the timezone information in the output. Default is True.
+    - format (str): The format of the time string to return. Default is "%H:%M:%S".
+
+    Returns:
+    - str: The current time in the specified timezone with optional timezone information based on the format.
+    """
     tz_date = get_current_datetime_raw( tz_name )
     
     if include_timezone:
-        return tz_date.strftime( "%H:%M:%S %Z" )
+        return tz_date.strftime( format + " %Z" )
     else:
-        return tz_date.strftime( "%H:%M:%S" )
+        return tz_date.strftime( format )
 
 def get_name_value_pairs( arg_list, debug=False, verbose=False ):
-    
     """
     Parses a list of strings -- name=value -- into dictionary format { "name":"value" }
 
@@ -480,8 +502,11 @@ if __name__ == "__main__":
     print( get_api_key( "openai" ) )
     # print( get_api_key( "openai", project_root="/Users/rruiz/Projects/projects-sshfs/genie-in-the-box" ) )
     
-    line = get_file_as_source_code_with_line_numbers( get_project_root() + "/io/code.py" )
-    print( line )
+    print( get_current_date( return_prose=True ) )
+    print( get_current_time( format="%H:00" ) )
+    
+    # line = get_file_as_source_code_with_line_numbers( get_project_root() + "/io/code.py" )
+    # print( line )
     
     # generate_domain_names( 10, debug=True )
     
