@@ -142,7 +142,7 @@ class RunningFifoQueue( FifoQueue ):
                 du.print_banner( "running_job.runtime_stats", prepend_nl=True )
                 pprint.pprint( running_job.runtime_stats )
             else:
-                print( f"ReceptionistAgent detected, not adding to snapshot manager" )
+                print( f"NOT adding to snapshot manager" )
                 # The receptionist is an exception, there is no code executed to generate a RAW answer, just a conversational one
                 running_job.answer = "no code executed by receptionist"
             
