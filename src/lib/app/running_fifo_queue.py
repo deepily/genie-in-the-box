@@ -93,12 +93,13 @@ class RunningFifoQueue( FifoQueue ):
         
         formatted_output = "ERROR: Formatted output not yet generated!?!"
         try:
-            # TODO: This block of conditionals should be replaced by a call to do_all() on the agent
-            if running_job.is_prompt_executable():
-                response_dict = running_job.run_prompt()
-            if running_job.is_code_runnable():
-                code_response = running_job.run_code( auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
-            formatted_output  = running_job.format_output()
+            # # TODO: This block of conditionals should be replaced by a call to do_all() on the agent
+            # if running_job.is_prompt_executable():
+            #     response_dict = running_job.run_prompt()
+            # if running_job.is_code_runnable():
+            #     code_response = running_job.run_code( auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
+            # formatted_output  = running_job.format_output()
+            formatted_output    = running_job.do_all()
         
         except Exception as e:
             

@@ -226,3 +226,11 @@ class AgentBase( RunnableCode, abc.ABC ):
     def formatter_ran_to_completion( self ):
         
         return self.answer_conversational is not None
+
+    def do_all( self ):
+        
+        self.run_prompt()
+        self.run_code()
+        self.format_output()
+        
+        return self.answer_conversational

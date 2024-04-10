@@ -63,6 +63,8 @@ class WeatherAgent( AgentBase ):
     
     def do_all( self ):
         
+        # No prompt to run just yet
+        # self.run_prompt()
         self.run_code()
         self.format_output()
         
