@@ -3,18 +3,18 @@ import json
 
 import lib.utils.util as du
 
-from lib.agents.agent_base import AgentBase
-from lib.tools.search_gib  import GibSearch
+from lib.agents.agent_base        import AgentBase
+from lib.tools.search_gib         import GibSearch
+from lib.memory.solution_snapshot import SolutionSnapshot as ss
 
 
 class WeatherAgent( AgentBase ):
-    def __init__( self, prepend_date_and_time=False, question="", push_counter=-1, routing_command="agent router go to weather", debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
+    def __init__( self, prepend_date_and_time=True, question="", last_question_asked="", push_counter=-1, routing_command="agent router go to weather", debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
-        # Conditionally prepend a date and time to force the cache to update on an hourly basis
-        if prepend_date_and_time:
-            question = f"It's {du.get_current_time( format='%H:00' )} on {du.get_current_date( return_prose=True )}. {question}"
+        # Prepend a date and time to force the cache to update on an hourly basis
+        self.reformulated_last_question_asked = f"It's {du.get_current_time( format='%I:00 %p' )} on {du.get_current_date( return_prose=True )}. {last_question_asked}"
         
-        super().__init__( df_path_key=None, question=question, routing_command=routing_command, push_counter=push_counter, debug=debug, verbose=verbose, auto_debug=auto_debug, inject_bugs=inject_bugs )
+        super().__init__( df_path_key=None, question=question, last_question_asked=last_question_asked, routing_command=routing_command, push_counter=push_counter, debug=debug, verbose=verbose, auto_debug=auto_debug, inject_bugs=inject_bugs )
         
         self.prompt                   = None
         self.xml_response_tag_names   = []
@@ -29,7 +29,7 @@ class WeatherAgent( AgentBase ):
     def run_code( self, auto_debug=None, inject_bugs=None ):
         
         try:
-            search   = GibSearch( query=self.question )
+            search   = GibSearch( query=self.reformulated_last_question_asked, debug=self.debug, verbose=self.verbose)
             search.search()
             response = search.get_results( scope="summary" )
             
@@ -63,7 +63,7 @@ class WeatherAgent( AgentBase ):
     
     def do_all( self ):
         
-        # No prompt to run just yet
+        # No prompt to run just yet!
         # self.run_prompt()
         self.run_code()
         self.format_output()
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     question      = "What's Spring like in Puerto Rico?"
     print( question )
     
-    weather_agent = WeatherAgent( prepend_date_and_time=False, question=question, routing_command="agent router go to weather", debug=True, verbose=True, auto_debug=True )
+    weather_agent = WeatherAgent( question=ss.remove_non_alphabetics( question ), last_question_asked=question, routing_command="agent router go to weather", debug=True, verbose=True, auto_debug=True )
     weather       = weather_agent.do_all()
     
     print( weather )
