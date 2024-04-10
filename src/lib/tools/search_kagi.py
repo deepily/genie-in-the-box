@@ -7,8 +7,10 @@ from lib.utils.util_stopwatch import Stopwatch
 
 class KagiSearch:
     
-    def __init__( self, query=None, url=None ):
+    def __init__( self, query=None, url=None, debug=False, verbose=False ):
         
+        self.debug    = debug
+        self.verbose  = verbose
         self.query    = query
         self.url      = url
         self._key     = du.get_api_key( "kagi" )
@@ -30,7 +32,7 @@ class KagiSearch:
     
     def search_fastgpt( self ):
         
-        timer    = Stopwatch( "Kagi FastGPT" )
+        timer    = Stopwatch( f"Kagi FastGPT query: [{self.query}]" )
         response = self._kagi.fastgpt( query=self.query )
         timer.print( "Done!", use_millis=True )
         
@@ -57,6 +59,7 @@ class KagiSearch:
     def get_summary( self ):
         
         timer = Stopwatch( "Kagi: Summarize" )
+        if self.debug: print( f"Kagi: Summarize: URL: [{self.url}]" )
         response = self._kagi.summarize( url=self.url, engine="agnes", summary_type="summary" )
         timer.print( "Done!", use_millis=True )
         

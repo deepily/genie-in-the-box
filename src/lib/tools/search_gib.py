@@ -1,7 +1,7 @@
 """
 This object is a wrapper for the KagiSearch object.
 
-Purpose: provide a simple vendor-neutral interface to the KagiSearch object.
+Purpose: provide a simple vendor-neutral interface to the KagiSearch and/or other objects.
 """
 
 from lib.tools.search_kagi           import KagiSearch
@@ -11,15 +11,18 @@ import lib.utils.util as du
 
 class GibSearch:
     
-    def __init__( self, query=None ):
+    def __init__( self, query=None, url=None, debug=False, verbose=False ):
         
-        self.query    = query
-        self._kagi    = KagiSearch( query=query )
-        self._results = None
+        self.debug     = debug
+        self.verbose   = verbose
+        self.query     = query
+        self.url       = url
+        self._searcher = KagiSearch( query=query, url=url, debug=debug, verbose=verbose )
+        self._results  = None
     
     def search( self ):
         
-        self._results = self._kagi.search_fastgpt()
+        self._results = self._searcher.search_fastgpt()
         
     def get_results( self, scope="all" ):
         
