@@ -6,9 +6,9 @@ import lib.utils.util as du
 from lib.agents.agent_base        import AgentBase
 
 class TodoListAgent( AgentBase ):
-    def __init__( self, question=None, push_counter=-1, routing_command=None, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
+    def __init__( self, question="", last_question_asked="", push_counter=-1, routing_command="agent router go to todo list", debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
-        super().__init__( df_path_key="path_to_todolist_df_wo_root", question=question, routing_command="agent router go to todo list", push_counter=push_counter, debug=debug, verbose=verbose, auto_debug=auto_debug, inject_bugs=inject_bugs )
+        super().__init__( df_path_key="path_to_todolist_df_wo_root", question=question, last_question_asked=last_question_asked, routing_command=routing_command, push_counter=push_counter, debug=debug, verbose=verbose, auto_debug=auto_debug, inject_bugs=inject_bugs )
         
         self.prompt = self._get_prompt()
         self.xml_response_tag_names   = [ "thoughts", "code", "example", "returns", "explanation" ]

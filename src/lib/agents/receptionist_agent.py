@@ -8,9 +8,9 @@ from lib.agents.raw_output_formatter   import RawOutputFormatter
 from lib.memory.input_and_output_table import InputAndOutputTable
 
 class ReceptionistAgent( AgentBase ):
-    def __init__( self, question=None, push_counter=-1, routing_command=None, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
+    def __init__( self, question="", last_question_asked="", push_counter=-1, routing_command="agent router go to receptionist", debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
-        super().__init__( question=question, routing_command="agent router go to receptionist", push_counter=push_counter, debug=debug, verbose=verbose )
+        super().__init__( question=question, last_question_asked=last_question_asked, routing_command=routing_command, push_counter=push_counter, debug=debug, verbose=verbose )
         
         self.io_tbl                   = InputAndOutputTable( debug=self.debug, verbose=self.verbose)
         self.prompt                   = self._get_prompt()
