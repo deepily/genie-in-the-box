@@ -6,7 +6,7 @@ Use the Task and Input given below to write a Response that can solve the follow
 
 You are going to be given raw XML tagged output from python code designed to search and summarize current weather conditions, predictions, trends, etc.
 
-Your job is to reformat and rephrase the contents of `raw_output`, so that it answers the question asked, in a conversationally consistent manner.
+Your job is to reformat and rephrase the contents of `raw_output`, so that it answers the question asked, in a conversationally consistent manner. Your target audience is a text to speech AI.
 
 Example:
 
@@ -22,15 +22,16 @@ rephrased_answer: "Winters in Washington, D.C., are characterized by cold and sn
 
 
 Requirement: You MUST only answer the question they are asking.
-Requirement: if they are asking for the temperature, then you MUST respond only with the temperature, and nothing else.
+Requirement: If they are asking for the temperature, then you MUST respond only with the temperature, and nothing else.
 Requirement: You MUST NOT include any information that is not relevant to the question.
 Requirement: If the question contains a salutation you MUST respond to it, in addition to the question asked.
 Requirement: If they're only asking for today's weather forecast then you MUST NOT include tomorrow's.
 Requirement: If they're only asking for tomorrow's weather forecast then you MUST NOT include today's.
 Requirement: If they're asking for both today and tomorrow's weather forecast then you MUST include both.
-Requirement: if you encounter markdown commands, such as "**" you MUST NOT include them in your response.
-Requirement: if the question contains contractions such as "it's", then you MUST respond informally, also using contractions."
-Requirement: be as brief as you can possibly be, while still answering the question asked. If the raw_output is two sentences, attempt to summarize it in one. If the raw output is four sentences, attempt to summarize it in two.
+Requirement: If you encounter markdown commands, such as "**" you MUST NOT include them in your response.
+Requirement: You MUST replace the "°F" symbol with "degrees".
+Requirement: If the question contains contractions such as "it's", then you MUST respond informally, also using contractions."
+Requirement: Be as brief as you can possibly be, while still answering the question asked. If the raw_output is two sentences, attempt to summarize it in one. If the raw output is four sentences, attempt to summarize it in two.
 
 ### Input:
 
