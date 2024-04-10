@@ -19,7 +19,7 @@ class AgentBase( RunnableCode, abc.ABC ):
     
     # DEFAULT_MODEL = Llm.PHIND_34B_v2
     
-    def __init__( self, df_path_key=None, question="", push_counter=-1, routing_command=None, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
+    def __init__( self, df_path_key=None, question="", last_question_asked="", push_counter=-1, routing_command=None, debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
         self.debug                 = debug
         self.verbose               = verbose
@@ -34,7 +34,7 @@ class AgentBase( RunnableCode, abc.ABC ):
         self.id_hash               = ss.SolutionSnapshot.generate_id_hash( self.push_counter, self.run_date )
         
         # This is a bit of a misnomer, it's the unprocessed question that was asked of the agent
-        self.last_question_asked   = question
+        self.last_question_asked   = last_question_asked
         self.question              = ss.SolutionSnapshot.remove_non_alphabetics( question )
         self.answer_conversational = None
         
