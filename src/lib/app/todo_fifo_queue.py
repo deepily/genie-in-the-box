@@ -88,7 +88,7 @@ class TodoFifoQueue( FifoQueue ):
         self.push_counter += 1
         salutations, question = self.parse_salutations( question )
         
-        du.print_banner( f"push_job( '{salutations}: {question}' )", prepend_nl=True )
+        du.print_banner( f"push_job( '{( salutations + ' ' + question ).strip()}' )", prepend_nl=True )
         threshold = self.config_mgr.get( "snapshot_similiarity_threshold", default=90.0, return_type="float" )
         print( f"push_job(): Using snapshot similarity threshold of [{threshold}]" )
         
@@ -144,8 +144,7 @@ class TodoFifoQueue( FifoQueue ):
             
             # Note the distinction between salutation and the question: all agents except the receptionist get the question only.
             # The receptionist gets the salutation plus the question to help it decide how it will respond.
-            salutation_plus_question = salutations + " " + question
-            salutation_plus_question.strip()
+            salutation_plus_question = ( salutations + " " + question ).strip()
 
             # We're going to give the routing function maximum information, hence including the salutation with the question
             # ¡OJO! I know this is a tad adhoc-ish, but it's what we want... for the moment at least
@@ -168,7 +167,7 @@ class TodoFifoQueue( FifoQueue ):
                 msg = starting_a_new_job.format( agent_type="date and time" )
                 ding_for_new_job = True
             elif command == "agent router go to weather":
-                agent = WeatherAgent( question=question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
+                agent = WeatherAgent( question=question, last_question_asked=salutation_plus_question, push_counter=self.push_counter, debug=True, verbose=False, auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
                 msg = starting_a_new_job.format( agent_type="weather" )
                 # ding_for_new_job = False
             elif command == "agent router go to receptionist" or command == "none":
@@ -178,7 +177,7 @@ class TodoFifoQueue( FifoQueue ):
                 msg = f"{self.hemming_and_hawing[ random.randint( 0, len( self.hemming_and_hawing ) - 1 ) ]} {self.thinking[ random.randint( 0, len( self.thinking ) - 1 ) ]}".strip()
                 # ding_for_new_job = False
             else:
-                msg = "TO DO: Implement command " + command
+                msg = f"TO DO: Implement command {command}"
             
             if ding_for_new_job:
                 self.socketio.emit( 'notification_sound_update', { 'soundFile': '/static/gentle-gong.mp3' } )
