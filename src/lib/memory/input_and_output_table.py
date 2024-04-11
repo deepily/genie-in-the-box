@@ -56,7 +56,7 @@ class InputAndOutputTable():
         # In this case the only embedding that we are cashing is the one that corresponds to the query/input, otherwise known
         # as the 'question' in the solution snapshot object and the 'query' in the self._question_embeddings_tbl object.
         # TODO: Make consistent the use of the terms 'input', 'query' and 'question'. While they are synonymous that's not necessarily clear to the casual reader.
-        timer = Stopwatch( msg=f"insert_io_row( '{input[ :64 ]}[0:64]' )" )
+        timer = Stopwatch( msg=f"insert_io_row( '{input[ :64 ]}...' )", silent=True )
         new_row = [ {
             "date"                             : date,
             "time"                             : time,
@@ -68,11 +68,9 @@ class InputAndOutputTable():
             "output_final_embedding"           : output_final_embedding if output_final_embedding else ss.generate_embedding( output_final ),
             "solution_path_wo_root"            : solution_path_wo_root
         } ]
-        if self.debug: print( f"BEFORE: input_and_output_tbl has [{self._input_and_output_tbl.count_rows()}] rows" )
         self._input_and_output_tbl.add( new_row )
-        timer.print( "Done!", use_millis=True, end="\n" )
-        if self.debug: print( f" AFTER: input_and_output_tbl has [{self._input_and_output_tbl.count_rows()}] rows" )
-    
+        timer.print( "Done! I/O table now has {self._input_and_output_tbl.count_rows()} rows", use_millis=True, end="\n" )
+        
     def get_knn_by_input( self, search_terms, k=5 ):
         
         timer = Stopwatch( msg="get_knn_by_input() called..." )
