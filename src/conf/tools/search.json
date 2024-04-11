@@ -1,0 +1,40 @@
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "search_and_summarize_web",
+            "description": "Performs a web search and summarizes the results",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Web search terms or questions to be answered and summarized"
+                    }
+                },
+                "required": [ "query" ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "query_io_table_for_knn_topics",
+            "description": "Queries the input and output table to find KNN topics",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "topics": {
+                        "type": "string",
+                        "description": "The topic, or topics, to query the io table for"
+                    },
+                    "max_items": {
+                        "type": "integer",
+                        "description": "Maximum number of similar topics to return, default is 5"
+                    }
+                },
+                "required": [ "topics" ]
+            }
+        }
+    }
+]
