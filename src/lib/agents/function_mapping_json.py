@@ -9,7 +9,7 @@ from lib.agents.agent_base import AgentBase
 from lib.agents.llm        import Llm
 
 import pandas as pd
-class FunctionMappingAgent( AgentBase ):
+class FunctionMappingAgentJson( AgentBase ):
     
     def __init__( self, path_to_df, question="", push_counter=-1, run_date=du.get_current_datetime(), debug=False, verbose=False ):
         
@@ -114,7 +114,7 @@ class FunctionMappingAgent( AgentBase ):
         if self.debug and self.verbose: print( json.dumps( self.prompt_response_dict, indent=4 ) )
         
         # Set up code for future execution
-        print( f"FunctionMappingAgent: is_event_function_call = [{self.prompt_response_dict[ 'is_event_function_call' ]}]" )
+        print( f"FunctionMappingAgentJson: is_event_function_call = [{self.prompt_response_dict[ 'is_event_function_call' ]}]" )
         if self.prompt_response_dict[ "is_event_function_call" ]:
             self.prompt_response_dict[ "code" ] = [
                 self.prompt_response_dict[ "import_as" ],
@@ -145,7 +145,7 @@ class FunctionMappingAgent( AgentBase ):
         # self.answer_conversational = self._query_llm( preamble, instructions, model=format_model, debug=self.debug )
         #
         # return self.answer_conversational
-        raise NotImplementedError( "FunctionMappingAgent.format_output() not implemented" )
+        raise NotImplementedError( "FunctionMappingAgentJson.format_output() not implemented" )
     
     def get_html( self ):
         
@@ -153,7 +153,7 @@ class FunctionMappingAgent( AgentBase ):
         
 if __name__ == "__main__":
     
-    agent = FunctionMappingAgent( "/src/conf/long-term-memory/events.csv", debug=True, verbose=True )
+    agent = FunctionMappingAgentJson( "/src/conf/long-term-memory/events.csv", debug=True, verbose=True )
     
     # question         = "What todo items do I have on my calendar for this week?"
     # question         = "What todo items do I have on my calendar for today?"
