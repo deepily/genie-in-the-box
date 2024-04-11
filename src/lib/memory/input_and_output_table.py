@@ -50,8 +50,6 @@ class InputAndOutputTable():
         input_type="", input="", input_embedding=[], output_raw="", output_final="", output_final_embedding=[], solution_path_wo_root=None
     ):
         
-        # print( f"insert_io_row() called with input: [{input}]" )
-        
         # ¡OJO! The embeddings are optional. If not provided, they will be generated.
         # In this case the only embedding that we are cashing is the one that corresponds to the query/input, otherwise known
         # as the 'question' in the solution snapshot object and the 'query' in the self._question_embeddings_tbl object.
@@ -61,8 +59,10 @@ class InputAndOutputTable():
             "date"                             : date,
             "time"                             : time,
             "input_type"                       : input_type,
-            "input"                            : ss.remove_non_alphabetics( input ),
-            "input_embedding"                  : input_embedding if input_embedding else self._question_embeddings_tbl.get_embedding( ss.remove_non_alphabetics( input ) ),
+            "input"                            : input,
+            # "input"                            : ss.remove_non_alphabetics( input ),
+            "input_embedding"                  : input_embedding if input_embedding else self._question_embeddings_tbl.get_embedding( input ),
+            # "input_embedding"                  : input_embedding if input_embedding else self._question_embeddings_tbl.get_embedding( ss.remove_non_alphabetics( input ) ),
             "output_raw"                       : output_raw,
             "output_final"                     : output_final,
             "output_final_embedding"           : output_final_embedding if output_final_embedding else ss.generate_embedding( output_final ),
@@ -71,7 +71,7 @@ class InputAndOutputTable():
         self._input_and_output_tbl.add( new_row )
         timer.print( "Done! I/O table now has {self._input_and_output_tbl.count_rows()} rows", use_millis=True, end="\n" )
         
-    def get_knn_by_input( self, search_terms, k=5 ):
+    def get_knn_by_input( self, search_terms, k=10 ):
         
         timer = Stopwatch( msg="get_knn_by_input() called..." )
         
