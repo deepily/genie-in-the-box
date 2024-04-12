@@ -51,18 +51,17 @@ class InputAndOutputTable():
     ):
         
         # ¡OJO! The embeddings are optional. If not provided, they will be generated.
-        # In this case the only embedding that we are cashing is the one that corresponds to the query/input, otherwise known
+        # In this case the only embedding that we are caching is the one that corresponds to the query/input, otherwise known
         # as the 'question' in the solution snapshot object and the 'query' in the self._question_embeddings_tbl object.
         # TODO: Make consistent the use of the terms 'input', 'query' and 'question'. While they are synonymous that's not necessarily clear to the casual reader.
         timer = Stopwatch( msg=f"insert_io_row( '{input[ :64 ]}...' )", silent=True )
+        
         new_row = [ {
             "date"                             : date,
             "time"                             : time,
             "input_type"                       : input_type,
             "input"                            : input,
-            # "input"                            : ss.remove_non_alphabetics( input ),
             "input_embedding"                  : input_embedding if input_embedding else self._question_embeddings_tbl.get_embedding( input ),
-            # "input_embedding"                  : input_embedding if input_embedding else self._question_embeddings_tbl.get_embedding( ss.remove_non_alphabetics( input ) ),
             "output_raw"                       : output_raw,
             "output_final"                     : output_final,
             "output_final_embedding"           : output_final_embedding if output_final_embedding else ss.generate_embedding( output_final ),
