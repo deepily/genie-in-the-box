@@ -13,6 +13,15 @@
                     }
                 },
                 "required": [ "query" ]
+            },
+            "returns": {
+                "type": "object",
+                "properties": {
+                    "summary": {
+                        "type": "string",
+                        "description": "The summarized text"
+                    }
+                }
             }
         }
     },
@@ -34,6 +43,18 @@
                     }
                 },
                 "required": [ "topics" ]
+            },
+            "returns": {
+                "type": "object",
+                "properties": {
+                    "topics": {
+                        "type": "list",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "The similar topics"
+                    }
+                }
             }
         }
     }
