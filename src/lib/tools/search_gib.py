@@ -20,7 +20,7 @@ class GibSearch:
         self._searcher = KagiSearch( query=query, url=url, debug=debug, verbose=verbose )
         self._results  = None
     
-    def search( self ):
+    def search_and_summarize_the_web( self ):
         
         self._results = self._searcher.search_fastgpt()
         
@@ -42,9 +42,9 @@ class GibSearch:
         
 if __name__ == '__main__':
     
-    query   = "What's the current temperature in Washington DC?"
+    query   = "What's the temperature in Washington DC?"
     search  = GibSearch( query=query )
-    search.search()
+    search.search_and_summarize_the_web()
     results = search.get_results( scope="summary" )
     meta    = search.get_results( scope="meta" )
     
