@@ -62,37 +62,40 @@ class AgentBase( RunnableCode, abc.ABC ):
     def _get_prompt_template_paths( self ):
         
         return{
-            "agent router go to date and time": self.config_mgr.get( "agent_prompt_for_date_and_time" ),
-            "agent router go to calendar"     : self.config_mgr.get( "agent_prompt_for_calendaring" ),
-            "agent router go to weather"      : self.config_mgr.get( "agent_prompt_for_weather" ),
-            "agent router go to todo list"    : self.config_mgr.get( "agent_prompt_for_todo_list" ),
-            "agent router go to receptionist" : self.config_mgr.get( "agent_prompt_for_receptionist" ),
-            "agent router go to debugger"     : self.config_mgr.get( "agent_prompt_for_debugger" ),
-            "agent router go to bug injector" : self.config_mgr.get( "agent_prompt_for_bug_injector" ),
+            "agent router go to date and time"   : self.config_mgr.get( "agent_prompt_for_date_and_time" ),
+            "agent router go to calendar"        : self.config_mgr.get( "agent_prompt_for_calendaring" ),
+            "agent router go to weather"         : self.config_mgr.get( "agent_prompt_for_weather" ),
+            "agent router go to todo list"       : self.config_mgr.get( "agent_prompt_for_todo_list" ),
+            "agent router go to receptionist"    : self.config_mgr.get( "agent_prompt_for_receptionist" ),
+            "agent router go to debugger"        : self.config_mgr.get( "agent_prompt_for_debugger" ),
+            "agent router go to bug injector"    : self.config_mgr.get( "agent_prompt_for_bug_injector" ),
+            "agent router go to function mapping": self.config_mgr.get( "agent_prompt_for_function_mapping" ),
         }
     
     def _get_models( self ):
         
         return{
-            "agent router go to date and time": self.config_mgr.get( "agent_model_name_for_date_and_time" ),
-            "agent router go to calendar"     : self.config_mgr.get( "agent_model_name_for_calendaring" ),
-            "agent router go to weather"      : self.config_mgr.get( "agent_model_name_for_weather" ),
-            "agent router go to todo list"    : self.config_mgr.get( "agent_model_name_for_todo_list" ),
-            "agent router go to receptionist" : self.config_mgr.get( "agent_model_name_for_receptionist" ),
-            "agent router go to debugger"     : self.config_mgr.get( "agent_model_name_for_debugger" ),
-            "agent router go to bug injector" : self.config_mgr.get( "agent_model_name_for_bug_injector" ),
+            "agent router go to date and time"   : self.config_mgr.get( "agent_model_name_for_date_and_time" ),
+            "agent router go to calendar"        : self.config_mgr.get( "agent_model_name_for_calendaring" ),
+            "agent router go to weather"         : self.config_mgr.get( "agent_model_name_for_weather" ),
+            "agent router go to todo list"       : self.config_mgr.get( "agent_model_name_for_todo_list" ),
+            "agent router go to receptionist"    : self.config_mgr.get( "agent_model_name_for_receptionist" ),
+            "agent router go to debugger"        : self.config_mgr.get( "agent_model_name_for_debugger" ),
+            "agent router go to bug injector"    : self.config_mgr.get( "agent_model_name_for_bug_injector" ),
+            "agent router go to function mapping": self.config_mgr.get( "agent_model_name_for_function_mapping" ),
         }
     
     def _get_serialization_topics( self ):
         
         return {
-            "agent router go to date and time": "date-and-time",
-            "agent router go to calendar"     : "calendar",
-            "agent router go to weather"      : "weather",
-            "agent router go to todo list"    : "todo-list",
-            "agent router go to receptionist" : "receptionist",
-            "agent router go to debugger"     : "code-debugger",
-            "agent router go to bug injector" : "bug-injector",
+            "agent router go to date and time"   : "date-and-time",
+            "agent router go to calendar"        : "calendar",
+            "agent router go to weather"         : "weather",
+            "agent router go to todo list"       : "todo-list",
+            "agent router go to receptionist"    : "receptionist",
+            "agent router go to debugger"        : "code-debugger",
+            "agent router go to bug injector"    : "bug-injector",
+            "agent router go to function mapping": "function-mapping",
         }
     def get_html( self ):
         

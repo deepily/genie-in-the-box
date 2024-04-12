@@ -19,7 +19,7 @@ class TodoListAgent( AgentBase ):
         
         column_names, list_names, head = self._get_df_metadata()
         
-        return self.prompt_template.format( question=self.question, column_names=column_names, list_names=list_names, head=head )
+        return self.prompt_template.format( question=self.last_question_asked, column_names=column_names, list_names=list_names, head=head )
     
     def _get_df_metadata( self ):
         

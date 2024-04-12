@@ -22,7 +22,7 @@ class ReceptionistAgent( AgentBase ):
         
         date_today, entries = self._get_df_metadata()
         
-        return self.prompt_template.format( query=self.question, date_today=date_today, entries=entries )
+        return self.prompt_template.format( query=self.last_question_asked, date_today=date_today, entries=entries )
     
     def _get_df_metadata( self ):
         
