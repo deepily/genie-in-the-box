@@ -51,7 +51,7 @@ class RunningFifoQueue( FifoQueue ):
                 # Limit the length of the question string
                 truncated_question = du.truncate_string( running_job.question, max_len=64 )
                 
-                run_timer = sw.Stopwatch( "Starting run timer..." )
+                run_timer = sw.Stopwatch( "Starting job run timer..." )
                 
                 # if type( running_job ) == FunctionMappingAgent:
                 #     running_job = self._handle_function_mapping_agent( running_job, truncated_question )
@@ -93,19 +93,11 @@ class RunningFifoQueue( FifoQueue ):
         
         formatted_output = "ERROR: Formatted output not yet generated!?!"
         try:
-            # # TODO: This block of conditionals should be replaced by a call to do_all() on the agent
-            # if running_job.is_prompt_executable():
-            #     response_dict = running_job.run_prompt()
-            # if running_job.is_code_runnable():
-            #     code_response = running_job.run_code( auto_debug=self.auto_debug, inject_bugs=self.inject_bugs )
-            # formatted_output  = running_job.format_output()
             formatted_output    = running_job.do_all()
         
         except Exception as e:
             
-            stack_trace = traceback.format_tb( e.__traceback__ )
-            du.print_banner( f"Stack trace for [{truncated_question}]", prepend_nl=True )
-            for line in stack_trace: print( line )
+            du.print_stack_trace( e, explanation="do_all() failed", caller="RunningFifoQueue._handle_base_agent()" )
             running_job = self._handle_error_case( code_response, running_job, truncated_question )
         
         du.print_banner( f"Job [{running_job.last_question_asked}] complete...", prepend_nl=True, end="\n" )
