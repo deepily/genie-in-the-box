@@ -136,7 +136,7 @@ class AgentBase( RunnableCode, abc.ABC ):
         
         for xml_tag in self.xml_response_tag_names:
             
-            if self.debug: print( f"Looking for xml_tag [{xml_tag}]" )
+            if self.debug and self.verbose: print( f"Looking for xml_tag [{xml_tag}]" )
             
             if xml_tag == "code":
                 # the get_code method expects enclosing tags
