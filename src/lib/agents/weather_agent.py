@@ -30,7 +30,7 @@ class WeatherAgent( AgentBase ):
         
         try:
             search   = GibSearch( query=self.reformulated_last_question_asked, debug=self.debug, verbose=self.verbose)
-            search.search()
+            search.search_and_summarize_the_web()
             response = search.get_results( scope="summary" )
             
             self.code_response_dict = {
@@ -72,9 +72,9 @@ class WeatherAgent( AgentBase ):
     
 if __name__ == "__main__":
     
-    # question      = "What's the current temperature in Washington DC?"
-    # question      = "Is it currently raining in Washington DC?"
-    question      = "What's Spring like in Puerto Rico?"
+    # question      = "What's the temperature in Washington DC?"
+    question      = "Is it raining in Washington DC?"
+    # question      = "What's Spring like in Puerto Rico?"
     print( question )
     
     weather_agent = WeatherAgent( question=ss.remove_non_alphabetics( question ), last_question_asked=question, routing_command="agent router go to weather", debug=True, verbose=True, auto_debug=True )
