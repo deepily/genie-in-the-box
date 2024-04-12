@@ -5,6 +5,7 @@ import sys
 import datetime as dt
 import pytz
 import json
+import traceback
 
 debug = False
 
@@ -419,6 +420,13 @@ def print_list( list_to_print, end="\n" ):
     for item in list_to_print:
         print( item, end=end )
     
+    
+def print_stack_trace( exception, explanation="Unknown reason", caller="Unknown caller", prepend_nl=True ):
+    
+    msg = f"ERROR: {explanation} in {caller}"
+    print_banner( msg, prepend_nl=prepend_nl, expletive=True )
+    stack_trace = traceback.format_tb( exception.__traceback__ )
+    for line in stack_trace: print( line )
     
 def sanity_check_file_path( file_path, silent=False ):
 
