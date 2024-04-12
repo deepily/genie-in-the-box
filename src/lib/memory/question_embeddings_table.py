@@ -68,7 +68,11 @@ class QuestionEmbeddingsTable():
             embedding: The embedding for the given question.
         """
         if self.debug: timer = Stopwatch( msg=f"get_embedding( '{question}' )", silent=True )
-        rows_returned = self._question_embeddings_tbl.search().where( f"question = '{question}'" ).limit( 1 ).select( [ "embedding" ] ).to_list()
+        try:
+            rows_returned = self._question_embeddings_tbl.search().where( f"question = '{question}'" ).limit( 1 ).select( [ "embedding" ] ).to_list()
+        except Exception as e:
+            du.print_stack_trace( e, explanation="search() failed", caller="QuestionEmbeddingsTable.get_embedding()" )
+            rows_returned = []
         if self.debug: timer.print( f"Done! w/ {len( rows_returned )} rows returned", use_millis=True )
         
         if not rows_returned:

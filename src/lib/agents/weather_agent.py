@@ -72,8 +72,8 @@ class WeatherAgent( AgentBase ):
     
 if __name__ == "__main__":
     
-    # question      = "What's the temperature in Washington DC?"
-    question      = "Is it raining in Washington DC?"
+    question      = "What's the temperature in Washington DC?"
+    # question      = "Is it raining in Washington DC?"
     # question      = "What's Spring like in Puerto Rico?"
     print( question )
     
