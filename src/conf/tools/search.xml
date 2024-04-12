@@ -1,6 +1,6 @@
 <functions>
     <function>
-        <description>Performs a web search and summarizes the results</description>
+        <description>Performs a web search and summarizes the results. Web search topics can range from weather, to sports, politics, technology, and any number of other unspecified topics.</description>
         <name>search_and_summarize_the_web</name>
         <parameters>
             <parameter>
@@ -15,6 +15,12 @@
                 <description>Is this a search for information that is dynamic and continually updated on the web (True), or is it static knowledge (False)?</description>
                 <required>True</required>
             </parameter>
+            <parameter>
+                <name>time_frame</name>
+                <type>string</type>
+                <description>What is the timeframe for our web search: today, yesterday, last week, last year etc.</description>
+                <required>False</required>
+            </parameter>
         </parameters>
         <returns>
             <return-value>
@@ -25,20 +31,20 @@
         </returns>
     </function>
     <function>
-        <description>Searches the memory table to find KNN topics. NOTE: This is designed to support the notion of an AI's long-term memory of conversations with humans</description>
+        <description>Searches the memory table to find KNN topics. This is where we store past conversations about any number of topics. This damn thing Zack and dumber  NOTE: This is designed to support the notion of an AI's long-term memory of conversations with humans</description>
         <name>query_memory_table_for_knn_topics</name>
         <parameters>
             <parameter>
-                <name>topics</name>
+                <name>question</name>
                 <type>string</type>
-                <description>The topic, or topics, to query the memory table for</description>
+                <description>The question, verbatim, that the topic, or topics, are derived from</description>
                 <required>True</required>
             </parameter>
             <parameter>
-                <name>max_items</name>
-                <type>integer</type>
-                <description>Maximum number of similar topics to return, default is 5</description>
-                <required>False</required>
+                <name>topics</name>
+                <type>string</type>
+                <description>The topic, or topics, to search the memory table for</description>
+                <required>True</required>
             </parameter>
         </parameters>
         <returns>
@@ -49,6 +55,46 @@
                     <type>string</type>
                 </items>
                 <description>A list of similar topic strings</description>
+            </return-value>
+        </returns>
+    </function>
+    <function>
+        <description>Searches the memory table to find KNN topics by specific date or date range. NOTE: This is designed to support the notion of an AI's long-term memory of conversations with humans</description>
+        <name>query_memory_table_by_date_for_knn_topics</name>
+        <parameters>
+            <parameter>
+                <name>question</name>
+                <type>string</type>
+                <description>The question, verbatim, that the topic, or topics, are derived from</description>
+                <required>True</required>
+            </parameter>
+            <parameter>
+                <name>topics</name>
+                <type>string</type>
+                <description>The topic, or topics, to search the memory table for</description>
+                <required>True</required>
+            </parameter>
+            <parameter>
+                <name>start_date</name>
+                <type>string</type>
+                <description>What is the start date of the search?. Defaults to "2024-04-01"</description>
+                <required>False</required>
+            </parameter>
+        </parameters>
+        <parameter>
+                <name>end_date</name>
+                <type>string</type>
+                <description>What is the end date of the search?. Defaults to whatever today's date is, using "YYYY-MM-DD"</description>
+                <required>False</required>
+            </parameter>
+        <returns>
+            <return-value>
+                <name>topics</name>
+                <type>list</type>
+                <items>
+                    <type>string</type>
+                </items>
+                <description>A list of similar topic strings, filtered by date</description>
             </return-value>
         </returns>
     </function>
