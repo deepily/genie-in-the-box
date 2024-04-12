@@ -69,77 +69,83 @@ class Llm:
     
     def query_llm( self, model=None, prompt_yaml=None, prompt=None, preamble=None, question=None, max_new_tokens=1024, temperature=0.5, top_k=100, top_p=0.25, stop_sequences=None, debug=None, verbose=None ):
         
-        if prompt_yaml is None and preamble is None and question is None and prompt is None:
-            raise ValueError( "ERROR: Neither prompt_yaml, nor prompt, nor preamble, nor question has a value set!" )
-        
-        # Allow us to override the prompt, preamble, and question set when instantiated
-        if model is not None: self.model = model
-        
-        if self.model == Llm.PHIND_34B_v2:
+        try:
+            if prompt_yaml is None and preamble is None and question is None and prompt is None:
+                raise ValueError( "ERROR: Neither prompt_yaml, nor prompt, nor preamble, nor question has a value set!" )
             
-            # Quick sanity check
-            if prompt is None: raise ValueError( "ERROR: Prompt is `None`!" )
+            # Allow us to override the prompt, preamble, and question set when instantiated
+            if model is not None: self.model = model
             
-            return self._query_llm_phind(
-                prompt, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, debug=debug, verbose=verbose, stop_sequences=stop_sequences
-            )
-        
-        elif self.model == Llm.GOOGLE_GEMINI_PRO:
+            if self.model == Llm.PHIND_34B_v2:
+                
+                # Quick sanity check
+                if prompt is None: raise ValueError( "ERROR: Prompt is `None`!" )
+                
+                return self._query_llm_phind(
+                    prompt, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, debug=debug, verbose=verbose, stop_sequences=stop_sequences
+                )
             
-            # Quick sanity check
-            if prompt is None: raise ValueError( "ERROR: Prompt is `None`!" )
-            return self._query_llm_google(
-                prompt, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, stop_sequences=stop_sequences, debug=debug, verbose=verbose
-            )
-        
-        else:
-            # Test for divisibility if receiving an "all in one" non chatbot type prompt
-            if prompt is not None:
+            elif self.model == Llm.GOOGLE_GEMINI_PRO:
                 
-                input_present        = "### Input:" in prompt
-                user_message_present = "### User Message" in prompt
-                
-                if not input_present and not user_message_present:
-                    msg = "ERROR: Prompt isn't divisible, '### Input:' and '### User Message:' not found in prompt!"
-                    print( msg )
-                    print( f"Prompt: [{prompt}]" )
-                    raise ValueError( msg )
-                
-                if input_present:
-                    preamble = prompt.split( "### Input:" )[ 0 ]
-                    question = prompt.split( "### Input:" )[ 1 ]
-                
-                if user_message_present:
-                    preamble = prompt.split( "### User Message" )[ 0 ]
-                    question = prompt.split( "### User Message" )[ 1 ]
-                    
-                # Strip out prompt markers
-                preamble = preamble.replace( "### System Prompt", "" )
-                preamble = preamble.replace( "### Input:", "" )
-                preamble = preamble.replace( "### Instruction:", "" )
-                preamble = preamble.replace( "### Task:", "" )
-                preamble = preamble.replace( "Use the Task and Input given below to write a Response that can solve the following Task.", "" )
-
-                question = question.replace( "### Input:", "" )
-                question = question.replace( "### User Message", "" )
-                question = question.replace( "### Assistant", "" )
-                question = question.replace( "### Response:", "" )
-                
-                if debug:
-                    print( f"Preamble: [{preamble}]" )
-                    print( f"Question: [{question}]" )
-                
-            elif preamble is None or question is None:
-                raise ValueError( "ERROR: Preamble or question is `None`!" )
-                
-            if self.model.startswith( "OpenAI/" ):
-                return self._query_llm_openai( preamble, question, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, stop_sequences=stop_sequences, debug=debug, verbose=verbose )
-            elif self.model.startswith( "Groq/" ):
-                return self._query_llm_groq( preamble, question, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, stop_sequences=stop_sequences, debug=debug, verbose=verbose )
-            elif self.model.startswith( "Google/" ):
-                return self._query_llm_google( preamble, question, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, stop_sequences=stop_sequences, debug=debug, verbose=verbose )
+                # Quick sanity check
+                if prompt is None: raise ValueError( "ERROR: Prompt is `None`!" )
+                return self._query_llm_google(
+                    prompt, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, stop_sequences=stop_sequences, debug=debug, verbose=verbose
+                )
+            
             else:
-                raise ValueError( f"ERROR: Model [{self.model}] not recognized!" )
+                # Test for divisibility if receiving an "all in one" non chatbot type prompt
+                if prompt is not None:
+                    
+                    input_present        = "### Input:" in prompt
+                    user_message_present = "### User Message" in prompt
+                    
+                    if not input_present and not user_message_present:
+                        msg = "ERROR: Prompt isn't divisible, '### Input:' and '### User Message:' not found in prompt!"
+                        print( msg )
+                        print( f"Prompt: [{prompt}]" )
+                        raise ValueError( msg )
+                    
+                    if input_present:
+                        preamble = prompt.split( "### Input:" )[ 0 ]
+                        question = prompt.split( "### Input:" )[ 1 ]
+                    
+                    if user_message_present:
+                        preamble = prompt.split( "### User Message" )[ 0 ]
+                        question = prompt.split( "### User Message" )[ 1 ]
+                        
+                    # Strip out prompt markers
+                    preamble = preamble.replace( "### System Prompt", "" )
+                    preamble = preamble.replace( "### Input:", "" )
+                    preamble = preamble.replace( "### Instruction:", "" )
+                    preamble = preamble.replace( "### Task:", "" )
+                    preamble = preamble.replace( "Use the Task and Input given below to write a Response that can solve the following Task.", "" )
+    
+                    question = question.replace( "### Input:", "" )
+                    question = question.replace( "### User Message", "" )
+                    question = question.replace( "### Assistant", "" )
+                    question = question.replace( "### Response:", "" )
+                    
+                    if debug:
+                        print( f"Preamble: [{preamble}]" )
+                        print( f"Question: [{question}]" )
+                    
+                elif preamble is None or question is None:
+                    raise ValueError( "ERROR: Preamble or question is `None`!" )
+                    
+                if self.model.startswith( "OpenAI/" ):
+                    return self._query_llm_openai( preamble, question, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, stop_sequences=stop_sequences, debug=debug, verbose=verbose )
+                elif self.model.startswith( "Groq/" ):
+                    return self._query_llm_groq( preamble, question, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, stop_sequences=stop_sequences, debug=debug, verbose=verbose )
+                elif self.model.startswith( "Google/" ):
+                    return self._query_llm_google( preamble, question, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k, top_p=top_p, stop_sequences=stop_sequences, debug=debug, verbose=verbose )
+                else:
+                    raise ValueError( f"ERROR: Model [{self.model}] not recognized!" )
+                
+        except ConnectionError as ce:
+            
+            du.print_stack_trace( ce, explanation="ConnectionError: Server isn't responding", caller="Llm.query_llm()" )
+            return "I'm sorry Dave, I'm afraid I can't do that because the LLM server isn't responding. Please check system logs."
     
     def _query_llm_google( self, prompt, max_new_tokens=1024, temperature=0.25, top_k=10, top_p=0.25, stop_sequences=[ "</response>" ], stream=True, debug=None, verbose=None ):
         
