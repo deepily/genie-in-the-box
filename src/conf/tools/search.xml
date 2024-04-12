@@ -1,0 +1,55 @@
+<functions>
+    <function>
+        <description>Performs a web search and summarizes the results</description>
+        <name>search_and_summarize_the_web</name>
+        <parameters>
+            <parameter>
+                <name>query</name>
+                <type>string</type>
+                <description>Web search terms or questions to be answered and summarized</description>
+                <required>True</required>
+            </parameter>
+            <parameter>
+                <name>information_is_dynamic</name>
+                <type>Boolean</type>
+                <description>Is this a search for information that is dynamic and continually updated on the web (True), or is it static knowledge (False)?</description>
+                <required>True</required>
+            </parameter>
+        </parameters>
+        <returns>
+            <return-value>
+                <name>summary</name>
+                <type>string</type>
+                <description>The summarized search text</description>
+            </return-value>
+        </returns>
+    </function>
+    <function>
+        <description>Searches the memory table to find KNN topics. NOTE: This is designed to support the notion of an AI's long-term memory of conversations with humans</description>
+        <name>query_memory_table_for_knn_topics</name>
+        <parameters>
+            <parameter>
+                <name>topics</name>
+                <type>string</type>
+                <description>The topic, or topics, to query the memory table for</description>
+                <required>True</required>
+            </parameter>
+            <parameter>
+                <name>max_items</name>
+                <type>integer</type>
+                <description>Maximum number of similar topics to return, default is 5</description>
+                <required>False</required>
+            </parameter>
+        </parameters>
+        <returns>
+            <return-value>
+                <name>topics</name>
+                <type>list</type>
+                <items>
+                    <type>string</type>
+                </items>
+                <description>A list of similar topic strings</description>
+            </return-value>
+        </returns>
+    </function>
+</functions>
