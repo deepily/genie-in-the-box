@@ -2,7 +2,8 @@ import os
 import regex as re
 import random
 import sys
-import datetime as dt
+from datetime import datetime as dt
+from datetime import timedelta as td
 import pytz
 import json
 import traceback
@@ -23,10 +24,13 @@ def add_to_path( path ):
         print( "Path [{}] already in sys.path".format( path ) )
 
 
-def get_current_datetime_raw( tz_name="US/Eastern" ):
+def get_current_datetime_raw( tz_name="US/Eastern", days_offset=0 ):
 
-    now = dt.datetime.now()
-    tz = pytz.timezone( tz_name )
+    # Get the current date plus or minus the specified days_offset
+    now     = dt.now()
+    delta   = td( days=days_offset )
+    now     = now + delta
+    tz      = pytz.timezone( tz_name )
     tz_date = now.astimezone( tz )
     
     return tz_date
@@ -37,7 +41,7 @@ def get_current_datetime( tz_name="US/Eastern" ):
     
     return tz_date.strftime( '%Y-%m-%d @ %H:%M:%S %Z' )
 
-def get_current_date( tz_name="US/Eastern", return_prose=False ):
+def get_current_date( tz_name="US/Eastern", return_prose=False, offset=0 ):
     """
     Returns the current date in the specified time zone.
 
@@ -49,7 +53,7 @@ def get_current_date( tz_name="US/Eastern", return_prose=False ):
     Returns:
         str: The current date formatted as specified.
     """
-    tz_date = get_current_datetime_raw( tz_name )
+    tz_date = get_current_datetime_raw( tz_name, days_offset=offset )
     
     if return_prose:
         return tz_date.strftime( "%A, %B %d, %Y" )
@@ -512,6 +516,10 @@ if __name__ == "__main__":
     
     print( get_current_date( return_prose=True ) )
     print( get_current_time( format="%H:00" ) )
+    
+    print( "yesterday:", get_current_datetime_raw( days_offset=-1 ) )
+    print( "    today:", get_current_datetime_raw( days_offset=0 ) )
+    print( " tomorrow:", get_current_datetime_raw( days_offset=1 ) )
     
     # line = get_file_as_source_code_with_line_numbers( get_project_root() + "/io/code.py" )
     # print( line )
