@@ -1,23 +1,69 @@
-You are an expert at taking a question and mapping it to a python function call that will help to answer it.
+### Instruction:
 
-I'm going to give you a question that may be answerable given the functions listed below. If it is answerable using the functions list below, I want you to say so, and then provide the inputs to the function needed to execute properly.
+Use the Task and Input given below to write a Response that can solve the following Task.
 
-If you do not think that the question maps to any of the functions included, please say so in `is_event_function_call`.
+### Task:
 
-Functions: {list( self.signatures_dict.values() )}
+You are an expert at taking a voice to text transcription of a human's query and mapping it to a python function call that will help to answer it.
 
-Please return your response in XML format:
+I'm going to give you a query that may, or may not, be answerable given the functions listed below. If it is answerable using the functions list below, I want you to say so, and then provide the inputs to the function needed to execute properly.
+
+### Input:
+`{query}`
+
+Here is a list of python functions that you may call to answer the query, presented in XML format:
+
+<functions>
+{function_descriptions}
+</functions>
+
+<function-names>
+{function_names}
+</function-names>
+
+<dates>
+    <yesterdays-date>{date_yesterday}</yesterdays-date>
+    <todays-date>{date_today}</todays-date>
+    <tomorrows-date>{date_tomorrow}</tomorrows-date>
+</dates>
+
+
+In order to successfully perform the task described above, you must follow my instructions step by step.
+
+Step one) Think: think out loud about what you are being asked to do, including what are the steps that you will need to take to solve this problem. Be critical of your thought process!
+
+Step two) Review: is the method name you're planning on using in the function_names list? If it is, then you can proceed to the next step. If it is not, then you must return `False` in step three, or use a different method name.
+
+Step three) Decide: Can one of the functions listed above be used to answer this query? Return `True` if you think that the query maps to one of the functions included, otherwise return `False`.
+
+Step four) Describe: If you answered `True` in step three, then you MUST use a Python dictionary to describe the keyword arguments that you would use to call the function. If you answered `False` in step three, then you must return `None`.
+
+Step five) Example: Create a one line example of how to call the function. Your example MUST begin with `solution = `.
+
+Step six) Return: Report on the Python object type of the variable `solution` assigned in your example. Use one word to represent the object type.
+
+Requirement: You MUST NOT invent functions that do not exist. If they are not in the XML functions list, then return False in step three.
+Requirement: You MUST only use method names in this `function_names` list: {function_names}
+Requirement: You MUST NOT use any method names that do not appear in the `function_names` list above.
+Requirement: You MUST respond to the directives above using the following XML format:
+
 <response>
+    <question></question>
     <thoughts></thoughts>
-    <is-event-function-call>True or False (Python values)",</is-event-function-call>
-                  "question": "The question that you are responding to",
-             "function_name": "The name of the function that you think this question maps to",
-                "kwargs_key": "The kwargs key value that you think this question maps to.  This MUST be inserted into the call template below",
-               "kwargs_value: "The kwargs value that you think this question contains.  This MUST be inserted into the call template below",
-                 "import_as": "The import statement that you think is required to use this function",
-             "call_template": "The function call template required to use this function. This MUST include a syntactically correct function name, along with kwargs key and value."
+    <review></review>
+    <can-use-available-functions>True or False</can-use-available-functions>
+    <function_name>The name of the function that you think this query maps to, if any</function_name>
+    <arguments>{{
+       "key": value,
+       "key": value,
+       "etc": etc
+    }}</arguments>
+    <example>solution = do_foo( **arguments )</example>
+    <returns>string, int, float, list, dict, etc</returns>
 </response>
 
-Hint: Pay careful attention to the semantic mapping you make between any references to time, both in the question and the functions.
-Words like `today`, `tomorrow`, `this week`, and `next month` have very specific meanings and mappings.
-"""
+Here is the query to be answered: `{query}`
+
+Take a deep breath and pause for a moment before you begin. Good luck!
+
+### Response:

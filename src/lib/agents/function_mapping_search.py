@@ -22,12 +22,19 @@ class FunctionMapperSearch( AgentBase ):
         
     def _get_prompt( self ):
         
+        date_yesterday      = du.get_current_date( offset=-1 )
+        date_today          = du.get_current_date()
+        date_tomorrow       = du.get_current_date( offset=1 )
+        date_after_tomorrow = du.get_current_date( offset=2 )
+        
         tools_path            = self.config_mgr.get( "agent_function_mapping_tools_path_wo_root" )
         du.print_banner( "Using a static message list for now. This should be dynamically generated from the tools_path!", expletive=True, chunk="WARNING! " )
-        function_names        = [ "search_and_summarize_the_web", "query_memory_table_for_knn_topics", "query_memory_table_by_date_for_knn_topics" ]
-        function_descriptions = du.get_file_as_string( du.get_project_root() + tools_path )
+        function_names        = [ "search_and_summarize_the_web_for_any_topic", "get_and_summarize_weather_forecast", "query_memory_table_for_knn_topics", "query_memory_table_by_date_for_knn_topics" ]
         
-        return self.prompt_template.format( query=self.last_question_asked, function_descriptions=function_descriptions, function_names=function_names, date_today=du.get_current_date() )
+        function_descriptions = du.get_file_as_string( du.get_project_root() + tools_path )
+        function_descriptions = function_descriptions.format( date_today=date_today, date_tomorrow=date_tomorrow, date_after_tomorrow=date_after_tomorrow )
+        
+        return self.prompt_template.format( query=self.last_question_asked, function_descriptions=function_descriptions, function_names=function_names, date_yesterday=date_yesterday, date_today=date_today, date_tomorrow=date_tomorrow, date_after_tomorrow=date_after_tomorrow )
     
     def restore_from_serialized_state( file_path ):
         
@@ -38,12 +45,12 @@ if __name__ == "__main__":
     # question = "What's Spring like in Washington DC?"
     # question = "What's the temperature in Washington DC?"
     questions = [
-        "Did we talk about sports on Monday, April 1, 2024?", "Today is Friday, April 12, 2024. Did we talk about your new job yesterday?",
+        # "Did we talk about sports on Monday, April 1, 2024?", "Today is Friday, April 12, 2024. Did we talk about your new job yesterday?",
         "What's the weather forecast for today?", "What's the weather forecast for tomorrow?", "What's the weather forecast for next week?",
-        "Do you remember if we talked about the weather yesterday?", "Did we talk about the weather last week?", "Do you remember the last time we talked about the weather?"
+        # "Do you remember if we talked about the weather yesterday?", "Did we talk about the weather last week?", "Do you remember the last time we talked about the weather?"
     ]
     
     for question in questions:#[ 0:1]:
-        mapper = FunctionMapperSearch( question=question, last_question_asked=question, debug=True, verbose=False )
+        mapper = FunctionMapperSearch( question=question, last_question_asked=question, debug=True, verbose=True )
         prompt_response_dict = mapper.run_prompt()
         # print( json.dumps( prompt_response_dict, indent=4, sort_keys=True ) )

@@ -1,12 +1,24 @@
 <functions>
     <function>
-        <description>Performs a web search and summarizes the results. Web search topics can range from weather, to sports, politics, technology, and any number of other unspecified topics.</description>
-        <name>search_and_summarize_the_web</name>
+        <description>Performs a web search for any topic and summarizes the results. Web search topics can range from sports, to politics, technology, and any number of other unspecified topics.</description>
+        <function_name>search_and_summarize_the_web_for_any_topic</function_name>
         <parameters>
             <parameter>
-                <name>query</name>
+                <name>question</name>
                 <type>string</type>
-                <description>Web search terms or questions to be answered and summarized</description>
+                <description>The question, verbatim, that the proofread_query and search_key_words, are derived from</description>
+                <required>True</required>
+            </parameter>
+            <parameter>
+                <name>proofread_query</name>
+                <type>string</type>
+                <description>Proofread web search query to be answered and summarized. Grammar, spelling, and all non-salient extraneous language removed.</description>
+                <required>True</required>
+            </parameter>
+            <parameter>
+                <name>search_key_words</name>
+                <type>string</type>
+                <description>Key words extracted from the proofread_query to be answered and summarized</description>
                 <required>True</required>
             </parameter>
             <parameter>
@@ -18,7 +30,7 @@
             <parameter>
                 <name>time_frame</name>
                 <type>string</type>
-                <description>What is the timeframe for our web search: today, yesterday, last week, last year etc.</description>
+                <description>What is the timeframe for our web search: today, yesterday, last week, last year etc. Defaults to "None"</description>
                 <required>False</required>
             </parameter>
         </parameters>
@@ -31,8 +43,51 @@
         </returns>
     </function>
     <function>
-        <description>Searches the memory table to find KNN topics. This is where we store past conversations about any number of topics. This damn thing Zack and dumber  NOTE: This is designed to support the notion of an AI's long-term memory of conversations with humans</description>
-        <name>query_memory_table_for_knn_topics</name>
+        <description>Searches for weather forecasts and summarizes the results.</description>
+        <function_name>get_and_summarize_weather_forecast</function_name>
+        <parameters>
+            <parameter>
+                <name>question</name>
+                <type>string</type>
+                <description>The question, verbatim, that the proofread_query and search_key_words, are derived from</description>
+                <required>True</required>
+            </parameter>
+            <parameter>
+                <name>proofread_query</name>
+                <type>string</type>
+                <description>Proofread web search query to be answered and summarized. Grammar, spelling, and all non-salient extraneous language removed.</description>
+                <required>True</required>
+            </parameter>
+            <parameter>
+                <name>location</name>
+                <type>string</type>
+                <description>Location for forecast. MUST either be a valid geographic location name or the constant `CURRENT_LOCATION`</description>
+                <required>True</required>
+            </parameter>
+            <parameter>
+                <name>start_date</name>
+                <type>string</type>
+                <description>What is the start date for our forecast? Defaults to today, "{date_today}"</description>
+                <required>False</required>
+            </parameter>
+            <parameter>
+                <name>end_date</name>
+                <type>string</type>
+                <description>What is the end date for our forecast? Defaults to "{date_after_tomorrow}"</description>
+                <required>False</required>
+            </parameter>
+        </parameters>
+        <returns>
+            <return-value>
+                <name>summary</name>
+                <type>string</type>
+                <description>The summarized weather forecast</description>
+            </return-value>
+        </returns>
+    </function>
+    <function>
+        <description>Searches the memory table to find KNN topics. This is where we store past conversations about any number of topics, including previous web searches. NOTE: This is designed to support the notion of an AI's long-term memory of conversations with humans</description>
+        <function_name>query_memory_table_for_knn_topics</function_name>
         <parameters>
             <parameter>
                 <name>question</name>
@@ -41,9 +96,9 @@
                 <required>True</required>
             </parameter>
             <parameter>
-                <name>topics</name>
+                <name>search_key_words</name>
                 <type>string</type>
-                <description>The topic, or topics, to search the memory table for</description>
+                <description>Key words extracted from the question to be answered and summarized</description>
                 <required>True</required>
             </parameter>
         </parameters>
@@ -60,7 +115,7 @@
     </function>
     <function>
         <description>Searches the memory table to find KNN topics by specific date or date range. NOTE: This is designed to support the notion of an AI's long-term memory of conversations with humans</description>
-        <name>query_memory_table_by_date_for_knn_topics</name>
+        <function_name>query_memory_table_by_date_for_knn_topics</function_name>
         <parameters>
             <parameter>
                 <name>question</name>
@@ -69,9 +124,9 @@
                 <required>True</required>
             </parameter>
             <parameter>
-                <name>topics</name>
+                <name>search_key_words</name>
                 <type>string</type>
-                <description>The topic, or topics, to search the memory table for</description>
+                <description>Key words extracted from the question to be answered and summarized</description>
                 <required>True</required>
             </parameter>
             <parameter>
@@ -84,7 +139,7 @@
         <parameter>
                 <name>end_date</name>
                 <type>string</type>
-                <description>What is the end date of the search?. Defaults to whatever today's date is, using "YYYY-MM-DD"</description>
+                <description>What is the end date of the search?. Defaults to today, {date_today}</description>
                 <required>False</required>
             </parameter>
         <returns>
