@@ -14,12 +14,12 @@ import lib.utils.util as du
 
 class Llm:
     
-    GPT_4             = "OpenAI/gpt-4-0613"
-    GPT_3_5           = "OpenAI/gpt-3.5-turbo-1106"
+    GPT_4             = "OpenAI/gpt-4-turbo-2024-04-09"
+    GPT_3_5           = "OpenAI/gpt-3.5-turbo-0125"
     PHIND_34B_v2      = "TGI/Phind-CodeLlama-34B-v2"
     GROQ_MIXTRAL_8X78 = "Groq/mixtral-8x7b-32768"
     GROQ_LLAMA2_70B   = "Groq/llama2-70b-4096"
-    GOOGLE_GEMINI_PRO = "Google/gemini-1.0-pro-latest"
+    GOOGLE_GEMINI_PRO = "Google/gemini-1.5-pro-latest"
 
     @staticmethod
     def extract_model_name( compound_name ):
