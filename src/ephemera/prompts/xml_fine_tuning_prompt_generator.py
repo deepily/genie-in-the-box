@@ -32,6 +32,9 @@ class XmlFineTuningPromptGenerator:
         # TODO: re-factor this!
         if init_prompt_templates:
             
+            # For inserting hemming and hawing into the prompts
+            self.interjections                   = self.get_interjections()
+            
             # Build up lists of browser command categories
             self.vox_cmd_compound_commands       = self._get_compound_vox_commands()
             self.vox_cmd_simple_commands         = self._get_simple_vox_commands()
@@ -73,20 +76,20 @@ class XmlFineTuningPromptGenerator:
     def _get_compound_vox_commands( self ):
         
         compound_commands = {
-            "go to current tab"                : "/src/ephemera/prompts/data/synthetic-data-load-url-current-tab.txt",
-            "go to new tab"                    : "/src/ephemera/prompts/data/synthetic-data-load-url-new-tab.txt",
-            "search current tab"               : "/src/ephemera/prompts/data/synthetic-data-search-in-current-tab.txt",
-            "search new tab"                   : "/src/ephemera/prompts/data/synthetic-data-search-in-new-tab.txt",
-            "search google current tab"        : "/src/ephemera/prompts/data/synthetic-data-search-google-in-current-tab.txt",
-            "search google new tab"            : "/src/ephemera/prompts/data/synthetic-data-search-google-in-new-tab.txt",
-            "search google scholar current tab": "/src/ephemera/prompts/data/synthetic-data-search-google-scholar-in-current-tab.txt",
-            "search google scholar new tab"    : "/src/ephemera/prompts/data/synthetic-data-search-google-scholar-in-new-tab.txt",
-            "search kagi new tab"              : "/src/ephemera/prompts/data/synthetic-data-search-kagi-in-new-tab.txt",
-            "search kagi current tab"          : "/src/ephemera/prompts/data/synthetic-data-search-kagi-in-current-tab.txt",
-            "search perplexity current tab"    : "/src/ephemera/prompts/data/synthetic-data-search-perplexity-in-current-tab.txt",
-            "search perplexity new tab"        : "/src/ephemera/prompts/data/synthetic-data-search-perplexity-in-new-tab.txt",
-            "search phind current tab"         : "/src/ephemera/prompts/data/synthetic-data-search-phind-in-current-tab.txt",
-            "search phind new tab"             : "/src/ephemera/prompts/data/synthetic-data-search-phind-in-new-tab.txt",
+            # "go to current tab"                : "/src/ephemera/prompts/data/synthetic-data-load-url-current-tab.txt",
+            # "go to new tab"                    : "/src/ephemera/prompts/data/synthetic-data-load-url-new-tab.txt",
+            # "search current tab"               : "/src/ephemera/prompts/data/synthetic-data-search-in-current-tab.txt",
+            # "search new tab"                   : "/src/ephemera/prompts/data/synthetic-data-search-in-new-tab.txt",
+            # "search google current tab"        : "/src/ephemera/prompts/data/synthetic-data-search-google-in-current-tab.txt",
+            # "search google new tab"            : "/src/ephemera/prompts/data/synthetic-data-search-google-in-new-tab.txt",
+            # "search google scholar current tab": "/src/ephemera/prompts/data/synthetic-data-search-google-scholar-in-current-tab.txt",
+            # "search google scholar new tab"    : "/src/ephemera/prompts/data/synthetic-data-search-google-scholar-in-new-tab.txt",
+            # "search kagi new tab"              : "/src/ephemera/prompts/data/synthetic-data-search-kagi-in-new-tab.txt",
+            # "search kagi current tab"          : "/src/ephemera/prompts/data/synthetic-data-search-kagi-in-current-tab.txt",
+            # "search perplexity current tab"    : "/src/ephemera/prompts/data/synthetic-data-search-perplexity-in-current-tab.txt",
+            # "search perplexity new tab"        : "/src/ephemera/prompts/data/synthetic-data-search-perplexity-in-new-tab.txt",
+            # "search phind current tab"         : "/src/ephemera/prompts/data/synthetic-data-search-phind-in-current-tab.txt",
+            # "search phind new tab"             : "/src/ephemera/prompts/data/synthetic-data-search-phind-in-new-tab.txt",
         }
         self._test_command_paths( compound_commands )
         
@@ -107,19 +110,19 @@ class XmlFineTuningPromptGenerator:
     def _get_simple_vox_commands( self ):
         
         simple_commands = {
-            "search using clipboard current tab"               : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-in-current-tab.txt",
-            "search using clipboard new tab"                   : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-in-new-tab.txt",
-            "search google using clipboard current tab"        : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-google-in-current-tab.txt",
-            "search google using clipboard new tab"            : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-google-in-new-tab.txt",
-            "search google scholar using clipboard current tab": "/src/ephemera/prompts/data/synthetic-data-search-clipboard-google-scholar-in-current-tab.txt",
-            "search google scholar using clipboard new tab"    : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-google-scholar-in-new-tab.txt",
-            "search kagi using clipboard current tab"          : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-kagi-in-current-tab.txt",
-            "search kagi using clipboard new tab"              : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-kagi-in-new-tab.txt",
-            "search perplexity using clipboard current tab"    : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-perplexity-in-current-tab.txt",
-            "search perplexity using clipboard new tab"        : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-perplexity-in-new-tab.txt",
-            "search phind using clipboard current tab"         : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-phind-in-current-tab.txt",
-            "search phind using clipboard new tab"             : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-phind-in-new-tab.txt",
-            "none"                                             : "/src/ephemera/prompts/data/synthetic-data-none-of-the-above.txt",
+            # "search using clipboard current tab"               : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-in-current-tab.txt",
+            # "search using clipboard new tab"                   : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-in-new-tab.txt",
+            # "search google using clipboard current tab"        : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-google-in-current-tab.txt",
+            # "search google using clipboard new tab"            : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-google-in-new-tab.txt",
+            # "search google scholar using clipboard current tab": "/src/ephemera/prompts/data/synthetic-data-search-clipboard-google-scholar-in-current-tab.txt",
+            # "search google scholar using clipboard new tab"    : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-google-scholar-in-new-tab.txt",
+            # "search kagi using clipboard current tab"          : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-kagi-in-current-tab.txt",
+            # "search kagi using clipboard new tab"              : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-kagi-in-new-tab.txt",
+            # "search perplexity using clipboard current tab"    : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-perplexity-in-current-tab.txt",
+            # "search perplexity using clipboard new tab"        : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-perplexity-in-new-tab.txt",
+            # "search phind using clipboard current tab"         : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-phind-in-current-tab.txt",
+            # "search phind using clipboard new tab"             : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-phind-in-new-tab.txt",
+            # "none"                                             : "/src/ephemera/prompts/data/synthetic-data-none-of-the-above.txt",
         }
         self._test_command_paths( simple_commands)
         
@@ -172,6 +175,28 @@ class XmlFineTuningPromptGenerator:
     def _get_receptionist_titles( self, requested_length=10 ):
         
         return self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-receptionist-titles.txt", requested_length=requested_length )
+    
+    def get_interjections( self, requested_length=None ):
+        
+        return self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-interjections-um-er-uh-etc.txt", requested_length=requested_length )
+    
+    def insert_interjection( self, text, interjections ):
+        
+        interjection = random.choice( interjections )
+        
+        # If we don't have any interjections, return the text as is
+        if interjection == "": return text
+        
+        # Split on spaces and insert randomly
+        words = text.split()
+        index = random.randint( 0, len( words ) )
+        # Capitalize the first word, otherwise lowercase it
+        if index == 0:
+            words.insert( index, interjection.capitalize() )
+        else:
+            words.insert( index, interjection.lower() )
+            
+        return " ".join( words )
     
     def _get_events_values( self, requested_length=100 ):
         
@@ -462,12 +487,14 @@ class XmlFineTuningPromptGenerator:
                         args = ""
                     else:
                         voice_command = raw_line.replace( placeholder, args )
+                        
+                    voice_command = self.insert_interjection( voice_command, self.interjections )
                     
-                    instruction = self.agent_router_instruction_template.format( command_choices=self.agent_router_commands )
-                    human_says  = self.common_human_says_template.format( voice_command=voice_command )
-                    input       = self.common_input_template.format( human_says=human_says, response_format=self.common_response_format )
-                    output      = self.common_output_template.format( command=compound_command, args=args )
-                    prompt      = self._get_prompt_instruction_format( instruction, input )
+                    instruction   = self.agent_router_instruction_template.format( command_choices=self.agent_router_commands )
+                    human_says    = self.common_human_says_template.format( voice_command=voice_command )
+                    input         = self.common_input_template.format( human_says=human_says, response_format=self.common_response_format )
+                    output        = self.common_output_template.format( command=compound_command, args=args )
+                    prompt        = self._get_prompt_instruction_format( instruction, input )
                     
                     instructions.append( instruction )
                     inputs.append( input )
@@ -1026,47 +1053,57 @@ if __name__ == "__main__":
     # print( os.getcwd() )
     # #
     xml_ftp_generator       = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=True )
+    interjections           = xml_ftp_generator.get_interjections()
+    print( interjections )
+    for i in range( 20 ):
+        
+        foo = xml_ftp_generator.insert_interjection( "So glad you made it!", interjections )
+        print( foo )
+        bar = xml_ftp_generator.insert_interjection( "Could you please check your memory and see if we've spoken about DC United this week?", interjections )
+        print( bar )
+        baz = xml_ftp_generator.insert_interjection( "I'm trying to get a hold of the boss. Can you help me out?", interjections )
+        print( baz )
     
-    # vox_cmd_prompt_template = xml_ftp_generator.get_prompt_template( "vox command" )
-    # print( vox_cmd_prompt_template )
-    # xml_ftp_generator.serialize_prompt( vox_cmd_prompt_template, "/src/conf/prompts/vox-command-template.txt" )
-    
-    # agent_prompt_template   = xml_ftp_generator.get_prompt_template( "agent router" )
-    # print( agent_prompt_template )
-    # xml_ftp_generator.serialize_prompt( agent_prompt_template,   "/src/conf/prompts/agent-router-template.txt" )
-    
-    xml_ftp_generator.serialize_prompts( "/src/conf/prompts/" )
-    
-    # xml_ftp_generator     = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:8080", debug=True )
-    # compound_qna_df       = xml_ftp_generator.build_compound_vox_cmd_training_prompts()
-    # simple_command_qna_df = xml_ftp_generator.build_simple_vox_cmd_training_prompts()
-    
-    # compound_agent_router_qna_df   = xml_ftp_generator.build_compound_agent_router_training_prompts()
-    # simple_agent_router_qna_df     = xml_ftp_generator.build_simple_agent_router_training_prompts()
+    # # vox_cmd_prompt_template = xml_ftp_generator.get_prompt_template( "vox command" )
+    # # print( vox_cmd_prompt_template )
+    # # xml_ftp_generator.serialize_prompt( vox_cmd_prompt_template, "/src/conf/prompts/vox-command-template.txt" )
     #
-    # print( compound_agent_router_qna_df.shape )
-    # print( compound_agent_router_qna_df.head( 10 ) )
+    # # agent_prompt_template   = xml_ftp_generator.get_prompt_template( "agent router" )
+    # # print( agent_prompt_template )
+    # # xml_ftp_generator.serialize_prompt( agent_prompt_template,   "/src/conf/prompts/agent-router-template.txt" )
     #
-    # print( simple_agent_router_qna_df.shape )
-    # print( simple_agent_router_qna_df.head( 10 ) )
-    
-    all_qna_df            = xml_ftp_generator.build_all_training_prompts()
-    
-    # for line in compound_qna_df.prompt[ 0 ].split( "\n" ): print( line )
-    # for line in simple_command_qna_df.prompt[ 0 ].split( "\n" ): print( line )
-    # for line in all_qna_df.prompt[ 0 ].split( "\n" ): print( line )
-    
-    train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( all_qna_df, sample_size=all_qna_df.shape[ 0 ], test_size=0.2, test_validate_size=0.5 )
-    xml_ftp_generator.write_ttv_split_to_jsonl( train_df, test_df, validate_df )
-
-    # validation block
-    validate_df    = pd.read_json( xml_ftp_generator.path_prefix + "/src/ephemera/prompts/data/voice-commands-xml-validate.jsonl", lines=True ).sample( 1000, random_state=42 )
-    timer          = Stopwatch( msg=f"Validating {validate_df.shape[ 0 ]:,} responses...", silent=False )
+    # xml_ftp_generator.serialize_prompts( "/src/conf/prompts/" )
     #
-    model_name     = "mistralai/Mistral-7B-Instruct-v0.2-AWQ"
-    validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="tgi", model_name=model_name )
-    validate_df    = xml_ftp_generator.validate_responses( validate_df )
-
-    xml_ftp_generator.print_validation_stats( validate_df, title=f"Validation Stats for `{model_name}`" )
-
-    timer.print( msg="Done!", use_millis=False, prepend_nl=True, end="\n" )
+    # # xml_ftp_generator     = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:8080", debug=True )
+    # # compound_qna_df       = xml_ftp_generator.build_compound_vox_cmd_training_prompts()
+    # # simple_command_qna_df = xml_ftp_generator.build_simple_vox_cmd_training_prompts()
+    #
+    # # compound_agent_router_qna_df   = xml_ftp_generator.build_compound_agent_router_training_prompts()
+    # # simple_agent_router_qna_df     = xml_ftp_generator.build_simple_agent_router_training_prompts()
+    # #
+    # # print( compound_agent_router_qna_df.shape )
+    # # print( compound_agent_router_qna_df.head( 10 ) )
+    # #
+    # # print( simple_agent_router_qna_df.shape )
+    # # print( simple_agent_router_qna_df.head( 10 ) )
+    #
+    # all_qna_df            = xml_ftp_generator.build_all_training_prompts()
+    #
+    # # for line in compound_qna_df.prompt[ 0 ].split( "\n" ): print( line )
+    # # for line in simple_command_qna_df.prompt[ 0 ].split( "\n" ): print( line )
+    # # for line in all_qna_df.prompt[ 0 ].split( "\n" ): print( line )
+    #
+    # train_df, test_df, validate_df = xml_ftp_generator.get_train_test_validate_split( all_qna_df, sample_size=all_qna_df.shape[ 0 ], test_size=0.2, test_validate_size=0.5 )
+    # xml_ftp_generator.write_ttv_split_to_jsonl( train_df, test_df, validate_df )
+    #
+    # # validation block
+    # validate_df    = pd.read_json( xml_ftp_generator.path_prefix + "/src/ephemera/prompts/data/voice-commands-xml-validate.jsonl", lines=True ).sample( 1000, random_state=42 )
+    # timer          = Stopwatch( msg=f"Validating {validate_df.shape[ 0 ]:,} responses...", silent=False )
+    # #
+    # model_name     = "mistralai/Mistral-7B-Instruct-v0.2-AWQ"
+    # validate_df    = xml_ftp_generator.generate_responses( validate_df, switch="tgi", model_name=model_name )
+    # validate_df    = xml_ftp_generator.validate_responses( validate_df )
+    #
+    # xml_ftp_generator.print_validation_stats( validate_df, title=f"Validation Stats for `{model_name}`" )
+    #
+    # timer.print( msg="Done!", use_millis=False, prepend_nl=True, end="\n" )
