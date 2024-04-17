@@ -34,6 +34,7 @@ class XmlFineTuningPromptGenerator:
             
             # For inserting hemming and hawing into the prompts
             self.interjections                   = self.get_interjections()
+            self.salutations                     = self.get_salutations()
             
             # Build up lists of browser command categories
             self.vox_cmd_compound_commands       = self._get_compound_vox_commands()
@@ -45,6 +46,7 @@ class XmlFineTuningPromptGenerator:
             self.common_human_says_template      = None
             self.common_response_format          = None
             self.common_output_template          = None
+            # self.router_output_template        = None
             self._init_common_templates()
             
             # These two are set by the call to self._init_vox_cmd_templates()
@@ -180,6 +182,21 @@ class XmlFineTuningPromptGenerator:
         
         return self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-interjections-um-er-uh-etc.txt", requested_length=requested_length )
     
+    def get_salutations( self, requested_length=500 ):
+        
+        names       = self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-receptionist-names.txt", requested_length=None )
+        salutations = self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-receptionist-salutations.txt", requested_length=requested_length )
+        
+        for idx, salutation in enumerate( salutations ):
+            name = random.choice( names )
+            # If we don't have any names, return the salutation sans the placeholder
+            if name == "":
+                salutations[ idx ] = salutation.replace( " COMPUTER_NAME", "" )
+            else:
+                salutations[ idx ] = salutation.replace( "COMPUTER_NAME", name )
+        
+        return salutations
+    
     def insert_interjection( self, text, interjections ):
         
         interjection = random.choice( interjections )
@@ -197,6 +214,16 @@ class XmlFineTuningPromptGenerator:
             words.insert( index, interjection.lower() )
             
         return " ".join( words )
+    
+    def prepend_salutation( self, text, salutations ):
+        
+        salutation = random.choice( salutations )
+        
+        # If we don't have any salutation to prepend, return the text as is
+        if salutation == "":
+            return text
+        else:
+            return salutation + " " + text
     
     def _get_events_values( self, requested_length=100 ):
         
@@ -264,6 +291,13 @@ class XmlFineTuningPromptGenerator:
             <command>{command}</command>
             <args>{args}</args>
         </response>"""
+        
+        # self.router_output_template = """
+        # <response>
+        #     <command>{command}</command>
+        #     <salutation>{salutation}</salutation>
+        #     <args>{args}</args>
+        # </response>"""
     
     def _init_vox_cmd_templates( self ):
         
@@ -339,7 +373,7 @@ class XmlFineTuningPromptGenerator:
         </response>
         """
         
-        self.agent_router_instruction_template = """Your job is to discern the intent of a human voice command transcription and translate it into a standardized agent routing command that another LLM would understand..
+        self.agent_router_instruction_template = """Your job is to discern the intent of a human voice command transcription and translate it into a standardized agent routing command that another LLM would understand.
 
         You will be given a human voice command as INPUT as well as a list of possible standardized commands. You must choose the correct standardized command from the following list:
         <agent-routing-commands>
@@ -489,6 +523,7 @@ class XmlFineTuningPromptGenerator:
                         voice_command = raw_line.replace( placeholder, args )
                         
                     voice_command = self.insert_interjection( voice_command, self.interjections )
+                    voice_command = self.prepend_salutation( voice_command, self.salutations )
                     
                     instruction   = self.agent_router_instruction_template.format( command_choices=self.agent_router_commands )
                     human_says    = self.common_human_says_template.format( voice_command=voice_command )
@@ -615,6 +650,9 @@ class XmlFineTuningPromptGenerator:
             raw_lines = du.get_file_as_list( self.path_prefix + self.agent_router_simple_commands[ simple_command ], clean=True )
             
             for raw_line in raw_lines:
+                
+                raw_line    = self.insert_interjection( raw_line, self.interjections )
+                raw_line    = self.prepend_salutation( raw_line, self.salutations )
                 
                 instruction = self.vox_cmd_instruction_template.format( command_choices=self.agent_router_commands )
                 human_says  = self.common_human_says_template.format( voice_command=raw_line )
@@ -1054,15 +1092,27 @@ if __name__ == "__main__":
     # #
     xml_ftp_generator       = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=True )
     interjections           = xml_ftp_generator.get_interjections()
-    print( interjections )
+    salutations             = xml_ftp_generator.get_salutations()
+    # print( interjections )
+    
     for i in range( 20 ):
         
         foo = xml_ftp_generator.insert_interjection( "So glad you made it!", interjections )
         print( foo )
+        foo = xml_ftp_generator.prepend_salutation( foo, salutations )
+        print( foo )
+        
         bar = xml_ftp_generator.insert_interjection( "Could you please check your memory and see if we've spoken about DC United this week?", interjections )
         print( bar )
+        bar = xml_ftp_generator.prepend_salutation( bar, salutations )
+        print( bar )
+        
         baz = xml_ftp_generator.insert_interjection( "I'm trying to get a hold of the boss. Can you help me out?", interjections )
         print( baz )
+        baz = xml_ftp_generator.prepend_salutation( baz, salutations )
+        print( baz )
+        
+    # print( salutations )
     
     # # vox_cmd_prompt_template = xml_ftp_generator.get_prompt_template( "vox command" )
     # # print( vox_cmd_prompt_template )

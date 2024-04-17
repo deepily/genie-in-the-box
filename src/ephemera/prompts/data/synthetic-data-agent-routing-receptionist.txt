@@ -36,7 +36,7 @@ Please transition to RECEPTIONIST_TITLE mode.
 I would like to go to RECEPTIONIST_TITLE now.
 Could you enable RECEPTIONIST_TITLE for me?
 Let's go ahead and activate RECEPTIONIST_TITLE.
-I think it's time for RECEPTIONIST_TITLE.
+I think it's time for the RECEPTIONIST_TITLE.
 Can we start with RECEPTIONIST_TITLE?
 Please prepare RECEPTIONIST_TITLE.
 It's RECEPTIONIST_TITLE time, right?
