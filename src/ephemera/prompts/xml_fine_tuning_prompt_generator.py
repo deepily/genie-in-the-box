@@ -198,11 +198,20 @@ class XmlFineTuningPromptGenerator:
         return salutations
     
     def insert_interjection( self, text, interjections ):
-        
+        """
+        Inserts a random interjection into the provided text at a random position.
+
+        Parameters:
+            text (str): The text to insert an interjection into.
+            interjections (list): A list of interjections to choose from.
+
+        Returns:
+            tuple: A tuple containing the inserted interjection and the modified text.
+        """
         interjection = random.choice( interjections )
         
         # If we don't have any interjections, return the text as is
-        if interjection == "": return text
+        if interjection == "": return "", text
         
         # Split on spaces and insert randomly
         words = text.split()
@@ -213,17 +222,27 @@ class XmlFineTuningPromptGenerator:
         else:
             words.insert( index, interjection.lower() )
             
-        return " ".join( words )
+        return interjection, " ".join( words )
     
     def prepend_salutation( self, text, salutations ):
-        
+        """
+        Prepends a random salutation to the given text.
+
+        Parameters:
+            text (str): The text to prepend the salutation to.
+            salutations (list): List of salutations to choose from.
+
+        Returns:
+            tuple: If the chosen salutation is empty, returns a tuple with an empty string and the original text.
+                   Otherwise, returns a tuple with the chosen salutation and the text with salutation prepended.
+        """
         salutation = random.choice( salutations )
         
         # If we don't have any salutation to prepend, return the text as is
         if salutation == "":
-            return text
+            return "", text
         else:
-            return salutation + " " + text
+            return salutation, salutation + " " + text
     
     def _get_events_values( self, requested_length=100 ):
         
@@ -246,7 +265,7 @@ class XmlFineTuningPromptGenerator:
     
     def _get_placeholder_values( self, placeholder_file, requested_length=None ):
         
-        # A requested_length of None used as the second value in a list slice returns all of the list
+        # A requested_length of None used as the second value in a list slice returns the entire list
         placeholders = du.get_file_as_list(
             self.path_prefix + placeholder_file, lower_case=False, clean=True, randomize=True
         )[ :requested_length ]
@@ -522,8 +541,8 @@ class XmlFineTuningPromptGenerator:
                     else:
                         voice_command = raw_line.replace( placeholder, args )
                         
-                    voice_command = self.insert_interjection( voice_command, self.interjections )
-                    voice_command = self.prepend_salutation( voice_command, self.salutations )
+                    _, voice_command = self.insert_interjection( voice_command, self.interjections )
+                    _, voice_command = self.prepend_salutation( voice_command, self.salutations )
                     
                     instruction   = self.agent_router_instruction_template.format( command_choices=self.agent_router_commands )
                     human_says    = self.common_human_says_template.format( voice_command=voice_command )
@@ -651,8 +670,8 @@ class XmlFineTuningPromptGenerator:
             
             for raw_line in raw_lines:
                 
-                raw_line    = self.insert_interjection( raw_line, self.interjections )
-                raw_line    = self.prepend_salutation( raw_line, self.salutations )
+                _, raw_line = self.insert_interjection( raw_line, self.interjections )
+                _, raw_line = self.prepend_salutation( raw_line, self.salutations )
                 
                 instruction = self.vox_cmd_instruction_template.format( command_choices=self.agent_router_commands )
                 human_says  = self.common_human_says_template.format( voice_command=raw_line )
@@ -1090,26 +1109,26 @@ if __name__ == "__main__":
     # os.chdir( "/var/model/genie-in-the-box/src" )
     # print( os.getcwd() )
     # #
-    xml_ftp_generator       = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=True )
+    xml_ftp_generator       = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=True, init_prompt_templates=False )
     interjections           = xml_ftp_generator.get_interjections()
     salutations             = xml_ftp_generator.get_salutations()
     # print( interjections )
     
     for i in range( 20 ):
         
-        foo = xml_ftp_generator.insert_interjection( "So glad you made it!", interjections )
+        _, foo = xml_ftp_generator.insert_interjection( "So glad you made it!", interjections )
         print( foo )
-        foo = xml_ftp_generator.prepend_salutation( foo, salutations )
+        _, foo = xml_ftp_generator.prepend_salutation( foo, salutations )
         print( foo )
         
-        bar = xml_ftp_generator.insert_interjection( "Could you please check your memory and see if we've spoken about DC United this week?", interjections )
+        _, bar = xml_ftp_generator.insert_interjection( "Could you please check your memory and see if we've spoken about DC United this week?", interjections )
         print( bar )
-        bar = xml_ftp_generator.prepend_salutation( bar, salutations )
+        _, bar = xml_ftp_generator.prepend_salutation( bar, salutations )
         print( bar )
         
-        baz = xml_ftp_generator.insert_interjection( "I'm trying to get a hold of the boss. Can you help me out?", interjections )
+        _, baz = xml_ftp_generator.insert_interjection( "I'm trying to get a hold of the boss. Can you help me out?", interjections )
         print( baz )
-        baz = xml_ftp_generator.prepend_salutation( baz, salutations )
+        _, baz = xml_ftp_generator.prepend_salutation( baz, salutations )
         print( baz )
         
     # print( salutations )
