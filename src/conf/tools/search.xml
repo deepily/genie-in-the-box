@@ -1,7 +1,7 @@
 <functions>
     <function>
         <description>Performs a web search for any topic and summarizes the results. Web search topics can range from sports, to politics, technology, and any number of other unspecified topics.</description>
-        <function_name>search_and_summarize_the_web_for_any_topic</function_name>
+        <function_name>search_and_summarize_web_for_any_topic</function_name>
         <parameters>
             <parameter>
                 <name>information_is_dynamic</name>
