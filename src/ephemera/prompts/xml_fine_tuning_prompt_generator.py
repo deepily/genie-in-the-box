@@ -55,9 +55,10 @@ class XmlFineTuningPromptGenerator:
             self._init_vox_cmd_templates()
             
             # Build up lists of agent routing command categories
-            self.agent_router_compound_commands = self._get_compound_agent_router_commands()
-            self.agent_router_simple_commands   = self._get_simple_agent_router_commands()
-            self.agent_router_commands          = self._compile_agent_router_commands()
+            self.agent_function_mapping_compound_commands = self._get_compound_agent_function_mapping_commands()
+            self.agent_router_compound_commands           = self._get_compound_agent_router_commands()
+            self.agent_router_simple_commands             = self._get_simple_agent_router_commands()
+            self.agent_router_commands                    = self._compile_agent_router_commands()
             
             # These two are set by the call to self._init_agent_router_templates()
             self.agent_router_instruction_template_gpt = None
@@ -100,14 +101,25 @@ class XmlFineTuningPromptGenerator:
     def _get_compound_agent_router_commands( self ):
         
         agent_routing_compound_commands = {
-            "agent router go to date and time": "/src/ephemera/prompts/data/synthetic-data-agent-routing-date-and-time.txt",
-            "agent router go to weather"      : "/src/ephemera/prompts/data/synthetic-data-agent-routing-weather.txt",
-            "agent router go to calendar"     : "/src/ephemera/prompts/data/synthetic-data-agent-routing-calendaring.txt",
-            "agent router go to receptionist" : "/src/ephemera/prompts/data/synthetic-data-agent-routing-receptionist.txt"
+            # "agent router go to date and time"   : "/src/ephemera/prompts/data/synthetic-data-agent-routing-date-and-time.txt",
+            # "agent router go to weather"         : "/src/ephemera/prompts/data/synthetic-data-agent-routing-weather.txt",
+            # "agent router go to calendar"        : "/src/ephemera/prompts/data/synthetic-data-agent-routing-calendaring.txt",
+            # "agent router go to receptionist"    : "/src/ephemera/prompts/data/synthetic-data-agent-routing-receptionist.txt",
+            # "agent router go to function mapping": "/src/ephemera/prompts/data/synthetic-data-agent-search-static-vs-dynamic.txt"
         }
         self._test_command_paths( agent_routing_compound_commands )
         
         return agent_routing_compound_commands
+    
+    def _get_compound_agent_function_mapping_commands( self ):
+        
+        agent_function_mapping_compound_commands = {
+            # This data set is not only static vs. dynamic, but also memory search vs. web search
+            "agent router go to function mapping": "/src/ephemera/prompts/data/synthetic-data-agent-search-static-vs-dynamic.txt"
+        }
+        self._test_command_paths( agent_function_mapping_compound_commands )
+        
+        return agent_function_mapping_compound_commands
     
     def _get_simple_vox_commands( self ):
         
@@ -126,7 +138,7 @@ class XmlFineTuningPromptGenerator:
             # "search phind using clipboard new tab"             : "/src/ephemera/prompts/data/synthetic-data-search-clipboard-phind-in-new-tab.txt",
             # "none"                                             : "/src/ephemera/prompts/data/synthetic-data-none-of-the-above.txt",
         }
-        self._test_command_paths( simple_commands)
+        self._test_command_paths( simple_commands )
         
         return simple_commands
     
@@ -183,7 +195,17 @@ class XmlFineTuningPromptGenerator:
         return self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-interjections-um-er-uh-etc.txt", requested_length=requested_length )
     
     def get_salutations( self, requested_length=500 ):
+        """
+        Get randomized salutations with randomized COMPUTER_NAME placeholder values.
         
+        NOTE: Current empty to non-empty string ratios are 1:3. This means that ~1/3 of the salutations will be a zero len string and that ~1/3 of the non-empty salutations will have no name inserted into them.
+
+        Parameters:
+            requested_length (int): The length of salutations requested.
+
+        Returns:
+            list: A list of salutations with customized placeholder values.
+        """
         names       = self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-receptionist-names.txt", requested_length=None )
         salutations = self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-receptionist-salutations.txt", requested_length=requested_length )
         
@@ -1109,7 +1131,8 @@ if __name__ == "__main__":
     # os.chdir( "/var/model/genie-in-the-box/src" )
     # print( os.getcwd() )
     # #
-    xml_ftp_generator       = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=True, init_prompt_templates=False )
+    # xml_ftp_generator       = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=True, init_prompt_templates=False )
+    xml_ftp_generator       = XmlFineTuningPromptGenerator( init_prompt_templates=False )
     interjections           = xml_ftp_generator.get_interjections()
     salutations             = xml_ftp_generator.get_salutations()
     # print( interjections )
