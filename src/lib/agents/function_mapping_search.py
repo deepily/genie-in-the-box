@@ -40,6 +40,39 @@ class FunctionMappingSearch( AgentBase ):
     def restore_from_serialized_state( file_path ):
         
         raise NotImplementedError( "FunctionMapperSearch.restore_from_serialized_state() not implemented" )
+    
+def iterate_with_runtime_stats( questions ):
+    
+    prompt_generator = XmlFineTuningPromptGenerator( init_prompt_templates=False, debug=True )
+    interjections    = prompt_generator.get_interjections()
+    salutations      = prompt_generator.get_salutations()
+    responses        = []
+    counter          = 0
+    
+    timer = Stopwatch( msg=f"Testing function mapping for {len( questions )} questions..." )
+    for question in questions:#[ 0:2 ]:
+        
+        counter += 1
+        _, question = prompt_generator.insert_interjection( question, interjections )
+        _, question = prompt_generator.prepend_salutation( question, salutations )
+        
+        mapper               = FunctionMappingSearch( question=question, last_question_asked=question, debug=True, verbose=False )
+        du.print_banner( f"Question: {question}", end="\n", prepend_nl=True )
+        prompt_response_dict = mapper.run_prompt( include_raw_response=True )
+        
+        responses.append( prompt_response_dict )
+        
+        delta_ms             = timer.get_delta_ms()
+        ms_per_question      = int( round( delta_ms / counter, 0 ) )
+        questions_remaining  = len( questions ) - counter
+        seconds_remaining    = int( ms_per_question * questions_remaining / 1000 )
+        
+        print( f"Time elapsed {int( delta_ms/1000 ):,} seconds. Average time per question: {int( ms_per_question / 1000 ):,} seconds. {questions_remaining} Questions remaining, ETA: {seconds_remaining:,} seconds", end="\n\n" )
+        
+    timer.print( msg="Done!", use_millis=False )
+    print( f"Average time per question: {round( timer.get_delta_ms() / len( questions ), 0 ):,} ms" )
+    
+    return responses
         
 if __name__ == "__main__":
     
@@ -54,22 +87,27 @@ if __name__ == "__main__":
         "Do you remember if we talked about the weather yesterday?", "Did we talk about the weather last week?", "Do you remember the last time we talked about the weather?"
     ]
     prompt_generator = XmlFineTuningPromptGenerator( init_prompt_templates=False, debug=True )
-    interjections    = prompt_generator.get_interjections()
-    salutations      = prompt_generator.get_salutations()
+    # interjections    = prompt_generator.get_interjections()
+    # salutations      = prompt_generator.get_salutations()
     
-    timer = Stopwatch( msg=f"Testing function mapping for {len(questions)} questions..." )
-    for question in questions[ 0:1 ]:
+    responses          = iterate_with_runtime_stats( questions )
+    for response in responses:
+        du.print_banner( f"Response from LLM to [{response[ 'last_question_asked' ]}]", end="\n", prepend_nl=True )
+        print( response[ "xml_response" ] )
         
-        _, question = prompt_generator.insert_interjection( question, interjections )
-        _, question = prompt_generator.prepend_salutation( question, salutations )
-        
-        mapper = FunctionMappingSearch( question=question, last_question_asked=question, debug=True, verbose=False )
-        prompt_response_dict = mapper.run_prompt()
-        du.print_banner( f"Question: {question}" )
-        for item in mapper.xml_response_tag_names:
-            print( f"{item}: {prompt_response_dict[ item ].strip()}" )
-            
-    timer.print( msg="Done!", use_millis=False )
-    # Calculate average time for a question
-    # Format So that milliseconds have a comma inserted every three digits
-    print( f"Average time per question: {round( timer.get_delta_ms() / len(questions), 0):,} ms" )
+    # timer = Stopwatch( msg=f"Testing function mapping for {len(questions)} questions..." )
+    # for question in questions[ 0:1 ]:
+    #
+    #     _, question = prompt_generator.insert_interjection( question, interjections )
+    #     _, question = prompt_generator.prepend_salutation( question, salutations )
+    #
+    #     mapper = FunctionMappingSearch( question=question, last_question_asked=question, debug=True, verbose=False )
+    #     prompt_response_dict = mapper.run_prompt()
+    #     du.print_banner( f"Question: {question}" )
+    #     for item in mapper.xml_response_tag_names:
+    #         print( f"{item}: {prompt_response_dict[ item ].strip()}" )
+    #
+    # timer.print( msg="Done!", use_millis=False )
+    # # Calculate average time for a question
+    # # Format So that milliseconds have a comma inserted every three digits
+    # print( f"Average time per question: {round( timer.get_delta_ms() / len(questions), 0):,} ms" )
