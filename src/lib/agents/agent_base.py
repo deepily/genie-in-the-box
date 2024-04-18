@@ -147,7 +147,7 @@ class AgentBase( RunnableCode, abc.ABC ):
         
         return prompt_response_dict
     
-    def run_prompt( self, model_name=None, temperature=0.5, top_p=0.25, top_k=10, max_new_tokens=1024, stop_sequences=None ):
+    def run_prompt( self, model_name=None, temperature=0.5, top_p=0.25, top_k=10, max_new_tokens=1024, stop_sequences=None, include_raw_response=False ):
         
         if model_name is not None: self.model_name = model_name
         
@@ -156,6 +156,9 @@ class AgentBase( RunnableCode, abc.ABC ):
         
         # Parse XML-esque response
         self.prompt_response_dict = self._update_response_dictionary( response )
+        
+        # Add raw response if requested. This is useful for creating synthetic data sets
+        if include_raw_response: self.prompt_response_dict[ "raw_response" ] = response
         
         return self.prompt_response_dict
     
