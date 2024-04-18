@@ -158,7 +158,10 @@ class AgentBase( RunnableCode, abc.ABC ):
         self.prompt_response_dict = self._update_response_dictionary( response )
         
         # Add raw response if requested. This is useful for creating synthetic data sets
-        if include_raw_response: self.prompt_response_dict[ "raw_response" ] = response
+        # See: function_mapping_search.py & xml_fine_tuning_prompt_generator.py for an example of how this is used.
+        if include_raw_response:
+            self.prompt_response_dict[ "xml_response" ]        = response
+            self.prompt_response_dict[ "last_question_asked" ] = self.last_question_asked
         
         return self.prompt_response_dict
     
