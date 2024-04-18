@@ -48,6 +48,7 @@ class Llm:
         
     def _stop_timer( self, msg="Done!", chunks=[ ] ):
         
+        print()
         self.timer.print( msg=msg, use_millis=True )
         
         if chunks:
