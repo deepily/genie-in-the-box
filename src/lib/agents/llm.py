@@ -69,6 +69,9 @@ class Llm:
     
     def query_llm( self, model=None, prompt_yaml=None, prompt=None, preamble=None, question=None, max_new_tokens=1024, temperature=0.5, top_k=100, top_p=0.25, stop_sequences=None, debug=None, verbose=None ):
         
+        if debug   is None: debug   = self.debug
+        if verbose is None: verbose = self.verbose
+        
         try:
             if prompt_yaml is None and preamble is None and question is None and prompt is None:
                 raise ValueError( "ERROR: Neither prompt_yaml, nor prompt, nor preamble, nor question has a value set!" )
@@ -126,7 +129,7 @@ class Llm:
                     question = question.replace( "### Assistant", "" )
                     question = question.replace( "### Response:", "" )
                     
-                    if debug:
+                    if debug and verbose:
                         print( f"Preamble: [{preamble}]" )
                         print( f"Question: [{question}]" )
                     
