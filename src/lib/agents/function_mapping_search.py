@@ -1,13 +1,12 @@
-import json
-
 import lib.utils.util                  as du
 
-from lib.utils.util_stopwatch          import Stopwatch
-from lib.agents.agent_base             import AgentBase
-from lib.memory.input_and_output_table import InputAndOutputTable
+from lib.utils.util_stopwatch           import Stopwatch
+from lib.agents.agent_base              import AgentBase
+from lib.memory.input_and_output_table  import InputAndOutputTable
 
+from ephemera.prompts.xml_fine_tuning_prompt_generator  import XmlFineTuningPromptGenerator
 
-class FunctionMapperSearch( AgentBase ):
+class FunctionMappingSearch( AgentBase ):
     
     def __init__( self, question="", last_question_asked="", routing_command="agent router go to function mapping", debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
@@ -23,14 +22,15 @@ class FunctionMapperSearch( AgentBase ):
         
     def _get_prompt( self ):
         
-        date_yesterday      = du.get_current_date( offset=-1 )
-        date_today          = du.get_current_date()
-        date_tomorrow       = du.get_current_date( offset=1 )
+        date_yesterday        = du.get_current_date( offset=-1 )
+        date_today            = du.get_current_date()
+        date_tomorrow         = du.get_current_date( offset=1 )
         # date_after_tomorrow = du.get_current_date( offset=2 )
         
         tools_path            = self.config_mgr.get( "agent_function_mapping_tools_path_wo_root" )
-        du.print_banner( "Using a static function_names list for now. This should be dynamically generated from the tools_path!", expletive=True, chunk="WARNING! " )
-        function_names        = [ "search_and_summarize_the_web_for_any_topic", "search_and_summarize_weather", "query_memory_table_for_knn_topics" ]
+        function_names        = [ "search_and_summarize_web_for_any_topic", "search_and_summarize_weather", "query_memory_table_for_knn_topics" ]
+        
+        if self.debug and self.verbose: du.print_banner( "Using a static function_names list for now. This should be dynamically generated from the tools_path!", expletive=True, chunk="WARNING! " )
         
         function_descriptions = du.get_file_as_string( du.get_project_root() + tools_path )
         function_descriptions = function_descriptions.format( date_today=date_today, date_tomorrow=date_tomorrow )
@@ -53,11 +53,18 @@ if __name__ == "__main__":
         # "What's the weather forecast for today?", "What's the weather forecast for tomorrow?", "What's the weather forecast for next week?",
         "Do you remember if we talked about the weather yesterday?", "Did we talk about the weather last week?", "Do you remember the last time we talked about the weather?"
     ]
+    prompt_generator = XmlFineTuningPromptGenerator( init_prompt_templates=False, debug=True )
+    interjections    = prompt_generator.get_interjections()
+    salutations      = prompt_generator.get_salutations()
+    
     timer = Stopwatch( msg=f"Testing function mapping for {len(questions)} questions..." )
-    for question in questions:#[ 0:1]:
-        mapper = FunctionMapperSearch( question=question, last_question_asked=question, debug=False, verbose=False )
+    for question in questions[ 0:1 ]:
+        
+        _, question = prompt_generator.insert_interjection( question, interjections )
+        _, question = prompt_generator.prepend_salutation( question, salutations )
+        
+        mapper = FunctionMappingSearch( question=question, last_question_asked=question, debug=True, verbose=False )
         prompt_response_dict = mapper.run_prompt()
-        # print( json.dumps( prompt_response_dict, indent=4, sort_keys=True ) )
         du.print_banner( f"Question: {question}" )
         for item in mapper.xml_response_tag_names:
             print( f"{item}: {prompt_response_dict[ item ].strip()}" )
