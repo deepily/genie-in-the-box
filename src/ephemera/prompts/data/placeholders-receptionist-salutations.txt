@@ -1,89 +1,68 @@
 Hey COMPUTER_NAME, could you help me with something?
-
 Hello COMPUTER_NAME, I was wondering if you could assist me:
-
 Good morning COMPUTER_NAME,
-
 Okay COMPUTER_NAME, I need your help,
-
 Hey there COMPUTER_NAME, got a minute?
-
 Good afternoon COMPUTER_NAME,
-
 Hi there COMPUTER_NAME,
-
 Morning COMPUTER_NAME,
-
 Yo! What's up COMPUTER_NAME,
-
 Hi COMPUTER_NAME, ready when you are:
-
 Hey COMPUTER_NAME, can I get your assistance?
-
 Hiya COMPUTER_NAME,
-
 Hello COMPUTER_NAME, ready to get started?
-
 Hey COMPUTER_NAME, let’s get to work, shall we?
-
 Good evening COMPUTER_NAME,
-
 Hey COMPUTER_NAME, you there?
-
 Hi COMPUTER_NAME, let’s have a chat.
-
 Hello COMPUTER_NAME, are you ready?
-
 Hey COMPUTER_NAME, can you give me a moment?
-
 Hey COMPUTER_NAME, good to see you.
-
 Hello COMPUTER_NAME, greetings!
-
 Good evening COMPUTER_NAME, how’s everything?
-
 Hi COMPUTER_NAME, how're your circuits?
-
 Hola COMPUTER_NAME, qué tal?
-
 Good morning COMPUTER_NAME, ready to start?
-
 Hello there COMPUTER_NAME, how's it going?
-
 Hi there COMPUTER_NAME, what’s new?
-
 Yo COMPUTER_NAME, how you doing?
-
 Hey COMPUTER_NAME, what’s up?
-
 Good afternoon COMPUTER_NAME, all well?
-
 Hello my dear COMPUTER_NAME,
-
 Hi my COMPUTER_NAME,
-
 Hola COMPUTER_NAME,
-
 Buenas tardes COMPUTER_NAME,
-
 Buenas noches COMPUTER_NAME,
-
 Buen día COMPUTER_NAME,
-
 Good day COMPUTER_NAME,
-
 Hello COMPUTER_NAME, my esteemed friend,
-
 My dearest COMPUTER_NAME,
-
 Greetings COMPUTER_NAME!
-
 Hello COMPUTER_NAME, a good day to you.
-
 Hey COMPUTER_NAME, ready for today?
-
 Buenos días COMPUTER_NAME
-
 Good evening COMPUTER_NAME
-
 Hey COMPUTER_NAME, my dear friend
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
