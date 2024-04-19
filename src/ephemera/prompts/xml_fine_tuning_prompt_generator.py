@@ -14,8 +14,11 @@ import lib.utils.util_xml      as dux
 import lib.app.util_llm_client as du_llm_client
 
 from huggingface_hub          import InferenceClient
-from lib.utils.util_stopwatch import Stopwatch
-from lib.agents.llm           import Llm
+
+# from lib.agents.function_mapping_search import FunctionMappingSearch
+from lib.app.configuration_manager      import ConfigurationManager
+from lib.utils.util_stopwatch           import Stopwatch
+from lib.agents.llm                     import Llm
 
 class XmlFineTuningPromptGenerator:
     
@@ -27,6 +30,8 @@ class XmlFineTuningPromptGenerator:
         
         self.path_prefix        = path_prefix
         self.tgi_url            = tgi_url
+        
+        self.config_mgr         = ConfigurationManager( env_var_name="GIB_CONFIG_MGR_CLI_ARGS" )
         
         # ¡OJO! This is a giant KLUDGE
         # TODO: re-factor this!
@@ -115,7 +120,7 @@ class XmlFineTuningPromptGenerator:
         agent_function_mapping_compound_commands = {
             # This data set is not only static vs. dynamic, but also memory search vs. web search
             # ¡OJO! Using 'agent router go to function mapping' may not be the best key name: ¡rethink this!
-            "agent router go to search function mapping": "/src/ephemera/prompts/data/synthetic-data-agent-search-static-vs-dynamic.txt"
+            "agent router go to search function mapping": self.config_mgr.get( "path_to_search_function_mapping_data_wo_root" )
         }
         self._test_command_paths( agent_function_mapping_compound_commands )
         
@@ -593,58 +598,49 @@ class XmlFineTuningPromptGenerator:
         
         return self.compound_agent_router_qna_df
     
-    def build_compound_function_mapping_training_prompts( self, sample_size_per_command=2000 ):
+    def build_compound_function_mapping_training_prompts( self, sample_size_per_command=2000, analyze_bigrams=False ):
         
         instructions, inputs, outputs, prompts, gpt_messages, commands = self._get_6_empty_lists()
     
         gpt_instruction = self.agent_router_instruction_template_gpt.format( command_choices=self.agent_router_commands )
         
-        # For each function mapping command, load the corresponding file and generate prompts
-        for compound_command in self.agent_function_mapping_compound_commands.keys():
+        # For each function mapping entry, load the corresponding file and generate prompts
+        for routing_key in self.agent_function_mapping_compound_commands.keys():
             
-            du.print_banner( f"Building prompts for compound FUNCTION MAPPING command [{compound_command}]", prepend_nl=True, end="\n" )
-            counter = 1
+            du.print_banner( f"Building prompts for compound FUNCTION MAPPING [{routing_key}]", prepend_nl=True, end="\n" )
             
-            raw_lines = du.get_file_as_list( self.path_prefix + self.agent_function_mapping_compound_commands[ compound_command ], clean=True, randomize=True )
-            locations = self._get_cities_and_countries( requested_length=None )
-            bigrams = []
-            for line in raw_lines:
+            path = self.path_prefix + self.agent_function_mapping_compound_commands[ routing_key ]
+            if path.endswith( ".txt" ):
                 
-                line = line.replace( "DEFAULT_LOCATION", random.choice( locations ) )
-                _, line = self.insert_interjection( line, self.interjections )
-                _, line = self.prepend_salutation( line, self.salutations )
-                print( line )
+                print( f"Loading RAW question data from [{path}]..." )
+                raw_lines = du.get_file_as_list( path, clean=True, randomize=True )
+                if analyze_bigrams: self._analyze_bigrams( raw_lines, "DEFAULT_LOCATION" )
                 
-                # Get the index for "DEFAULT_LOCATION"
-                words = line.split( " " )
-                found = False
+                locations = self._get_cities_and_countries( requested_length=None )
+                placeholders_and_values = { "DEFAULT_LOCATION": locations }
                 
-                for idx, word in enumerate( words ):
-                    if "DEFAULT_LOCATION" in word:
-                        bigrams.append( ( words[ idx - 1 ] + " " + words[ idx ] ) )
-                        found = True
-                        break
-                if not found:
-                    bigrams.append( ( "No DEFAULT_LOCATION provided" ) )
+                questions   = self._build_function_mapping_questions( raw_lines, placeholders_and_values )
+                answers_xml = self._generate_function_mapping_response_objects( questions, max_questions=2 )
+                
+                for answer in answers_xml:
                     
-            # Use a counter object to count the bigrams
-            from collections import Counter
-            bigram_counter = Counter( bigrams )
-            # Print out the most common bigrams sorted descending
-            print( bigram_counter.most_common() )
-            
-            
-        #     if compound_command in [ "agent router go to search function mapping" ]:
-        #         arguments   = self._get_cities_and_countries( None )
-        #         placeholder = "in DEFAULT_LOCATION"
-        #     else:
-        #         raise Exception( f"Unknown function mapping command [{compound_command}]" )
-        #
+                    du.print_banner( answer[ "last_question_asked" ], end="\n", prepend_nl=True )
+                    print( answer[ "xml_response" ] )
+                
+            elif path.endswith( ".xml" ):
+                
+                print( f"Loading XML question & generated response data from [{path}]..." )
+                
+            else:
+                
+                extension = path.split( "." )[ -1 ]
+                raise Exception( f"Unknown function mapping file type [*.{extension}] for routing_key [{routing_key}]" )
+
         #     for raw_line in raw_lines:
         #
         #         for args in arguments:
         #
-        #             if compound_command == "agent router go to calendar":
+        #             if routing_key == "agent router go to calendar":
         #                 voice_command = raw_line.replace( "PLACE", "" )
         #                 for key in args.keys():
         #                     voice_command = voice_command.replace( key, args[ key ] )
@@ -659,16 +655,16 @@ class XmlFineTuningPromptGenerator:
         #             instruction   = self.agent_router_instruction_template.format( command_choices=self.agent_router_commands )
         #             human_says    = self.common_human_says_template.format( voice_command=voice_command )
         #             input         = self.common_input_template.format( human_says=human_says, response_format=self.common_response_format )
-        #             output        = self.common_output_template.format( command=compound_command, args=args )
+        #             output        = self.common_output_template.format( command=routing_key, args=args )
         #             prompt        = self._get_prompt_instruction_format( instruction, input )
         #
         #             instructions.append( instruction )
         #             inputs.append( input )
         #             outputs.append( output )
         #             prompts.append( prompt )
-        #             commands.append( compound_command )
+        #             commands.append( routing_key )
         #
-        #             gpt_messages.append( self._get_gpt_messages_dict( gpt_instruction, voice_command, compound_command, args ) )
+        #             gpt_messages.append( self._get_gpt_messages_dict( gpt_instruction, voice_command, routing_key, args ) )
         #
         #             self._do_conditional_print( counter, voice_command )
         #             counter += 1
@@ -682,6 +678,85 @@ class XmlFineTuningPromptGenerator:
         #
         # return self.compound_agent_router_qna_df
         return None
+    
+    def _generate_function_mapping_response_objects( self, questions, max_questions=None ):
+        
+        # If max_questions is None, the slice will be all the questions
+        questions = questions[ 0:max_questions ]
+        responses = [ ]
+        counter   = 0
+        
+        timer = Stopwatch( msg=f"Testing function mapping for {len( questions )} questions..." )
+        for question in questions:
+            
+            counter += 1
+            from lib.agents.function_mapping_search import FunctionMappingSearch
+            mapper = FunctionMappingSearch(  question=question, last_question_asked=question, debug=self.debug, verbose=self.verbose )
+            du.print_banner( f"Question: {question}", end="\n", prepend_nl=True )
+            prompt_response_dict = mapper.run_prompt( include_raw_response=True )
+            
+            responses.append( prompt_response_dict )
+            
+            # Print out some ~progress stats
+            delta_ms            = timer.get_delta_ms()
+            time_elapsed        = int( delta_ms / 1000 )
+            ms_per_question     = int( round( delta_ms / counter, 0 ) )
+            time_per_question   = int( ms_per_question / 1000 )
+            questions_remaining = len( questions ) - counter
+            seconds_remaining   = int( ms_per_question * questions_remaining / 1000 )
+            
+            print( f"Time elapsed {time_elapsed:,} seconds. Average time per question: {time_per_question:,} seconds. {questions_remaining} questions remaining, ETA: {seconds_remaining:,} seconds...", end="\n\n" )
+        
+        timer.print( msg="Done!", use_millis=False )
+        print( f"Average time per question: {round( timer.get_delta_ms() / len( questions ), 0 ):,} ms" )
+        
+        return responses
+        
+    def _build_function_mapping_questions( self, raw_lines, placeholders_and_values ):
+        
+        du.print_banner( "Building function mapping questions...", prepend_nl=True)
+        lines   = [ ]
+        for line in raw_lines:
+            
+            # Iterate over placeholders and substitute random values for them
+            for placeholder, values in placeholders_and_values.items():
+                line = line.replace( placeholder, random.choice( values ) )
+            
+            # Insert interjections and salutations
+            _, line = self.insert_interjection( line, self.interjections )
+            _, line = self.prepend_salutation( line, self.salutations )
+            lines.append( line )
+            if self.debug:print( line )
+        
+        return lines
+    
+    def _analyze_bigrams( self, raw_lines, placeholder ):
+        
+        du.print_banner( f"Analyzing bigrams for placeholder [{placeholder}]...", prepend_nl=True )
+        
+        # Do a quick and dirty search and summary for DEFAULT_LOCATION
+        bigrams = [ ]
+        
+        for line in raw_lines:
+            
+            found = False
+            words = line.split( " " )
+            
+            for idx, word in enumerate( words ):
+                if placeholder in word and idx >= 1:
+                    bigrams.append( words[ idx - 1 ] + " " + words[ idx ] )
+                    found = True
+                    break
+                    
+            if not found:
+                bigrams.append( f"No placeholder '{placeholder}' provided" )
+                
+        # Count the bigrams
+        from collections import Counter
+        bigram_counter = Counter( bigrams )
+        # Print out the most common bigrams sorted descending
+        for bigram, count in bigram_counter.most_common():
+            print( f"{bigram}: {count}" )
         
     def get_prompt_template( self, name ):
         
@@ -1222,8 +1297,8 @@ if __name__ == "__main__":
     # os.chdir( "/var/model/genie-in-the-box/src" )
     # print( os.getcwd() )
     # #
-    xml_ftp_generator       = XmlFineTuningPromptGenerator()
-    xml_ftp_generator.build_compound_function_mapping_training_prompts()
+    xml_ftp_generator       = XmlFineTuningPromptGenerator( debug=True )
+    xml_ftp_generator.build_compound_function_mapping_training_prompts( analyze_bigrams=True )
     
     # xml_ftp_generator       = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=True, init_prompt_templates=False )
     # xml_ftp_generator       = XmlFineTuningPromptGenerator( init_prompt_templates=False )
