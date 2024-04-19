@@ -8,6 +8,7 @@ from ephemera.prompts.xml_fine_tuning_prompt_generator  import XmlFineTuningProm
 
 class FunctionMappingSearch( AgentBase ):
     
+    # ¡OJO! Using 'agent router go to function mapping' may not be the best key name: ¡rethink this!
     def __init__( self, question="", last_question_asked="", routing_command="agent router go to function mapping", debug=False, verbose=False, auto_debug=False, inject_bugs=False ):
         
         super().__init__( question=question, last_question_asked=last_question_asked, routing_command=routing_command, push_counter=-1, debug=debug, verbose=verbose, auto_debug=auto_debug, inject_bugs=inject_bugs )
