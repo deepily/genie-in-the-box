@@ -105,7 +105,6 @@ class XmlFineTuningPromptGenerator:
             # "agent router go to weather"         : "/src/ephemera/prompts/data/synthetic-data-agent-routing-weather.txt",
             # "agent router go to calendar"        : "/src/ephemera/prompts/data/synthetic-data-agent-routing-calendaring.txt",
             # "agent router go to receptionist"    : "/src/ephemera/prompts/data/synthetic-data-agent-routing-receptionist.txt",
-            # "agent router go to function mapping": "/src/ephemera/prompts/data/synthetic-data-agent-search-static-vs-dynamic.txt"
         }
         self._test_command_paths( agent_routing_compound_commands )
         
@@ -115,7 +114,8 @@ class XmlFineTuningPromptGenerator:
         
         agent_function_mapping_compound_commands = {
             # This data set is not only static vs. dynamic, but also memory search vs. web search
-            "agent router go to function mapping": "/src/ephemera/prompts/data/synthetic-data-agent-search-static-vs-dynamic.txt"
+            # ¡OJO! Using 'agent router go to function mapping' may not be the best key name: ¡rethink this!
+            "agent router go to search function mapping": "/src/ephemera/prompts/data/synthetic-data-agent-search-static-vs-dynamic.txt"
         }
         self._test_command_paths( agent_function_mapping_compound_commands )
         
@@ -264,8 +264,9 @@ class XmlFineTuningPromptGenerator:
         if salutation == "":
             return "", text
         else:
-            return salutation, salutation + " " + text
-    
+            # Lowercase the first word of the text
+            return salutation, salutation + " " + text[ 0 ].lower() + text[ 1: ]
+        
     def _get_events_values( self, requested_length=100 ):
         
         events      = self._get_placeholder_values( "/src/ephemera/prompts/data/placeholders-calendaring-events.txt", requested_length=None )
@@ -536,7 +537,7 @@ class XmlFineTuningPromptGenerator:
             du.print_banner( f"Building prompts for compound AGENT ROUTER command [{compound_command}]", prepend_nl=True, end="\n" )
             counter = 1
             
-            raw_lines = du.get_file_as_list( self.path_prefix + self.agent_router_compound_commands[ compound_command ], clean=True, randomize=True )[ 0:100]
+            raw_lines = du.get_file_as_list( self.path_prefix + self.agent_router_compound_commands[ compound_command ], clean=True, randomize=True )[ 0:100 ]
             
             if compound_command in [ "agent router go to weather", "agent router go to date and time" ]:
                 arguments   = self._get_cities_and_countries( len( raw_lines ) )
@@ -591,6 +592,96 @@ class XmlFineTuningPromptGenerator:
         self.compound_agent_router_qna_df = compound_agent_router_qna_df
         
         return self.compound_agent_router_qna_df
+    
+    def build_compound_function_mapping_training_prompts( self, sample_size_per_command=2000 ):
+        
+        instructions, inputs, outputs, prompts, gpt_messages, commands = self._get_6_empty_lists()
+    
+        gpt_instruction = self.agent_router_instruction_template_gpt.format( command_choices=self.agent_router_commands )
+        
+        # For each function mapping command, load the corresponding file and generate prompts
+        for compound_command in self.agent_function_mapping_compound_commands.keys():
+            
+            du.print_banner( f"Building prompts for compound FUNCTION MAPPING command [{compound_command}]", prepend_nl=True, end="\n" )
+            counter = 1
+            
+            raw_lines = du.get_file_as_list( self.path_prefix + self.agent_function_mapping_compound_commands[ compound_command ], clean=True, randomize=True )
+            locations = self._get_cities_and_countries( requested_length=None )
+            bigrams = []
+            for line in raw_lines:
+                
+                line = line.replace( "DEFAULT_LOCATION", random.choice( locations ) )
+                _, line = self.insert_interjection( line, self.interjections )
+                _, line = self.prepend_salutation( line, self.salutations )
+                print( line )
+                
+                # Get the index for "DEFAULT_LOCATION"
+                words = line.split( " " )
+                found = False
+                
+                for idx, word in enumerate( words ):
+                    if "DEFAULT_LOCATION" in word:
+                        bigrams.append( ( words[ idx - 1 ] + " " + words[ idx ] ) )
+                        found = True
+                        break
+                if not found:
+                    bigrams.append( ( "No DEFAULT_LOCATION provided" ) )
+                    
+            # Use a counter object to count the bigrams
+            from collections import Counter
+            bigram_counter = Counter( bigrams )
+            # Print out the most common bigrams sorted descending
+            print( bigram_counter.most_common() )
+            
+            
+        #     if compound_command in [ "agent router go to search function mapping" ]:
+        #         arguments   = self._get_cities_and_countries( None )
+        #         placeholder = "in DEFAULT_LOCATION"
+        #     else:
+        #         raise Exception( f"Unknown function mapping command [{compound_command}]" )
+        #
+        #     for raw_line in raw_lines:
+        #
+        #         for args in arguments:
+        #
+        #             if compound_command == "agent router go to calendar":
+        #                 voice_command = raw_line.replace( "PLACE", "" )
+        #                 for key in args.keys():
+        #                     voice_command = voice_command.replace( key, args[ key ] )
+        #                 # Reset args to an empty string, NOT a dictionary
+        #                 args = ""
+        #             else:
+        #                 voice_command = raw_line.replace( placeholder, args )
+        #
+        #             _, voice_command = self.insert_interjection( voice_command, self.interjections )
+        #             _, voice_command = self.prepend_salutation( voice_command, self.salutations )
+        #
+        #             instruction   = self.agent_router_instruction_template.format( command_choices=self.agent_router_commands )
+        #             human_says    = self.common_human_says_template.format( voice_command=voice_command )
+        #             input         = self.common_input_template.format( human_says=human_says, response_format=self.common_response_format )
+        #             output        = self.common_output_template.format( command=compound_command, args=args )
+        #             prompt        = self._get_prompt_instruction_format( instruction, input )
+        #
+        #             instructions.append( instruction )
+        #             inputs.append( input )
+        #             outputs.append( output )
+        #             prompts.append( prompt )
+        #             commands.append( compound_command )
+        #
+        #             gpt_messages.append( self._get_gpt_messages_dict( gpt_instruction, voice_command, compound_command, args ) )
+        #
+        #             self._do_conditional_print( counter, voice_command )
+        #             counter += 1
+        #
+        #     print()
+        #
+        # compound_agent_router_qna_df = pd.DataFrame( { "command": commands, "instruction": instructions, "input": inputs, "output": outputs, "prompt": prompts, "gpt_message": gpt_messages } )
+        # compound_agent_router_qna_df = self._prune_duplicates_and_sample( compound_agent_router_qna_df, sample_size=( sample_size_per_command * len( self.vox_cmd_compound_commands ) ), sample_size_per_command=sample_size_per_command )
+        #
+        # self.compound_agent_router_qna_df = compound_agent_router_qna_df
+        #
+        # return self.compound_agent_router_qna_df
+        return None
         
     def get_prompt_template( self, name ):
         
@@ -1131,28 +1222,31 @@ if __name__ == "__main__":
     # os.chdir( "/var/model/genie-in-the-box/src" )
     # print( os.getcwd() )
     # #
-    # xml_ftp_generator       = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=True, init_prompt_templates=False )
-    xml_ftp_generator       = XmlFineTuningPromptGenerator( init_prompt_templates=False )
-    interjections           = xml_ftp_generator.get_interjections()
-    salutations             = xml_ftp_generator.get_salutations()
-    # print( interjections )
+    xml_ftp_generator       = XmlFineTuningPromptGenerator()
+    xml_ftp_generator.build_compound_function_mapping_training_prompts()
     
-    for i in range( 20 ):
-        
-        _, foo = xml_ftp_generator.insert_interjection( "So glad you made it!", interjections )
-        print( foo )
-        _, foo = xml_ftp_generator.prepend_salutation( foo, salutations )
-        print( foo )
-        
-        _, bar = xml_ftp_generator.insert_interjection( "Could you please check your memory and see if we've spoken about DC United this week?", interjections )
-        print( bar )
-        _, bar = xml_ftp_generator.prepend_salutation( bar, salutations )
-        print( bar )
-        
-        _, baz = xml_ftp_generator.insert_interjection( "I'm trying to get a hold of the boss. Can you help me out?", interjections )
-        print( baz )
-        _, baz = xml_ftp_generator.prepend_salutation( baz, salutations )
-        print( baz )
+    # xml_ftp_generator       = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=True, init_prompt_templates=False )
+    # xml_ftp_generator       = XmlFineTuningPromptGenerator( init_prompt_templates=False )
+    # interjections           = xml_ftp_generator.get_interjections()
+    # salutations             = xml_ftp_generator.get_salutations()
+    # # print( interjections )
+    #
+    # for i in range( 20 ):
+    #
+    #     _, foo = xml_ftp_generator.insert_interjection( "So glad you made it!", interjections )
+    #     print( foo )
+    #     _, foo = xml_ftp_generator.prepend_salutation( foo, salutations )
+    #     print( foo )
+    #
+    #     _, bar = xml_ftp_generator.insert_interjection( "Could you please check your memory and see if we've spoken about DC United this week?", interjections )
+    #     print( bar )
+    #     _, bar = xml_ftp_generator.prepend_salutation( bar, salutations )
+    #     print( bar )
+    #
+    #     _, baz = xml_ftp_generator.insert_interjection( "I'm trying to get a hold of the boss. Can you help me out?", interjections )
+    #     print( baz )
+    #     _, baz = xml_ftp_generator.prepend_salutation( baz, salutations )
+    #     print( baz )
         
     # print( salutations )
     
@@ -1198,4 +1292,4 @@ if __name__ == "__main__":
     #
     # xml_ftp_generator.print_validation_stats( validate_df, title=f"Validation Stats for `{model_name}`" )
     #
-    # timer.print( msg="Done!", use_millis=False, prepend_nl=True, end="\n" )
+    # timer.print( msg="Done!", use_millis=False, prepend_nl=True, end="\n" )44
