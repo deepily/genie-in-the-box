@@ -598,7 +598,7 @@ class XmlFineTuningPromptGenerator:
         
         return self.compound_agent_router_qna_df
     
-    def build_compound_function_mapping_training_prompts( self, sample_size_per_command=2000, analyze_bigrams=False ):
+    def build_compound_function_mapping_training_prompts( self, sample_size_per_command=2000, analyze_bigrams=False, max_questions=2 ):
         
         instructions, inputs, outputs, prompts, gpt_messages, commands = self._get_6_empty_lists()
     
@@ -609,7 +609,8 @@ class XmlFineTuningPromptGenerator:
             
             du.print_banner( f"Building prompts for compound FUNCTION MAPPING [{routing_key}]", prepend_nl=True, end="\n" )
             
-            path = self.path_prefix + self.agent_function_mapping_compound_commands[ routing_key ]
+            path     = self.path_prefix + self.agent_function_mapping_compound_commands[ routing_key ]
+            boundary = "<!-- QnR Boundary -->"
             if path.endswith( ".txt" ):
                 
                 print( f"Loading RAW question data from [{path}]..." )
@@ -619,17 +620,42 @@ class XmlFineTuningPromptGenerator:
                 locations = self._get_cities_and_countries( requested_length=None )
                 placeholders_and_values = { "DEFAULT_LOCATION": locations }
                 
-                questions   = self._build_function_mapping_questions( raw_lines, placeholders_and_values )
-                answers_xml = self._generate_function_mapping_response_objects( questions, max_questions=2 )
+                questions = self._build_function_mapping_questions( raw_lines, placeholders_and_values )
+                responses = self._generate_function_mapping_response_objects( questions, max_questions=max_questions )
+                count     = len( responses )
+                counter   = 0
                 
-                for answer in answers_xml:
+                
+                # Write the responses to an XML file of the same name
+                output_path = path.replace( ".txt", ".xml" )
+                with open( output_path, "w", encoding="utf-8" ) as f:
                     
-                    du.print_banner( answer[ "last_question_asked" ], end="\n", prepend_nl=True )
-                    print( answer[ "xml_response" ] )
+                    f.write( "<qnrs>\n" )
+                    for response in responses:
+                        if self.debug and self.verbose:
+                            print( f"Writing '{response[ 'last_question_asked' ]}'..." )
+                        elif self.debug:
+                            print( ".", end="" )
+                        f.write( "<qnr>\n" )
+                        f.write( "<question>" + response[ "last_question_asked" ] + "</question>\n" )
+                        f.write( response[ "xml_response" ] + "\n" )
+                        f.write( "</qnr>\n" )
+                        counter += 1
+                        # Don't write a boundary after the last question
+                        if counter < count: f.write( f"{boundary}\n" )
+                    f.write( "</qnrs>\n" )
+                
+                if self.debug and not self.verbose: print()
+                print( f"Saved {counter} QnRs to [{output_path}]" )
                 
             elif path.endswith( ".xml" ):
                 
-                print( f"Loading XML question & generated response data from [{path}]..." )
+                msg = f"Loading XML QnR data from [{path}]..."
+                print( msg )
+                xml_data = du.get_file_as_string( path )
+                qnrs     = xml_data.split( boundary )
+                msg      = f"{msg} Done! Loaded {len( qnrs )} QnR pairs."
+                print( msg )
                 
             else:
                 
@@ -686,13 +712,13 @@ class XmlFineTuningPromptGenerator:
         responses = [ ]
         counter   = 0
         
-        timer = Stopwatch( msg=f"Testing function mapping for {len( questions )} questions..." )
+        timer = Stopwatch( msg=f"Generating function mapping for {len( questions )} questions..." )
         for question in questions:
             
             counter += 1
             from lib.agents.function_mapping_search import FunctionMappingSearch
             mapper = FunctionMappingSearch(  question=question, last_question_asked=question, debug=self.debug, verbose=self.verbose )
-            du.print_banner( f"Question: {question}", end="\n", prepend_nl=True )
+            du.print_banner( f"Question {counter} of {len( questions )}: {question}", end="\n", prepend_nl=True )
             prompt_response_dict = mapper.run_prompt( include_raw_response=True )
             
             responses.append( prompt_response_dict )
@@ -1296,9 +1322,11 @@ if __name__ == "__main__":
     print( os.getcwd() )
     # os.chdir( "/var/model/genie-in-the-box/src" )
     # print( os.getcwd() )
-    # #
+    
+    # Generating ~320 responses cost about $15, and take about 2.5 hours
     xml_ftp_generator       = XmlFineTuningPromptGenerator( debug=True )
-    xml_ftp_generator.build_compound_function_mapping_training_prompts( analyze_bigrams=True )
+    # So, for now just generate 10 responses    
+    xml_ftp_generator.build_compound_function_mapping_training_prompts( analyze_bigrams=True, max_questions=10 )
     
     # xml_ftp_generator       = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=True, init_prompt_templates=False )
     # xml_ftp_generator       = XmlFineTuningPromptGenerator( init_prompt_templates=False )
