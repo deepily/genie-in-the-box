@@ -130,7 +130,7 @@ class AgentBase( RunnableCode, abc.ABC ):
         
     def _update_response_dictionary( self, response ):
         
-        if self.debug: print( f"update_response_dictionary called..." )
+        if self.debug and self.verbose: print( f"update_response_dictionary called..." )
         
         prompt_response_dict = { }
         
