@@ -135,7 +135,7 @@ Have we checked DEFAULT_LOCATION's climate data from the past decade recently?
 When was the last time we talked about climate challenges faced by DEFAULT_LOCATION's wildlife?
 Did I already ask about DEFAULT_LOCATION's climate trends compared to nearby cities?
 Have we discussed DEFAULT_LOCATION's climate adaptation measures in the past few weeks?
-When did we last review DEFAULT_LOCATION's climate change impacts on coastal areas?
+When did we last review DEFAULT_LOCATION's climate change impacts?
 Did we cover DEFAULT_LOCATION's climate research and ongoing projects yet?
 Have we talked about DEFAULT_LOCATION's climate variability affecting farmers recently?
 When did we last review DEFAULT_LOCATION's historical climate data?
@@ -144,7 +144,6 @@ Have I asked about DEFAULT_LOCATION's climate variability affecting wildlife bef
 When was the last time we covered DEFAULT_LOCATION's climate change challenges?
 Did we discuss DEFAULT_LOCATION's climate adaptation plans in the last session?
 Have we talked about DEFAULT_LOCATION's climate research findings lately?
-When did we last review DEFAULT_LOCATION's climate change impacts on coastal areas?
 Did I already ask about DEFAULT_LOCATION's climate variability affecting farmers?
 Have we discussed DEFAULT_LOCATION's climate change adaptation measures recently?
 When was the last time we talked about DEFAULT_LOCATION's climate variability affecting businesses?
