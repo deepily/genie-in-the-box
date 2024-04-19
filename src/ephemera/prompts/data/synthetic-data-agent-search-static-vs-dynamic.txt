@@ -1,0 +1,320 @@
+How much rainfall does DEFAULT_LOCATION typically get in a year?
+Do we have many sunny days in DEFAULT_LOCATION?
+What's the humidity like in DEFAULT_LOCATION during spring?
+Have you noticed any changes in climate in DEFAULT_LOCATION?
+What's the historical snowfall like in DEFAULT_LOCATION?
+Are there frequent extreme weather events in DEFAULT_LOCATION?
+Do tornadoes occur often in DEFAULT_LOCATION?
+How does climate affect wildlife in DEFAULT_LOCATION?
+Can you share past climate data for DEFAULT_LOCATION?
+What challenges does climate present in DEFAULT_LOCATION?
+How does DEFAULT_LOCATION's climate compare globally?
+Is DEFAULT_LOCATION at risk of flooding?
+What's the air quality like in DEFAULT_LOCATION right now?
+How are climate models predicting DEFAULT_LOCATION's future?
+Can you explain ocean currents' role in DEFAULT_LOCATION's climate?
+What's the typical weather during hurricane season in DEFAULT_LOCATION?
+Are there noticeable climate trends in DEFAULT_LOCATION?
+How does climate variability impact DEFAULT_LOCATION?
+What measures are taken to adapt to climate in DEFAULT_LOCATION?
+Are there ongoing climate research projects in DEFAULT_LOCATION?
+Is it going to rain in DEFAULT_LOCATION today?
+What's the temperature like in DEFAULT_LOCATION right now?
+Can you tell me the forecast for DEFAULT_LOCATION this weekend?
+Do you think it will snow in DEFAULT_LOCATION next week?
+How windy is it in DEFAULT_LOCATION today?
+Will there be fog in DEFAULT_LOCATION tomorrow?
+Should I bring an umbrella if I'm heading to DEFAULT_LOCATION?
+Do you know when the sun will set in DEFAULT_LOCATION this evening?
+Is there a chance of a heatwave coming to DEFAULT_LOCATION soon?
+Are we expecting hail in DEFAULT_LOCATION today?
+What's the UV index forecast for DEFAULT_LOCATION tomorrow?
+Have you seen a rainbow in DEFAULT_LOCATION recently?
+Is there a storm brewing in DEFAULT_LOCATION tonight?
+Do tornadoes hit DEFAULT_LOCATION often?
+How's the visibility due to fog in DEFAULT_LOCATION?
+Is there a cold front moving through DEFAULT_LOCATION this week?
+What's the dew point like in DEFAULT_LOCATION right now?
+Are we facing a drought in DEFAULT_LOCATION in the coming months?
+Can you give me a summary of the weather in DEFAULT_LOCATION?
+Do weather conditions impact transportation in DEFAULT_LOCATION?
+What's the impact of climate change on DEFAULT_LOCATION's agriculture sector?
+How has DEFAULT_LOCATION's climate variability affected local businesses?
+Can you provide historical data on DEFAULT_LOCATION's snowfall trends?
+Is DEFAULT_LOCATION at risk of flooding due to changing climate patterns?
+What measures are being taken in DEFAULT_LOCATION to adapt to climate change?
+How do DEFAULT_LOCATION's climate conditions compare to those of a century ago?
+Are there any ongoing climate research projects focused on DEFAULT_LOCATION?
+Can you explain the role of ocean currents in DEFAULT_LOCATION's climate?
+What's the typical weather pattern during DEFAULT_LOCATION's hurricane season?
+How are climate models predicting future conditions for DEFAULT_LOCATION?
+What's the expected visibility in DEFAULT_LOCATION due to fog tomorrow morning?
+Are there any chances of a thunderstorm disrupting outdoor activities in DEFAULT_LOCATION?
+Can you provide a weather radar image for DEFAULT_LOCATION's current conditions?
+Is there a possibility of a cold front moving through DEFAULT_LOCATION this week?
+What's the dew point forecast for DEFAULT_LOCATION this evening?
+How likely is it for DEFAULT_LOCATION to experience a drought in the coming months?
+Will there be any significant weather impacts on DEFAULT_LOCATION's transportation networks?
+Are there any weather-related closures or delays expected in DEFAULT_LOCATION?
+What's the air quality index in DEFAULT_LOCATION today and how does it compare to norms?
+Can you give a summary of DEFAULT_LOCATION's weather patterns over the past year?
+Is DEFAULT_LOCATION experiencing any long-term climate trends, such as warming?
+How does DEFAULT_LOCATION's climate compare to global averages?
+What's the typical humidity level during monsoon season in DEFAULT_LOCATION?
+Has DEFAULT_LOCATION seen any changes in its climate patterns in the last decade?
+Are there any climate-related challenges faced by farmers in DEFAULT_LOCATION?
+Can you provide data on the frequency of tornadoes in DEFAULT_LOCATION?
+What's the average number of sunny days in DEFAULT_LOCATION during spring?
+How does DEFAULT_LOCATION's climate impact local wildlife?
+Has there been any noticeable increase in extreme weather events in DEFAULT_LOCATION?
+What's the impact of climate change on DEFAULT_LOCATION's coastal areas?
+Can you give me a detailed hourly weather forecast for DEFAULT_LOCATION today?
+What's the UV index expected to be in DEFAULT_LOCATION tomorrow?
+Are there any weather advisories or warnings in effect for DEFAULT_LOCATION?
+What's the likelihood of a heatwave hitting DEFAULT_LOCATION next week?
+Is there a chance of hail in DEFAULT_LOCATION this evening?
+What's the wind speed and direction expected in DEFAULT_LOCATION tomorrow morning?
+Will there be any significant temperature fluctuations in DEFAULT_LOCATION this week?
+Can you tell me when the sun will set in DEFAULT_LOCATION today?
+How accurate are weather forecasts for DEFAULT_LOCATION usually?
+What's the water temperature at DEFAULT_LOCATION's beaches right now?
+What's the average rainfall in DEFAULT_LOCATION for the past decade?
+How many days of sunshine does DEFAULT_LOCATION typically get in a year?
+What's the climate like in DEFAULT_LOCATION during the summer months?
+Are there any noticeable climate changes happening in DEFAULT_LOCATION?
+What's the historical temperature range for DEFAULT_LOCATION in winter?
+Can you provide data on DEFAULT_LOCATION's climate over the last century?
+What's the humidity level like in DEFAULT_LOCATION during autumn?
+Has DEFAULT_LOCATION experienced any extreme weather events in recent years?
+How does DEFAULT_LOCATION's climate compare to nearby cities?
+What's the average snowfall in DEFAULT_LOCATION during January?
+Hey, what's the temperature gonna be like in DEFAULT_LOCATION today?
+Is there any chance of rain in DEFAULT_LOCATION later?
+What's the weather forecast for DEFAULT_LOCATION tomorrow?
+Do I need an umbrella if I'm heading to DEFAULT_LOCATION this afternoon?
+Will it be sunny in DEFAULT_LOCATION this weekend?
+What's the current weather in DEFAULT_LOCATION?
+Is it going to snow in DEFAULT_LOCATION next week?
+Can you tell me if it's windy in DEFAULT_LOCATION right now?
+What are the chances of thunderstorms in DEFAULT_LOCATION tonight?
+Should I expect any fog in DEFAULT_LOCATION early morning?
+Did we discuss the average rainfall in DEFAULT_LOCATION last week?
+Have I asked you about the number of sunny days in DEFAULT_LOCATION yet?
+When was the last time we talked about DEFAULT_LOCATION's humidity during spring?
+Did we cover any changes in climate patterns in DEFAULT_LOCATION recently?
+Have we checked DEFAULT_LOCATION's historical snowfall data before?
+When was the last time we discussed extreme weather events in DEFAULT_LOCATION?
+Did I already ask about tornado frequency in DEFAULT_LOCATION?
+Have we talked about how climate affects wildlife in DEFAULT_LOCATION?
+When did we last review the past climate data for DEFAULT_LOCATION?
+Did we discuss climate challenges in DEFAULT_LOCATION yet?
+Have we talked about the chance of rain in DEFAULT_LOCATION today?
+When did I ask you about the temperature in DEFAULT_LOCATION right now?
+Did we cover the weather forecast for DEFAULT_LOCATION this weekend?
+When was the last time we discussed snow in DEFAULT_LOCATION next week?
+Have we checked the wind speed in DEFAULT_LOCATION today?
+When did we talk about fog in DEFAULT_LOCATION tomorrow?
+Did I already ask if I need an umbrella in DEFAULT_LOCATION?
+Have we discussed the sun setting time in DEFAULT_LOCATION this evening?
+When was the last time we mentioned a heatwave in DEFAULT_LOCATION?
+Did we talk about hail in DEFAULT_LOCATION today yet?
+Did we cover DEFAULT_LOCATION's typical climate trends in the last meeting?
+Have I asked about the historical snowfall in DEFAULT_LOCATION before?
+When was the last time we talked about DEFAULT_LOCATION's climate adaptation measures?
+Did we discuss the impact of climate change on DEFAULT_LOCATION's agriculture recently?
+Have we checked DEFAULT_LOCATION's climate variability in the past month?
+When did we last review DEFAULT_LOCATION's climate challenges and risks?
+Did I already ask about the global comparison of DEFAULT_LOCATION's climate?
+Have we talked about DEFAULT_LOCATION's climate research projects lately?
+When was the last time we discussed DEFAULT_LOCATION's flood risk due to climate change?
+Did we cover DEFAULT_LOCATION's air quality during the previous discussion?
+Have I asked about the climate models predicting DEFAULT_LOCATION's future before?
+When did we last talk about ocean currents' impact on DEFAULT_LOCATION's climate?
+Did we discuss DEFAULT_LOCATION's climate variability affecting businesses yet?
+Have we checked DEFAULT_LOCATION's climate data from the past decade recently?
+When was the last time we talked about climate challenges faced by DEFAULT_LOCATION's wildlife?
+Did I already ask about DEFAULT_LOCATION's climate trends compared to nearby cities?
+Have we discussed DEFAULT_LOCATION's climate adaptation measures in the past few weeks?
+When did we last review DEFAULT_LOCATION's climate change impacts on coastal areas?
+Did we cover DEFAULT_LOCATION's climate research and ongoing projects yet?
+Have we talked about DEFAULT_LOCATION's climate variability affecting farmers recently?
+When did we last review DEFAULT_LOCATION's historical climate data?
+Did we discuss DEFAULT_LOCATION's climate adaptation strategies in the previous meeting?
+Have I asked about DEFAULT_LOCATION's climate variability affecting wildlife before?
+When was the last time we covered DEFAULT_LOCATION's climate change challenges?
+Did we discuss DEFAULT_LOCATION's climate adaptation plans in the last session?
+Have we talked about DEFAULT_LOCATION's climate research findings lately?
+When did we last review DEFAULT_LOCATION's climate change impacts on coastal areas?
+Did I already ask about DEFAULT_LOCATION's climate variability affecting farmers?
+Have we discussed DEFAULT_LOCATION's climate change adaptation measures recently?
+When was the last time we talked about DEFAULT_LOCATION's climate variability affecting businesses?
+Did we cover DEFAULT_LOCATION's climate research and ongoing projects in the past meeting?
+Have I asked about DEFAULT_LOCATION's climate variability impacting wildlife before?
+When was the last time we reviewed DEFAULT_LOCATION's historical climate data?
+Did we discuss DEFAULT_LOCATION's climate change adaptation strategies in the previous meeting?
+Have we talked about DEFAULT_LOCATION's climate variability affecting farmers in the past few weeks?
+When did we last discuss DEFAULT_LOCATION's climate change challenges?
+Did I already ask about DEFAULT_LOCATION's climate adaptation plans?
+Have we discussed DEFAULT_LOCATION's climate research findings in the last session?
+When was the last time we reviewed DEFAULT_LOCATION's climate change impacts on coastal areas?
+Did we cover DEFAULT_LOCATION's climate variability affecting businesses in the past meeting?
+Have we talked about the chance of rain in DEFAULT_LOCATION yesterday?
+When did I ask about the temperature in DEFAULT_LOCATION this morning?
+Did we cover the weather forecast for DEFAULT_LOCATION last week?
+When was the last time we discussed snow in DEFAULT_LOCATION last month?
+Have we checked the wind speed in DEFAULT_LOCATION yesterday?
+When did we talk about fog in DEFAULT_LOCATION this morning?
+Did I already ask if I need an umbrella in DEFAULT_LOCATION yesterday?
+Have we discussed the sun setting time in DEFAULT_LOCATION last evening?
+When was the last time we mentioned a heatwave in DEFAULT_LOCATION last week?
+Did we talk about hail in DEFAULT_LOCATION yesterday yet?
+Have we discussed the chance of rain in DEFAULT_LOCATION last month?
+When did I ask about the temperature in DEFAULT_LOCATION last week?
+Did we cover the weather forecast for DEFAULT_LOCATION yesterday?
+When was the last time we discussed snow in DEFAULT_LOCATION yesterday?
+Have we checked the wind speed in DEFAULT_LOCATION last week?
+When did we talk about fog in DEFAULT_LOCATION yesterday?
+Did I already ask if I need an umbrella in DEFAULT_LOCATION last week?
+Have we discussed the sun setting time in DEFAULT_LOCATION yesterday?
+When was the last time we mentioned a heatwave in DEFAULT_LOCATION yesterday?
+Did we talk about hail in DEFAULT_LOCATION yesterday yet?
+Have we discussed the chance of rain in DEFAULT_LOCATION last year?
+When did I ask about the temperature in DEFAULT_LOCATION last month?
+Did we cover the weather forecast for DEFAULT_LOCATION last month?
+When was the last time we discussed snow in DEFAULT_LOCATION last week?
+Have we checked the wind speed in DEFAULT_LOCATION last month?
+When did we talk about fog in DEFAULT_LOCATION last month?
+Did I already ask if I need an umbrella in DEFAULT_LOCATION last month?
+Have we discussed the sun setting time in DEFAULT_LOCATION last month?
+When was the last time we mentioned a heatwave in DEFAULT_LOCATION last month?
+Did we talk about hail in DEFAULT_LOCATION last month yet?
+Have we discussed the chance of rain in DEFAULT_LOCATION last year?
+When did I ask about the temperature in DEFAULT_LOCATION last year?
+Did we cover the weather forecast for DEFAULT_LOCATION last year?
+When was the last time we discussed snow in DEFAULT_LOCATION last year?
+Have we checked the wind speed in DEFAULT_LOCATION last year?
+When did we talk about fog in DEFAULT_LOCATION last year?
+Did I already ask if I need an umbrella in DEFAULT_LOCATION last year?
+Have we discussed the sun setting time in DEFAULT_LOCATION last year?
+When was the last time we mentioned a heatwave in DEFAULT_LOCATION last year?
+Did we talk about hail in DEFAULT_LOCATION last year yet?
+How much rainfall does this area typically get in a year?
+Do we have many sunny days here?
+What's the humidity like during spring?
+Have you noticed any changes in climate here?
+What's the historical snowfall like?
+Are there frequent extreme weather events?
+Do tornadoes occur often?
+How does climate affect wildlife?
+Can you share past climate data?
+What challenges does climate present here?
+How does the climate here compare globally?
+Is this area at risk of flooding?
+What's the air quality like right now?
+How are climate models predicting the future?
+Can you explain the role of ocean currents in the climate?
+What's the typical weather during hurricane season?
+Are there noticeable climate trends?
+How does climate variability impact this area?
+What measures are taken to adapt to climate?
+Are there ongoing climate research projects?
+Is it going to rain today?
+What's the temperature like right now?
+Can you tell me the forecast for this weekend?
+Do you think it will snow next week?
+How windy is it today?
+Will there be fog tomorrow?
+Should I bring an umbrella if I'm heading out?
+Do you know when the sun will set this evening?
+Is there a chance of a heatwave coming soon?
+Are we expecting hail today?
+What's the UV index forecast for tomorrow?
+Have you seen a rainbow recently?
+Is there a storm brewing tonight?
+Do tornadoes hit often?
+How's the visibility due to fog?
+Is there a cold front moving through this week?
+What's the dew point like right now?
+Are we facing a drought in the coming months?
+Can you give me a summary of the weather?
+Do weather conditions impact transportation?
+What's the impact of climate change on agriculture?
+How has climate variability affected local businesses?
+Can you provide historical data on snowfall trends?
+Is this area at risk of flooding due to changing climate patterns?
+What measures are being taken to adapt to climate change?
+How do the climate conditions compare to those of a century ago?
+Are there any ongoing climate research projects focused here?
+Can you explain the role of ocean currents in the climate?
+What's the typical weather pattern during hurricane season?
+How are climate models predicting future conditions?
+What's the expected visibility due to fog tomorrow morning?
+Are there any chances of a thunderstorm disrupting outdoor activities tonight?
+Can you provide a weather radar image for the current conditions?
+Is there a possibility of a cold front moving through this week?
+What's the dew point forecast for this evening?
+How likely is it to experience a drought in the coming months?
+Will there be any significant weather impacts on transportation networks?
+Are there any weather-related closures or delays expected?
+What's the air quality index today and how does it compare to norms?
+Can you give a summary of the weather patterns over the past year?
+Is this place experiencing any long-term climate trends, such as warming?
+How does the climate compare to global averages?
+What's the typical humidity level during monsoon season?
+Have there been any changes in climate patterns in the last decade?
+Are there any climate-related challenges faced by farmers?
+Can you provide data on the frequency of tornadoes?
+What's the average number of sunny days during spring?
+How does the climate impact local wildlife?
+Has there been any noticeable increase in extreme weather events?
+What's the impact of climate change on coastal areas?
+Can you give me a detailed hourly weather forecast for today?
+What's the UV index expected to be tomorrow?
+Are there any weather advisories or warnings in effect?
+What's the likelihood of a heatwave hitting next week?
+Is there a chance of hail this evening?
+What's the wind speed and direction expected tomorrow morning?
+Will there be any significant temperature fluctuations this week?
+Can you tell me when the sun will set today?
+How accurate are weather forecasts usually?
+What's the water temperature at the beaches right now?
+What's the average rainfall for the past decade?
+How many days of sunshine does this place typically get in a year?
+What's the climate like during the summer months?
+Are there any noticeable climate changes happening?
+What's the historical temperature range for winter?
+Can you provide data on the climate over the last century?
+What's the humidity level like during autumn?
+Has this place experienced any extreme weather events in recent years?
+How does the climate compare to nearby cities?
+What's the average snowfall during January?
+Hey, what's the temperature gonna be like today?
+Is there any chance of rain later?
+What's the weather forecast for tomorrow?
+Do I need an umbrella if I'm heading out this afternoon?
+Will it be sunny this weekend?
+What's the current weather?
+Is it going to snow next week?
+Can you tell me if it's windy right now?
+What are the chances of thunderstorms tonight?
+Should I expect any fog early morning?
+Did we discuss the average rainfall last week?
+Have I asked you about the number of sunny days yet?
+When was the last time we talked about humidity during spring?
+Did we cover any changes in climate patterns recently?
+Have we checked historical snowfall data before?
+When was the last time we discussed extreme weather events?
+Did I already ask about tornado frequency?
+Have we talked about how climate affects wildlife?
+When did we last review the past climate data?
+Did we discuss climate challenges here yet?
+Have we talked about the chance of rain today?
+When did I ask you about the temperature right now?
+Did we cover the weather forecast for this weekend?
+When was the last time we discussed snow next week?
+Have we checked the wind speed today?
+When did we talk about fog tomorrow?
+Did I already ask if I need an umbrella?
+Have we discussed the sun setting time this evening?
+When was the last time we mentioned a heatwave?
+Did we talk about hail today yet?
