@@ -157,7 +157,7 @@ class AgentBase( RunnableCode, abc.ABC ):
         # Parse XML-esque response
         self.prompt_response_dict = self._update_response_dictionary( response )
         
-        # Add raw response if requested. This is useful for creating synthetic data sets
+        # Add raw response if requested. This is useful for creating synthetic datasets
         # See: function_mapping_search.py & xml_fine_tuning_prompt_generator.py for an example of how this is used.
         if include_raw_response:
             self.prompt_response_dict[ "xml_response" ]        = response
