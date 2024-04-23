@@ -1325,7 +1325,7 @@ if __name__ == "__main__":
     
     # Generating ~320 responses cost about $15, and take about 2.5 hours
     xml_ftp_generator       = XmlFineTuningPromptGenerator( debug=True )
-    # So, for now just generate 10 responses    
+    # So, for now just generate 10 responses
     xml_ftp_generator.build_compound_function_mapping_training_prompts( analyze_bigrams=True, max_questions=10 )
     
     # xml_ftp_generator       = XmlFineTuningPromptGenerator( tgi_url="http://127.0.0.1:3000", debug=False, silent=True, init_prompt_templates=False )

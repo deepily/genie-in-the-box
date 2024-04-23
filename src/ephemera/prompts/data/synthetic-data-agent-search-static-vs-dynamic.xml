@@ -1,0 +1,187 @@
+<qnrs>
+<qnr>
+<question>Trusty Sidekick what's the likelihood of a heatwave hitting next week?</question>
+<response>
+    <thoughts>
+        The query asks about the likelihood of a heatwave occurring next week, which is a weather-related question. Among the available functions, 'search_and_summarize_weather' seems most appropriate as it is designed to search for weather forecasts and trends. This function can provide a summarized forecast for a specific location and date range, which is suitable for answering the query about a future heatwave.
+    </thoughts>
+    <can-use-available-functions>True</can-use-available-functions>
+    <function_name>search_and_summarize_weather</function_name>
+    <kwargs>{
+       "information_is_dynamic": true,
+       "proofread_query": "likelihood of a heatwave next week",
+       "search_key_words": "heatwave, next week",
+       "location": "CURRENT_LOCATION",
+       "start_date": "2024-04-26",
+       "end_date": "2024-05-02"
+    }</kwargs>
+    <example>solution = search_and_summarize_weather(information_is_dynamic=True, proofread_query="likelihood of a heatwave next week", search_key_words="heatwave, next week", location="CURRENT_LOCATION", start_date="2024-04-26", end_date="2024-05-02")</example>
+    <returns>string</returns>
+</response>
+</qnr>
+<!-- QnR Boundary -->
+<qnr>
+<question>Did I already ask about Aurora, Colorado's climate variability affecting farmers? i guess...</question>
+<response>
+    <thoughts>The query is asking whether a specific topic about climate variability in Aurora, Colorado affecting farmers has been previously discussed. This is a question about recalling past interactions or queries, which suggests that we need a function that can look up historical queries or topics. Among the available functions, 'query_memory_table_for_knn_topics' seems to be designed for recalling topics from a memory table, which fits the requirement of checking if a topic has been previously discussed.</thoughts>
+    <can-use-available-functions>True</can-use-available-functions>
+    <function_name>query_memory_table_for_knn_topics</function_name>
+    <kwargs>{
+       "topics": "Aurora, Colorado climate variability farmers",
+       "start_date": "2024-04-01",
+       "end_date": "2024-04-19"
+    }</kwargs>
+    <example>solution = query_memory_table_for_knn_topics(topics="Aurora, Colorado climate variability farmers", start_date="2024-04-01", end_date="2024-04-19")</example>
+    <returns>list</returns>
+</response>
+</qnr>
+<!-- QnR Boundary -->
+<qnr>
+<question>Good day Einstein, are there any weather advisories or warnings in effect for Manila, Philippines?</question>
+<response>
+    <thoughts>
+        The query asks for current weather advisories or warnings for Manila, Philippines. This is dynamic information that changes frequently and is specific to weather conditions. Among the available functions, 'search_and_summarize_weather' seems most appropriate as it is designed to handle weather-related queries, including forecasts and trends, which could encompass advisories and warnings. The function requires inputs such as the location, which matches our need to specify Manila, Philippines. Additionally, it requires a proofread query and search keywords, which we can derive from the original query.
+    </thoughts>
+    <can-use-available-functions>True</can-use-available-functions>
+    <function_name>search_and_summarize_weather</function_name>
+    <kwargs>{
+       "information_is_dynamic": true,
+       "proofread_query": "Are there any weather advisories or warnings in effect for Manila, Philippines?",
+       "search_key_words": "weather advisories, warnings, Manila, Philippines",
+       "location": "Manila, Philippines"
+    }</kwargs>
+    <example>solution = search_and_summarize_weather(information_is_dynamic=True, proofread_query="Are there any weather advisories or warnings in effect for Manila, Philippines?", search_key_words="weather advisories, warnings, Manila, Philippines", location="Manila, Philippines")</example>
+    <returns>string</returns>
+</response>
+</qnr>
+<!-- QnR Boundary -->
+<qnr>
+<question>Hey Carlita, my dear friend did now... we discuss Muscat, Oman's climate variability affecting businesses yet?</question>
+<response>
+    <thoughts>The query is asking about the impact of climate variability in Muscat, Oman on businesses. This seems to be a topic that could potentially be covered by either a general web search or a specific search related to weather and its effects. The function 'search_and_summarize_web_for_any_topic' could be used to gather and summarize information on this topic from the web, as it allows for a broad range of topics including business and climate impacts. The function 'search_and_summarize_weather' is more focused on weather forecasts and trends, which might not directly answer the question about the impact on businesses unless the query is specifically about weather forecasts affecting businesses. The function 'query_memory_table_for_knn_topics' is not suitable as it relates to querying an AI's memory, not external information.</thoughts>
+    <can-use-available-functions>True</can-use-available-functions>
+    <function_name>search_and_summarize_web_for_any_topic</function_name>
+    <kwargs>{
+       "information_is_dynamic": true,
+       "proofread_query": "Impact of climate variability on businesses in Muscat, Oman",
+       "search_key_words": "climate variability, businesses, Muscat, Oman"
+    }</kwargs>
+    <example>solution = search_and_summarize_web_for_any_topic(information_is_dynamic=True, proofread_query="Impact of climate variability on businesses in Muscat, Oman", search_key_words="climate variability, businesses, Muscat, Oman")</example>
+    <returns>string</returns>
+</response>
+</qnr>
+<!-- QnR Boundary -->
+<qnr>
+<question>Are there any noticeable climate changes happening?</question>
+<response>
+    <thoughts>
+        The query asks about noticeable climate changes, which suggests a need for information on a broad and dynamic topic. The function 'search_and_summarize_web_for_any_topic' seems suitable because it can handle a wide range of topics, including dynamic ones like climate change. The function 'search_and_summarize_weather' is more specific to weather forecasts and trends, which might not fully capture the broader concept of climate change. The function 'query_memory_table_for_knn_topics' is designed for querying an AI's memory, which doesn't seem relevant to obtaining current, real-world data on climate changes.
+    </thoughts>
+    <can-use-available-functions>True</can-use-available-functions>
+    <function_name>search_and_summarize_web_for_any_topic</function_name>
+    <kwargs>{
+       "information_is_dynamic": true,
+       "proofread_query": "What are the current noticeable climate changes?",
+       "search_key_words": "climate changes"
+    }</kwargs>
+    <example>solution = search_and_summarize_web_for_any_topic(information_is_dynamic=True, proofread_query="What are the current noticeable climate changes?", search_key_words="climate changes")</example>
+    <returns>string</returns>
+</response>
+</qnr>
+<!-- QnR Boundary -->
+<qnr>
+<question>Have we talked er... about El Paso, Texas's climate variability affecting farmers recently?</question>
+<response>
+    <thoughts>
+        The query is asking whether there has been a recent discussion about the climate variability in El Paso, Texas, and its effects on farmers. This seems to be a question about recalling past conversations or discussions, which suggests that it might be related to memory or historical data retrieval. The function 'query_memory_table_for_knn_topics' seems appropriate as it is designed to search an AI's memory for topics discussed within a specific date range. The other functions focus on web searches and weather summaries, which do not directly address the need to recall past discussions.
+    </thoughts>
+    <can-use-available-functions>True</can-use-available-functions>
+    <function_name>query_memory_table_for_knn_topics</function_name>
+    <kwargs>{
+       "topics": "El Paso, Texas climate variability affecting farmers",
+       "start_date": "2024-04-01",
+       "end_date": "2024-04-19"
+    }</kwargs>
+    <example>solution = query_memory_table_for_knn_topics(topics="El Paso, Texas climate variability affecting farmers", start_date="2024-04-01", end_date="2024-04-19")</example>
+    <returns>list</returns>
+</response>
+</qnr>
+<!-- QnR Boundary -->
+<qnr>
+<question>Hiya Neo, do like... tornadoes hit Saint Paul, Minnesota often?</question>
+<response>
+    <thoughts>
+        The query asks about the frequency of tornado occurrences in Saint Paul, Minnesota. This is a weather-related question, but it's more about historical data or trends rather than a current or future forecast. The function 'search_and_summarize_weather' is designed for forecasts and current weather conditions, not historical data. However, the function 'search_and_summarize_web_for_any_topic' can handle a wide range of topics, including historical weather events like tornado occurrences. This function can perform a web search and summarize the results, which is suitable for answering the query about tornado frequency.
+    </thoughts>
+    <can-use-available-functions>True</can-use-available-functions>
+    <function_name>search_and_summarize_web_for_any_topic</function_name>
+    <kwargs>{
+       "information_is_dynamic": false,
+       "proofread_query": "How often do tornadoes hit Saint Paul, Minnesota?",
+       "search_key_words": "tornadoes, Saint Paul, Minnesota, frequency"
+    }</kwargs>
+    <example>solution = search_and_summarize_web_for_any_topic(information_is_dynamic=False, proofread_query="How often do tornadoes hit Saint Paul, Minnesota?", search_key_words="tornadoes, Saint Paul, Minnesota, frequency")</example>
+    <returns>string</returns>
+</response>
+</qnr>
+<!-- QnR Boundary -->
+<qnr>
+<question>Clever Companion when did we you see... last discuss Chandler, Arizona's climate change challenges?</question>
+<response>
+    <thoughts>
+        The query is asking for the last date on which a discussion about Chandler, Arizona's climate change challenges occurred. This seems to be a request for historical data about past discussions or topics, rather than current information or forecasts. Therefore, the function that searches the memory table for topics by specific date or date range, 'query_memory_table_for_knn_topics', appears to be the most suitable. This function can search for topics discussed in the past and provide the dates associated with those discussions.
+    </thoughts>
+    <can-use-available-functions>True</can-use-available-functions>
+    <function_name>query_memory_table_for_knn_topics</function_name>
+    <kwargs>{
+       "topics": "Chandler, Arizona climate change challenges",
+       "start_date": "2024-04-01",
+       "end_date": "2024-04-19"
+    }</kwargs>
+    <example>solution = query_memory_table_for_knn_topics(topics="Chandler, Arizona climate change challenges", start_date="2024-04-01", end_date="2024-04-19")</example>
+    <returns>list</returns>
+</response>
+</qnr>
+<!-- QnR Boundary -->
+<qnr>
+<question>What's the expected visibility due to fog tomorrow morning?</question>
+<response>
+    <thoughts>
+        The query asks for a specific weather-related forecast about visibility due to fog for tomorrow morning. To answer this, I need to find a function that can provide weather forecasts. Among the available functions, 'search_and_summarize_weather' seems most appropriate as it is designed to search for weather forecasts and summarize the results. This function requires inputs such as the type of information (dynamic), a proofread query, key words, location, and dates. The query specifically asks about visibility due to fog, which is a dynamic weather condition, making this function suitable.
+    </thoughts>
+    <can-use-available-functions>True</can-use-available-functions>
+    <function_name>search_and_summarize_weather</function_name>
+    <kwargs>{
+       "information_is_dynamic": true,
+       "proofread_query": "Expected visibility due to fog tomorrow morning",
+       "search_key_words": "visibility, fog, tomorrow morning",
+       "location": "CURRENT_LOCATION",
+       "start_date": "2024-04-20",
+       "end_date": "2024-04-20"
+    }</kwargs>
+    <example>solution = search_and_summarize_weather(information_is_dynamic=True, proofread_query="Expected visibility due to fog tomorrow morning", search_key_words="visibility, fog, tomorrow morning", location="CURRENT_LOCATION", start_date="2024-04-20", end_date="2024-04-20")</example>
+    <returns>string</returns>
+</response>
+</qnr>
+<!-- QnR Boundary -->
+<qnr>
+<question>Hello Neo, are you ready? is there a possibility of a cold front moving through Lisbon, Portugal this week?</question>
+<response>
+    <thoughts>
+        The query asks about the possibility of a cold front moving through Lisbon, Portugal this week. This is a weather-related question, so I need to find a function that can handle weather forecasts or related information. Among the available functions, 'search_and_summarize_weather' seems most appropriate as it specifically deals with searching and summarizing weather forecasts and trends. The function requires inputs such as the location, which is clearly Lisbon, Portugal in this case, and the date range, which would be this week. I need to ensure that the function name I plan to use is in the provided list of function names.
+    </thoughts>
+    <can-use-available-functions>True</can-use-available-functions>
+    <function_name>search_and_summarize_weather</function_name>
+    <kwargs>{
+       "information_is_dynamic": true,
+       "proofread_query": "Is there a possibility of a cold front moving through Lisbon, Portugal this week?",
+       "search_key_words": "cold front, Lisbon, Portugal, this week",
+       "location": "Lisbon, Portugal",
+       "start_date": "2024-04-19",
+       "end_date": "2024-04-25"
+    }</kwargs>
+    <example>solution = search_and_summarize_weather(information_is_dynamic=True, proofread_query="Is there a possibility of a cold front moving through Lisbon, Portugal this week?", search_key_words="cold front, Lisbon, Portugal, this week", location="Lisbon, Portugal", start_date="2024-04-19", end_date="2024-04-25")</example>
+    <returns>string</returns>
+</response>
+</qnr>
+</qnrs>
